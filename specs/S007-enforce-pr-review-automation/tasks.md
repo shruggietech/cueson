@@ -141,8 +141,8 @@
 - [x] T038 Record the repository-automation architecture decision and user-visible policy gates in CHANGELOG.md
 - [x] T039 Revalidate spec quality and run post-implementation Spec Kit convergence and cross-artifact analysis across spec.md, plan.md, and tasks.md
 - [x] T040 Run formatter, standalone tests and vet, root vet and tests, race tests, actionlint, and whitespace checks from specs/S007-enforce-pr-review-automation/quickstart.md
-- [ ] T041 Commit and push the complete S007 tree, publish a formatted pull request that closes #9, and read its body back from GitHub
-- [ ] T042 Run the S007 adapter in dry-run mode against the live pull request and compare its JSON with GitHub evidence
+- [x] T041 Commit and push the complete S007 tree, publish a formatted pull request that closes #9, and read its body back from GitHub
+- [x] T042 Run the S007 adapter in dry-run mode against the live pull request and compare its JSON with GitHub evidence
 - [x] T043 Record the trusted-default-branch activation limit and require hosted mutation-source proof on the first post-merge pull request before issue #10 configures required contexts
 
 ### External delivery gates
