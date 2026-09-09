@@ -32,7 +32,7 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 	for _, required := range []string{
 		"pull_request:", "workflow_dispatch:", "contents: read", "persist-credentials: false",
 		"github.com/goreleaser/goreleaser/v2@v2.18.1", "github.com/anchore/syft/cmd/syft@v1.51.1",
-		"goreleaser release --snapshot --clean --skip=publish", "retention-days: 3",
+		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "retention-days: 3",
 	} {
 		if !strings.Contains(workflow, required) {
 			t.Errorf("release-proof.yml missing %q", required)

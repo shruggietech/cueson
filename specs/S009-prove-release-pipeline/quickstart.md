@@ -24,14 +24,14 @@ Expected: every command succeeds and repository-authored files satisfy encoding 
 
 ## 2. Install exact release tools
 
-Use a dedicated temporary `GOBIN`, then install:
+Use a dedicated temporary `GOBIN`, set `GOTOOLCHAIN=auto` for tool compilation, then install:
 
 ```text
 go install github.com/goreleaser/goreleaser/v2@v2.18.1
 go install github.com/anchore/syft/cmd/syft@v1.51.1
 ```
 
-Expected: `goreleaser --version` reports v2.18.1. Syft can report `[not provided]` when built by the exact `go install` command because that build path does not inject its presentation version; the pinned module command remains the reviewed v1.51.1 identity. The tools remain outside the product module and release archives.
+Expected: Go automatically obtains the newer compilers required by the pinned tool modules while Cueson's own build retains its Go 1.25 compatibility floor. `goreleaser --version` reports v2.18.1. Syft can report `[not provided]` when built by the exact `go install` command because that build path does not inject its presentation version; the pinned module command remains the reviewed v1.51.1 identity. The tools remain outside the product module and release archives.
 
 ## 3. Validate configuration and build the snapshot
 

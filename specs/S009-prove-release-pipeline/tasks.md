@@ -116,7 +116,7 @@
 - [x] T032 Run Go formatting, repository text checks, root and standalone module tests, race detection, vet, GoReleaser validation, the full snapshot proof, workflow linting, `git diff --check`, UTF-8/BOM/line-ending checks, and mojibake scans
 - [x] T033 Run Spec Kit convergence against `spec.md`, `plan.md`, and `tasks.md`; append and implement any remaining work before publication
 - [x] T034 Confirm issue #11 and the `cueson Delivery` item remain at Stage `In progress` with Slice `S009` and default Status unused before publication
-- [ ] T035 Format the official pull-request body through `scripts/github-format`, publish it with `Closes #11`, read it back, verify rendering, and move the Project item to `PR review`
+- [x] T035 Format the official pull-request body through `scripts/github-format`, publish it with `Closes #11`, read it back, verify rendering, and move the Project item to `PR review`
 - [ ] T036 Wait for all hosted checks and first-round third-party reviews, address every finding, request at most one `@codex review` second round only when required, and stop for the operator's final merge ritual after all checks and reviews are satisfied
 
 ---

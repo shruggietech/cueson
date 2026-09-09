@@ -38,6 +38,7 @@ jobs:
         shell: bash
         env:
           GOBIN: ${{ runner.temp }}/release-tools
+          GOTOOLCHAIN: auto
         run: |
           mkdir -p "${GOBIN}"
           go install github.com/goreleaser/goreleaser/v2@v2.18.1

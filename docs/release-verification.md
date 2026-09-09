@@ -27,6 +27,7 @@ Use a dedicated temporary command directory. In PowerShell:
 
 ```powershell
 $env:GOBIN = Join-Path $env:TEMP "cueson-release-tools"
+$env:GOTOOLCHAIN = "auto"
 New-Item -ItemType Directory -Force -Path $env:GOBIN | Out-Null
 go install github.com/goreleaser/goreleaser/v2@v2.18.1
 go install github.com/anchore/syft/cmd/syft@v1.51.1
@@ -39,6 +40,7 @@ In a POSIX shell:
 
 ```bash
 export GOBIN="$(mktemp -d)"
+export GOTOOLCHAIN="auto"
 go install github.com/goreleaser/goreleaser/v2@v2.18.1
 go install github.com/anchore/syft/cmd/syft@v1.51.1
 export PATH="${GOBIN}:${PATH}"
@@ -46,7 +48,7 @@ goreleaser --version
 syft version
 ```
 
-The GoReleaser version command must report v2.18.1. A Syft binary built through the exact `go install` command can report `[not provided]` because the Go build path does not inject Syft's presentation version; the versioned module command is the reviewed identity in that case. A later stable tool is not an equivalent S009 proof until the versioned configuration and verification are reviewed together.
+Go's automatic toolchain selection is required while compiling the pinned release tools because their own modules require newer Go compilers than Cueson's Go 1.25 compatibility floor. The Cueson build still follows the repository module's selected compatible toolchain. The GoReleaser version command must report v2.18.1. A Syft binary built through the exact `go install` command can report `[not provided]` because the Go build path does not inject Syft's presentation version; the versioned module command is the reviewed identity in that case. A later stable tool is not an equivalent S009 proof until the versioned configuration and verification are reviewed together.
 
 ## Foreground snapshot
 
