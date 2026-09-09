@@ -314,6 +314,8 @@ func TestScanForbiddenRecognizesEscapedAndStructuralPaths(t *testing.T) {
 		[]byte(`{"path":"D:/build/cueson"}`),
 		[]byte(`{"path":"\\\\server\\share\\cueson"}`),
 		[]byte(`{"detail":"built from /workspace/cueson"}`),
+		[]byte(`{"fileName":"/opt/ci/cueson"}`),
+		[]byte(`{"sourceInfo":"acquired package info from go module information: /workspace/cueson"}`),
 		[]byte(`alice-host`),
 	}
 	for _, data := range invalid {
@@ -327,7 +329,8 @@ func TestScanForbiddenRecognizesEscapedAndStructuralPaths(t *testing.T) {
 	valid := [][]byte{
 		[]byte(`{"url":"https://cueson.io/schema/v0.0.0/cueson.schema.json"}`),
 		[]byte(`{"purl":"pkg:golang/github.com/shruggietech/cueson@v0.0.0"}`),
-		[]byte(`{"module":"github.com/shruggietech/cueson","catalog_path":"\\cueson"}`),
+		[]byte(`{"module":"github.com/shruggietech/cueson","fileName":"\\cueson","sourceInfo":"acquired package info from go module information: \\cueson"}`),
+		[]byte(`{"module":"github.com/shruggietech/cueson","fileName":"/cueson","sourceInfo":"acquired package info from go module information: /cueson"}`),
 	}
 	for _, data := range valid {
 		if err := scanForbidden("test", data, nil); err != nil {

@@ -668,7 +668,7 @@ func scanForbidden(label string, data []byte, forbidden []string) error {
 	}
 	var decoded any
 	if json.Unmarshal(data, &decoded) == nil {
-		if containsAbsolutePathValue(decoded) {
+		if containsAbsolutePathValue("", decoded) {
 			return fmt.Errorf("%s contains a structurally absolute path", label)
 		}
 	} else if containsAbsolutePath(string(data)) {
@@ -677,24 +677,33 @@ func scanForbidden(label string, data []byte, forbidden []string) error {
 	return nil
 }
 
-func containsAbsolutePathValue(value any) bool {
+func containsAbsolutePathValue(field string, value any) bool {
 	switch typed := value.(type) {
 	case map[string]any:
 		for key, child := range typed {
-			if containsAbsolutePath(key) || containsAbsolutePathValue(child) {
+			if containsAbsolutePath(key) || containsAbsolutePathValue(key, child) {
 				return true
 			}
 		}
 	case []any:
 		for _, child := range typed {
-			if containsAbsolutePathValue(child) {
+			if containsAbsolutePathValue(field, child) {
 				return true
 			}
 		}
 	case string:
+		if isSyftVirtualRoot(field, typed) {
+			return false
+		}
 		return containsAbsolutePath(typed)
 	}
 	return false
+}
+
+func isSyftVirtualRoot(field, value string) bool {
+	const sourcePrefix = "acquired package info from go module information: "
+	return field == "fileName" && (value == "/cueson" || value == `\cueson`) ||
+		field == "sourceInfo" && (value == sourcePrefix+"/cueson" || value == sourcePrefix+`\cueson`)
 }
 
 func containsAbsolutePath(value string) bool {

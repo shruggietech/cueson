@@ -122,6 +122,7 @@
 - [x] T038 [Review] Bind every packaged binary's public version surface to a release-only marker and verify that marker for foreign targets in `internal/version/version.go`, `.goreleaser.yaml`, and `scripts/release-verify/verify.go`
 - [x] T039 [Hosted] Scope local-identifier inspection to semantic Go build information, release metadata, and SBOM JSON so arbitrary binary bytes cannot create false path matches in `scripts/release-verify/verify.go`
 - [x] T040 [Review] Replace the common-root path list with host-independent structural detection for arbitrary drive, UNC, and POSIX absolute paths in `scripts/release-verify/verify.go`
+- [x] T041 [Hosted] Treat Syft's exact platform-specific `/cueson` and `\cueson` catalog roots as virtual artifact identities while continuing to reject all other structurally absolute metadata paths in `scripts/release-verify/verify.go`
 
 ---
 
