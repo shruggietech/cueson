@@ -21,14 +21,22 @@
 *.ttf binary
 *.otf binary
 
-# Subtitle fixtures are evidence for byte-exact behavior. Preserve their bytes.
+# Test metadata and normalized expectations remain repository-authored LF text.
+testdata/** text=auto eol=lf
+
+# Authoritative fixture artifacts bypass Git text and whitespace normalization.
+testdata/fixtures/**/source/** -text -eol -whitespace
+testdata/fixtures/**/expected/bytes/** -text -eol -whitespace
+testdata/malformed/**/input/** -text -eol -whitespace
+testdata/fuzz/**/input/** -text -eol -whitespace
+
+# Known subtitle fixture extensions remain protected as defense in depth.
 testdata/**/*.srt -text -eol -whitespace
 testdata/**/*.vtt -text -eol -whitespace
 testdata/**/*.stl -text -eol -whitespace
 testdata/**/*.sup -text -eol -whitespace
 testdata/**/*.idx -text -eol -whitespace
 testdata/**/*.sub -text -eol -whitespace
-testdata/malformed/** -text -eol -whitespace
 
 # Approved brand sources and consumer copies are byte-for-byte assets.
 brand/** -text -eol -whitespace
