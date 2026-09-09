@@ -21,7 +21,7 @@ var (
 	artifactIDPattern      = regexp.MustCompile(`^[a-z0-9]+(?:[_-][a-z0-9]+)*$`)
 	sha256Pattern          = regexp.MustCompile(`^[0-9a-f]{64}$`)
 	localDrivePathPattern  = regexp.MustCompile(`(?i)^[a-z]:[\\/]`)
-	localPathInTextPattern = regexp.MustCompile(`(?i)(^|[[:space:]'"(=])(?:[a-z]:[\\/]|file:(?:/{0,2})|\\\\|/(?:[^/[:space:]]+/)+)`)
+	localPathInTextPattern = regexp.MustCompile(`(?i)(^|[[:space:]'"(=])(?:[a-z]:[\\/]|file:(?:/{0,2})|\\\\|/[^/[:space:]]+(?:/[^/[:space:]]+)*)`)
 )
 
 // Manifest is the versioned, ordered root fixture inventory.

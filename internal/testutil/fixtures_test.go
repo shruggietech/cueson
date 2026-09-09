@@ -86,6 +86,12 @@ func TestVerifyFixturesRejectsInvalidCorpus(t *testing.T) {
 		{name: "embedded Unix origin path", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
 			manifest.Fixtures[0].Origin.Source = "Captured from /mnt/private/fixture.txt"
 		}, want: "origin source must not be a local path"},
+		{name: "embedded root-level Unix origin path", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
+			manifest.Fixtures[0].Origin.Source = "Captured from /secret.txt"
+		}, want: "origin source must not be a local path"},
+		{name: "embedded root-level Unix recipe path", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
+			manifest.Fixtures[0].Origin.Recipe = stringPointer("Copy /secret.txt verbatim.")
+		}, want: "origin recipe must not contain a local path"},
 		{name: "local recipe path", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
 			manifest.Fixtures[0].Origin.Recipe = stringPointer(`Copy C:\Users\person\fixture.txt.`)
 		}, want: "origin recipe must not contain a local path"},
