@@ -221,6 +221,12 @@ Read-only inspection reported pull request #20 as mergeable without using the or
 
 S008 did not merge or enable auto-merge, create or move a tag, publish a release or schema, alter production-domain configuration, modify an organization policy, or touch another repository. Automatic merged-head deletion is configured but cannot be behaviorally observed until the operator performs the separately authorized final merge.
 
+### Delivery record
+
+Issue #10 remains open and assigned to milestone `v0.0.0`. Its five acceptance checkboxes are complete, and the official pull request retains the closing reference that delegates issue closure to the final merge. Immediate Project read-back showed the issue exactly once in `cueson Delivery`, Stage `PR review`, Slice `S008`, and no value in the unused default Status field.
+
+The single authorized second Codex review reported one P2 finding: the original T025 and SC-007 wording claimed the trusted-base policy workflow had completed even though its adapter fix cannot run from `main` until merge. Commit `86085eb` narrowed the hosted success claim to the 17 S006 CI and CodeQL contexts, preserved the explicit policy limitation, received a commit-specific reply, and resolved the review thread. No third review was requested. The final head-specific check and review inventory is published on pull request #20 because a source commit cannot name its own hash.
+
 ## Recovery and failure handling
 
 A mismatched or unavailable read-back stops dependent mutations. Earlier verified controls remain reported as partial progress. Recovery begins by reading current state again and never assumes that a failed request was atomic.

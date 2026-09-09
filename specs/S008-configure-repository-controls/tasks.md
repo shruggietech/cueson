@@ -118,12 +118,12 @@
 
 - [x] T037 [US4] Reconcile docs/repository-controls.md, docs/architecture.md, docs/project-management.md, SECURITY.md, CHANGELOG.md, and all S008 artifacts with the final observed external state
 - [x] T038 [US4] Rerun the complete local verification suite and final Spec Kit analysis plus convergence gates, appending and completing any remediation tasks in specs/S008-configure-repository-controls/tasks.md
-- [ ] T039 [US4] Commit and push the final evidence update, then wait for all current-head CI, CodeQL, Codex, security-bot, and policy results without starting more than one authorized second Codex round
-- [ ] T040 [US4] Address every review finding with regression or evidence changes, reply with commit evidence, resolve only satisfied threads, and verify no unresolved review remains on the S008 pull request
-- [ ] T041 [US4] Update issue #10 acceptance and verification evidence through the publication formatter, immediately read the body back, and preserve its open state until merge
-- [ ] T042 [US4] Move issue #10 to Project Stage `PR review`, preserve Slice `S008`, clear default Status, and read every field back into docs/repository-controls.md
-- [ ] T043 [US4] Publish and read back one formatted final-head evidence comment containing required and deferred contexts, successful run URLs, policy status sources, repository ruleset identifier, and final read-back time
-- [ ] T044 [US4] Perform the final clean-worktree, branch, remote, issue, milestone, Project, ruleset, security, workflow, review, and CI audit, then stop for the operator's final review and merge ritual
+- [x] T039 [US4] Commit and push the final evidence update, then wait for all current-head CI, CodeQL, Codex, security-bot, and policy results without starting more than one authorized second Codex round
+- [x] T040 [US4] Address every review finding with regression or evidence changes, reply with commit evidence, resolve only satisfied threads, and verify no unresolved review remains on the S008 pull request
+- [x] T041 [US4] Update issue #10 acceptance and verification evidence through the publication formatter, immediately read the body back, and preserve its open state until merge
+- [x] T042 [US4] Move issue #10 to Project Stage `PR review`, preserve Slice `S008`, clear default Status, and read every field back into docs/repository-controls.md
+- [x] T043 [US4] Publish and read back one formatted final-head evidence comment containing required and deferred contexts, successful run URLs, policy status sources, repository ruleset identifier, and final read-back time
+- [x] T044 [US4] Perform the final clean-worktree, branch, remote, issue, milestone, Project, ruleset, security, workflow, review, and CI audit, then stop for the operator's final review and merge ritual
 
 **Checkpoint**: S008 is complete and verified but unmerged, with the human operator holding the final decision.
 
