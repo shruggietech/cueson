@@ -102,6 +102,16 @@ The `Pull request policy` workflow runs only trusted `main` code through `pull_r
 
 Because GitHub does not activate a newly introduced trusted-default-branch workflow for its own pull request, S007 verifies that pull request with a read-only live adapter audit and fixture-backed mutation tests. The first eligible pull request after merge must prove the hosted status source and Actions-bot comment behavior before issue #10 makes either policy context required.
 
+## Repository protection
+
+Repository protection is cumulative. The existing organization-owned default-branch ruleset remains an immutable S008 input, while Cueson-specific resolved-conversation and required-check policy belongs to a repository-owned ruleset targeting only `main`. Classic branch protection is not treated as the sole authority when rulesets supply the effective policy.
+
+Required checks enter protection only after the exact context, pull-request head, successful terminal result, and provider identity are read back from GitHub. The 17 stable S006 CI and CodeQL contexts form the initial candidate set. Both S007 commit-status contexts remain conditional on the complete first-post-merge activation proof, including the GitHub Actions-authored second-round request path; if S008 receives a clean first review, neither policy context becomes required.
+
+Repository Actions default to read permission, pull-request approval remains disabled, action sources are limited to GitHub-owned actions, and immutable action references are required. Versioned workflows continue to declare their own minimum permissions. The versioned CodeQL workflow remains authoritative rather than enabling a competing default setup.
+
+One organization-administrator bypass on the repository-owned ruleset preserves recovery from a misconfigured or renamed gate. It is not ordinary delivery authority: pull requests still follow the bounded review protocol, and final merge remains a human decision.
+
 ## Work ownership after ratification
 
 | Issue | Implementation ownership |

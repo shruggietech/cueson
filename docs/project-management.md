@@ -34,6 +34,14 @@ The trusted workflow uses current GitHub evidence for every reconciliation and w
 
 The workflow becomes active only after its implementation reaches the default branch. Its introducing pull request receives read-only live API validation plus fixture-backed mutation proof. Hosted status and Actions-bot request behavior must be demonstrated on the first eligible post-merge pull request before repository rules make either context required.
 
+## Repository controls
+
+The stable S006 CI and CodeQL contexts may become required only after successful current-head runs are read back with their provider identities. The S007 issue-link and Codex-review contexts have an additional activation gate: neither becomes required until one eligible post-S007 pull request proves both trusted status publication and the GitHub Actions-authored second-round request path. A clean review leaves that pair deferred without weakening independently proven gates.
+
+Cueson-specific protection uses a repository-owned ruleset and does not modify the organization-owned baseline. The repository rule targets only `main`, requires pull requests and resolved conversations, blocks deletion and non-fast-forward updates, and contains one organization-administrator recovery bypass. Required checks use strict current-base policy and the exact evidence-backed contexts recorded in [repository controls](repository-controls.md).
+
+Repository configuration is changed in dependency order and each write is followed by a separate authoritative read. External-state evidence records both successful controls and plan or policy limitations. Automatic branch deletion is verified after the next operator merge; a successful setting read-back proves configuration, while the post-merge observation proves behavior.
+
 ## Bootstrap state
 
 The initial planning structure is established before shipped product code begins. CI-required checks, repository rulesets, security automation, Codex review automation, and release dry runs are tracked outcomes that are activated only after their implementation exists.
