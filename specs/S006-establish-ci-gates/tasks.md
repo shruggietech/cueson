@@ -117,7 +117,7 @@
 
 **Purpose**: Use the operator's explicit authorization to publish S006, prove real failure behavior, correct it, and expose only the final green tree to automated reviewers.
 
-- [ ] T034 Commit the intended final implementation and Spec Kit evidence on `S006-establish-ci-gates`, then add `.github/ci-failure-probe` in a separate controlled-failure commit.
+- [X] T034 Commit the intended final implementation and Spec Kit evidence on `S006-establish-ci-gates`, then add `.github/ci-failure-probe` in a separate controlled-failure commit.
 - [ ] T035 Push `S006-establish-ci-gates`, publish the official pull request as a draft with a formatter-verified body containing `Closes #8`, and read the body back from GitHub.
 - [ ] T036 Verify the hosted `CI / Repository text` check and overall `CI` workflow fail specifically because `.github/ci-failure-probe` exists, then retain the failed run URL in `specs/S006-establish-ci-gates/tasks.md`.
 - [ ] T037 Remove `.github/ci-failure-probe`, commit and push the correction, and verify the final pull-request diff contains no probe.
