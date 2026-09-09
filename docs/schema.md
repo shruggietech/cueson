@@ -4,7 +4,7 @@
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document defines the schema decisions that implementation issue [#5](https://github.com/shruggietech/cueson/issues/5) must realize. The schema file does not exist yet, and this document does not claim that validation or embedding is already available.
+This document defines the schema decisions realized by implementation issue [#5](https://github.com/shruggietech/cueson/issues/5). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable, and its structural and semantic validation foundation is available internally; source-integrity execution and exact restoration remain assigned to issue [#6](https://github.com/shruggietech/cueson/issues/6).
 
 ## Dialect, identity, and version
 
