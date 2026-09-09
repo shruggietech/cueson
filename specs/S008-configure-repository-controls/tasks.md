@@ -21,7 +21,7 @@
 - [x] T001 Verify issue #10 dependencies, parent, milestone, Slice `S008`, and Project Stage `Specced`, recording planning state in specs/S008-configure-repository-controls/plan.md
 - [x] T002 Capture pre-mutation repository, merge, Actions, security, CodeQL, classic-protection, repository-ruleset, and effective organization-ruleset state in docs/repository-controls.md
 - [x] T003 Prove the organization-owned ruleset identity and baseline update timestamp in docs/repository-controls.md
-- [x] T004 Validate all 25 functional requirements and 8 success criteria against specs/S008-configure-repository-controls/checklists/requirements.md
+- [x] T004 Validate all 26 functional requirements and 9 success criteria against specs/S008-configure-repository-controls/checklists/requirements.md
 
 ---
 
@@ -38,80 +38,92 @@
 - [x] T009 [P] Record S008 repository-control additions and architecture decisions under `[Unreleased]` in CHANGELOG.md
 - [x] T010 Verify Spec Kit artifacts, repository UTF-8 without BOM, line endings, mojibake absence, publication formatting, whitespace, root tests, race tests, vet, and nested script tests using specs/S008-configure-repository-controls/quickstart.md
 - [x] T011 Run the blocking cross-artifact analysis gate over spec.md, plan.md, and tasks.md and resolve every critical or high-severity finding in specs/S008-configure-repository-controls/
-- [ ] T012 Commit the validated pre-publication slice, push S008-configure-repository-controls, publish the official pull request with `Closes #10`, and read its formatted body back into the verification record in docs/repository-controls.md
-- [ ] T013 Move issue #10 to Project Stage `In progress`, preserve Slice `S008`, and clear the default Status field, recording read-back in docs/repository-controls.md
+- [x] T012 Commit the validated pre-publication slice, push S008-configure-repository-controls, publish the official pull request with `Closes #10`, and read its formatted body back into the verification record in docs/repository-controls.md
+- [x] T013 Move issue #10 to Project Stage `In progress`, preserve Slice `S008`, and clear the default Status field, recording read-back in docs/repository-controls.md
 
 **Checkpoint**: The official S008 pull request exists, is publication-safe, and can supply hosted evidence without granting administrative credentials to pull-request code.
 
 ---
 
-## Phase 3: User Story 2 - Establish Secure Repository Defaults (Priority: P1)
+## Phase 3: Hosted Policy Activation Remediation
+
+**Purpose**: Correct the S007 live-adapter mismatch exposed by the first official post-merge pull request before relying on policy evidence.
+
+- [x] T014 Record the first hosted reconciliation failure and GitHub's actual commit-status representation in docs/repository-controls.md
+- [x] T015 Add failing status read-back and untrusted-no-op regression cases in scripts/pr-policy/github_test.go
+- [x] T016 Bind status read-back to the validated request endpoint and exact GitHub Actions creator in scripts/pr-policy/github.go
+
+**Checkpoint**: A first accepted status mutation reads back successfully in one run, and an untrusted matching status cannot suppress the trusted mutation.
+
+---
+
+## Phase 4: User Story 2 - Establish Secure Repository Defaults (Priority: P1)
 
 **Goal**: Reduce workflow and merge privilege, enable supported security facilities, and preserve versioned CodeQL.
 
 **Independent Test**: Every repository setting and security capability has an authoritative before value, explicit desired value, mutation result, and immediate after value in docs/repository-controls.md.
 
-- [ ] T014 [US2] Read the initial S008 hosted CI, CodeQL, and policy results before permission changes and record their current head in docs/repository-controls.md
-- [ ] T015 [US2] Restrict repository Actions to GitHub-owned actions and full-SHA references, immediately read the policy back, and record it in docs/repository-controls.md
-- [ ] T016 [US2] Reduce default workflow permissions to read with pull-request approval disabled, immediately read the defaults back, and record them in docs/repository-controls.md
-- [ ] T017 [US2] Enable Dependabot security updates with dependency alerts retained, immediately read both states back, and record them in docs/repository-controls.md
-- [ ] T018 [US2] Enable secret scanning and push protection when supported, immediately read both states back, and record any limitation in docs/repository-controls.md
-- [ ] T019 [US2] Enable private vulnerability reporting when supported, immediately read its state back, and record any limitation in docs/repository-controls.md
-- [ ] T020 [US2] Preserve the versioned CodeQL workflow and read back that default setup remains unconfigured with current CodeQL checks healthy in docs/repository-controls.md
-- [ ] T021 [US2] Make squash the only merge method, keep auto-merge disabled, enable automatic merged-head deletion, immediately read repository settings back, and record them in docs/repository-controls.md
-- [ ] T022 [US2] Dispatch a new S008 head update under the reduced defaults and require all current-head hosted workflows to finish successfully, recording results in docs/repository-controls.md
+- [ ] T017 [US2] Read the initial S008 hosted CI, CodeQL, and policy results before permission changes and record their current head in docs/repository-controls.md
+- [ ] T018 [US2] Restrict repository Actions to GitHub-owned actions and full-SHA references, immediately read the policy back, and record it in docs/repository-controls.md
+- [ ] T019 [US2] Reduce default workflow permissions to read with pull-request approval disabled, immediately read the defaults back, and record them in docs/repository-controls.md
+- [ ] T020 [US2] Enable Dependabot security updates with dependency alerts retained, immediately read both states back, and record them in docs/repository-controls.md
+- [ ] T021 [US2] Enable secret scanning and push protection when supported, immediately read both states back, and record any limitation in docs/repository-controls.md
+- [ ] T022 [US2] Enable private vulnerability reporting when supported, immediately read its state back, and record any limitation in docs/repository-controls.md
+- [ ] T023 [US2] Preserve the versioned CodeQL workflow and read back that default setup remains unconfigured with current CodeQL checks healthy in docs/repository-controls.md
+- [ ] T024 [US2] Make squash the only merge method, keep auto-merge disabled, enable automatic merged-head deletion, immediately read repository settings back, and record them in docs/repository-controls.md
+- [ ] T025 [US2] Dispatch a new S008 head update under the reduced defaults and require all current-head hosted workflows to finish successfully, recording results in docs/repository-controls.md
 
 **Checkpoint**: Secure repository defaults are verified independently, and existing workflows still operate with their explicit minimum permissions.
 
 ---
 
-## Phase 4: User Story 1 - Protect the Default Branch with Proven Gates (Priority: P1)
+## Phase 5: User Story 1 - Protect the Default Branch with Proven Gates (Priority: P1)
 
 **Goal**: Create repository-scoped default-branch protection using only successful current-head evidence.
 
 **Independent Test**: The complete repository-owned ruleset reads back with the expected target, bypass, pull-request rules, ref protections, and exact proven check list.
 
-- [ ] T023 [US1] Query the current S008 head's check runs and map all 17 S006 contract contexts to successful GitHub Actions evidence in docs/repository-controls.md
-- [ ] T024 [US1] Query current-head combined statuses and record exact source evidence for both S007 policy contexts in docs/repository-controls.md
-- [ ] T025 [US1] Evaluate the S007 Actions-bot second-round proof gate and either admit both policy contexts or defer both with an explicit reason in docs/repository-controls.md
-- [ ] T026 [US1] Construct the strict required-check list from only admitted hosted evidence and record exact contexts plus integration identifiers in docs/repository-controls.md
-- [ ] T027 [US1] Create the active repository-owned `cueson verified default branch` ruleset with one OrganizationAdmin recovery bypass and record its returned identifier in docs/repository-controls.md
-- [ ] T028 [US1] Read the complete repository ruleset back and verify default-branch targeting, deletion and non-fast-forward protection, pull-request requirement, resolved conversations, squash-only policy, strict checks, and the sole bypass in docs/repository-controls.md
-- [ ] T029 [US1] Read effective branch rules and confirm the repository and organization rules combine without changing organization ruleset `20478126`, recording the comparison in docs/repository-controls.md
+- [ ] T026 [US1] Query the current S008 head's check runs and map all 17 S006 contract contexts to successful GitHub Actions evidence in docs/repository-controls.md
+- [ ] T027 [US1] Query current-head combined statuses and record exact source evidence for both S007 policy contexts in docs/repository-controls.md
+- [ ] T028 [US1] Evaluate the S007 Actions-bot second-round proof gate and either admit both policy contexts or defer both with an explicit reason in docs/repository-controls.md
+- [ ] T029 [US1] Construct the strict required-check list from only admitted hosted evidence and record exact contexts plus integration identifiers in docs/repository-controls.md
+- [ ] T030 [US1] Create the active repository-owned `cueson verified default branch` ruleset with one OrganizationAdmin recovery bypass and record its returned identifier in docs/repository-controls.md
+- [ ] T031 [US1] Read the complete repository ruleset back and verify default-branch targeting, deletion and non-fast-forward protection, pull-request requirement, resolved conversations, squash-only policy, strict checks, and the sole bypass in docs/repository-controls.md
+- [ ] T032 [US1] Read effective branch rules and confirm the repository and organization rules combine without changing organization ruleset `20478126`, recording the comparison in docs/repository-controls.md
 
 **Checkpoint**: The default branch is protected by an active repository-owned ruleset whose check list is fully traceable to current-head evidence.
 
 ---
 
-## Phase 5: User Story 3 - Preserve Scope and Recovery Boundaries (Priority: P1)
+## Phase 6: User Story 3 - Preserve Scope and Recovery Boundaries (Priority: P1)
 
 **Goal**: Prove that hardening remained repository-scoped and recoverable without consuming merge or release authority.
 
 **Independent Test**: Live API state shows one S008-created repository ruleset, one organization-administrator recovery category, no organization-rule update, and no release, tag, schema, domain, or unrelated-repository mutation.
 
-- [ ] T030 [US3] Re-query organization ruleset `20478126` and compare its identifier, source, rules, bypass actors, and update timestamp with the baseline in docs/repository-controls.md
-- [ ] T031 [US3] Verify the S008-created ruleset has no bot, deploy-key, contributor-role, unrelated-team, or second bypass entry in docs/repository-controls.md
-- [ ] T032 [US3] Verify no auto-merge, merge, tag, release, schema publication, production-domain, organization-policy, or unrelated-repository action occurred and record the boundary audit in docs/repository-controls.md
-- [ ] T033 [US3] Exercise read-only effective-rule and mergeability inspection for the S008 pull request without using the administrative bypass, recording the result in docs/repository-controls.md
+- [ ] T033 [US3] Re-query organization ruleset `20478126` and compare its identifier, source, rules, bypass actors, and update timestamp with the baseline in docs/repository-controls.md
+- [ ] T034 [US3] Verify the S008-created ruleset has no bot, deploy-key, contributor-role, unrelated-team, or second bypass entry in docs/repository-controls.md
+- [ ] T035 [US3] Verify no auto-merge, merge, tag, release, schema publication, production-domain, organization-policy, or unrelated-repository action occurred and record the boundary audit in docs/repository-controls.md
+- [ ] T036 [US3] Exercise read-only effective-rule and mergeability inspection for the S008 pull request without using the administrative bypass, recording the result in docs/repository-controls.md
 
 **Checkpoint**: Scope and recovery boundaries are explicit and independently auditable.
 
 ---
 
-## Phase 6: User Story 4 - Produce Auditable Configuration Evidence (Priority: P2)
+## Phase 7: User Story 4 - Produce Auditable Configuration Evidence (Priority: P2)
 
 **Goal**: Finish a chronological evidence record that a maintainer can reproduce and review.
 
 **Independent Test**: The quickstart, source-controlled evidence, issue body, Project fields, pull-request comments, final head, ruleset, and hosted results agree without placeholders or unsupported claims.
 
-- [ ] T034 [US4] Reconcile docs/repository-controls.md, docs/architecture.md, docs/project-management.md, SECURITY.md, CHANGELOG.md, and all S008 artifacts with the final observed external state
-- [ ] T035 [US4] Rerun the complete local verification suite and final Spec Kit analysis plus convergence gates, appending and completing any remediation tasks in specs/S008-configure-repository-controls/tasks.md
-- [ ] T036 [US4] Commit and push the final evidence update, then wait for all current-head CI, CodeQL, Codex, security-bot, and policy results without starting more than one authorized second Codex round
-- [ ] T037 [US4] Address every review finding with regression or evidence changes, reply with commit evidence, resolve only satisfied threads, and verify no unresolved review remains on the S008 pull request
-- [ ] T038 [US4] Update issue #10 acceptance and verification evidence through the publication formatter, immediately read the body back, and preserve its open state until merge
-- [ ] T039 [US4] Move issue #10 to Project Stage `PR review`, preserve Slice `S008`, clear default Status, and read every field back into docs/repository-controls.md
-- [ ] T040 [US4] Publish and read back one formatted final-head evidence comment containing required and deferred contexts, successful run URLs, policy status sources, repository ruleset identifier, and final read-back time
-- [ ] T041 [US4] Perform the final clean-worktree, branch, remote, issue, milestone, Project, ruleset, security, workflow, review, and CI audit, then stop for the operator's final review and merge ritual
+- [ ] T037 [US4] Reconcile docs/repository-controls.md, docs/architecture.md, docs/project-management.md, SECURITY.md, CHANGELOG.md, and all S008 artifacts with the final observed external state
+- [ ] T038 [US4] Rerun the complete local verification suite and final Spec Kit analysis plus convergence gates, appending and completing any remediation tasks in specs/S008-configure-repository-controls/tasks.md
+- [ ] T039 [US4] Commit and push the final evidence update, then wait for all current-head CI, CodeQL, Codex, security-bot, and policy results without starting more than one authorized second Codex round
+- [ ] T040 [US4] Address every review finding with regression or evidence changes, reply with commit evidence, resolve only satisfied threads, and verify no unresolved review remains on the S008 pull request
+- [ ] T041 [US4] Update issue #10 acceptance and verification evidence through the publication formatter, immediately read the body back, and preserve its open state until merge
+- [ ] T042 [US4] Move issue #10 to Project Stage `PR review`, preserve Slice `S008`, clear default Status, and read every field back into docs/repository-controls.md
+- [ ] T043 [US4] Publish and read back one formatted final-head evidence comment containing required and deferred contexts, successful run URLs, policy status sources, repository ruleset identifier, and final read-back time
+- [ ] T044 [US4] Perform the final clean-worktree, branch, remote, issue, milestone, Project, ruleset, security, workflow, review, and CI audit, then stop for the operator's final review and merge ritual
 
 **Checkpoint**: S008 is complete and verified but unmerged, with the human operator holding the final decision.
 
@@ -123,10 +135,11 @@
 
 - **Phase 1**: Starts from clean synchronized `main` and issue #10's unblocked state.
 - **Phase 2**: Depends on Phase 1 and blocks every live mutation because the official pull request supplies hosted identity evidence.
-- **Phase 3 / US2**: Depends on the official pull request and verifies tightened defaults before required checks are activated.
-- **Phase 4 / US1**: Depends on Phase 3's successful workflow rerun so required checks are proven under final permission defaults.
-- **Phase 5 / US3**: Depends on the repository-owned ruleset created in Phase 4.
-- **Phase 6 / US4**: Depends on all controls and scope checks; it owns final review remediation and evidence publication.
+- **Phase 3**: Depends on the official pull request's live adapter evidence and blocks administrative mutations until the dependency defect is fixed.
+- **Phase 4 / US2**: Depends on the corrected policy adapter and verifies tightened defaults before required checks are activated.
+- **Phase 5 / US1**: Depends on Phase 4's successful workflow rerun so required checks are proven under final permission defaults.
+- **Phase 6 / US3**: Depends on the repository-owned ruleset created in Phase 5.
+- **Phase 7 / US4**: Depends on all controls and scope checks; it owns final review remediation and evidence publication.
 
 ### User Story Dependencies
 
@@ -138,9 +151,9 @@
 ### Parallel Opportunities
 
 - T005 through T009 edit independent documentation files and can proceed in parallel.
-- T017 through T020 touch independent security API surfaces but remain sequential in execution so each read-back is isolated and partial failure is obvious.
-- T023 and T024 read independent hosted evidence surfaces but feed the sequential admission decision in T025.
-- T030 through T032 are independent read-only boundary audits after ruleset creation.
+- T020 through T023 touch independent security API surfaces but remain sequential in execution so each read-back is isolated and partial failure is obvious.
+- T026 and T027 read independent hosted evidence surfaces but feed the sequential admission decision in T028.
+- T033 through T035 are independent read-only boundary audits after ruleset creation.
 
 ---
 

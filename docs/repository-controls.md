@@ -121,7 +121,13 @@ The `Cueson PR policy / Issue link` and `Cueson PR policy / Codex review` status
 
 ## After S008
 
-No S008 mutation has been applied at the pre-publication checkpoint. Final values, ruleset identity, hosted check evidence, limitations, and verification timestamps are recorded here only after their authoritative read-back.
+### Hosted activation observation
+
+The official pull request is [#20](https://github.com/shruggietech/cueson/pull/20). Its initial head was `83d4f58bde8d9df5c1871fd1a5ce69498acbfc7f`, its formatted 39-line body read back successfully, and GitHub resolved `Closes #10`.
+
+The first trusted reconciliation run, [34400932303](https://github.com/shruggietech/cueson/actions/runs/34400932303), published `Cueson PR policy / Issue link` successfully but then failed its local read-back comparison. GitHub's actual create and list representations omit the redundant `sha` field while binding the request to the commit-status endpoint for the exact SHA. A comment-triggered retry published `Cueson PR policy / Codex review` and failed for the same reason. This is a dependency defect, not a failed policy decision: the two statuses exist on the intended head with IDs `53854883221` and `53854918611`, exact context, expected state and description, run target, and creator `github-actions[bot]` ID `41898282`.
+
+S008 stopped all administrative mutations at this failure, amended its Spec Kit requirements, and added test-first remediation before continuing. Final values, ruleset identity, admitted check evidence, limitations, and verification timestamps follow only after the corrected adapter and authoritative read-backs succeed.
 
 ## Recovery and failure handling
 

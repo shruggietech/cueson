@@ -81,6 +81,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 - Required-check names can collide across providers, change capitalization, or appear on a stale revision.
 - A check can report success on the pull request merge commit while remaining absent from the pull request head.
 - A policy status can be written by an unexpected actor even when its context text matches.
+- GitHub commit-status list and create responses can omit a redundant commit SHA even though the request endpoint is bound to that SHA.
 - The first post-S007 pull request can complete cleanly without exercising the automated second-round comment path.
 - Repository rules can combine cumulatively with an organization-owned ruleset even when classic branch protection reports no configuration.
 - An administrative bypass can be too broad, absent, or unavailable for repository-owned rules.
@@ -120,6 +121,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 - **FR-023**: A failed or partial mutation MUST fail visibly, preserve the last verified state in the record, and stop dependent mutations until the failure is understood.
 - **FR-024**: The final pull request MUST close issue #10, contain publication-safe Markdown, and stop for human final review and merge after all available reviews are resolved and all required checks are green.
 - **FR-025**: S008 MUST NOT merge or auto-merge its pull request, modify organization-wide rules, alter unrelated repositories, create or move a tag, publish a release, publish a schema, or mutate production `cueson.io` configuration.
+- **FR-026**: Hosted status mutation verification MUST compare the accepted identifier, context, state, description, target, and trusted creator against the requested commit endpoint without requiring a redundant field that GitHub omits from its status representation.
 
 ### Key Entities
 
@@ -141,6 +143,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 - **SC-006**: 100% of requested security capabilities are either read back as enabled or recorded with a specific authoritative limitation.
 - **SC-007**: Existing CI, CodeQL, and pull-request policy workflows complete under the reduced default workflow permission without acquiring broader explicit permission.
 - **SC-008**: The final repository evidence contains zero mutations to organization-owned rules, unrelated repositories, release state, tags, schemas, or production domain configuration.
+- **SC-009**: The first mutation of each PR-policy context reads back successfully in the same run when GitHub returns its documented commit-status representation.
 
 ## Assumptions
 

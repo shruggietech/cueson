@@ -42,6 +42,12 @@
 
 **Alternatives considered:** A new administrative Go program was rejected as disproportionate for one repository and would duplicate GitHub CLI authentication and REST behavior. Background polling was rejected by the repository's Windows process and verification rules. Recording only successful API exit codes was rejected because a successful mutation response is not authoritative read-back.
 
+## Decision: Bind status read-back to the requested endpoint instead of a redundant response field
+
+**Rationale:** The first hosted S008 reconciliation proved that GitHub's commit-status create and list representations omit a `sha` property even though both requests are already scoped to `/commits/{sha}/statuses`. S007's fixture incorrectly supplied that redundant field, so the first accepted status mutation was reported as a read-back mismatch. The adapter will treat the validated request path as the commit binding and will compare the returned status identifier, context, state, description, target URL, and exact GitHub Actions creator. Existing matching statuses are no-ops only when that creator is trusted.
+
+**Alternatives considered:** Accepting any status with matching text was rejected because an unexpected writer could suppress a trusted replacement. Inferring the SHA from unrelated response text was rejected because the request path is the authoritative binding. Retrying the failed mutation without fixing the adapter was rejected because every first mutation would fail once and violate immediate read-back success.
+
 ## Sources
 
 - [GitHub REST API endpoints for repository rulesets](https://docs.github.com/en/rest/repos/rules)
