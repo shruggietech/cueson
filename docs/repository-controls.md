@@ -129,6 +129,41 @@ The first trusted reconciliation run, [34400932303](https://github.com/shruggiet
 
 S008 stopped all administrative mutations at this failure, amended its Spec Kit requirements, and added test-first remediation before continuing. Final values, ruleset identity, admitted check evidence, limitations, and verification timestamps follow only after the corrected adapter and authoritative read-backs succeed.
 
+### Verified repository and Actions settings
+
+The first control group completed at 2026-09-09T20:34:36Z. Every mutation received a separate successful read-back.
+
+| Control | Before | Verified after |
+|---|---|---|
+| Actions | Enabled | Enabled |
+| Allowed action sources | All actions | GitHub-owned actions only |
+| Full-SHA pinning required | No | Yes |
+| Default workflow permission | Write | Read |
+| Workflows may approve pull requests | No | No |
+| Squash merge | Enabled | Enabled |
+| Merge commits | Enabled | Disabled |
+| Rebase merge | Enabled | Disabled |
+| Auto-merge | Disabled | Disabled |
+| Delete merged head branches | Disabled | Enabled |
+
+The selected-action read-back returned `github_owned_allowed: true`, `verified_allowed: false`, and an empty additional-pattern list. Every existing workflow action is GitHub-owned and already uses a full commit SHA.
+
+### Verified security settings
+
+| Control | Before | Verified after |
+|---|---|---|
+| Dependency graph and vulnerability alerts | Enabled | Enabled |
+| Dependabot security updates | Disabled | Enabled and not paused |
+| Versioned CodeQL workflow | Successful | Successful on S008 head `9cd5666a8bebdfb1bd86e5669cb22cd91ee1644b` in run [34401628498](https://github.com/shruggietech/cueson/actions/runs/34401628498) |
+| GitHub default CodeQL setup | Not configured | Not configured |
+| Open code-scanning alerts | Zero | Zero |
+| Secret scanning | Disabled | Enabled |
+| Secret push protection | Disabled | Enabled |
+| Open secret-scanning alerts | Endpoint unavailable while disabled | Zero after enablement |
+| Private vulnerability reporting | Disabled | Enabled |
+
+GitHub also reports optional non-provider patterns, AI detection, validity checks, delegated alert dismissal, and delegated bypass as disabled. S008 did not enable those separately licensed or experimental subfeatures because they are outside the approved baseline and no implementation depends on them.
+
 ## Recovery and failure handling
 
 A mismatched or unavailable read-back stops dependent mutations. Earlier verified controls remain reported as partial progress. Recovery begins by reading current state again and never assumes that a failed request was atomic.

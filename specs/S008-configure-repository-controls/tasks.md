@@ -63,14 +63,14 @@
 
 **Independent Test**: Every repository setting and security capability has an authoritative before value, explicit desired value, mutation result, and immediate after value in docs/repository-controls.md.
 
-- [ ] T017 [US2] Read the initial S008 hosted CI, CodeQL, and policy results before permission changes and record their current head in docs/repository-controls.md
-- [ ] T018 [US2] Restrict repository Actions to GitHub-owned actions and full-SHA references, immediately read the policy back, and record it in docs/repository-controls.md
-- [ ] T019 [US2] Reduce default workflow permissions to read with pull-request approval disabled, immediately read the defaults back, and record them in docs/repository-controls.md
-- [ ] T020 [US2] Enable Dependabot security updates with dependency alerts retained, immediately read both states back, and record them in docs/repository-controls.md
-- [ ] T021 [US2] Enable secret scanning and push protection when supported, immediately read both states back, and record any limitation in docs/repository-controls.md
-- [ ] T022 [US2] Enable private vulnerability reporting when supported, immediately read its state back, and record any limitation in docs/repository-controls.md
-- [ ] T023 [US2] Preserve the versioned CodeQL workflow and read back that default setup remains unconfigured with current CodeQL checks healthy in docs/repository-controls.md
-- [ ] T024 [US2] Make squash the only merge method, keep auto-merge disabled, enable automatic merged-head deletion, immediately read repository settings back, and record them in docs/repository-controls.md
+- [x] T017 [US2] Read the initial S008 hosted CI, CodeQL, and policy results before permission changes and record their current head in docs/repository-controls.md
+- [x] T018 [US2] Restrict repository Actions to GitHub-owned actions and full-SHA references, immediately read the policy back, and record it in docs/repository-controls.md
+- [x] T019 [US2] Reduce default workflow permissions to read with pull-request approval disabled, immediately read the defaults back, and record them in docs/repository-controls.md
+- [x] T020 [US2] Enable Dependabot security updates with dependency alerts retained, immediately read both states back, and record them in docs/repository-controls.md
+- [x] T021 [US2] Enable secret scanning and push protection when supported, immediately read both states back, and record any limitation in docs/repository-controls.md
+- [x] T022 [US2] Enable private vulnerability reporting when supported, immediately read its state back, and record any limitation in docs/repository-controls.md
+- [x] T023 [US2] Preserve the versioned CodeQL workflow and read back that default setup remains unconfigured with current CodeQL checks healthy in docs/repository-controls.md
+- [x] T024 [US2] Make squash the only merge method, keep auto-merge disabled, enable automatic merged-head deletion, immediately read repository settings back, and record them in docs/repository-controls.md
 - [ ] T025 [US2] Dispatch a new S008 head update under the reduced defaults and require all current-head hosted workflows to finish successfully, recording results in docs/repository-controls.md
 
 **Checkpoint**: Secure repository defaults are verified independently, and existing workflows still operate with their explicit minimum permissions.
