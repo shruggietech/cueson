@@ -144,22 +144,23 @@ type CheckResult struct {
 }
 
 type Snapshot struct {
-	Complete      bool           `json:"complete"`
-	Errors        []string       `json:"errors,omitempty"`
-	Number        int            `json:"number"`
-	HeadSHA       string         `json:"head_sha"`
-	BaseRef       string         `json:"base_ref"`
-	AuthorLogin   string         `json:"author_login"`
-	Author        Actor          `json:"author"`
-	Draft         bool           `json:"draft"`
-	State         string         `json:"state"`
-	ClosingIssues []ClosingIssue `json:"closing_issues"`
-	Comments      []Comment      `json:"comments"`
-	Reactions     []Reaction     `json:"reactions"`
-	Reviews       []Review       `json:"reviews"`
-	ReviewThreads []ReviewThread `json:"review_threads"`
-	Comparisons   []Comparison   `json:"comparisons"`
-	Checks        []CheckResult  `json:"checks"`
+	Complete        bool           `json:"complete"`
+	Errors          []string       `json:"errors,omitempty"`
+	Number          int            `json:"number"`
+	HeadSHA         string         `json:"head_sha"`
+	BaseRef         string         `json:"base_ref"`
+	AuthorLogin     string         `json:"author_login"`
+	Author          Actor          `json:"author"`
+	Draft           bool           `json:"draft"`
+	State           string         `json:"state"`
+	ClosingIssues   []ClosingIssue `json:"closing_issues"`
+	Comments        []Comment      `json:"comments"`
+	Reactions       []Reaction     `json:"reactions"`
+	Reviews         []Review       `json:"reviews"`
+	ReviewThreads   []ReviewThread `json:"review_threads"`
+	HistoricalHeads []string       `json:"historical_heads"`
+	Comparisons     []Comparison   `json:"comparisons"`
+	Checks          []CheckResult  `json:"checks"`
 }
 
 type PolicyResult struct {
@@ -398,9 +399,17 @@ func classifyReviewEvidence(snapshot Snapshot) (reviewEvidence, error) {
 			evidence.requestAt = comment.CreatedAt
 			evidence.requestEvidence = append(evidence.requestEvidence, fmt.Sprintf("marked request comment %d", comment.ID))
 		} else if comment.Author.Login == OperatorLogin && comment.Author.Type == "User" && standaloneInvocationCount(comment.Body) != 0 {
-			evidence.requestCount += standaloneInvocationCount(comment.Body)
+			invocations := standaloneInvocationCount(comment.Body)
+			evidence.requestCount += invocations
 			evidence.requestAt = comment.CreatedAt
 			evidence.requestEvidence = append(evidence.requestEvidence, fmt.Sprintf("operator request comment %d", comment.ID))
+			if invocations == 1 {
+				head, err := operatorRequestHead(comment.Body, snapshot.HistoricalHeads, snapshot.HeadSHA)
+				if err != nil {
+					return reviewEvidence{}, fmt.Errorf("operator request comment %d: %w", comment.ID, err)
+				}
+				evidence.requestHead = head
+			}
 		}
 
 		terminal, kind, ok, err := parseTerminalComment(comment)
@@ -747,6 +756,26 @@ func parseReservation(description string) (int, string, bool) {
 		return 0, "", false
 	}
 	return number, matches[2], true
+}
+
+func operatorRequestHead(body string, historicalHeads []string, currentHead string) (string, error) {
+	matches := commitPrefixPattern.FindAllStringSubmatch(body, -1)
+	if len(matches) != 1 {
+		return "", errors.New("standalone review request must cite exactly one backticked commit")
+	}
+	candidates := make(map[string]struct{}, len(historicalHeads)+1)
+	for _, head := range append(append([]string(nil), historicalHeads...), currentHead) {
+		if commitSHAExpression.MatchString(head) && strings.HasPrefix(head, matches[0][1]) {
+			candidates[head] = struct{}{}
+		}
+	}
+	if len(candidates) != 1 {
+		return "", errors.New("cited commit does not identify exactly one pull-request head")
+	}
+	for head := range candidates {
+		return head, nil
+	}
+	return "", errors.New("cited commit did not resolve")
 }
 
 func standaloneInvocationCount(body string) int {

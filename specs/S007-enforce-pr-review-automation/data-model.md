@@ -15,6 +15,7 @@
 | `reactions` | Pull-request reactions | Fully paginated; actor, kind, and time retained |
 | `reviews` | Submitted pull-request reviews | Fully paginated; actor, commit, body, and time retained |
 | `review_threads` | Current inline review threads | Fully paginated with resolution and comment evidence |
+| `historical_heads` | Every head revision observed in pull-request history | Fully paginated, full lowercase commit identifiers used to bind operator review requests |
 
 ## Comment
 

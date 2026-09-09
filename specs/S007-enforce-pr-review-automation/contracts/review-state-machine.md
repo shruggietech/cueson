@@ -31,7 +31,7 @@
 
 ## Round attribution
 
-The summary is edited in place and is only latest terminal evidence. It is not a historical ledger. Reviews and threads retain their reviewed commit; the second-round marker and status-history reservation establish the round-two boundary. `isResolved` controls finding resolution, while outdated findings remain blocking until resolved.
+The summary is edited in place and is only latest terminal evidence. It is not a historical ledger. Reviews and threads retain their reviewed commit; the second-round marker and status-history reservation establish the round-two boundary. A configured-operator request must cite exactly one backticked commit prefix that uniquely resolves within the collected pull-request head history; an unbound request consumes the allowance but cannot be rebound to a later head. `isResolved` controls finding resolution, while outdated findings remain blocking until resolved.
 
 The first-round remediation bridge requires GitHub comparison evidence that the finding review commit is an ancestor of and older than the current head, plus successful current-head results for every configured S006 CI gate. This is the only transition that may use finding evidence from a prior head. Divergent or force-pushed history, missing gates, or top-level findings without resolvable threads remain blocking.
 

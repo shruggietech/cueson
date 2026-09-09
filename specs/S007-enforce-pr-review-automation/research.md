@@ -60,7 +60,7 @@ An exception is an exact line `skip: issue-link - <reason>` or `skip: codex-revi
 
 ## Decision: Treat a second request as the permanent automated ceiling
 
-Any exact S007 round-two marker attributed to the GitHub Actions bot, or configured-operator `@codex review` comment, consumes round two. A marker-shaped comment from any other actor fails closed without establishing a round boundary. Automation emits its request only after first-round Codex findings exist and all resolvable threads are resolved. After a second request, current-head unresolved findings, failure, stale completion, or later head changes remain blocking until explicit operator action. No later state emits a request.
+Any exact S007 round-two marker attributed to the GitHub Actions bot, or configured-operator `@codex review` comment, consumes round two. A configured-operator request must also cite exactly one backticked commit prefix that uniquely resolves to the collected pull-request head history before later review evidence can be attributed to it; an unbound request consumes the allowance but fails closed. A marker-shaped comment from any other actor fails closed without establishing a round boundary. Automation emits its request only after first-round Codex findings exist and all resolvable threads are resolved. After a second request, current-head unresolved findings, failure, stale completion, or later head changes remain blocking until explicit operator action. No later state emits a request.
 
 **Rationale:** Conservative counting is required to prove duplicate, retried, edited, and concurrent events cannot create a third review.
 

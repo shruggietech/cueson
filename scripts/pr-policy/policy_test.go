@@ -314,9 +314,39 @@ func TestWhitespaceSurroundedOperatorInvocationConsumesRoundTwo(t *testing.T) {
 	t.Parallel()
 
 	snapshot := baseSnapshot()
-	snapshot.Comments = []Comment{{ID: 21, Author: operator, Body: "context\n  @codex review  \nmore", CreatedAt: testStart}}
+	snapshot.Comments = []Comment{{ID: 21, Author: operator, Body: "context\n  @codex review  \n\nReviewed commit: `" + testHead[:10] + "`", CreatedAt: testStart}}
 	result := EvaluateCodexReview(snapshot)
 	assertResult(t, result, StatusPending, false)
+}
+
+func TestOperatorReviewRequestRequiresOneHistoricalHead(t *testing.T) {
+	t.Parallel()
+
+	for _, test := range []struct {
+		name string
+		body string
+	}{
+		{name: "missing commit", body: "@codex review"},
+		{name: "unknown commit", body: "@codex review\n\nReviewed commit: `abcdef0`"},
+		{name: "multiple commits", body: "@codex review\n\nReviewed commits: `" + testHead[:10] + "` and `" + testOld[:10] + "`"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			snapshot := baseSnapshot()
+			snapshot.Comments = []Comment{{ID: 21, Author: operator, Body: test.body, CreatedAt: testStart}}
+			result := EvaluateCodexReview(snapshot)
+			if result.State != StatusError || result.RequestSecond {
+				t.Fatalf("unbound operator request did not fail closed: %+v", result)
+			}
+		})
+	}
+
+	snapshot := baseSnapshot()
+	snapshot.HistoricalHeads = []string{testOld, testHead}
+	snapshot.Comments = []Comment{{ID: 21, Author: operator, Body: "@codex review\n\nReviewed commit: `" + testOld[:10] + "`", CreatedAt: testStart}}
+	result := EvaluateCodexReview(snapshot)
+	if result.State != StatusFailure || !strings.Contains(result.Description, "stale") || result.RequestSecond {
+		t.Fatalf("historical operator request was rebound to current head: %+v", result)
+	}
 }
 
 func TestTenfoldReplayRequestsAtMostOneSecondRound(t *testing.T) {
@@ -523,7 +553,7 @@ func reviewScenario(t *testing.T, scenario string) Snapshot {
 		snapshot.Comments[len(snapshot.Comments)-1].Body = RoundTwoComment(snapshot.Number, testOld)
 	case "protocol-violation":
 		addRoundTwoRequest(&snapshot)
-		snapshot.Comments = append(snapshot.Comments, Comment{ID: 31, Author: operator, Body: "@codex review", CreatedAt: testStart.Add(4 * time.Minute)})
+		snapshot.Comments = append(snapshot.Comments, Comment{ID: 31, Author: operator, Body: "@codex review\n\nReviewed commit: `" + testHead[:10] + "`", CreatedAt: testStart.Add(4 * time.Minute)})
 	default:
 		t.Fatalf("unknown review scenario %q", scenario)
 	}
@@ -532,13 +562,14 @@ func reviewScenario(t *testing.T, scenario string) Snapshot {
 
 func baseSnapshot() Snapshot {
 	return Snapshot{
-		Complete:    true,
-		Number:      19,
-		HeadSHA:     testHead,
-		BaseRef:     "main",
-		AuthorLogin: "contributor",
-		Author:      Actor{Login: "contributor", ID: 7, Type: "User"},
-		State:       "open",
+		Complete:        true,
+		Number:          19,
+		HeadSHA:         testHead,
+		BaseRef:         "main",
+		AuthorLogin:     "contributor",
+		Author:          Actor{Login: "contributor", ID: 7, Type: "User"},
+		State:           "open",
+		HistoricalHeads: []string{testHead},
 	}
 }
 

@@ -642,6 +642,7 @@ func (c *githubClient) collectSnapshotAt(ctx context.Context, pull githubPullReq
 	if err != nil {
 		return Snapshot{}, fmt.Errorf("collect pull request history: %w", err)
 	}
+	snapshot.HistoricalHeads = append(snapshot.HistoricalHeads, historicalHeads...)
 	for _, sha := range historicalHeads {
 		statuses, err := c.listStatuses(ctx, sha)
 		if err != nil {
