@@ -121,7 +121,7 @@
 - [X] T035 Push `S006-establish-ci-gates`, publish the official pull request as a draft with a formatter-verified body containing `Closes #8`, and read the body back from GitHub.
 - [X] T036 Verify the hosted `CI / Repository text` check and overall `CI` workflow fail specifically because `.github/ci-failure-probe` exists, then retain the failed run URL in `specs/S006-establish-ci-gates/tasks.md`.
 - [X] T037 Remove `.github/ci-failure-probe`, commit and push the correction, and verify the final pull-request diff contains no probe.
-- [ ] T038 Wait for every corrected CI and CodeQL check in `specs/S006-establish-ci-gates/contracts/check-contract.md` to complete successfully within the 20-minute success-criterion window, record elapsed time, investigate every failure, and push fixes until green.
+- [X] T038 Wait for every corrected CI and CodeQL check in `specs/S006-establish-ci-gates/contracts/check-contract.md` to complete successfully within the 20-minute success-criterion window, record elapsed time, investigate every failure, and push fixes until green.
 - [ ] T039 Mark the pull request ready for review only after the corrected checks are green so third-party Codex and security bots evaluate the intended tree.
 
 **Checkpoint**: Hosted failure and recovery are proven, the final tree is green, and automated review may begin.
@@ -216,6 +216,7 @@ Task: "Implement independent least-privilege CodeQL workflow in .github/workflow
 - 2026-09-09 Spec Kit convergence found all 17 functional requirements and 8 success criteria covered by the chronological task plan, with no unresolved clarification marker, constitution conflict, or missing pre-publication work. T034 through T045 remain intentionally pending because they own authorized publication, hosted proof, automated review, and final handoff.
 - 2026-09-09 Project read-back confirmed issue #8 item `PVTI_lADOBpohEc4Bi59Izg6FU8k` has `Slice: S006`, `Stage: In progress`, and an empty default `Status` field.
 - 2026-09-09 draft pull request [#18](https://github.com/shruggietech/cueson/pull/18) was published with a formatter-verified and read-back-verified body. Controlled CI run [34379737911](https://github.com/shruggietech/cueson/actions/runs/34379737911) failed only at `CI / Repository text`, whose log named `.github/ci-failure-probe`; the other 15 CI jobs passed. Companion CodeQL run [34379738261](https://github.com/shruggietech/cueson/actions/runs/34379738261) completed successfully.
+- 2026-09-09 corrected CI run [34380003957](https://github.com/shruggietech/cueson/actions/runs/34380003957) passed all 16 jobs in 1 minute 37 seconds, including native Windows, macOS, and Linux tests plus all six pure-Go builds. Corrected CodeQL run [34380003962](https://github.com/shruggietech/cueson/actions/runs/34380003962) passed in 1 minute 9 seconds. Both satisfy the 20-minute success criterion.
 
 ## Hosted-Discovered Remediation
 
