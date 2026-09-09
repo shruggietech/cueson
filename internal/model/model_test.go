@@ -47,6 +47,7 @@ func TestDocumentValidateRejectsSemanticViolations(t *testing.T) {
 		}, want: "source_order"},
 		{name: "cue count", mutate: func(doc *Document) { doc.Document.CueCount = 2 }, want: "cue_count"},
 		{name: "timestamp instant", mutate: func(doc *Document) { doc.Source.Assets[0].Timestamps.Modified.UnixNS++ }, want: "timestamps.modified"},
+		{name: "sub-nanosecond timestamp", mutate: func(doc *Document) { doc.Source.Assets[0].Timestamps.Modified.ISO = "2026-09-09T00:00:00.0000000001Z" }, want: "fractional precision"},
 		{name: "creation provenance", mutate: func(doc *Document) { doc.Source.Assets[0].Timestamps.CreatedSource = "unavailable" }, want: "created_source"},
 		{name: "format data", mutate: func(doc *Document) {
 			doc.Cues[0].FormatData = CueFormatData{WebVTT: &WebVTTCueData{TimingLineRaw: "x"}}

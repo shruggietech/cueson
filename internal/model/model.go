@@ -3,6 +3,7 @@ package model
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -312,6 +313,9 @@ func validateTimestamps(timestamps Timestamps, assetIndex int) error {
 		if observation.value == nil {
 			continue
 		}
+		if hasExcessFractionalPrecision(observation.value.ISO) {
+			return fmt.Errorf("source.assets[%d].timestamps.%s.iso fractional precision exceeds unix_ns", assetIndex, observation.name)
+		}
 		parsed, err := time.Parse(time.RFC3339Nano, observation.value.ISO)
 		if err != nil {
 			return fmt.Errorf("source.assets[%d].timestamps.%s.iso: %w", assetIndex, observation.name, err)
@@ -327,6 +331,26 @@ func validateTimestamps(timestamps Timestamps, assetIndex int) error {
 		return fmt.Errorf("source.assets[%d].timestamps.created_source %q requires a created timestamp", assetIndex, timestamps.CreatedSource)
 	}
 	return nil
+}
+
+func hasExcessFractionalPrecision(value string) bool {
+	timeSeparator := strings.IndexByte(value, 'T')
+	if timeSeparator < 0 {
+		return false
+	}
+	fractionOffset := strings.IndexByte(value[timeSeparator+1:], '.')
+	if fractionOffset < 0 {
+		return false
+	}
+	fractionStart := timeSeparator + 1 + fractionOffset + 1
+	digits := 0
+	for index := fractionStart; index < len(value); index++ {
+		if value[index] < '0' || value[index] > '9' {
+			break
+		}
+		digits++
+	}
+	return digits > 9
 }
 
 func validateFormatData(format string, root DocumentFormatData, cues []Cue) error {

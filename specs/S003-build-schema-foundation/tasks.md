@@ -155,3 +155,10 @@ Task T018: Record the S003 schema foundation in CHANGELOG.md.
 - Completed tasks are marked `[X]` during implementation.
 - Tests precede their corresponding implementation within each behavior phase.
 - S003 adds no source-integrity execution, restoration, native format ingest, rendering, conversion, public validation command, completion, release, or production-domain work.
+
+## Phase 7: Review Remediation
+
+**Purpose**: Resolve verified first-round review findings without expanding S003 scope.
+
+- [X] T020 Reject RFC 3339 timestamp fractions that exceed the `unix_ns` representation and add regression coverage in `internal/model/model.go` and `internal/model/model_test.go`
+- [X] T021 Treat post-commit backup cleanup as a surfaced warning rather than a failed replacement and add status regression coverage in `internal/cli/cli.go` and `internal/cli/cli_test.go`

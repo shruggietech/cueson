@@ -273,6 +273,20 @@ func TestRunSchemaRuntimeFailures(t *testing.T) {
 	}
 }
 
+func TestSchemaOutputCleanupWarningIsSuccessful(t *testing.T) {
+	t.Parallel()
+
+	var stderr bytes.Buffer
+	diagnostics := diagnosticWriter{writer: &stderr}
+	status := handleSchemaFileResult(&outputCleanupWarning{message: "schema written; cleanup pending"}, &stderr, diagnostics)
+	if status != ExitSuccess {
+		t.Errorf("handleSchemaFileResult() status = %d, want %d", status, ExitSuccess)
+	}
+	if got := stderr.String(); !strings.Contains(got, "warning: schema written; cleanup pending") {
+		t.Errorf("handleSchemaFileResult() stderr = %q, want cleanup warning", got)
+	}
+}
+
 func assertFileEqualsSchema(t *testing.T, path string) {
 	t.Helper()
 	got, err := os.ReadFile(path)

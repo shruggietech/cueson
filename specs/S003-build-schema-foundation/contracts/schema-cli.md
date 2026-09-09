@@ -23,6 +23,8 @@ Missing output values, extra operands, unknown options, `--version` combined wit
 
 Canceled execution, stdout failure, temporary-file creation or write failure, close failure, and replacement commit failure write an error to stderr, avoid success output, and return 1. A failed forced replacement retains or restores the prior destination.
 
+Failure to remove a backup after the replacement has already committed produces a warning and returns 0 because the requested destination contains the complete schema; the warning identifies the retained backup for operator cleanup.
+
 ## Help truth
 
 Root help lists `version` and `schema` only. Schema help describes its three behaviors and explicit replacement option. Restore, encode, render, convert, validate, inspect, and completion remain absent.
