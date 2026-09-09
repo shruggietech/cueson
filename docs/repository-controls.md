@@ -127,7 +127,7 @@ The official pull request is [#20](https://github.com/shruggietech/cueson/pull/2
 
 The first trusted reconciliation run, [34400932303](https://github.com/shruggietech/cueson/actions/runs/34400932303), published `Cueson PR policy / Issue link` successfully but then failed its local read-back comparison. GitHub's actual create and list representations omit the redundant `sha` field while binding the request to the commit-status endpoint for the exact SHA. A comment-triggered retry published `Cueson PR policy / Codex review` and failed for the same reason. This is a dependency defect, not a failed policy decision: the two statuses exist on the intended head with IDs `53854883221` and `53854918611`, exact context, expected state and description, run target, and creator `github-actions[bot]` ID `41898282`.
 
-S008 stopped all administrative mutations at this failure, amended its Spec Kit requirements, and added test-first remediation before continuing. Final values, ruleset identity, admitted check evidence, limitations, and verification timestamps follow only after the corrected adapter and authoritative read-backs succeed.
+S008 stopped all administrative mutations at this failure, amended its Spec Kit requirements, and added test-first remediation before continuing. The adapter now validates the requested commit-status endpoint, exact status fields, and GitHub Actions creator without requiring a redundant `sha` member that GitHub does not return. Regression coverage also proves that an otherwise matching status from an untrusted creator is replaced rather than accepted as a no-op.
 
 ### Verified repository and Actions settings
 
@@ -163,6 +163,63 @@ The selected-action read-back returned `github_owned_allowed: true`, `verified_a
 | Private vulnerability reporting | Disabled | Enabled |
 
 GitHub also reports optional non-provider patterns, AI detection, validity checks, delegated alert dismissal, and delegated bypass as disabled. S008 did not enable those separately licensed or experimental subfeatures because they are outside the approved baseline and no implementation depends on them.
+
+### Hosted check evidence and admission
+
+The reduced Actions defaults were exercised by S008 head `6568fc02d0dcff585a73b46ccc06419abea70b37`. CI run [34402009634](https://github.com/shruggietech/cueson/actions/runs/34402009634) and CodeQL run [34402009797](https://github.com/shruggietech/cueson/actions/runs/34402009797) completed successfully. Every admitted check run was created by the GitHub Actions integration, app ID `15368`.
+
+GitHub's required-status API uses the raw check-run `name`, while the S006 contract also records the workflow-qualified display name. The following 17 raw names are therefore the exact required contexts:
+
+- `Analyze Go`
+- `Formatting`
+- `Repository text`
+- `Vet`
+- `Schema and conformance`
+- `Static analysis`
+- `Vulnerability scan`
+- `Native tests (Linux)`
+- `Native tests (Windows)`
+- `Native tests (macOS)`
+- `Race detection`
+- `Pure-Go build (linux-amd64)`
+- `Pure-Go build (linux-arm64)`
+- `Pure-Go build (windows-amd64)`
+- `Pure-Go build (windows-arm64)`
+- `Pure-Go build (darwin-amd64)`
+- `Pure-Go build (darwin-arm64)`
+
+The security summary check named `CodeQL`, created by GitHub Code Scanning app ID `57789`, also succeeded. It is not part of the stable S006 contract and is not required by the repository ruleset.
+
+On the same head, combined-status read-back contained `Cueson PR policy / Issue link` with state `success`, description `Closes shruggietech/cueson#10`, target run [34402007765](https://github.com/shruggietech/cueson/actions/runs/34402007765), and creator `github-actions[bot]` ID `41898282`. The `Cueson PR policy / Codex review` status was absent. The policy workflow's `Reconcile` check failed because `pull_request_target` correctly ran the still-trusted adapter from `main`, which cannot include S008's fix before merge. In addition, the only clean first-round Codex review was bound to the earlier head `83d4f58bde8d9df5c1871fd1a5ce69498acbfc7f`, so the S007 Actions-bot second-round proof gate was not satisfied on this admission head. Both policy contexts remain deferred together. Neither is a required check.
+
+### Verified repository rules
+
+At 2026-09-09T20:39:08Z, GitHub created repository ruleset `22685253`, `cueson verified default branch`. Its complete read-back at 2026-09-09T20:41:47Z showed:
+
+| Property | Verified value |
+|---|---|
+| Source | Repository `shruggietech/cueson` |
+| Enforcement | Active |
+| Target | Branches matching `~DEFAULT_BRANCH` |
+| Ref protection | Deletion and non-fast-forward updates blocked |
+| Pull requests | Required |
+| Conversation resolution | Required |
+| Allowed merge methods | Squash only |
+| Required approvals | Zero |
+| Required checks | The 17 contexts above, each bound to GitHub Actions app ID `15368` |
+| Strict checks | Enabled |
+| Enforcement on branch creation | Disabled |
+| Bypass | One `OrganizationAdmin` actor in `always` mode |
+
+No bot, deploy key, repository role, team, or second bypass entry exists in the repository ruleset. Effective-rule read-back for `main` showed the organization and repository rules composing together, including the repository's stricter conversation-resolution, squash-only, and required-check controls.
+
+Organization ruleset `20478126` retained its original organization source, active enforcement, deletion and non-fast-forward rules, pull-request rule, two bypass actors, and update timestamp `2026-08-11T18:09:16.051-04:00`. S008 did not mutate it.
+
+### Boundary and mergeability audit
+
+Read-only inspection reported pull request #20 as mergeable without using the organization-administrator bypass. Its merge state remained unstable only because the non-required trusted-main `Reconcile` check exposed the adapter defect described above; all 17 admitted checks and the CodeQL security summary were successful on the inspected head.
+
+S008 did not merge or enable auto-merge, create or move a tag, publish a release or schema, alter production-domain configuration, modify an organization policy, or touch another repository. Automatic merged-head deletion is configured but cannot be behaviorally observed until the operator performs the separately authorized final merge.
 
 ## Recovery and failure handling
 
