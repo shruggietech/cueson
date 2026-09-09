@@ -1,0 +1,37 @@
+# Normalize repository text to LF unless a more specific rule follows.
+* text=auto eol=lf
+
+# Windows scripts retain native CRLF line endings.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary build and brand assets are never text-normalized.
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+
+# Subtitle fixtures are evidence for byte-exact behavior. Preserve their bytes.
+testdata/**/*.srt -text -eol -whitespace
+testdata/**/*.vtt -text -eol -whitespace
+testdata/**/*.stl -text -eol -whitespace
+testdata/**/*.sup -text -eol -whitespace
+testdata/**/*.idx -text -eol -whitespace
+testdata/**/*.sub -text -eol -whitespace
+testdata/malformed/** -text -eol -whitespace
+
+# Approved brand sources and consumer copies are byte-for-byte assets.
+brand/** -text -eol -whitespace
+docs/assets/brand/** -text -eol -whitespace
+docs/assets/favicons/** -text -eol -whitespace
+docs/assets/fonts/** -text -eol -whitespace

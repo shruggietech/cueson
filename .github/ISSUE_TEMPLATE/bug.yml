@@ -1,0 +1,129 @@
+name: Bug report
+description: Report incorrect parsing, rendering, restoration, conversion, validation, tooling, or documentation behavior
+title: "[bug] "
+labels: ["type: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Include the smallest source or Cue JSON input that demonstrates the problem when redistribution is safe. Subtitle inputs are byte-sensitive, so attach the original file instead of pasting a normalized copy when encoding or line endings may matter.
+
+  - type: input
+    id: version
+    attributes:
+      label: Cueson version or commit
+      placeholder: "0.0.0 / commit SHA / not yet available"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operation
+    attributes:
+      label: Operation
+      options:
+        - Encode or format detection
+        - Restore
+        - Render
+        - Convert
+        - Validate or inspect
+        - Schema
+        - Build, release, or repository tooling
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: source-format
+    attributes:
+      label: Source format
+      options:
+        - SRT / SubRip
+        - WebVTT
+        - Cue JSON
+        - Future or unsupported format
+        - Not applicable
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and architecture
+      placeholder: "Windows 11 amd64 / macOS arm64 / Ubuntu amd64"
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What happened, what should have happened, and why the difference matters.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Who is affected, under what conditions, and why is this worth fixing?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Define the smallest useful fix and any behavior that should remain unchanged.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Exact commands and inputs needed to reproduce the result. Redact local paths if they are not material.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Diagnostics, exit code, hashes, metadata results, or other relevant output.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: List observable conditions that must be true before this issue can close.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: List blocking issues or decisions, or write None.
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: State the commands, tests, or manual checks that will prove the fix.
+    validations:
+      required: true
+
+  - type: textarea
+    id: source-provenance
+    attributes:
+      label: Fixture provenance
+      description: If attaching source material, state its origin and whether it may be redistributed as a permanent regression fixture.
+    validations:
+      required: false

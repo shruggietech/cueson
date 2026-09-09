@@ -1,0 +1,91 @@
+name: Feature request
+description: Propose a new Cueson capability or contract change
+title: "[feature] "
+labels: ["type: feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Lead with the problem and observable outcome. Non-trivial product work will be specified through the repository's Spec Kit workflow before implementation.
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What should a user or downstream consumer be able to accomplish?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What currently prevents that outcome, and who is affected?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+      description: Optional implementation or contract ideas. Alternatives are welcome.
+    validations:
+      required: false
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Define the smallest coherent capability and what remains out of scope.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: List observable conditions that must be true before this issue can close.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: List blocking issues or decisions, or write None.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Schema and common model
+        - SRT codec
+        - WebVTT codec
+        - Source preservation and restoration
+        - Conversion
+        - CLI
+        - Documentation
+        - Build, release, or repository tooling
+        - Future format
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and fidelity concerns
+      description: Note any source fidelity, schema compatibility, conversion loss, platform, or security implications.
+    validations:
+      required: false
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: How would we prove the requested outcome works?
+    validations:
+      required: true

@@ -1,0 +1,52 @@
+name: Planned work item
+description: Define one atomic, independently verifiable project outcome
+title: "[task] "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: State one independently closeable result.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Explain why this outcome is needed and what authoritative decision it traces to.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Identify what is included and any important exclusions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use independently testable task-list items.
+      placeholder: "- [ ] Observable result"
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Name blocking issues or write "None". Use native issue dependencies after creation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: List the commands, evidence, or review needed to close this issue.
+    validations:
+      required: true

@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#000000">
+  <title>Cueson | Making Media Content Directly Readable to AI</title>
+  <meta name="description" content="A plain-English guide to what Cueson unlocks and the subtitle and caption formats it is designed to understand.">
+  <style>
+    @import url("https://cdn.shruggie.tech/brand/typography.css");
+
+    :root {
+      --color-black: #000000;
+      --color-green-bright: #2BCC73;
+      --color-green-deep: #00AB21;
+      --color-orange: #FF5300;
+      --color-gray-light: #D1D3D4;
+      --color-white: #FFFFFF;
+      --color-gray-950: #0A0A0A;
+      --color-gray-900: #111111;
+      --color-gray-850: #161616;
+      --color-gray-800: #1A1A1A;
+      --color-gray-600: #6B6B6B;
+      --color-gray-500: #858585;
+      --color-gray-400: #9A9A9A;
+      --text-primary: var(--color-white);
+      --text-muted: var(--color-gray-400);
+      --text-accent: var(--color-green-bright);
+      --border-subtle: rgba(255,255,255,0.09);
+      --border-strong: rgba(255,255,255,0.18);
+      --font-display: "Space Grotesk", system-ui, sans-serif;
+      --font-body: "Geist", system-ui, sans-serif;
+      --font-mono: "Geist Mono", ui-monospace, monospace;
+      --container-max: 1500px;
+      --radius-sm: 7px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      background: var(--color-black);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      scroll-behavior: smooth;
+    }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at 12% -5%, rgba(43,204,115,0.15), transparent 30rem),
+        radial-gradient(circle at 92% 2%, rgba(255,83,0,0.10), transparent 25rem),
+        var(--color-black);
+      color: var(--text-primary);
+    }
+    .container {
+      width: min(var(--container-max), calc(100% - 2.5rem));
+      margin: 0 auto;
+    }
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .site-header .container {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 0.8rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+    .brand-product {
+      font-family: var(--font-mono);
+      color: var(--text-accent);
+      font-size: 0.76rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .header-note {
+      color: var(--color-gray-500);
+      font-size: 0.82rem;
+    }
+    .hero {
+      padding: clamp(4.2rem, 9vw, 8rem) 0 3.4rem;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-accent);
+      margin-bottom: 0.9rem;
+    }
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      letter-spacing: -0.025em;
+      margin-top: 0;
+    }
+    h1 {
+      font-size: clamp(2.8rem, 6.3vw, 6rem);
+      line-height: 0.96;
+      max-width: 1180px;
+      margin-bottom: 1.65rem;
+    }
+    h1 .accent { color: var(--text-accent); }
+    .lede {
+      max-width: 950px;
+      font-size: clamp(1.13rem, 2.1vw, 1.42rem);
+      color: var(--color-gray-light);
+      margin: 0;
+    }
+    .hero-note {
+      max-width: 900px;
+      margin-top: 1.2rem;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+    }
+    .pipeline {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 0.85rem;
+      align-items: stretch;
+      margin-top: 2.7rem;
+    }
+    .pipeline-box {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.35rem;
+      background: rgba(17,17,17,0.92);
+    }
+    .pipeline-box strong {
+      display: block;
+      font-family: var(--font-display);
+      margin-bottom: 0.35rem;
+    }
+    .pipeline-box span {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .pipeline-box.cueson {
+      border-color: rgba(43,204,115,0.38);
+      background: linear-gradient(145deg, rgba(43,204,115,0.12), rgba(17,17,17,0.95));
+    }
+    .pipeline-box.ai {
+      border-color: rgba(255,83,0,0.30);
+      background: linear-gradient(145deg, rgba(255,83,0,0.09), rgba(17,17,17,0.95));
+    }
+    .pipeline-arrow {
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      color: var(--color-orange);
+      font-size: 1.3rem;
+    }
+    .why-grid {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 1rem;
+    }
+    .why-card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.3rem 1.4rem;
+      background: rgba(10,10,10,0.93);
+    }
+    .why-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.4rem;
+    }
+    .why-card p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+    .section {
+      padding: 3rem 0 5.5rem;
+    }
+    .section-alt {
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(10,10,10,0.72);
+    }
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 2rem;
+      margin-bottom: 1.45rem;
+    }
+    .section-heading h2 {
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+      margin-bottom: 0.35rem;
+    }
+    .section-heading p {
+      max-width: 760px;
+      margin: 0;
+      color: var(--text-muted);
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: flex-end;
+    }
+    .badge {
+      display: inline-flex;
+      white-space: nowrap;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.04em;
+      padding: 0.22rem 0.48rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      margin-right: 0.28rem;
+    }
+    .status-v1 {
+      color: var(--color-green-bright);
+      background: rgba(43,204,115,0.13);
+      border-color: rgba(43,204,115,0.28);
+    }
+    .status-future {
+      color: var(--color-gray-light);
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.12);
+    }
+    .status-ocr {
+      color: #ff9565;
+      background: rgba(255,83,0,0.12);
+      border-color: rgba(255,83,0,0.3);
+    }
+    .kind-text {
+      color: #a8c0ff;
+      background: rgba(80,130,255,0.12);
+      border-color: rgba(80,130,255,0.25);
+    }
+    .kind-binary {
+      color: #ffd77e;
+      background: rgba(255,199,64,0.12);
+      border-color: rgba(255,199,64,0.25);
+    }
+    .kind-bitmap {
+      color: #d4a7ff;
+      background: rgba(190,110,255,0.12);
+      border-color: rgba(190,110,255,0.25);
+    }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 0.1rem; }
+    .table-shell {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--color-gray-950);
+      box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+    }
+    .table-scroll { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1320px;
+      table-layout: fixed;
+    }
+    col.c1 { width: 13%; }
+    col.c2 { width: 21%; }
+    col.c3 { width: 21%; }
+    col.c4 { width: 21%; }
+    col.c5 { width: 24%; }
+    th {
+      text-align: left;
+      vertical-align: bottom;
+      padding: 1rem 1.05rem;
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--color-gray-light);
+      background: #0D0D0D;
+      border-bottom: 1px solid var(--border-strong);
+    }
+    td {
+      vertical-align: top;
+      padding: 1.15rem 1.05rem 1.3rem;
+      border-bottom: 1px solid var(--border-subtle);
+      border-right: 1px solid rgba(255,255,255,0.045);
+      font-size: 0.9rem;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td:last-child { border-right: 0; }
+    tbody tr:nth-child(even) td { background: rgba(255,255,255,0.017); }
+    tbody tr:hover td { background: rgba(43,204,115,0.035); }
+    .format-cell { background: rgba(255,255,255,0.021); }
+    .format-name {
+      font-family: var(--font-display);
+      font-size: 1.13rem;
+      font-weight: 700;
+      margin-bottom: 0.18rem;
+    }
+    .extensions {
+      font-family: var(--font-mono);
+      color: var(--color-orange);
+      font-size: 0.75rem;
+      margin-bottom: 0.68rem;
+    }
+    .family {
+      font-family: var(--font-display);
+      font-weight: 500;
+      margin-bottom: 0.28rem;
+    }
+    .muted { color: var(--text-muted); }
+    .unlock {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.6rem;
+    }
+    .callout {
+      padding: 1.45rem 1.55rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: var(--color-gray-900);
+    }
+    .callout h3 {
+      font-size: 1.08rem;
+      margin-bottom: 0.45rem;
+    }
+    .callout p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+    .callout.green {
+      border-color: rgba(43,204,115,0.26);
+      background: linear-gradient(145deg, rgba(43,204,115,0.07), var(--color-gray-900) 58%);
+    }
+    .callout.orange {
+      border-color: rgba(255,83,0,0.27);
+      background: linear-gradient(145deg, rgba(255,83,0,0.07), var(--color-gray-900) 58%);
+    }
+    .bottom-line {
+      margin-top: 2.5rem;
+      padding: 1.35rem 1.5rem;
+      border-left: 3px solid var(--color-green-bright);
+      background: rgba(43,204,115,0.055);
+      max-width: 1050px;
+      color: var(--color-gray-light);
+    }
+    .bottom-line strong {
+      color: var(--color-white);
+      font-family: var(--font-display);
+    }
+    .site-footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 2.4rem 0 3rem;
+      color: var(--color-gray-500);
+      font-size: 0.82rem;
+    }
+    .site-footer .container {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .tagline {
+      font-family: var(--font-display);
+      color: var(--color-gray-400);
+    }
+    .tagline .shruggie { color: var(--text-accent); }
+
+    @media (max-width: 900px) {
+      .pipeline { grid-template-columns: 1fr; }
+      .pipeline-arrow { transform: rotate(90deg); min-height: 1rem; }
+      .why-grid, .unlock { grid-template-columns: 1fr; }
+      .section-heading { align-items: start; flex-direction: column; }
+      .legend { justify-content: flex-start; }
+      .header-note { display: none; }
+    }
+    @media print {
+      .site-header { position: static; }
+      .table-scroll { overflow: visible; }
+      table { min-width: 0; font-size: 7.5pt; }
+      body { background: #000000; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="brand" aria-label="ShruggieTech Cueson">
+        <span>ShruggieTech</span>
+        <span class="brand-product">Cueson</span>
+      </div>
+      <div class="header-note">Cue JSON for media content</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <span class="eyebrow">The real reason Cueson exists</span>
+        <h1>Make media content <span class="accent">directly readable to AI.</span></h1>
+        <p class="lede">A huge amount of what people say, read, watch, and archive is trapped behind subtitle formats that machines cannot treat as ordinary text. Some are simple text files. Some are dense XML. Some are old binary broadcast records. Some are literally pictures of words. Cueson turns that fractured universe into one predictable Cue JSON surface where the words, timing, speakers, provenance, layout, and other useful context are directly visible.</p>
+        <p class="hero-note">Cueson performs the format-specific work once, at the file boundary. After that, downstream AI does not need its own subtitle parser, bitmap-caption decoder, OCR glue, or custom conversion pipeline just to understand the content. It can reason over the resulting structured plaintext and timing data directly. Future transcription tools can emit the same Cue JSON shape for spoken audio, extending the same machine-readable surface beyond existing subtitle tracks.</p>
+
+        <div class="pipeline" aria-label="How Cueson unlocks media for AI">
+          <div class="pipeline-box">
+            <strong>Media content</strong>
+            <span>Text subtitles, styled captions, broadcast files, bitmap subtitles, and transcription-derived timed speech.</span>
+          </div>
+          <div class="pipeline-arrow" aria-hidden="true">→</div>
+          <div class="pipeline-box cueson">
+            <strong>Cueson</strong>
+            <span>Parse, preserve, normalize, and when needed derive plaintext through OCR while retaining the original source.</span>
+          </div>
+          <div class="pipeline-arrow" aria-hidden="true">→</div>
+          <div class="pipeline-box ai">
+            <strong>Direct AI reasoning</strong>
+            <span>Search, summarize, compare, classify, extract facts, build graphs, and reason about what the media actually contains.</span>
+          </div>
+        </div>
+
+        <div class="why-grid">
+          <article class="why-card">
+            <h3>One reasoning surface</h3>
+            <p>AI sees the same predictable cue structure whether the source began as SRT text, broadcast XML, a legacy binary file, or a Blu-ray subtitle image.</p>
+          </article>
+          <article class="why-card">
+            <h3>No information hostage</h3>
+            <p>The plain text is easy to consume, while original bytes, names, timing, metadata, styling, graphics, and provenance remain available instead of being discarded.</p>
+          </article>
+          <article class="why-card">
+            <h3>No downstream format maze</h3>
+            <p>Once content becomes Cue JSON, every downstream tool can speak the same language instead of maintaining a growing pile of one-off parsers and conversion steps.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Target format map</span>
+            <h2>The subtitle universe Cueson is designed to open up</h2>
+            <p>SRT and WebVTT are the first stable targets. The other families show why the common Cue JSON model matters long term, especially when the original content is binary or image-based rather than plain text.</p>
+          </div>
+          <div class="legend" aria-label="Format legend">
+            <span class="badge status-v1">v1</span>
+            <span class="badge status-future">Future</span>
+            <span class="badge status-ocr">Future + OCR</span>
+            <span class="badge kind-text">Text</span>
+            <span class="badge kind-binary">Binary</span>
+            <span class="badge kind-bitmap">Bitmap</span>
+          </div>
+        </div>
+
+        <div class="table-shell">
+          <div class="table-scroll">
+            <table>
+              <colgroup>
+                <col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Format</th>
+                  <th>Where it comes from</th>
+                  <th>What it is used for</th>
+                  <th>What is actually inside</th>
+                  <th>What Cueson unlocks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+      <td class="format-cell">
+        <div class="format-name">SRT</div>
+        <div class="extensions">.srt</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-v1">v1</span></div>
+      </td>
+      <td><div class="family">Simple timed text</div><div class="muted">Originally created around the SubRip subtitle-ripping tool, then adopted almost everywhere as a simple subtitle interchange format.</div></td>
+      <td>Downloaded subtitles, media players, video editing, localization handoffs, archives, and subtitle sidecars.</td>
+      <td>Plain text arranged into numbered cues with start and end times. Very little standardized styling or metadata.</td>
+      <td>The words and timing become direct Cue JSON fields that an AI can read immediately.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">WebVTT</div>
+        <div class="extensions">.vtt</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-v1">v1</span></div>
+      </td>
+      <td><div class="family">Web timed text</div><div class="muted">Designed for timed text on the web and used with HTML video and audio.</div></td>
+      <td>Web captions, subtitles, chapters, speaker labels, descriptions, cue positioning, and time-aligned metadata.</td>
+      <td>Timed text plus cue settings, speakers, regions, notes, styles, inline timing, and richer structure than SRT.</td>
+      <td>Cueson exposes the text, timing, speakers, tokens, and structure without forcing the AI to understand WebVTT syntax.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">TTML</div>
+        <div class="extensions">.ttml / .xml</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-future">Future</span></div>
+      </td>
+      <td><div class="family">XML timed text</div><div class="muted">A W3C timed-text family built for richer professional caption and subtitle interchange.</div></td>
+      <td>Streaming platforms, localization, accessibility, broadcast-to-streaming workflows, and professional caption exchange.</td>
+      <td>XML describing timed text, layout, regions, styles, metadata, language, and presentation behavior.</td>
+      <td>Cueson can reduce a complex XML document to a predictable semantic cue model while retaining the original structure.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">IMSC</div>
+        <div class="extensions">.ttml / .xml</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-future">Future</span></div>
+      </td>
+      <td><div class="family">Streaming timed text</div><div class="muted">A constrained TTML profile created specifically for interoperable internet media subtitles and captions.</div></td>
+      <td>OTT and streaming delivery where platforms need a predictable professional timed-text profile.</td>
+      <td>TTML-based text, timing, styling, regions, language, and presentation information under a tighter interoperability profile.</td>
+      <td>The same Cue JSON surface can expose what was said and when, while preserving IMSC-specific presentation details.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">SMPTE-TT</div>
+        <div class="extensions">.xml</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-future">Future</span></div>
+      </td>
+      <td><div class="family">Broadcast timed text</div><div class="muted">A professional timed-text profile from the Society of Motion Picture and Television Engineers.</div></td>
+      <td>Broadcast caption interchange and movement between legacy television caption systems and newer timed-text workflows.</td>
+      <td>XML timed text plus broadcast-oriented metadata and mechanisms for preserving caption information that simpler formats cannot represent.</td>
+      <td>Cueson makes the human-language content accessible without flattening away the broadcast information that may still matter.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">ASS</div>
+        <div class="extensions">.ass</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-future">Future</span></div>
+      </td>
+      <td><div class="family">Styled subtitle script</div><div class="muted">Advanced SubStation Alpha, strongly associated with Aegisub and sophisticated fansubbing workflows.</div></td>
+      <td>Anime, fansubs, karaoke, signs, elaborate styling, precise positioning, typography, and visual subtitle effects.</td>
+      <td>Script sections, styles, events, dialogue, positioning, override tags, karaoke timing, and drawing or effect instructions.</td>
+      <td>The dialogue becomes plain structured text for reasoning while the highly expressive visual script remains preserved.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">SSA</div>
+        <div class="extensions">.ssa</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-future">Future</span></div>
+      </td>
+      <td><div class="family">Styled subtitle script</div><div class="muted">SubStation Alpha, the predecessor to ASS.</div></td>
+      <td>Legacy styled subtitles, fansubs, positioned dialogue, and older subtitle-authoring workflows.</td>
+      <td>Scripted subtitle events, styles, dialogue, timing, and positioning directives.</td>
+      <td>Older SSA collections become machine-readable through the same common cue model used for newer formats.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">EBU-STL</div>
+        <div class="extensions">.stl</div>
+        <div class="badge-row"><span class="badge kind-binary">Binary</span><span class="badge status-future">Future</span></div>
+      </td>
+      <td><div class="family">Legacy broadcast exchange</div><div class="muted">A European Broadcasting Union subtitle exchange standard designed for professional television workflows.</div></td>
+      <td>Broadcaster handoff, television subtitling, localization vendors, transmission workflows, and long-term media archives.</td>
+      <td>Binary records containing subtitle text, timing, character-set information, positioning, and broadcast metadata.</td>
+      <td>Cueson turns an opaque legacy binary file into directly inspectable text and timing while retaining the exact binary source.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">EBU-TT</div>
+        <div class="extensions">.xml</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-future">Future</span></div>
+      </td>
+      <td><div class="family">Modern broadcast timed text</div><div class="muted">A newer European Broadcasting Union timed-text family based on XML.</div></td>
+      <td>Modern broadcast and online subtitle exchange, accessibility workflows, archives, and professional distribution.</td>
+      <td>Structured XML containing timed text, metadata, styling, language, and professional broadcast semantics.</td>
+      <td>Cueson gives AI the readable content immediately without making downstream systems carry an EBU-specific XML parser.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">PGS / SUP</div>
+        <div class="extensions">.sup</div>
+        <div class="badge-row"><span class="badge kind-bitmap">Bitmap</span><span class="badge status-ocr">Future + OCR</span></div>
+      </td>
+      <td><div class="family">Blu-ray bitmap subtitles</div><div class="muted">Presentation Graphic Stream subtitles used heavily on Blu-ray and related disc media.</div></td>
+      <td>Disc subtitles where the subtitle is authored as a rendered visual image rather than editable characters.</td>
+      <td>Timed bitmap graphics, palettes, positioning, and presentation instructions. The file may contain no text characters at all.</td>
+      <td>This is where Cueson becomes especially powerful: OCR can derive real text for AI reasoning while the original subtitle images remain authoritative.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">VobSub</div>
+        <div class="extensions">.idx + .sub</div>
+        <div class="badge-row"><span class="badge kind-bitmap">Bitmap</span><span class="badge status-ocr">Future + OCR</span></div>
+      </td>
+      <td><div class="family">DVD bitmap subtitles</div><div class="muted">A common representation created when subtitles are extracted from DVDs.</div></td>
+      <td>DVD subtitle extraction, archival sidecars, media-player playback, and migration from disc media.</td>
+      <td>A paired format: IDX carries timing, language, palette, and indexing information while SUB carries the actual subtitle images.</td>
+      <td>Cueson can keep the pair together, preserve the original imagery, and layer OCR text on top so AI can reason about what the subtitles actually say.</td>
+    </tr>
+<tr>
+      <td class="format-cell">
+        <div class="format-name">SAMI</div>
+        <div class="extensions">.smi / .sami</div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-future">Future</span></div>
+      </td>
+      <td><div class="family">Legacy synchronized text</div><div class="muted">Microsoft Synchronized Accessible Media Interchange, created for synchronized accessibility and multimedia captions.</div></td>
+      <td>Older Windows Media collections, synchronized captions, subtitles, and audio-description workflows.</td>
+      <td>HTML-like timed text with synchronization markers, style classes, language information, and caption content.</td>
+      <td>Cueson can make older media collections readable through the same modern machine-facing representation.</td>
+    </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="unlock">
+          <article class="callout green">
+            <h3>The preservation half</h3>
+            <p>Cueson is not supposed to shred every format into generic text. It keeps a machine-friendly interpretation and a lossless source envelope together. That means an AI can see the text immediately while software can still recover or inspect the original file and its native details.</p>
+          </article>
+          <article class="callout orange">
+            <h3>The OCR half</h3>
+            <p>PGS and VobSub illustrate the bigger idea. A human sees subtitles on screen, but the file may contain only images. OCR converts those visual words into structured plaintext that AI can reason over, while Cueson keeps the original subtitle graphics intact as the authoritative evidence.</p>
+          </article>
+        </div>
+
+        <div class="bottom-line"><strong>The payoff:</strong> the content of media stops being locked behind whatever file format happened to carry it. Once represented as Cue JSON, the actual language inside the media becomes a directly addressable data source for AI, search systems, analytical software, archives, and applications that have never heard of SRT, TTML, ASS, PGS, or VobSub.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>By ShruggieTech</div>
+      <div class="tagline"><span class="shruggie" aria-hidden="true">¯\_(ツ)_/¯</span> We'll figure it out.</div>
+    </div>
+  </footer>
+</body>
+</html>

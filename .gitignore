@@ -1,0 +1,34 @@
+# Binaries and build output
+/bin/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.*
+
+# Go workspace and dependency output
+go.work
+go.work.sum
+vendor/
+
+# Local environment and editor state
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+*.swp
+
+# Operating-system artifacts
+.DS_Store
+Thumbs.db
+
+# Spec Kit agent integrations may contain local credentials or state. The
+# generated skill definitions are intentionally versioned; everything else is
+# excluded unless admitted here.
+.agents/*
+!.agents/skills/

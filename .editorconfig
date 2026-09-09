@@ -1,0 +1,49 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{ps1,cmd,bat}]
+end_of_line = crlf
+
+[*.md]
+trim_trailing_whitespace = false
+
+[testdata/**]
+charset = unset
+end_of_line = unset
+trim_trailing_whitespace = false
+insert_final_newline = unset
+
+[brand/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = false
+
+[docs/assets/brand/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = false
+
+[docs/assets/favicons/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = false
+
+[docs/assets/fonts/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = false
+
+[gui/assets/fonts/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = false
