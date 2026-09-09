@@ -220,3 +220,4 @@ Task: "Implement independent least-privilege CodeQL workflow in .github/workflow
 
 - [X] T046 [US2] Make `TestVerifyFixturesRejectsCanonicalAliasInInventory` select its setup from the temporary filesystem's observed case behavior instead of `runtime.GOOS`, so case-insensitive macOS and Windows filesystems exercise the same collision path while case-sensitive filesystems create a distinct alias.
 - [ ] T047 [US2] Make `TestSetLinuxDescriptorTimesRejectsClosedFile` request one real timestamp change because Linux may validly short-circuit two `UTIME_OMIT` values without consulting the closed descriptor; rerun native-equivalent Linux tests through hosted CI.
+- [ ] T048 [US3] Change CodeQL Go extraction from unsupported `build-mode: none` to the pinned action's documented `build-mode: autobuild`, then verify the hosted `CodeQL / Analyze Go` check succeeds.

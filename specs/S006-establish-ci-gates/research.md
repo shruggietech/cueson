@@ -40,6 +40,14 @@
 
 **Alternatives considered**: One monolithic job was rejected because it hides which contract failed and provides only one coarse required-check name. Dynamic path filters were rejected because documentation-only changes must still prove the stable check set exists.
 
+## CodeQL build mode
+
+**Decision**: Configure Go CodeQL initialization with `build-mode: autobuild` and let the pinned v4 action perform its supported compiled-language extraction before analysis.
+
+**Rationale**: The first hosted run proved that CodeQL CLI 2.27.0 rejects `none` for Go and accepts only `autobuild` or `manual`. The pinned action documents the `autobuild` init mode as the current replacement for a separate autobuild step. The root module is conventionally buildable and needs no custom build command.
+
+**Alternatives considered**: `none` was rejected by the hosted extractor. Manual mode was rejected because it would duplicate an ordinary Go build solely for extraction and introduce a second command contract without improving the current repository's analysis.
+
 ## Controlled failing-run proof
 
 **Decision**: Make the repository-text job reject a committed `.github/ci-failure-probe` marker. Publish the first draft pull-request revision with that marker, wait for the job and overall CI workflow to fail, then remove the marker, push the correction, and require all checks to pass before marking the pull request ready for review.
