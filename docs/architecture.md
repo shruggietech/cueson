@@ -22,6 +22,8 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 | `internal/model` | Cue JSON types and format-neutral semantic invariants | Filesystem I/O, command behavior, or codec selection |
 | `internal/schema` | Embedded schema bytes, identity and version access, structural validation, and schema/software lockstep checks | Native codec capability inference |
 | `internal/source` | Source bundles, safe basenames, byte length and SHA-256 verification, metadata capture ordering, exact restoration, and platform timestamp results | Native format parsing or model-driven rendering |
+| `internal/testutil` | Domain-neutral fixture loading, provenance and integrity verification, portable-path enforcement, generic golden comparisons, and explicit local-identifier rejection | Model, schema, source, codec, or CLI semantics |
+| `internal/conformance` | Cross-package projections that prove schema, model, source, fixture, malformed, and path-leak behavior together | Production behavior or reusable domain APIs |
 | `internal/codec` | Format detection plus native ingest and model-driven render implementations | Exact source restoration |
 | `internal/convert` | Model-driven conversion and explicit loss accounting | Source-envelope restoration |
 | `internal/ocr` | Future OCR provider boundary for derived recognition | Source truth or codec-specific parsing |
@@ -67,6 +69,16 @@ Windows captures and attempts creation, modification, and access timestamps thro
 S004 supplies native-selectable adapter tests, runs Windows behavior natively in the development environment, and proves Linux and macOS build selection through CGO-disabled cross-compilation. Hosted native execution on all three operating systems remains issue [#8](https://github.com/shruggietech/cueson/issues/8), which is intentionally downstream of the source and test foundations.
 
 Windows process launches for console applications must use `CREATE_NO_WINDOW` or an equivalent hidden-process guarantee and disable interactive prompts.
+
+## Fixture and conformance foundation
+
+The root `testdata/manifest.json` is the only inventory authority for committed payloads beneath root `testdata/fixtures`, `testdata/malformed`, and the reserved `testdata/fuzz` tree. Each payload has one portable identity, explicit purpose and origin, redistribution approval, license and attribution, NOTICE decision, intentional byte characteristics, exact byte length, and lowercase SHA-256. Verification rejects unlisted or missing files, unsafe or colliding paths, links, non-regular files, incomplete provenance, disallowed redistribution, and byte drift before a conformance assertion begins.
+
+Repository-authored fixture metadata and normalized JSON expectations remain UTF-8 without BOM and LF-normalized. Authoritative source, expected-byte, malformed-input, and future fuzz-input paths bypass Git text and whitespace normalization even when their current bytes happen to be valid text. Verification reads these artifacts as bytes and never normalizes or repairs them.
+
+`internal/testutil` remains domain-neutral to avoid import cycles and incompatible format-specific assertion dialects. It compares semantic JSON, ordered diagnostics, exact bytes, integrity values, and explicit timestamp outcomes using fixture IDs and logical surface names. Cross-package tests under `internal/conformance` own projections from the Cueson model and source reports, prove exact restoration from the accepted seed, exercise parse, structure, semantics, and integrity rejection stages, and reject explicit native, slash, backslash, and JSON-escaped local identifiers.
+
+The embedded `internal/schema/testdata/representative.cueson.json` remains the canonical schema contract example owned by `internal/schema`; it is intentionally outside the root manifest rather than an undeclared corpus payload. Initial fuzz boundaries exercise complete Cue JSON decoding, canonical source-envelope base64 integrity, and safe basenames with callback guards and no restoration writes. Native SRT and WebVTT grammar coverage remains downstream codec work, and hosted platform automation remains issue [#8](https://github.com/shruggietech/cueson/issues/8).
 
 ## Work ownership after ratification
 

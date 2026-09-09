@@ -1,0 +1,216 @@
+{
+  "manifest_version": 1,
+  "fixtures": [
+    {
+      "id": "source-envelope/basic-lf",
+      "purpose": "Prove an accepted LF SubRip source envelope retains exact source bytes and portable model expectations without claiming native grammar support.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S005 fixture foundation",
+        "recipe": "Write the documented three-line ASCII sample with LF line endings and construct the v0.0.0 envelope through the canonical schema contract."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/source-envelope/basic-lf/source/captions.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 53,
+          "sha256": "955096d8a9c0df1a51bc836d0fd7cfc2d06c75807c5908b5017791d436673eea",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/source-envelope/basic-lf/expected/model.json",
+          "media_type": "application/json",
+          "size_bytes": 2814,
+          "sha256": "cc8bd7d01097ea3cec06b811f8b2a16bab8a57f7f075ad028724de0561569310",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/source-envelope/basic-lf/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "cue-json/truncated",
+      "purpose": "Retain a minimal parse-stage Cue JSON regression.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S005 fixture foundation",
+        "recipe": "Write one opening brace followed by LF."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/cue-json/truncated/input/document.cueson.json",
+          "media_type": "application/json",
+          "size_bytes": 2,
+          "sha256": "a6fb08fda1acb957b6116bd37811a1fe41a01611c0631edbf786d6889a27a55c",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "parse Cue JSON"
+      }
+    },
+    {
+      "id": "cue-json/structural-extra-field",
+      "purpose": "Retain a deterministic structure-stage rejection for an undeclared root property.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S005 fixture foundation",
+        "recipe": "Write a JSON object containing only the undeclared property unexpected."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/cue-json/structural-extra-field/input/document.cueson.json",
+          "media_type": "application/json",
+          "size_bytes": 20,
+          "sha256": "0dcf5074e815ba374c02a103f9d0f739def46c7f04ff898c303724dd15e2f9eb",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "structure",
+        "diagnostic_contains": "validate Cue JSON structure"
+      }
+    },
+    {
+      "id": "source-envelope/semantic-count",
+      "purpose": "Retain a structurally valid Cue JSON document whose declared cue count violates model semantics.",
+      "class": "malformed",
+      "origin": {
+        "kind": "derived",
+        "source": "Cueson v0.0.0 representative contract example",
+        "recipe": "Minify the representative and change document.cue_count from 1 to 2 while leaving one cue and stats.cue_count at 1."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/source-envelope/semantic-count/input/document.cueson.json",
+          "media_type": "application/json",
+          "size_bytes": 1934,
+          "sha256": "e836b94d98a22ef0d5818a11b890315545998ec21a6272741df8267f2878c45d",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "document and stats cue_count must equal 1"
+      }
+    },
+    {
+      "id": "source-envelope/hash-mismatch",
+      "purpose": "Retain a valid envelope whose declared source digest fails preparation before restoration writes a destination.",
+      "class": "malformed",
+      "origin": {
+        "kind": "derived",
+        "source": "Cueson v0.0.0 representative contract example",
+        "recipe": "Minify the representative and replace the source asset SHA-256 with 64 zeroes while retaining the original base64 bytes."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/source-envelope/hash-mismatch/input/document.cueson.json",
+          "media_type": "application/json",
+          "size_bytes": 1934,
+          "sha256": "a435b786f6b2e3b4e9a04ed965a779dd62e594bf2b3a8e96a565fe803ec11ebf",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "integrity",
+        "diagnostic_contains": "SHA-256"
+      }
+    }
+  ]
+}
