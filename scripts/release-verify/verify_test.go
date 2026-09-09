@@ -309,6 +309,11 @@ func TestScanForbiddenRecognizesEscapedAndStructuralPaths(t *testing.T) {
 		[]byte(`C:\Users\alice\src\cueson`),
 		[]byte(`{"path":"C:\\Users\\alice\\src\\cueson"}`),
 		[]byte(`/home/alice/cueson`),
+		[]byte(`{"path":"/opt/ci/cueson"}`),
+		[]byte(`{"path":"D:\\build\\cueson"}`),
+		[]byte(`{"path":"D:/build/cueson"}`),
+		[]byte(`{"path":"\\\\server\\share\\cueson"}`),
+		[]byte(`{"detail":"built from /workspace/cueson"}`),
 		[]byte(`alice-host`),
 	}
 	for _, data := range invalid {
@@ -318,6 +323,16 @@ func TestScanForbiddenRecognizesEscapedAndStructuralPaths(t *testing.T) {
 	}
 	if err := scanForbidden("test", []byte(`{"path":"internal/schema/cueson.schema.json"}`), forbidden); err != nil {
 		t.Fatalf("safe relative path rejected: %v", err)
+	}
+	valid := [][]byte{
+		[]byte(`{"url":"https://cueson.io/schema/v0.0.0/cueson.schema.json"}`),
+		[]byte(`{"purl":"pkg:golang/github.com/shruggietech/cueson@v0.0.0"}`),
+		[]byte(`{"module":"github.com/shruggietech/cueson","catalog_path":"\\cueson"}`),
+	}
+	for _, data := range valid {
+		if err := scanForbidden("test", data, nil); err != nil {
+			t.Errorf("safe metadata rejected: %v", err)
+		}
 	}
 }
 

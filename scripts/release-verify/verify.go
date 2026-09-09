@@ -666,13 +666,71 @@ func scanForbidden(label string, data []byte, forbidden []string) error {
 			return fmt.Errorf("%s contains forbidden local identifier", label)
 		}
 	}
-	structural := []string{`c:\\users\\`, `c:\users\`, `/home/`, `/users/`, `/tmp/`, `/private/var/folders/`}
-	for _, needle := range structural {
-		if strings.Contains(text, needle) {
-			return fmt.Errorf("%s contains structural absolute path %q", label, needle)
+	var decoded any
+	if json.Unmarshal(data, &decoded) == nil {
+		if containsAbsolutePathValue(decoded) {
+			return fmt.Errorf("%s contains a structurally absolute path", label)
 		}
+	} else if containsAbsolutePath(string(data)) {
+		return fmt.Errorf("%s contains a structurally absolute path", label)
 	}
 	return nil
+}
+
+func containsAbsolutePathValue(value any) bool {
+	switch typed := value.(type) {
+	case map[string]any:
+		for key, child := range typed {
+			if containsAbsolutePath(key) || containsAbsolutePathValue(child) {
+				return true
+			}
+		}
+	case []any:
+		for _, child := range typed {
+			if containsAbsolutePathValue(child) {
+				return true
+			}
+		}
+	case string:
+		return containsAbsolutePath(typed)
+	}
+	return false
+}
+
+func containsAbsolutePath(value string) bool {
+	for index := 0; index+2 < len(value); index++ {
+		if isASCIIAlpha(value[index]) && value[index+1] == ':' && (value[index+2] == '/' || value[index+2] == '\\') && pathBoundary(value, index) {
+			return true
+		}
+	}
+	for index := 0; index+1 < len(value); index++ {
+		if value[index] == '\\' && value[index+1] == '\\' && pathBoundary(value, index) {
+			return true
+		}
+		if value[index] != '/' || value[index+1] == '/' || !pathBoundary(value, index) {
+			continue
+		}
+		if isPathComponentStart(value[index+1]) {
+			return true
+		}
+	}
+	return false
+}
+
+func pathBoundary(value string, index int) bool {
+	if index == 0 {
+		return true
+	}
+	previous := value[index-1]
+	return previous == ' ' || previous == '\t' || previous == '\n' || previous == '\r' || strings.ContainsRune(`"'([{=,:;`, rune(previous))
+}
+
+func isASCIIAlpha(value byte) bool {
+	return value >= 'a' && value <= 'z' || value >= 'A' && value <= 'Z'
+}
+
+func isPathComponentStart(value byte) bool {
+	return isASCIIAlpha(value) || value >= '0' && value <= '9' || value == '.' || value == '_' || value == '-' || value == '~'
 }
 
 func safeMemberName(name string) bool {
