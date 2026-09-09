@@ -236,7 +236,7 @@ The schema MUST NOT contain:
 
 The source asset stores only the original base file name.
 
-File names stored in the schema MUST be portable safe basenames. They MUST reject path separators, `.` and `..`, ASCII control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, traversal constructs, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when a device stem has an extension. Validation occurs before an output path is constructed on every operating system.
+File names stored in the schema MUST be portable safe basenames. They MUST reject path separators, `.` and `..`, ASCII control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, traversal constructs, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when a device stem has an extension. Within one source bundle, basenames MUST be unique under Unicode canonical caseless matching, defined as NFD normalization, default Unicode case folding, then NFD normalization again. Semantic validation completes these checks before restoration opens any output.
 
 Additional metadata is encouraged when it describes the media, subtitle track, source encoding, source format, language, tool version, or conversion process. Metadata MUST NOT be used to smuggle filesystem paths into the document.
 
@@ -645,7 +645,7 @@ Each asset MUST contain or explicitly null the stable fields required by the can
 
 `role` initially supports `primary` and `companion`.
 
-`file_name` is the original source basename. It MUST satisfy the portable safe-basename contract, including rejection of directory paths, control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, traversal components, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when followed by an extension.
+`file_name` is the original source basename. It MUST satisfy the portable safe-basename contract, including rejection of directory paths, control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, traversal components, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when followed by an extension. Its portable collision key MUST be unique within `source.assets`.
 
 `media_type` describes the source asset media type when known.
 
@@ -1193,7 +1193,9 @@ cueson restore INPUT.cueson.json
 
 Restores the original source asset or asset set from `source.assets[].data_base64`.
 
-Default output names come from the stored safe basenames.
+With no destination option, a single asset uses its stored portable safe basename in the current directory. `--output-dir` restores one or more assets beneath the selected directory using their stored basenames. A single-asset `--output` supplies a separately validated literal runtime destination and may rename the file. `--output` and `--output-dir` are mutually exclusive.
+
+Before opening any output, Cueson MUST validate all stored basenames, compute the complete destination plan, and reject duplicate portable basename keys or destination paths. `--force` MUST NOT permit one source asset to replace another asset from the same bundle.
 
 The command MUST refuse to overwrite existing files unless `--force` is supplied.
 

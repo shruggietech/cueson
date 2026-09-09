@@ -83,7 +83,9 @@ cueson schema --output PATH
 cueson restore INPUT.cueson.json [options]
 ```
 
-`restore` validates the source envelope and recreates its exact asset bytes without calling a format codec. Single-asset output may use `--output`; multi-asset restoration uses `--output-dir`. Every output name comes from a portable safe basename validated under the schema contract before path construction.
+`restore` validates the source envelope and recreates its exact asset bytes without calling a format codec. With no destination option, a single asset uses its stored portable safe basename in the current directory. `--output-dir` places one or more assets beneath the caller-selected directory using their stored basenames. `--output` is valid only for a single-asset document and supplies a separately validated literal runtime destination that may rename the file; it is not required to match the stored basename. `--output` and `--output-dir` are mutually exclusive.
+
+Before opening any output, restoration validates every stored basename, builds the full destination plan, and rejects portable basename-key or destination collisions. Overwrite checks apply to the completed plan, so `--force` never permits one source asset to replace another asset from the same bundle.
 
 Baseline options are:
 

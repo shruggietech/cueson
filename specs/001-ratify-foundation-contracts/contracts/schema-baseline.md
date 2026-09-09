@@ -33,5 +33,6 @@ The declaration describes official Cueson capability for the document's format. 
 - Each non-empty OCR observation is independently identified and provenanced, including its engine identity and a resolvable source reference; if `derived` is retained, it is always true.
 - The multi-asset source envelope preserves ordered assets, portable safe basenames, exact byte lengths, SHA-256 identities, original bytes, and truthful timestamp metadata.
 - Portable safe basenames reject path syntax, control characters, Windows-invalid punctuation and trailing characters, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when followed by extensions.
+- Basenames within one source bundle are unique under Unicode canonical caseless matching: NFD normalization, default Unicode case folding, then NFD normalization again.
 - Original filesystem paths and machine identifiers are prohibited.
 - Cueson-owned keys use lowercase `snake_case`; JSON Schema keywords keep standards-defined spelling.

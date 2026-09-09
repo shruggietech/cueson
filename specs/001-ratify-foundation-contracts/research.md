@@ -40,6 +40,22 @@
 
 **Alternatives considered**: Relying on path joining was rejected because Windows device names and alternate data streams do not require traversal. Validating only on Windows was rejected because it would allow documents with non-portable restoration semantics to pass elsewhere.
 
+## Multi-asset destination collisions
+
+**Decision**: Require every stored basename in one source bundle to be unique under Unicode canonical caseless matching, defined as NFD normalization, default Unicode case folding, then NFD normalization again. Restoration computes and validates the complete destination plan before opening any output, and `--force` cannot authorize one bundle asset to replace another.
+
+**Rationale**: Exact-string uniqueness does not prevent `captions.srt` and `CAPTIONS.SRT`, or canonically equivalent Unicode names, from collapsing on case-insensitive or normalization-insensitive filesystems. Preflight validation prevents partial writes and intra-bundle data loss.
+
+**Alternatives considered**: Host-native collision checks were rejected because the same Cue JSON would have different validity across platforms. Detecting collisions during writes was rejected because it can leave a partially restored bundle.
+
+## Restore destination selection
+
+**Decision**: A default single-asset restore uses the stored basename in the current directory, while `--output-dir` uses stored basenames beneath an explicit directory. A single-asset `--output` is a separately validated literal runtime destination that may rename the file. The two destination options are mutually exclusive.
+
+**Rationale**: Stored names are untrusted document data and preserve provenance; explicit output paths are caller-selected runtime data. Treating both as the same contract creates contradictory naming requirements and prevents intentional renaming.
+
+**Alternatives considered**: Requiring `--output` to match the stored basename was rejected because the option would add no useful behavior. Allowing `--output` for multiple assets was rejected because one path cannot represent a collision-free asset set.
+
 ## Architecture boundaries
 
 **Decision**: Keep command wiring, version identity, common model, schema, source restoration, codecs, conversion, and future OCR providers as separate internal responsibilities. Exact restoration reads the source envelope directly and does not call a codec. No package is a public Go API in v0.0.0.

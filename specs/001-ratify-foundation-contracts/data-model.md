@@ -57,6 +57,27 @@ Represents one CLI command's relationship to the current executable.
 
 - Absent commands become implemented only in their owning issue and then enter help and command listings.
 
+## Restoration Output Plan
+
+Represents the validated one-to-one mapping from source assets to runtime destinations before restoration performs file I/O.
+
+**Fields**:
+
+- `asset_id`: document-local source asset identity.
+- `stored_basename`: the schema-validated original basename.
+- `portable_collision_key`: basename transformed through Unicode canonical caseless matching (NFD normalization, default Unicode case folding, then NFD normalization again).
+- `destination`: the complete runtime output path.
+- `destination_origin`: stored default, stored basename beneath `--output-dir`, or explicit single-asset `--output`.
+
+**Validation rules**:
+
+- Stored basenames and portable collision keys are unique within the source bundle.
+- Default output is valid only for one asset and uses its stored basename in the current directory.
+- `--output-dir` maps every asset's stored basename beneath one caller-selected directory.
+- `--output` is valid only for one asset, may rename it, and is validated as a caller-selected literal runtime destination rather than as stored document data.
+- `--output` and `--output-dir` are mutually exclusive.
+- The complete plan rejects duplicate destinations and overwrite violations before any output is opened; `--force` does not permit intra-bundle replacement.
+
 ## Delivery Record
 
 Represents the evidence-backed state of an issue within the active Project.

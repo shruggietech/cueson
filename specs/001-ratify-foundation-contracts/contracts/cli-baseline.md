@@ -15,6 +15,8 @@
 - Invocation errors, runtime diagnostics, and error-associated usage use stderr.
 - Structured output contains no decoration.
 - Quiet, silent, color, literal-path, option-termination, and explicit-overwrite conventions apply consistently to shipped commands.
+- Default single-asset output and names beneath `--output-dir` derive from stored portable safe basenames; single-asset `--output` is a separately validated caller-selected runtime destination that may rename the file.
+- `--output` and `--output-dir` are mutually exclusive, and the complete collision-free destination plan is validated before any output is opened.
 
 ## Failure classification
 

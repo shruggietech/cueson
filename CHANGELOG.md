@@ -22,7 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-09: Use `subrip` and `webvtt` as canonical schema keys and declare the completed v0.0.0 milestone `envelope_only`, with public generic restoration owned by the source-foundation slice and native ingest/render deferred.
 - 2026-09-09: Require an `ocr_observations` array on every cue and keep every observation derived, independently provenanced, and subordinate to source truth.
 - 2026-09-09: Show only implemented CLI commands in help, classify invocation and pre-execution failures as exit code 2, and classify missing runtime capability as exit code 1.
-- 2026-09-09: Validate source-asset basenames against one portable safety rule that rejects Windows device names and NTFS alternate-data-stream syntax before restoration constructs an output path.
+- 2026-09-09: Validate source-asset basenames against one portable safety and collision rule that rejects Windows device names, NTFS alternate-data-stream syntax, and normalization or case-fold collisions before restoration opens any output.
+- 2026-09-09: Treat stored basenames as default and `--output-dir` names while allowing single-asset `--output` to select a separately validated runtime path.
 - 2026-09-09: Keep bootstrap issue #1 open until the badge correction reaches and is verified on the default branch.
 
 ## [0.0.0]

@@ -100,6 +100,18 @@
 
 ---
 
+## Phase 8: Round-Two Review Resolution
+
+**Purpose**: Resolve every actionable final-round Codex finding without creating an unbounded review loop.
+
+- [X] T024 Inspect and validate every second-round Codex finding against the updated contracts and CLI behavior
+- [X] T025 Define collision-free multi-asset basename and destination planning across the ratified documents and Spec Kit artifacts
+- [X] T026 Separate stored default and `--output-dir` names from an explicit single-asset `--output` runtime destination
+- [X] T027 Amend GitHub issue #6 with matching collision and destination-selection acceptance boundaries and read the published body back
+- [X] T028 Rerun Spec Kit analysis and the complete verification suite, prepare the final resolution commit, confirm both findings are addressed, and record that the protocol permits no third review request
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

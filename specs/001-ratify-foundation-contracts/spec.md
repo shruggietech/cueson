@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-09
 
-**Status**: Complete (round-one findings resolved and verified)
+**Status**: Complete (both review rounds resolved and verified)
 
 **Input**: User description: "Using Spec Kit and the shruggie-speckit autopilot protocol, make the README badges truthful, complete bootstrap bookkeeping, and ratify the v0.0.0 architecture, schema, CLI, and format boundaries without shipped product implementation; halt before push and public pull request."
 
@@ -65,6 +65,8 @@ As a project operator, I can see that the bootstrap is closure-ready and the con
 - A third-party producer emits a conforming document: its producer version may differ from the schema version it targets.
 - A local task completes but its branch is not public: Project and issue wording must not claim a pull request or remote branch exists.
 - A basename is harmless on the producing platform but maps to a Windows device or alternate data stream: reject it through the portable schema contract before restoration constructs any output path.
+- Two source assets have names that differ only by case or canonical Unicode representation: reject the bundle before opening any output.
+- A caller supplies `--output` for a single asset: treat it as a separately validated runtime destination that may rename the file rather than requiring the stored basename.
 
 ## Requirements *(mandatory)*
 
@@ -92,6 +94,8 @@ As a project operator, I can see that the bootstrap is closure-ready and the con
 - **FR-020**: The slice MUST complete Spec Kit specification, clarification, planning, task generation, analysis, implementation, and local verification, then commit locally and halt before push or public pull-request creation.
 - **FR-021**: The slice MUST NOT add shipped Go code, a root Go module, schema implementation, CI workflows, repository rulesets, tags, releases, or production-domain changes.
 - **FR-022**: The v0.0.0 roadmap MUST include the multi-asset source envelope, integrity validation, and public generic exact restoration required by the ratified `restore_supported: true` capability while leaving codec-integrated round trips to the 0.x series.
+- **FR-023**: The schema and restoration baselines MUST require source-asset basenames to be unique under Unicode canonical caseless matching (NFD normalization, default Unicode case folding, then NFD normalization again) and MUST reject all basename and destination collisions before any output is opened.
+- **FR-024**: The CLI baseline MUST distinguish stored-basename defaults and `--output-dir` mappings from an explicit single-asset `--output` runtime destination, MUST allow that explicit path to rename the restored file, and MUST make `--output` and `--output-dir` mutually exclusive.
 
 ## Success Criteria *(mandatory)*
 

@@ -36,6 +36,8 @@ Confirm the ratified documents provide exactly one answer for:
 - command visibility and unavailable-command behavior;
 - restoration independence from codecs;
 - portable basename rejection of Windows devices and alternate-data-stream syntax;
+- collision-free multi-asset planning under Unicode canonical caseless matching;
+- explicit single-asset `--output` separation from stored default and `--output-dir` names;
 - generic exact restoration in the v0.0.0 roadmap rather than the later codec series.
 
 Trace issues #4 through #7 to the corresponding architecture, schema, or CLI section. No acceptance criterion may depend only on chat history.
