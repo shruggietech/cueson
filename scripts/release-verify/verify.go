@@ -187,9 +187,6 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 		if err != nil {
 			return evidence, fmt.Errorf("read %s: %w", target.Archive, err)
 		}
-		if err := scanForbidden(target.Archive, archiveBytes, forbidden); err != nil {
-			return evidence, err
-		}
 		target.ArchiveSHA, err = verifyArchiveDigest(target.Archive, archiveBytes, checksums)
 		if err != nil {
 			return evidence, err
@@ -202,10 +199,7 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 		if err != nil {
 			return evidence, fmt.Errorf("inspect %s: %w", target.Archive, err)
 		}
-		if err := scanForbidden(target.Archive+" binary", binaryBytes, forbidden); err != nil {
-			return evidence, err
-		}
-		if err := verifyBuildInfo(binaryBytes, *target, config.Commit); err != nil {
+		if err := verifyBuildInfo(binaryBytes, *target, config.Commit, forbidden); err != nil {
 			return evidence, fmt.Errorf("inspect %s build information: %w", target.Archive, err)
 		}
 
@@ -334,15 +328,15 @@ func verifyMembers(target Target, members map[string]archiveMember, canonicalSch
 	return members[target.Binary].data, nil
 }
 
-func verifyBuildInfo(binary []byte, target Target, commit string) error {
+func verifyBuildInfo(binary []byte, target Target, commit string, forbidden []string) error {
 	info, err := buildinfo.Read(bytes.NewReader(binary))
 	if err != nil {
 		return err
 	}
-	return verifyBuildSettings(info, target, commit)
+	return verifyBuildSettings(info, target, commit, forbidden)
 }
 
-func verifyBuildSettings(info *buildinfo.BuildInfo, target Target, commit string) error {
+func verifyBuildSettings(info *buildinfo.BuildInfo, target Target, commit string, forbidden []string) error {
 	settings := make(map[string]string, len(info.Settings))
 	for _, setting := range info.Settings {
 		settings[setting.Key] = setting.Value
@@ -355,6 +349,13 @@ func verifyBuildSettings(info *buildinfo.BuildInfo, target Target, commit string
 		if got := settings[key]; got != want {
 			return fmt.Errorf("setting %s=%q, want %q", key, got, want)
 		}
+	}
+	encoded, err := json.Marshal(info)
+	if err != nil {
+		return fmt.Errorf("encode Go build information: %w", err)
+	}
+	if err := scanForbidden("Go build information", encoded, forbidden); err != nil {
+		return err
 	}
 	return nil
 }

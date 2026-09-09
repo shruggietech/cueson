@@ -120,6 +120,7 @@
 - [ ] T036 Wait for all hosted checks and first-round third-party reviews, address every finding, request at most one `@codex review` second round only when required, and stop for the operator's final merge ritual after all checks and reviews are satisfied
 - [x] T037 [Review] Replace host-dependent Windows absolute-path detection with portable drive and UNC syntax checks in `scripts/release-verify/verify.go` and `scripts/release-verify/verify_test.go`
 - [x] T038 [Review] Bind every packaged binary's public version surface to a release-only marker and verify that marker for foreign targets in `internal/version/version.go`, `.goreleaser.yaml`, and `scripts/release-verify/verify.go`
+- [x] T039 [Hosted] Scope local-identifier inspection to semantic Go build information, release metadata, and SBOM JSON so arbitrary binary bytes cannot create false path matches in `scripts/release-verify/verify.go`
 
 ---
 

@@ -79,7 +79,7 @@ The verifier:
 - requires a one-to-one lowercase SHA-256 checksum mapping for the six archives;
 - validates target, `CGO_ENABLED=0`, trimmed paths, source revision, and clean VCS state from Go build information, then requires the release-version marker consumed by the public version surface in every target binary;
 - validates one binary-derived SPDX JSON SBOM per archive with target and source-revision identity;
-- scans names, members, binaries, GoReleaser metadata, and SBOM JSON for structural or supplied local identifiers;
+- scans Go build information, GoReleaser metadata, and SBOM JSON for structural or supplied local identifiers without treating arbitrary compressed or executable bytes as text;
 - executes only the host-compatible packaged binary and requires exact `version`, `schema --version`, and emitted-schema output;
 - writes `dist/release-evidence.json` only after every assertion passes.
 

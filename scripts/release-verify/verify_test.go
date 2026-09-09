@@ -144,7 +144,7 @@ func TestVerifyBuildSettings(t *testing.T) {
 		{Key: "CGO_ENABLED", Value: "0"}, {Key: "vcs.revision", Value: testCommit},
 		{Key: "vcs.modified", Value: "false"}, {Key: "-trimpath", Value: "true"},
 	}}
-	if err := verifyBuildSettings(valid, target, testCommit); err != nil {
+	if err := verifyBuildSettings(valid, target, testCommit, nil); err != nil {
 		t.Fatal(err)
 	}
 	for _, key := range []string{"GOOS", "GOARCH", "CGO_ENABLED", "vcs.revision", "vcs.modified", "-trimpath"} {
@@ -155,9 +155,14 @@ func TestVerifyBuildSettings(t *testing.T) {
 				invalid.Settings[index].Value = "wrong"
 			}
 		}
-		if err := verifyBuildSettings(&invalid, target, testCommit); err == nil {
+		if err := verifyBuildSettings(&invalid, target, testCommit, nil); err == nil {
 			t.Errorf("accepted invalid %s setting", key)
 		}
+	}
+	leaking := *valid
+	leaking.Settings = append(append([]debug.BuildSetting(nil), valid.Settings...), debug.BuildSetting{Key: "local.path", Value: "/home/alice/cueson"})
+	if err := verifyBuildSettings(&leaking, target, testCommit, nil); err == nil {
+		t.Error("accepted local path in Go build information")
 	}
 }
 

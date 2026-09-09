@@ -36,7 +36,7 @@ S009 does not sign SBOMs or publish an attestation. Absence of those claims is p
 
 GoReleaser emits `metadata.json` and `artifacts.json`. Repository verification emits `release-evidence.json` only after all assertions pass. The evidence summary contains the version, full source revision, expected counts, target identities, archive and SBOM digests, host-execution result, and `published: false`.
 
-No inspected JSON, archive name, archive member, Go build setting, or executable string may contain supplied checkout-root, username, hostname, drive-root, or other local-identifier needles.
+No inspected JSON, archive name, archive member, or Go build setting may contain supplied checkout-root, username, hostname, drive-root, or other local-identifier needles. Arbitrary compressed and executable bytes are not decoded as text; binary acceptance instead uses parsed build information plus exact embedded-schema and release-marker checks.
 
 ## Version and source identity
 
