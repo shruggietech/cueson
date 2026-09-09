@@ -75,6 +75,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 2. **Given** a required-check candidate is evaluated, **When** evidence is recorded, **Then** the record identifies the exact context, current head revision, result, and source needed to justify or reject protection.
 3. **Given** the S008 pull request receives a clean first Codex review without findings, **When** policy protection is finalized, **Then** the lack of a GitHub Actions-authored second-round request is recorded and both PR-policy contexts remain non-required.
 4. **Given** S008 receives first-round findings and the trusted workflow emits the one permitted second-round request, **When** the request and policy statuses are read back successfully, **Then** the two PR-policy contexts may be required only after the complete hosted proof is recorded.
+5. **Given** the second Codex review reports a resolvable finding, **When** that finding is resolved on a proven descendant head and all required checks pass there, **Then** the review policy succeeds without requesting a prohibited third review.
 
 ### Edge Cases
 
@@ -91,6 +92,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 - Reducing default workflow permissions must not remove explicit narrow permissions required by existing CI, CodeQL, or pull-request policy workflows.
 - Applying a required check before it succeeds on the active pull-request head can make the branch unmergeable until operator recovery.
 - Concurrent operator or organization-policy changes can make the post-mutation read-back differ from the requested state.
+- A second-round finding necessarily moves the head when its remediation changes source, so treating every later head as stale would contradict the no-third-review rule.
 
 ## Requirements *(mandatory)*
 
@@ -122,6 +124,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 - **FR-024**: The final pull request MUST close issue #10, contain publication-safe Markdown, and stop for human final review and merge after all available reviews are resolved and all required checks are green.
 - **FR-025**: S008 MUST NOT merge or auto-merge its pull request, modify organization-wide rules, alter unrelated repositories, create or move a tag, publish a release, publish a schema, or mutate production `cueson.io` configuration.
 - **FR-026**: Hosted status mutation verification MUST compare the accepted identifier, context, state, description, target, and trusted creator against the requested commit endpoint without requiring a redundant field that GitHub omits from its status representation.
+- **FR-027**: A resolved second-round finding MAY satisfy review policy on a newer head only when the reviewed head is a proven ancestor, every second-round thread is resolved, all S006 checks succeed on the newer head, and no third review is requested.
 
 ### Key Entities
 
@@ -144,6 +147,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 - **SC-007**: Existing CI and CodeQL workflows complete on the final S008 head under the reduced default workflow permission without acquiring broader explicit permission, while the trusted-base pull-request policy records its S008 adapter fix and remains non-required until post-merge activation can exercise that trusted code.
 - **SC-008**: The final repository evidence contains zero mutations to organization-owned rules, unrelated repositories, release state, tags, schemas, or production domain configuration.
 - **SC-009**: The first mutation of each PR-policy context reads back successfully in the same run when GitHub returns its documented commit-status representation.
+- **SC-010**: A second-round finding resolved on a proven descendant with complete current-head CI produces a successful Codex-review policy result and zero additional review requests.
 
 ## Assumptions
 

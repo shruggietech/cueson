@@ -21,7 +21,7 @@
 - [x] T001 Verify issue #10 dependencies, parent, milestone, Slice `S008`, and Project Stage `Specced`, recording planning state in specs/S008-configure-repository-controls/plan.md
 - [x] T002 Capture pre-mutation repository, merge, Actions, security, CodeQL, classic-protection, repository-ruleset, and effective organization-ruleset state in docs/repository-controls.md
 - [x] T003 Prove the organization-owned ruleset identity and baseline update timestamp in docs/repository-controls.md
-- [x] T004 Validate all 26 functional requirements and 9 success criteria against specs/S008-configure-repository-controls/checklists/requirements.md
+- [x] T004 Validate all 27 functional requirements and 10 success criteria against specs/S008-configure-repository-controls/checklists/requirements.md
 
 ---
 
@@ -196,3 +196,15 @@ The native Codex integration owns round one. If round one has findings, S008 res
 - External state is never inferred from a successful mutation response alone.
 - Head-specific evidence belongs in the issue or pull-request record because a commit cannot durably name its own final hash.
 - Existing organization policy is evidence input, never an S008 mutation target.
+
+---
+
+## Phase 8: Convergence
+
+**Purpose**: Remove the contradiction exposed when a second-round review finding requires a remediation commit while the protocol forbids a third review.
+
+- [x] T045 Add a failing policy regression proving that resolved second-round findings may complete on a proven descendant head only after all required checks pass, with negative cases for missing ancestry and incomplete CI, per FR-024 (partial)
+- [x] T046 Update the Codex policy evaluator to accept that narrow descendant-remediation path without issuing another review request, per FR-024 (contradicts)
+- [x] T047 Reconcile the S008 specification, architecture, project-management guidance, changelog, and repository-control evidence with the corrected second-round remediation rule, per Constitution VII (partial)
+- [x] T048 Run the complete local verification and Spec Kit analysis/convergence gates, then commit and push the correction without requesting a third review, per FR-024 (partial)
+- [ ] T049 Clear every remediable red pull-request surface through trusted workflow execution, record any operator-only recovery decision explicitly, re-audit reviews and hosted checks, and stop only when the GitHub pull request is visibly ready or a concrete human decision is required, per FR-024 (partial)

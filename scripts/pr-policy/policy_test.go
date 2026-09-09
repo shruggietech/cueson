@@ -13,6 +13,7 @@ import (
 const (
 	testHead = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 	testOld  = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	testNew  = "cccccccccccccccccccccccccccccccccccccccc"
 )
 
 var (
@@ -486,6 +487,34 @@ func TestNoStateAfterRoundTwoRequestsAnotherReview(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestResolvedRoundTwoFindingCanCompleteOnVerifiedRemediationHead(t *testing.T) {
+	t.Parallel()
+
+	makeSnapshot := func() Snapshot {
+		snapshot := reviewScenario(t, "round-two-resolved")
+		snapshot.HeadSHA = testNew
+		snapshot.HistoricalHeads = append(snapshot.HistoricalHeads, testNew)
+		snapshot.Comparisons = append(snapshot.Comparisons, Comparison{BaseSHA: testHead, HeadSHA: testNew, Status: "ahead", AheadBy: 1})
+		for _, context := range RequiredS006Checks {
+			snapshot.Checks = append(snapshot.Checks, CheckResult{Context: context, State: "success", SHA: testNew, CreatedAt: testStart.Add(5 * time.Minute)})
+		}
+		return snapshot
+	}
+
+	result := EvaluateCodexReview(makeSnapshot())
+	if result.State != StatusSuccess || result.RequestSecond || result.Description != "Round-two findings are resolved on descendant remediation head" {
+		t.Fatalf("verified round-two remediation did not complete: %+v", result)
+	}
+
+	missingAncestry := makeSnapshot()
+	missingAncestry.Comparisons = nil
+	assertResult(t, EvaluateCodexReview(missingAncestry), StatusFailure, false)
+
+	missingCI := makeSnapshot()
+	missingCI.Checks = missingCI.Checks[:len(missingCI.Checks)-1]
+	assertResult(t, EvaluateCodexReview(missingCI), StatusPending, false)
 }
 
 func TestRemediationBridgeFailsClosedWithoutAncestryAndGreenCI(t *testing.T) {

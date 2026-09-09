@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Made fixture-alias and closed-descriptor tests portable across case-insensitive macOS filesystems and Linux timestamp syscall behavior exposed by the first hosted native matrix.
+- Allowed a resolved second-round Codex finding to complete on a proven descendant remediation head with green required checks, removing the contradiction between stale-head rejection and the no-third-review rule.
 
 ### Decisions
 
