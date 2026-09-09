@@ -9,11 +9,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - Initialized the repository, Spec Kit integration, governance documents, publication tooling, and GitHub planning foundation.
+- Added the v0.0.0 architecture, Cue JSON schema, and CLI implementation baselines with their Spec Kit decision and verification artifacts.
+
+### Changed
+
+- Replaced unavailable dynamic CI and release badges with truthful planned and unreleased state badges until those public resources exist.
 
 ### Decisions
 
 - Treat the project specification as a working pre-release draft until its contracts are ratified through the constitution and implementation slices.
 - Keep repository publication utilities separate from the shipped Cueson product.
+- 2026-09-09: Use `subrip` and `webvtt` as canonical schema keys and declare the completed v0.0.0 milestone `envelope_only`, with public generic restoration owned by the source-foundation slice and native ingest/render deferred.
+- 2026-09-09: Require an `ocr_observations` array on every cue and keep every observation derived, independently provenanced, and subordinate to source truth.
+- 2026-09-09: Show only implemented CLI commands in help, classify invocation and pre-execution failures as exit code 2, and classify missing runtime capability as exit code 1.
+- 2026-09-09: Keep bootstrap issue #1 open until the badge correction reaches and is verified on the default branch.
 
 ## [0.0.0]
 
