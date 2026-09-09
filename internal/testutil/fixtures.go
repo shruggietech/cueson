@@ -21,7 +21,7 @@ var (
 	artifactIDPattern      = regexp.MustCompile(`^[a-z0-9]+(?:[_-][a-z0-9]+)*$`)
 	sha256Pattern          = regexp.MustCompile(`^[0-9a-f]{64}$`)
 	localDrivePathPattern  = regexp.MustCompile(`(?i)^[a-z]:[\\/]`)
-	localPathInTextPattern = regexp.MustCompile(`(?i)(^|[[:space:]'"(=])(?:[a-z]:[\\/]|file:(?:/{0,2})|\\\\|/(?:home|users|tmp|var/tmp)/)`)
+	localPathInTextPattern = regexp.MustCompile(`(?i)(^|[[:space:]'"(=])(?:[a-z]:[\\/]|file:(?:/{0,2})|\\\\|/(?:[^/[:space:]]+/)+)`)
 )
 
 // Manifest is the versioned, ordered root fixture inventory.
@@ -63,7 +63,7 @@ type Artifact struct {
 	Role         string       `json:"role"`
 	Path         string       `json:"path"`
 	MediaType    string       `json:"media_type"`
-	SizeBytes    int64        `json:"size_bytes"`
+	SizeBytes    *int64       `json:"size_bytes"`
 	SHA256       string       `json:"sha256"`
 	ByteContract ByteContract `json:"byte_contract"`
 }
@@ -249,7 +249,7 @@ func validateOrigin(fixtureID string, origin Origin) error {
 		return fmt.Errorf("fixture %s: origin source is required", fixtureID)
 	}
 	lowerSource := strings.ToLower(strings.TrimSpace(origin.Source))
-	if strings.HasPrefix(lowerSource, "file:") || strings.HasPrefix(lowerSource, "/") || strings.HasPrefix(lowerSource, `\\`) || localDrivePathPattern.MatchString(lowerSource) {
+	if strings.HasPrefix(lowerSource, "file:") || strings.HasPrefix(lowerSource, "/") || strings.HasPrefix(lowerSource, `\\`) || localDrivePathPattern.MatchString(lowerSource) || localPathInTextPattern.MatchString(origin.Source) {
 		return fmt.Errorf("fixture %s: origin source must not be a local path", fixtureID)
 	}
 	if origin.Recipe != nil && localPathInTextPattern.MatchString(*origin.Recipe) {
@@ -304,7 +304,10 @@ func validateArtifactRecord(fixtureID string, artifact Artifact) error {
 	if strings.TrimSpace(artifact.MediaType) == "" {
 		return fmt.Errorf("fixture %s artifact %s: media_type is required", fixtureID, artifact.ID)
 	}
-	if artifact.SizeBytes < 0 {
+	if artifact.SizeBytes == nil {
+		return fmt.Errorf("fixture %s artifact %s: size_bytes is required", fixtureID, artifact.ID)
+	}
+	if *artifact.SizeBytes < 0 {
 		return fmt.Errorf("fixture %s artifact %s: size_bytes must be non-negative", fixtureID, artifact.ID)
 	}
 	if !sha256Pattern.MatchString(artifact.SHA256) {
@@ -360,7 +363,7 @@ func verifyArtifact(root, fixtureID string, artifact Artifact) error {
 	if err != nil {
 		return fmt.Errorf("%s: cannot read declared payload", label)
 	}
-	if int64(len(data)) != artifact.SizeBytes {
+	if int64(len(data)) != *artifact.SizeBytes {
 		return fmt.Errorf("%s: byte length does not match", label)
 	}
 	sum := sha256.Sum256(data)
@@ -494,6 +497,9 @@ func verifyInventory(root string, declared map[string]declaredArtifact) error {
 			}
 			if !declaredPath {
 				return fmt.Errorf("fixture inventory: payload is not declared in manifest")
+			}
+			if portable != owner.artifact.Path {
+				return fmt.Errorf("fixture %s artifact %s: undeclared payload collides with the declared portable path", owner.fixtureID, owner.artifactID)
 			}
 			seen[key] = struct{}{}
 			return nil

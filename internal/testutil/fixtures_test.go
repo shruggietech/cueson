@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -61,7 +62,10 @@ func TestVerifyFixturesRejectsInvalidCorpus(t *testing.T) {
 		{name: "digest mismatch", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
 			manifest.Fixtures[0].Artifacts[0].SHA256 = strings.Repeat("0", 64)
 		}, want: "SHA-256 does not match"},
-		{name: "size mismatch", mutate: func(_ *testing.T, _ string, manifest *Manifest) { manifest.Fixtures[0].Artifacts[0].SizeBytes++ }, want: "byte length does not match"},
+		{name: "size mismatch", mutate: func(_ *testing.T, _ string, manifest *Manifest) { (*manifest.Fixtures[0].Artifacts[0].SizeBytes)++ }, want: "byte length does not match"},
+		{name: "missing size", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
+			manifest.Fixtures[0].Artifacts[0].SizeBytes = nil
+		}, want: "size_bytes is required"},
 		{name: "byte contract mismatch", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
 			manifest.Fixtures[0].Artifacts[0].ByteContract.LineEndings = "crlf"
 		}, want: "line endings do not match"},
@@ -75,6 +79,12 @@ func TestVerifyFixturesRejectsInvalidCorpus(t *testing.T) {
 		}, want: "declared payload is missing"},
 		{name: "local origin path", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
 			manifest.Fixtures[0].Origin.Source = `C:\Users\person\fixture.txt`
+		}, want: "origin source must not be a local path"},
+		{name: "embedded origin path", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
+			manifest.Fixtures[0].Origin.Source = "Captured from file:///tmp/private.txt"
+		}, want: "origin source must not be a local path"},
+		{name: "embedded Unix origin path", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
+			manifest.Fixtures[0].Origin.Source = "Captured from /mnt/private/fixture.txt"
 		}, want: "origin source must not be a local path"},
 		{name: "local recipe path", mutate: func(_ *testing.T, _ string, manifest *Manifest) {
 			manifest.Fixtures[0].Origin.Recipe = stringPointer(`Copy C:\Users\person\fixture.txt.`)
@@ -101,6 +111,36 @@ func TestVerifyFixturesRejectsInvalidCorpus(t *testing.T) {
 	}
 }
 
+func TestVerifyFixturesRejectsCanonicalAliasInInventory(t *testing.T) {
+	t.Parallel()
+
+	root := createCorpus(t, []byte("hello\n"))
+	manifest := readManifest(t, root)
+	if runtime.GOOS == "windows" {
+		manifest.Fixtures[0].Artifacts[0].Path = "fixtures/basic/source/INPUT.TXT"
+		writeManifest(t, root, manifest)
+	} else {
+		writeFile(t, filepath.Join(root, filepath.FromSlash("fixtures/basic/source/INPUT.TXT")), []byte("hello\n"))
+	}
+	_, err := VerifyFixtures(root)
+	if err == nil || !strings.Contains(err.Error(), "collides with the declared portable path") {
+		t.Fatalf("VerifyFixtures() error = %v", err)
+	}
+}
+
+func TestVerifyFixturesRequiresEmptyArtifactSize(t *testing.T) {
+	t.Parallel()
+
+	root := createCorpus(t, nil)
+	manifest := readManifest(t, root)
+	manifest.Fixtures[0].Artifacts[0].SizeBytes = nil
+	writeManifest(t, root, manifest)
+	_, err := VerifyFixtures(root)
+	if err == nil || !strings.Contains(err.Error(), "size_bytes is required") {
+		t.Fatalf("VerifyFixtures() error = %v", err)
+	}
+}
+
 func TestVerifyFixturesInventoriesFuzzRegressions(t *testing.T) {
 	t.Parallel()
 
@@ -120,7 +160,7 @@ func TestVerifyFixturesInventoriesFuzzRegressions(t *testing.T) {
 			Status: "approved", License: "MIT", Attribution: "Copyright ShruggieTech", NoticeRequired: &notice,
 		},
 		Artifacts: []Artifact{{
-			ID: "input", Role: "malformed_input", Path: path, MediaType: "application/octet-stream", SizeBytes: int64(len(data)), SHA256: hex.EncodeToString(sum[:]),
+			ID: "input", Role: "malformed_input", Path: path, MediaType: "application/octet-stream", SizeBytes: int64Pointer(int64(len(data))), SHA256: hex.EncodeToString(sum[:]),
 			ByteContract: ByteContract{Encoding: "binary", BOM: "not_applicable", LineEndings: "not_applicable", FinalNewline: "not_applicable"},
 		}},
 		Expectation: Expectation{Result: "rejected", Stage: stringPointer("parse"), DiagnosticContains: stringPointer("parse Cue JSON")},
@@ -168,7 +208,7 @@ func createCorpus(t *testing.T, data []byte) string {
 			Class:          "accepted",
 			Origin:         Origin{Kind: "synthetic", Source: "Cueson S005 test suite", Recipe: stringPointer("Write the ASCII bytes hello followed by LF.")},
 			Redistribution: Redistribution{Status: "approved", License: "MIT", Attribution: "Copyright ShruggieTech", NoticeRequired: &notice},
-			Artifacts:      []Artifact{{ID: "source", Role: "source", Path: "fixtures/basic/source/input.txt", MediaType: "text/plain", SizeBytes: int64(len(data)), SHA256: hex.EncodeToString(sum[:]), ByteContract: ByteContract{Encoding: "utf-8", BOM: "absent", LineEndings: "lf", FinalNewline: "present"}}},
+			Artifacts:      []Artifact{{ID: "source", Role: "source", Path: "fixtures/basic/source/input.txt", MediaType: "text/plain", SizeBytes: int64Pointer(int64(len(data))), SHA256: hex.EncodeToString(sum[:]), ByteContract: byteContractForTestData(data)}},
 			Expectation:    Expectation{Result: "accepted"},
 		}},
 	}
@@ -228,4 +268,17 @@ func writeFile(t *testing.T, path string, data []byte) {
 
 func stringPointer(value string) *string {
 	return &value
+}
+
+func int64Pointer(value int64) *int64 {
+	return &value
+}
+
+func byteContractForTestData(data []byte) ByteContract {
+	contract := ByteContract{Encoding: "utf-8", BOM: "absent", LineEndings: "none", FinalNewline: "absent"}
+	if len(data) > 0 && data[len(data)-1] == '\n' {
+		contract.LineEndings = "lf"
+		contract.FinalNewline = "present"
+	}
+	return contract
 }

@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"os"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -65,7 +66,7 @@ func TestAcceptedSourceEnvelopeConformance(t *testing.T) {
 	if err := testutil.CompareBytes(fixture.ID, "source_bytes", sourceBytes, decodedSource); err != nil {
 		t.Fatal(err)
 	}
-	if err := testutil.CompareIntegrity(fixture.ID, "source_integrity", decodedSource, sourceArtifact.SizeBytes, sourceArtifact.SHA256); err != nil {
+	if err := testutil.CompareIntegrity(fixture.ID, "source_integrity", decodedSource, *sourceArtifact.SizeBytes, sourceArtifact.SHA256); err != nil {
 		t.Fatal(err)
 	}
 
@@ -85,7 +86,7 @@ func TestAcceptedSourceEnvelopeConformance(t *testing.T) {
 		t.Fatal(err)
 	}
 	timestampOutcomes := portableTimestamps(report.Assets[0].Timestamps)
-	if err := testutil.CompareTimestamps(fixture.ID, "timestamps", append([]testutil.TimestampOutcome(nil), timestampOutcomes...), timestampOutcomes); err != nil {
+	if err := testutil.CompareTimestamps(fixture.ID, "timestamps", expectedTimestamps(), timestampOutcomes); err != nil {
 		t.Fatal(err)
 	}
 
@@ -99,7 +100,15 @@ func TestAcceptedSourceEnvelopeConformance(t *testing.T) {
 	}
 	home, _ := os.UserHomeDir()
 	host, _ := os.Hostname()
-	if err := testutil.CheckNoForbidden(fixture.ID, "portable_expectation", portable, root, filepath.Dir(output), home, host); err != nil {
+	currentUser, err := user.Current()
+	if err != nil {
+		t.Fatalf("resolve current user: %v", err)
+	}
+	userSentinels := []string{currentUser.Username, filepath.Base(home)}
+	if separator := strings.LastIndexAny(currentUser.Username, `\\/`); separator >= 0 {
+		userSentinels = append(userSentinels, currentUser.Username[separator+1:])
+	}
+	if err := testutil.CheckNoForbidden(fixture.ID, "portable_expectation", portable, append([]string{root, filepath.Dir(output), home, host}, userSentinels...)...); err != nil {
 		t.Fatal(err)
 	}
 	proveEquivalentRoots(t, fixture.ID, modelBytes)
@@ -213,6 +222,35 @@ func portableTimestamps(results []source.TimestampResult) []testutil.TimestampOu
 		outcomes[index] = testutil.TimestampOutcome{Kind: string(result.Kind), Status: string(result.Status), EffectivePrecision: result.EffectivePrecision}
 	}
 	return outcomes
+}
+
+func expectedTimestamps() []testutil.TimestampOutcome {
+	switch runtime.GOOS {
+	case "windows":
+		return []testutil.TimestampOutcome{
+			{Kind: string(source.TimestampCreated), Status: testutil.TimestampRestored, EffectivePrecision: "100ns"},
+			{Kind: string(source.TimestampModified), Status: testutil.TimestampRestored, EffectivePrecision: "100ns"},
+			{Kind: string(source.TimestampAccessed), Status: testutil.TimestampRestored, EffectivePrecision: "100ns"},
+		}
+	case "linux":
+		return []testutil.TimestampOutcome{
+			{Kind: string(source.TimestampCreated), Status: testutil.TimestampUnsupported},
+			{Kind: string(source.TimestampModified), Status: testutil.TimestampRestored, EffectivePrecision: "1ns"},
+			{Kind: string(source.TimestampAccessed), Status: testutil.TimestampRestored, EffectivePrecision: "1ns"},
+		}
+	case "darwin":
+		return []testutil.TimestampOutcome{
+			{Kind: string(source.TimestampCreated), Status: testutil.TimestampUnsupported},
+			{Kind: string(source.TimestampModified), Status: testutil.TimestampRestored, EffectivePrecision: "1us"},
+			{Kind: string(source.TimestampAccessed), Status: testutil.TimestampRestored, EffectivePrecision: "1us"},
+		}
+	default:
+		return []testutil.TimestampOutcome{
+			{Kind: string(source.TimestampCreated), Status: testutil.TimestampUnsupported},
+			{Kind: string(source.TimestampModified), Status: testutil.TimestampUnsupported},
+			{Kind: string(source.TimestampAccessed), Status: testutil.TimestampUnsupported},
+		}
+	}
 }
 
 func fixtureRoot(t *testing.T) string {
