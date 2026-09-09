@@ -44,11 +44,11 @@ Both recognized formats use `envelope_only` with all four capability booleans fa
 
 ## Decision: Stage schema file output before replacement
 
-Write and close a same-directory temporary file before committing it to the selected destination. Refuse an existing path without `--force`; with force, move an existing destination to a same-directory backup, install the completed temporary file, restore the backup on commit failure, then remove the backup after success.
+Write and close a same-directory temporary file before committing it to the selected destination. Refuse an existing path without `--force`; with force, replace the existing regular file with the completed temporary file in one same-directory rename operation. A failed commit leaves the destination in place, and the uncommitted temporary file is removed.
 
-**Rationale**: The requested payload is fixed and small, but explicit overwrite must not turn a failed write into a destroyed prior file. Same-directory moves avoid cross-volume rename failures.
+**Rationale**: The requested payload is fixed and small, but explicit overwrite must not turn a failed write into a destroyed prior file. A single replacement operation avoids the race introduced by first moving the prior destination to a disclosed or undisclosed backup path.
 
-**Alternatives considered**: Direct truncating writes were rejected because they can corrupt an existing destination on failure. Platform-specific replacement APIs were rejected as unnecessary expansion for this slice.
+**Alternatives considered**: Direct truncating writes were rejected because they can corrupt an existing destination on failure. A backup-and-rollback sequence was rejected after review because another process can occupy the destination between the two renames and prevent restoration of the prior file.
 
 ## Decision: Treat output-precondition failures separately from runtime I/O
 

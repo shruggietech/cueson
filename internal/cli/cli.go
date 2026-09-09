@@ -68,14 +68,6 @@ func (err *outputPreconditionError) Error() string {
 	return err.message
 }
 
-type outputCleanupWarning struct {
-	message string
-}
-
-func (warning *outputCleanupWarning) Error() string {
-	return warning.message
-}
-
 type diagnosticLevel uint8
 
 const (
@@ -209,11 +201,6 @@ func runSchema(options schemaOptions, stdout, stderr io.Writer, diagnostics diag
 
 func handleSchemaFileResult(err error, stderr io.Writer, diagnostics diagnosticWriter) int {
 	if err != nil {
-		var cleanupWarning *outputCleanupWarning
-		if errors.As(err, &cleanupWarning) {
-			diagnostics.write(diagnosticWarning, cleanupWarning.Error())
-			return ExitSuccess
-		}
 		var precondition *outputPreconditionError
 		if errors.As(err, &precondition) {
 			diagnostics.write(diagnosticError, precondition.Error())
@@ -395,6 +382,10 @@ func createSchemaFile(path string, payload []byte) (result error) {
 }
 
 func replaceSchemaFile(path string, payload []byte) (result error) {
+	return replaceSchemaFileUsing(path, payload, os.Rename)
+}
+
+func replaceSchemaFileUsing(path string, payload []byte, commit func(string, string) error) (result error) {
 	directory := filepath.Dir(path)
 	base := filepath.Base(path)
 	temporary, err := os.CreateTemp(directory, "."+base+".tmp-*")
@@ -419,32 +410,10 @@ func replaceSchemaFile(path string, payload []byte) (result error) {
 		return err
 	}
 
-	backup, err := os.CreateTemp(directory, "."+base+".bak-*")
-	if err != nil {
-		return err
-	}
-	backupPath := backup.Name()
-	if err := backup.Close(); err != nil {
-		_ = os.Remove(backupPath)
-		return err
-	}
-	if err := os.Remove(backupPath); err != nil {
-		return err
-	}
-	if err := os.Rename(path, backupPath); err != nil {
-		return err
-	}
-	if err := os.Rename(temporaryPath, path); err != nil {
-		restoreErr := os.Rename(backupPath, path)
-		if restoreErr != nil {
-			return errors.Join(err, fmt.Errorf("restore prior output: %w", restoreErr))
-		}
+	if err := commit(temporaryPath, path); err != nil {
 		return err
 	}
 	temporaryPath = ""
-	if err := os.Remove(backupPath); err != nil {
-		return &outputCleanupWarning{message: fmt.Sprintf("schema was written to %q, but prior-output backup %q could not be removed: %v", path, backupPath, err)}
-	}
 	return nil
 }
 

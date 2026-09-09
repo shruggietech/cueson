@@ -162,3 +162,10 @@ Task T018: Record the S003 schema foundation in CHANGELOG.md.
 
 - [X] T020 Reject RFC 3339 timestamp fractions that exceed the `unix_ns` representation and add regression coverage in `internal/model/model.go` and `internal/model/model_test.go`
 - [X] T021 Treat post-commit backup cleanup as a surfaced warning rather than a failed replacement and add status regression coverage in `internal/cli/cli.go` and `internal/cli/cli_test.go`
+
+## Phase 8: Final Review Remediation
+
+**Purpose**: Resolve verified second-round review findings without requesting another automated review.
+
+- [X] T022 Replace the rollback-prone backup sequence with one same-directory replacement commit and verify that commit failure preserves the destination in `internal/cli/cli.go` and `internal/cli/cli_test.go`
+- [X] T023 Correct implemented-capability claims for restoration, decoded source integrity, and Unicode collision enforcement in `docs/schema.md`, `CHANGELOG.md`, and the S003 decision artifacts

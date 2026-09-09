@@ -21,9 +21,7 @@ Missing output values, extra operands, unknown options, `--version` combined wit
 
 ## Runtime failures
 
-Canceled execution, stdout failure, temporary-file creation or write failure, close failure, and replacement commit failure write an error to stderr, avoid success output, and return 1. A failed forced replacement retains or restores the prior destination.
-
-Failure to remove a backup after the replacement has already committed produces a warning and returns 0 because the requested destination contains the complete schema; the warning identifies the retained backup for operator cleanup.
+Canceled execution, stdout failure, temporary-file creation or write failure, close failure, and replacement commit failure write an error to stderr, avoid success output, and return 1. Forced replacement commits a completed same-directory temporary file in one rename operation, so a failed commit leaves the prior destination in place without a rollback window.
 
 ## Help truth
 

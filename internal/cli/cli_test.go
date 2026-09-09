@@ -273,17 +273,42 @@ func TestRunSchemaRuntimeFailures(t *testing.T) {
 	}
 }
 
-func TestSchemaOutputCleanupWarningIsSuccessful(t *testing.T) {
+func TestReplaceSchemaFileCommitFailurePreservesDestination(t *testing.T) {
 	t.Parallel()
 
-	var stderr bytes.Buffer
-	diagnostics := diagnosticWriter{writer: &stderr}
-	status := handleSchemaFileResult(&outputCleanupWarning{message: "schema written; cleanup pending"}, &stderr, diagnostics)
-	if status != ExitSuccess {
-		t.Errorf("handleSchemaFileResult() status = %d, want %d", status, ExitSuccess)
+	directory := t.TempDir()
+	output := filepath.Join(directory, "cueson.schema.json")
+	before := []byte("preserve me")
+	if err := os.WriteFile(output, before, 0o600); err != nil {
+		t.Fatal(err)
 	}
-	if got := stderr.String(); !strings.Contains(got, "warning: schema written; cleanup pending") {
-		t.Errorf("handleSchemaFileResult() stderr = %q, want cleanup warning", got)
+
+	commitFailure := errors.New("commit failed")
+	err := replaceSchemaFileUsing(output, schema.Bytes(), func(temporaryPath, destinationPath string) error {
+		if destinationPath != output {
+			t.Fatalf("commit destination = %q, want %q", destinationPath, output)
+		}
+		if temporaryInfo, statErr := os.Stat(temporaryPath); statErr != nil || !temporaryInfo.Mode().IsRegular() {
+			t.Fatalf("temporary output is not a regular file: info = %v, error = %v", temporaryInfo, statErr)
+		}
+		got, readErr := os.ReadFile(destinationPath)
+		if readErr != nil || !bytes.Equal(got, before) {
+			t.Fatalf("destination changed before commit: bytes = %q, error = %v", got, readErr)
+		}
+		return commitFailure
+	})
+	if !errors.Is(err, commitFailure) {
+		t.Fatalf("replaceSchemaFileUsing() error = %v, want commit failure", err)
+	}
+	if got, err := os.ReadFile(output); err != nil || !bytes.Equal(got, before) {
+		t.Fatalf("failed replacement changed destination: bytes = %q, error = %v", got, err)
+	}
+	entries, err := os.ReadDir(directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(entries) != 1 || entries[0].Name() != filepath.Base(output) {
+		t.Fatalf("failed replacement left temporary entries: %v", entries)
 	}
 }
 
