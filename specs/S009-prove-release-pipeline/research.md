@@ -38,7 +38,7 @@
 
 ## Decision: Separate structural matrix checks from host-compatible execution
 
-**Rationale:** One host cannot execute every cross-compiled binary. The verifier validates all six binaries structurally and uses Go build information for target and revision evidence, while executing `cueson version` and `cueson schema --version` only for the current host's compatible archive. Hosted Ubuntu proves Linux amd64; the foreground Windows run proves Windows amd64.
+**Rationale:** One host cannot execute every cross-compiled binary. The verifier validates all six binaries structurally, requires the release-version marker consumed by the public version surface, and uses Go build information for target and revision evidence, while executing `cueson version` and `cueson schema --version` only for the current host's compatible archive. Hosted Ubuntu proves Linux amd64; the foreground Windows run proves Windows amd64.
 
 **Alternatives considered:** Emulation was rejected as disproportionate and a new trusted dependency. Skipping all execution was rejected because public CLI surfaces must be proven from a packaged binary on compatible hosts.
 

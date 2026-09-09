@@ -30,7 +30,7 @@ builds:
       - -trimpath
       - -buildvcs=true
     ldflags:
-      - -s -w -X github.com/shruggietech/cueson/internal/version.current={{ .Version }}
+      - -s -w -X github.com/shruggietech/cueson/internal/version.releaseOverride=cueson-release-version:{{ .Version }}
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:

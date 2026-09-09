@@ -21,7 +21,10 @@ import (
 	"strings"
 )
 
-const evidenceFilename = "release-evidence.json"
+const (
+	evidenceFilename          = "release-evidence.json"
+	binaryVersionMarkerPrefix = "cueson-release-version:"
+)
 
 var (
 	commitPattern           = regexp.MustCompile(`^[0-9a-f]{40}$`)
@@ -195,7 +198,7 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 		if err != nil {
 			return evidence, fmt.Errorf("inspect %s: %w", target.Archive, err)
 		}
-		binaryBytes, err := verifyMembers(*target, members, canonicalSchema)
+		binaryBytes, err := verifyMembers(*target, members, canonicalSchema, config.Version)
 		if err != nil {
 			return evidence, fmt.Errorf("inspect %s: %w", target.Archive, err)
 		}
@@ -301,7 +304,7 @@ func readArchive(name string, data []byte) (map[string]archiveMember, error) {
 	return members, nil
 }
 
-func verifyMembers(target Target, members map[string]archiveMember, canonicalSchema []byte) ([]byte, error) {
+func verifyMembers(target Target, members map[string]archiveMember, canonicalSchema []byte, version string) ([]byte, error) {
 	expected := map[string]bool{target.Binary: true, "cueson.schema.json": true, "LICENSE": true, "NOTICE": true}
 	if len(members) != len(expected) {
 		return nil, fmt.Errorf("archive has %d members, want %d", len(members), len(expected))
@@ -324,6 +327,9 @@ func verifyMembers(target Target, members map[string]archiveMember, canonicalSch
 	}
 	if !bytes.Contains(members[target.Binary].data, canonicalSchema) {
 		return nil, fmt.Errorf("binary does not embed the canonical schema bytes")
+	}
+	if !bytes.Contains(members[target.Binary].data, []byte(binaryVersionMarkerPrefix+version)) {
+		return nil, fmt.Errorf("binary does not contain the expected release-version marker")
 	}
 	return members[target.Binary].data, nil
 }

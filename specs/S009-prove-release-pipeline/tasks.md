@@ -118,6 +118,8 @@
 - [x] T034 Confirm issue #11 and the `cueson Delivery` item remain at Stage `In progress` with Slice `S009` and default Status unused before publication
 - [x] T035 Format the official pull-request body through `scripts/github-format`, publish it with `Closes #11`, read it back, verify rendering, and move the Project item to `PR review`
 - [ ] T036 Wait for all hosted checks and first-round third-party reviews, address every finding, request at most one `@codex review` second round only when required, and stop for the operator's final merge ritual after all checks and reviews are satisfied
+- [x] T037 [Review] Replace host-dependent Windows absolute-path detection with portable drive and UNC syntax checks in `scripts/release-verify/verify.go` and `scripts/release-verify/verify_test.go`
+- [x] T038 [Review] Bind every packaged binary's public version surface to a release-only marker and verify that marker for foreign targets in `internal/version/version.go`, `.goreleaser.yaml`, and `scripts/release-verify/verify.go`
 
 ---
 

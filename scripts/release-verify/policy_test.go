@@ -16,7 +16,7 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 
 	for _, required := range []string{
 		`version_template: "0.0.0"`, "release:", "disable: true", "CGO_ENABLED=0",
-		"github.com/shruggietech/cueson/internal/version.current={{ .Version }}",
+		"github.com/shruggietech/cueson/internal/version.releaseOverride=cueson-release-version:{{ .Version }}",
 		"cueson_{{ .Version }}_checksums.txt", "artifacts: binary", "spdx-json=$document",
 	} {
 		if !strings.Contains(config, required) {

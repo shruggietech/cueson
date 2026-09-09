@@ -59,7 +59,7 @@ goreleaser check
 goreleaser release --snapshot --clean --skip=publish
 ```
 
-The `.goreleaser.yaml` file fixes the snapshot identity to `0.0.0`, disables release publishing in configuration, closes the build matrix to six targets, normalizes artifact timestamps to the source commit, strips build paths, and injects the existing `internal/version.current` variable. GoReleaser writes only beneath ignored `dist/`.
+The `.goreleaser.yaml` file fixes the snapshot identity to `0.0.0`, disables release publishing in configuration, closes the build matrix to six targets, normalizes artifact timestamps to the source commit, strips build paths, and injects the `internal/version` release override with a verifier-readable marker consumed by the public version surface. GoReleaser writes only beneath ignored `dist/`.
 
 GoReleaser snapshot mode does not upload artifacts. `release.disable: true` is a second boundary so the checked-in configuration cannot publish even if a caller omits snapshot mode. A future public release requires a separate specification and operator authorization.
 
@@ -77,7 +77,7 @@ The verifier:
 - accepts only flat regular archive members and rejects absolute paths, traversal, links, devices, duplicates, and unexpected content;
 - compares every packaged schema byte-for-byte with `internal/schema/cueson.schema.json`;
 - requires a one-to-one lowercase SHA-256 checksum mapping for the six archives;
-- validates target, `CGO_ENABLED=0`, trimmed paths, source revision, clean VCS state, and injected version from Go build information;
+- validates target, `CGO_ENABLED=0`, trimmed paths, source revision, and clean VCS state from Go build information, then requires the release-version marker consumed by the public version surface in every target binary;
 - validates one binary-derived SPDX JSON SBOM per archive with target and source-revision identity;
 - scans names, members, binaries, GoReleaser metadata, and SBOM JSON for structural or supplied local identifiers;
 - executes only the host-compatible packaged binary and requires exact `version`, `schema --version`, and emitted-schema output;

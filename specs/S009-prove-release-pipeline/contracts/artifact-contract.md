@@ -45,11 +45,13 @@ The following values must all equal `0.0.0`:
 - requested snapshot version;
 - packaged executable `cueson version` output on a compatible host;
 - packaged executable `cueson schema --version` output on a compatible host;
-- version injected into `internal/version.current`;
+- release override marker consumed by `internal/version.String`;
 - canonical packaged schema `schema_version`;
 - canonical packaged schema version segment in `$id`.
 
 Every binary's Go build information must identify its expected target and the full source revision when the Go toolchain emits VCS settings. The revision must equal the verified checkout revision and `vcs.modified` must be false.
+
+Every target binary must contain `cueson-release-version:0.0.0`, the release override marker consumed by the public version surface. This makes the injected version independently verifiable for foreign targets that the current host cannot execute.
 
 ## Failure behavior
 

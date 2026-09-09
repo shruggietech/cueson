@@ -80,12 +80,12 @@ func TestVerifyMembers(t *testing.T) {
 	target := expectedTargets("0.0.0")[0]
 	schema := []byte(`{"schema_version":"0.0.0"}`)
 	valid := map[string]archiveMember{
-		"cueson":             {name: "cueson", mode: 0o755, data: append([]byte("binary"), schema...)},
+		"cueson":             {name: "cueson", mode: 0o755, data: append(append([]byte("binary"), schema...), []byte(binaryVersionMarkerPrefix+"0.0.0")...)},
 		"cueson.schema.json": {name: "cueson.schema.json", mode: 0o644, data: schema},
 		"LICENSE":            {name: "LICENSE", mode: 0o644, data: []byte("license")},
 		"NOTICE":             {name: "NOTICE", mode: 0o644, data: []byte("notice")},
 	}
-	if _, err := verifyMembers(target, valid, schema); err != nil {
+	if _, err := verifyMembers(target, valid, schema, "0.0.0"); err != nil {
 		t.Fatalf("valid members: %v", err)
 	}
 	tests := []struct {
@@ -98,16 +98,22 @@ func TestVerifyMembers(t *testing.T) {
 			items["cueson.schema.json"] = archiveMember{data: []byte("drift")}
 		}},
 		{"not executable", func(items map[string]archiveMember) {
-			items["cueson"] = archiveMember{mode: 0o644, data: append([]byte("binary"), schema...)}
+			items["cueson"] = archiveMember{mode: 0o644, data: valid["cueson"].data}
 		}},
 		{"schema not embedded", func(items map[string]archiveMember) {
-			items["cueson"] = archiveMember{mode: 0o755, data: []byte("binary")}
+			items["cueson"] = archiveMember{mode: 0o755, data: []byte("binary" + binaryVersionMarkerPrefix + "0.0.0")}
+		}},
+		{"version marker missing", func(items map[string]archiveMember) {
+			items["cueson"] = archiveMember{mode: 0o755, data: append([]byte("binary"), schema...)}
+		}},
+		{"version marker wrong", func(items map[string]archiveMember) {
+			items["cueson"] = archiveMember{mode: 0o755, data: append(append([]byte("binary"), schema...), []byte(binaryVersionMarkerPrefix+"0.0.1")...)}
 		}},
 	}
 	for _, test := range tests {
 		items := cloneMembers(valid)
 		test.mutate(items)
-		if _, err := verifyMembers(target, items, schema); err == nil {
+		if _, err := verifyMembers(target, items, schema, "0.0.0"); err == nil {
 			t.Errorf("%s accepted", test.name)
 		}
 	}
