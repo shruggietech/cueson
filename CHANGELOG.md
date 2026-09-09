@@ -12,10 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added the v0.0.0 architecture, Cue JSON schema, and CLI implementation baselines with their Spec Kit decision and verification artifacts.
 - Added the dependency-free Go module and first buildable `cueson` executable with truthful root help, exact `cueson version` output, stable stream and exit-code handling, global diagnostic policy, and focused tests.
 - Added the canonical Draft 2020-12 Cue JSON `0.0.0` schema, representative contract document, internal common model and semantic validation, embedded schema access, software/schema lockstep checks, and the `schema` command with explicit safe output replacement.
+- Added canonical source-integrity validation, portable canonical-caseless collision protection, rollback-safe staged restoration, capture-before-read timestamp boundaries, native Windows/Linux/macOS timestamp adapters, and the public codec-independent `restore` command.
 
 ### Changed
 
 - Replaced unavailable dynamic CI and release badges with truthful planned and unreleased state badges until those public resources exist.
+- Changed the v0.0.0 envelope capability to advertise generic exact restoration while native ingest, model-driven render, and OCR-required capabilities remain false.
 
 ### Decisions
 
@@ -28,6 +30,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-09: Treat stored basenames as default and `--output-dir` names while allowing single-asset `--output` to select a separately validated runtime path.
 - 2026-09-09: Keep bootstrap issue #1 open until the badge correction reaches and is verified on the default branch.
 - 2026-09-09: Keep `restore_supported` false throughout S003 because schema recognition and a preservation envelope do not constitute the public restoration capability owned by issue #6.
+- 2026-09-09: Set `restore_supported` true in S004 only after canonical integrity checks, complete destination planning, safe publication, rollback, and the public restore command pass together.
+- 2026-09-09: Keep hosted native Windows, Linux, and macOS execution in downstream issue #8 while S004 provides native-selectable tests, current-host Windows proof, and CGO-disabled foreign-platform compilation to avoid a circular dependency.
 
 ## [0.0.0]
 

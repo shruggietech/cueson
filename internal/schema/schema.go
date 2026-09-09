@@ -9,6 +9,7 @@ import (
 	"io"
 	"strings"
 	"sync"
+	"unicode/utf8"
 
 	jsonschema "github.com/santhosh-tekuri/jsonschema/v6"
 	"github.com/shruggietech/cueson/internal/model"
@@ -61,25 +62,96 @@ func Compiled() (*jsonschema.Schema, error) {
 
 // Validate applies JSON parsing, structural validation, and model semantics.
 func Validate(data []byte) error {
+	_, err := Decode(data)
+	return err
+}
+
+// Decode validates Cue JSON and returns its typed document.
+func Decode(data []byte) (model.Document, error) {
+	var document model.Document
+	if !utf8.Valid(data) {
+		return document, fmt.Errorf("parse Cue JSON: input is not valid UTF-8")
+	}
+	if err := validateUnicodeEscapes(data); err != nil {
+		return document, fmt.Errorf("parse Cue JSON: %w", err)
+	}
 	instance, err := decodeOne(data)
 	if err != nil {
-		return fmt.Errorf("parse Cue JSON: %w", err)
+		return document, fmt.Errorf("parse Cue JSON: %w", err)
 	}
 	contract, err := Compiled()
 	if err != nil {
-		return fmt.Errorf("compile embedded schema: %w", err)
+		return document, fmt.Errorf("compile embedded schema: %w", err)
 	}
 	if err := contract.Validate(instance); err != nil {
-		return fmt.Errorf("validate Cue JSON structure: %w", err)
+		return document, fmt.Errorf("validate Cue JSON structure: %w", err)
 	}
-	var document model.Document
 	if err := json.Unmarshal(data, &document); err != nil {
-		return fmt.Errorf("decode Cue JSON model: %w", err)
+		return document, fmt.Errorf("decode Cue JSON model: %w", err)
 	}
 	if err := document.Validate(); err != nil {
-		return fmt.Errorf("validate Cue JSON semantics: %w", err)
+		return document, fmt.Errorf("validate Cue JSON semantics: %w", err)
+	}
+	return document, nil
+}
+
+func validateUnicodeEscapes(data []byte) error {
+	inString := false
+	for index := 0; index < len(data); index++ {
+		switch data[index] {
+		case '"':
+			inString = !inString
+		case '\\':
+			if !inString || index+1 >= len(data) {
+				continue
+			}
+			if data[index+1] != 'u' {
+				index++
+				continue
+			}
+			value, valid := decodeHexEscape(data, index+2)
+			if !valid {
+				continue
+			}
+			switch {
+			case value >= 0xd800 && value <= 0xdbff:
+				if index+12 > len(data) || data[index+6] != '\\' || data[index+7] != 'u' {
+					return fmt.Errorf("unpaired high-surrogate Unicode escape at byte %d", index)
+				}
+				low, lowValid := decodeHexEscape(data, index+8)
+				if !lowValid || low < 0xdc00 || low > 0xdfff {
+					return fmt.Errorf("unpaired high-surrogate Unicode escape at byte %d", index)
+				}
+				index += 11
+			case value >= 0xdc00 && value <= 0xdfff:
+				return fmt.Errorf("unpaired low-surrogate Unicode escape at byte %d", index)
+			default:
+				index += 5
+			}
+		}
 	}
 	return nil
+}
+
+func decodeHexEscape(data []byte, start int) (uint16, bool) {
+	if start+4 > len(data) {
+		return 0, false
+	}
+	var value uint16
+	for _, character := range data[start : start+4] {
+		value <<= 4
+		switch {
+		case character >= '0' && character <= '9':
+			value += uint16(character - '0')
+		case character >= 'a' && character <= 'f':
+			value += uint16(character-'a') + 10
+		case character >= 'A' && character <= 'F':
+			value += uint16(character-'A') + 10
+		default:
+			return 0, false
+		}
+	}
+	return value, true
 }
 
 // CheckLockstep verifies that official software and schema versions match.

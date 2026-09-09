@@ -7,11 +7,11 @@
   <a href="docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-repository-58A6FF"></a>
 </p>
 
-**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial target formats:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** Pre-release schema foundation
+**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial target formats:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** Pre-release source foundation
 
 Cueson will convert subtitle and caption formats into and out of a canonical, versioned JSON representation called Cue JSON. Its common cue model is designed for direct use by search, analysis, automation, and AI systems, while a source envelope preserves the original assets for byte-exact restoration.
 
-The repository contains a buildable `cueson` executable and the [canonical Draft 2020-12 Cue JSON `0.0.0` schema](internal/schema/cueson.schema.json). The executable provides truthful help, `cueson version`, and embedded schema retrieval; it does not yet provide a public release, source restoration, or native subtitle-format support.
+The repository contains a buildable `cueson` executable and the [canonical Draft 2020-12 Cue JSON `0.0.0` schema](internal/schema/cueson.schema.json). The executable provides truthful help, `cueson version`, embedded schema retrieval, and codec-independent exact restoration from valid source envelopes. It does not yet provide a public release or native subtitle-format ingest and render support.
 
 ## Project direction
 
@@ -34,7 +34,10 @@ go run ./cmd/cueson --help
 go run ./cmd/cueson version
 go run ./cmd/cueson schema --version
 go run ./cmd/cueson schema
+go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
+
+The restore command validates canonical base64, byte length, SHA-256, portable names, the complete destination plan, and overwrite safety before accepting output. Timestamp restoration is platform-aware; use `--strict-metadata` to require reproducible captured timestamps or `--no-metadata` to skip metadata application. Hosted CI remains planned in issue [#8](https://github.com/shruggietech/cueson/issues/8).
 
 Run the product tests and build:
 

@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/shruggietech/cueson/internal/schema"
+	"github.com/shruggietech/cueson/internal/source"
 	"github.com/shruggietech/cueson/internal/version"
 )
 
@@ -35,6 +36,17 @@ type schemaOptions struct {
 	force     bool
 }
 
+type restoreOptions struct {
+	input          string
+	output         string
+	outputSet      bool
+	outputDir      string
+	outputDirSet   bool
+	force          bool
+	strictMetadata bool
+	noMetadata     bool
+}
+
 type helpTarget uint8
 
 const (
@@ -42,6 +54,7 @@ const (
 	rootHelp
 	versionHelp
 	schemaHelp
+	restoreHelp
 )
 
 type invocation struct {
@@ -49,6 +62,7 @@ type invocation struct {
 	help    helpTarget
 	options globalOptions
 	schema  schemaOptions
+	restore restoreOptions
 }
 
 type invocationError struct {
@@ -92,6 +106,7 @@ Usage:
 Commands:
   version  Print the Cueson executable version.
   schema   Print or save the embedded Cue JSON schema.
+  restore  Restore exact source-envelope bytes.
 
 Global options:
   -q, --quiet  Suppress informational and success diagnostics.
@@ -105,6 +120,7 @@ Examples:
   cueson version
   cueson schema --version
   cueson schema --output cueson.schema.json
+  cueson restore --output restored.srt document.cueson.json
 `
 
 const versionHelpText = `Print the Cueson executable version.
@@ -134,6 +150,26 @@ Examples:
   cueson schema --output cueson.schema.json --force
 `
 
+const restoreHelpText = `Restore exact source-envelope bytes without a format codec.
+
+Usage:
+  cueson [global options] restore [options] INPUT
+
+Options:
+  -o, --output PATH       Restore one asset to a literal path.
+  --output-dir DIR        Restore all assets beneath an existing directory.
+  -f, --force             Replace approved existing regular files.
+  --strict-metadata       Require every captured timestamp to be restored.
+  --no-metadata           Skip timestamp restoration.
+  -h, --help              Show restore help.
+
+Successful restoration writes no stdout payload. Warnings and errors use stderr.
+Multi-asset documents require --output-dir. Metadata modes are mutually exclusive.
+
+Example:
+  cueson restore --output restored.srt document.cueson.json
+`
+
 const rootUsageText = `Usage:
   cueson [global options] <command>
 `
@@ -144,6 +180,10 @@ const versionUsageText = `Usage:
 
 const schemaUsageText = `Usage:
   cueson [global options] schema [--version | --output PATH [--force]]
+`
+
+const restoreUsageText = `Usage:
+  cueson [global options] restore [--output PATH | --output-dir DIR] [--force] [--strict-metadata | --no-metadata] INPUT
 `
 
 // Run executes one Cueson command against the supplied process streams.
@@ -165,6 +205,8 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return writeStdout(stdout, diagnostics, []byte(versionHelpText))
 	case schemaHelp:
 		return writeStdout(stdout, diagnostics, []byte(schemaHelpText))
+	case restoreHelp:
+		return writeStdout(stdout, diagnostics, []byte(restoreHelpText))
 	}
 
 	select {
@@ -179,10 +221,61 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return writeStdout(stdout, diagnostics, []byte(version.String()+"\n"))
 	case "schema":
 		return runSchema(parsed.schema, stdout, stderr, diagnostics)
+	case "restore":
+		return runRestore(ctx, parsed.restore, stderr, diagnostics)
 	default:
 		diagnostics.write(diagnosticError, "internal command dispatch failure")
 		return ExitRuntimeFailure
 	}
+}
+
+func runRestore(ctx context.Context, options restoreOptions, stderr io.Writer, diagnostics diagnosticWriter) int {
+	inputInfo, err := os.Stat(options.input)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			diagnostics.write(diagnosticError, fmt.Sprintf("input %q does not exist", options.input))
+			writeUsage(stderr, restoreHelp)
+			return ExitInvocation
+		}
+		diagnostics.write(diagnosticError, fmt.Sprintf("read Cue JSON %q: %v", options.input, err))
+		return ExitRuntimeFailure
+	}
+	if !inputInfo.Mode().IsRegular() {
+		diagnostics.write(diagnosticError, fmt.Sprintf("input %q is not a regular file", options.input))
+		writeUsage(stderr, restoreHelp)
+		return ExitInvocation
+	}
+	payload, err := os.ReadFile(options.input)
+	if err != nil {
+		diagnostics.write(diagnosticError, fmt.Sprintf("read Cue JSON %q: %v", options.input, err))
+		return ExitRuntimeFailure
+	}
+	document, err := schema.Decode(payload)
+	if err != nil {
+		diagnostics.write(diagnosticError, err.Error())
+		return ExitRuntimeFailure
+	}
+	metadataMode := source.MetadataDefault
+	if options.strictMetadata {
+		metadataMode = source.MetadataStrict
+	} else if options.noMetadata {
+		metadataMode = source.MetadataNone
+	}
+	report, err := source.Restore(ctx, document, source.RestoreOptions{Output: options.output, OutputDir: options.outputDir, Force: options.force, Metadata: metadataMode})
+	if err != nil {
+		var precondition *source.PreconditionError
+		if errors.As(err, &precondition) {
+			diagnostics.write(diagnosticError, precondition.Error())
+			writeUsage(stderr, restoreHelp)
+			return ExitInvocation
+		}
+		diagnostics.write(diagnosticError, fmt.Sprintf("restore: %v", err))
+		return ExitRuntimeFailure
+	}
+	for _, warning := range report.Warnings {
+		diagnostics.write(diagnosticWarning, warning)
+	}
+	return ExitSuccess
 }
 
 func runSchema(options schemaOptions, stdout, stderr io.Writer, diagnostics diagnosticWriter) int {
@@ -285,6 +378,65 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 					continue
 				}
 			}
+			if parsed.command == "restore" {
+				switch arg {
+				case "-f", "--force":
+					parsed.restore.force = true
+					continue
+				case "--strict-metadata":
+					parsed.restore.strictMetadata = true
+					continue
+				case "--no-metadata":
+					parsed.restore.noMetadata = true
+					continue
+				case "-o", "--output":
+					if parsed.restore.outputSet {
+						return parsed, restoreInvocationError("--output may be specified only once")
+					}
+					if index+1 >= len(args) {
+						return parsed, restoreInvocationError("--output requires a path")
+					}
+					index++
+					parsed.restore.output, parsed.restore.outputSet = args[index], true
+					if parsed.restore.output == "" {
+						return parsed, restoreInvocationError("--output requires a path")
+					}
+					continue
+				case "--output-dir":
+					if parsed.restore.outputDirSet {
+						return parsed, restoreInvocationError("--output-dir may be specified only once")
+					}
+					if index+1 >= len(args) {
+						return parsed, restoreInvocationError("--output-dir requires a path")
+					}
+					index++
+					parsed.restore.outputDir, parsed.restore.outputDirSet = args[index], true
+					if parsed.restore.outputDir == "" {
+						return parsed, restoreInvocationError("--output-dir requires a path")
+					}
+					continue
+				}
+				if strings.HasPrefix(arg, "--output=") {
+					if parsed.restore.outputSet {
+						return parsed, restoreInvocationError("--output may be specified only once")
+					}
+					parsed.restore.output, parsed.restore.outputSet = strings.TrimPrefix(arg, "--output="), true
+					if parsed.restore.output == "" {
+						return parsed, restoreInvocationError("--output requires a path")
+					}
+					continue
+				}
+				if strings.HasPrefix(arg, "--output-dir=") {
+					if parsed.restore.outputDirSet {
+						return parsed, restoreInvocationError("--output-dir may be specified only once")
+					}
+					parsed.restore.outputDir, parsed.restore.outputDirSet = strings.TrimPrefix(arg, "--output-dir="), true
+					if parsed.restore.outputDir == "" {
+						return parsed, restoreInvocationError("--output-dir requires a path")
+					}
+					continue
+				}
+			}
 
 			if strings.HasPrefix(arg, "-") {
 				return parsed, &invocationError{message: fmt.Sprintf("unknown option %q", arg), usage: usageForCommand(parsed.command)}
@@ -293,13 +445,20 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 
 		if parsed.command == "" {
 			parsed.command = arg
-			if parsed.command != "version" && parsed.command != "schema" {
+			if parsed.command != "version" && parsed.command != "schema" && parsed.command != "restore" {
 				return parsed, &invocationError{message: fmt.Sprintf("unknown command %q", parsed.command), usage: rootHelp}
 			}
 			continue
 		}
 
-		return parsed, &invocationError{message: fmt.Sprintf("%s accepts no arguments", parsed.command), usage: usageForCommand(parsed.command)}
+		if parsed.command == "restore" && parsed.restore.input == "" {
+			parsed.restore.input = arg
+			continue
+		}
+		if parsed.command != "restore" {
+			return parsed, &invocationError{message: fmt.Sprintf("%s accepts no arguments", parsed.command), usage: usageForCommand(parsed.command)}
+		}
+		return parsed, &invocationError{message: fmt.Sprintf("%s accepts no additional arguments", parsed.command), usage: usageForCommand(parsed.command)}
 	}
 
 	if parsed.command == "" {
@@ -314,11 +473,26 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 			return parsed, schemaInvocationError("--force requires --output")
 		}
 	}
+	if parsed.command == "restore" {
+		if parsed.restore.input == "" {
+			return parsed, restoreInvocationError("restore requires one INPUT path")
+		}
+		if parsed.restore.outputSet && parsed.restore.outputDirSet {
+			return parsed, restoreInvocationError("--output and --output-dir are mutually exclusive")
+		}
+		if parsed.restore.strictMetadata && parsed.restore.noMetadata {
+			return parsed, restoreInvocationError("--strict-metadata and --no-metadata are mutually exclusive")
+		}
+	}
 	return parsed, nil
 }
 
 func schemaInvocationError(message string) *invocationError {
 	return &invocationError{message: message, usage: schemaHelp}
+}
+
+func restoreInvocationError(message string) *invocationError {
+	return &invocationError{message: message, usage: restoreHelp}
 }
 
 func usageForCommand(command string) helpTarget {
@@ -327,6 +501,8 @@ func usageForCommand(command string) helpTarget {
 		return versionHelp
 	case "schema":
 		return schemaHelp
+	case "restore":
+		return restoreHelp
 	default:
 		return rootHelp
 	}
@@ -338,6 +514,8 @@ func writeUsage(writer io.Writer, target helpTarget) {
 		fmt.Fprint(writer, versionUsageText)
 	case schemaHelp:
 		fmt.Fprint(writer, schemaUsageText)
+	case restoreHelp:
+		fmt.Fprint(writer, restoreUsageText)
 	default:
 		fmt.Fprint(writer, rootUsageText)
 	}

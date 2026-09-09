@@ -6,7 +6,7 @@
     "status": "envelope_only",
     "ingest_supported": false,
     "render_supported": false,
-    "restore_supported": false,
+    "restore_supported": true,
     "ocr_required_for_semantic_output": false
   },
   "producer": {
