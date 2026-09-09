@@ -64,6 +64,7 @@ jobs:
           cache-dependency-path: |
             go.sum
             scripts/github-format/go.mod
+            scripts/pr-policy/go.mod
       - name: Reject controlled failure probe
         shell: bash
         run: |
@@ -75,6 +76,8 @@ jobs:
         run: go run ./scripts/github-format/main.go .
       - name: Test publication formatter
         run: go -C scripts/github-format test -count=1 ./...
+      - name: Test pull-request policy automation
+        run: go -C scripts/pr-policy test -count=1 ./...
       - name: Check repository whitespace
         shell: bash
         run: |

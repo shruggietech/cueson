@@ -90,6 +90,18 @@ Staticcheck, govulncheck, and actionlint use explicit Go module versions. Extern
 
 The stable check names are recorded in `specs/S006-establish-ci-gates/contracts/check-contract.md` for later repository protection work. S006 does not create empty gates for native SRT/WebVTT parsing, model-driven rendering, cross-format conversion, Codex-review automation, release packaging, or repository settings. Those names appear only after their owning implementation exists.
 
+## Pull-request policy automation
+
+The standalone `scripts/pr-policy` module owns deterministic issue-link and Codex-review decisions without entering the shipped product module. GitHub's fully paginated closing-issue references are authoritative for link syntax and target resolution. Normal pull requests require at least one resolved closing issue or an exact pull-request-specific exception from the configured human operator. Dependabot receives an explicit issue-link exception and remains excluded from automatic Codex review.
+
+The policy publishes `Cueson PR policy / Issue link` and `Cueson PR policy / Codex review` commit statuses against the pull request's current head. Draft and acknowledged first reviews remain pending. A current-head terminal Codex result passes only when its thumbs-up and summary are attributable to the configured integration and no actionable finding remains unresolved. Unknown, failed, incomplete, stale, contradictory, or partially paginated evidence fails closed with a corrective description.
+
+Round one remains the native Codex integration's responsibility. Automation may issue one marked `@codex review` request only after first-round findings are resolved. When remediation changes the head, the reviewed finding commit must be an ancestor of the newer current head and every configured S006 CI gate must pass on that head. Only an exact GitHub Actions-authored marker or configured-operator request establishes the second-round boundary; marker-shaped comments from other actors fail closed. An operator request must cite one backticked commit prefix that resolves uniquely in the pull-request head history, use its latest edit time as the boundary, and acquire an authenticated durable reservation when first observed, so it cannot be silently rebound or forgotten after a later edit, deletion, or push. An authenticated marked or operator-issued second request permanently consumes the automated allowance. Second-round findings, failure, or later head changes remain blocking and never create a third automatic request.
+
+The `Pull request policy` workflow runs only trusted `main` code through `pull_request_target`, pull-request conversation comments, and a non-hourly recovery schedule. It never checks out a pull-request head or merge ref. Its token grants only repository, pull-request, and check-result read access plus issue-comment and commit-status write authority; checkout credentials and dependency caches are disabled. One non-canceling global concurrency group serializes mutations, while complete evidence refetches and mutation read-back make retries idempotent. Reaction-only completion and review-thread resolution converge through scheduled recovery, and the configured operator can request immediate recovery with `/cueson reconcile` on the pull request.
+
+Because GitHub does not activate a newly introduced trusted-default-branch workflow for its own pull request, S007 verifies that pull request with a read-only live adapter audit and fixture-backed mutation tests. The first eligible pull request after merge must prove the hosted status source and Actions-bot comment behavior before issue #10 makes either policy context required.
+
 ## Work ownership after ratification
 
 | Issue | Implementation ownership |
@@ -99,5 +111,6 @@ The stable check names are recorded in `specs/S006-establish-ci-gates/contracts/
 | [#6](https://github.com/shruggietech/cueson/issues/6) | Source integrity, capture-before-read metadata, safe generic exact restoration, public `restore` command, and platform timestamp adapters/results |
 | [#7](https://github.com/shruggietech/cueson/issues/7) | Fixture provenance, golden helpers, conformance infrastructure, malformed corpus conventions, and fuzz boundaries |
 | [#8](https://github.com/shruggietech/cueson/issues/8) | Stable CI, native Windows/macOS/Linux execution, pure-Go cross-build proof, pinned analysis, vulnerability scanning, and independent CodeQL |
+| [#9](https://github.com/shruggietech/cueson/issues/9) | Issue-linked pull-request policy, native Codex review reconciliation, one bounded second-round request, and trusted recovery automation |
 
 SRT and WebVTT codecs, model-driven render, and cross-format conversion are deliberately deferred to later implementation slices. This document does not authorize placeholder commands or premature capability claims.

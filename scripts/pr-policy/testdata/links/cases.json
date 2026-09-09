@@ -1,0 +1,38 @@
+[
+  {
+    "name": "github-resolved-local-reference",
+    "scenario": "local",
+    "expected_state": "success",
+    "request_second": false
+  },
+  {
+    "name": "github-resolved-cross-repository-reference",
+    "scenario": "cross-repository",
+    "expected_state": "success",
+    "request_second": false
+  },
+  {
+    "name": "no-github-resolved-reference",
+    "scenario": "missing",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "configured-operator-exception",
+    "scenario": "operator-exception",
+    "expected_state": "success",
+    "request_second": false
+  },
+  {
+    "name": "untrusted-exception",
+    "scenario": "untrusted-exception",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "dependabot-exception",
+    "scenario": "dependabot",
+    "expected_state": "success",
+    "request_second": false
+  }
+]
