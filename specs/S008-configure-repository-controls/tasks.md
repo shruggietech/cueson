@@ -71,7 +71,7 @@
 - [x] T022 [US2] Enable private vulnerability reporting when supported, immediately read its state back, and record any limitation in docs/repository-controls.md
 - [x] T023 [US2] Preserve the versioned CodeQL workflow and read back that default setup remains unconfigured with current CodeQL checks healthy in docs/repository-controls.md
 - [x] T024 [US2] Make squash the only merge method, keep auto-merge disabled, enable automatic merged-head deletion, immediately read repository settings back, and record them in docs/repository-controls.md
-- [x] T025 [US2] Dispatch a new S008 head update under the reduced defaults and require all current-head hosted workflows to finish successfully, recording results in docs/repository-controls.md
+- [x] T025 [US2] Dispatch a new S008 head update under the reduced defaults, require every S006 CI and CodeQL context to finish successfully, and record the trusted-base PR-policy bootstrap limitation in docs/repository-controls.md
 
 **Checkpoint**: Secure repository defaults are verified independently, and existing workflows still operate with their explicit minimum permissions.
 

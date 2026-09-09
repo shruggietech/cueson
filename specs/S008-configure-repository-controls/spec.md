@@ -101,7 +101,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 - **FR-003**: S008 MUST keep squash merge enabled and MUST disable merge-commit and rebase-merge methods so squash is the only normal merge strategy.
 - **FR-004**: S008 MUST enable automatic merged-head branch deletion and MUST keep automatic merge disabled.
 - **FR-005**: Default workflow permissions MUST be reduced to read access and workflows MUST remain unable to approve pull-request reviews by default.
-- **FR-006**: Existing workflows MUST retain only their explicit minimum permissions and MUST continue to complete after the repository default is reduced.
+- **FR-006**: Existing CI and CodeQL workflows MUST retain only their explicit minimum permissions and MUST continue to complete after the repository default is reduced. A trusted-base policy workflow whose adapter fix is introduced by S008 MUST remain non-required and have its pre-merge activation limitation recorded rather than execute pull-request code with administrative credentials.
 - **FR-007**: Applicable dependency graph, vulnerability alert, automated dependency security update, code-scanning, secret-scanning, secret push-protection, and private vulnerability reporting features MUST be enabled when supported.
 - **FR-008**: Any unavailable or externally constrained security feature MUST be recorded with the authoritative limitation response and MUST NOT be represented as enabled.
 - **FR-009**: S008 MUST NOT replace, edit, disable, or widen the bypass of the existing organization-owned default-branch ruleset.
@@ -141,7 +141,7 @@ A maintainer reviewing the pull request can reconstruct what changed, why it cha
 - **SC-004**: The effective default-branch policy blocks deletion, non-fast-forward updates, direct unprivileged updates, unresolved conversations, and every selected missing or failing required check.
 - **SC-005**: Exactly one recovery bypass path remains for the configured operator authority, with no S008-created bypass for contributors, automation, or unrelated teams.
 - **SC-006**: 100% of requested security capabilities are either read back as enabled or recorded with a specific authoritative limitation.
-- **SC-007**: Existing CI, CodeQL, and pull-request policy workflows complete under the reduced default workflow permission without acquiring broader explicit permission.
+- **SC-007**: Existing CI and CodeQL workflows complete on the final S008 head under the reduced default workflow permission without acquiring broader explicit permission, while the trusted-base pull-request policy records its S008 adapter fix and remains non-required until post-merge activation can exercise that trusted code.
 - **SC-008**: The final repository evidence contains zero mutations to organization-owned rules, unrelated repositories, release state, tags, schemas, or production domain configuration.
 - **SC-009**: The first mutation of each PR-policy context reads back successfully in the same run when GitHub returns its documented commit-status representation.
 
