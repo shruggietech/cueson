@@ -31,6 +31,7 @@ The declaration describes official Cueson capability for the document's format. 
 - Cues expose normalized timing, `raw_text`, `plain_text`, logical lines, speakers, tokens, OCR observations, placement, and format-native data.
 - Every cue contains an `ocr_observations` array, which may be empty.
 - Each non-empty OCR observation is independently identified and provenanced, including its engine identity and a resolvable source reference; if `derived` is retained, it is always true.
-- The multi-asset source envelope preserves ordered assets, safe basenames, exact byte lengths, SHA-256 identities, original bytes, and truthful timestamp metadata.
+- The multi-asset source envelope preserves ordered assets, portable safe basenames, exact byte lengths, SHA-256 identities, original bytes, and truthful timestamp metadata.
+- Portable safe basenames reject path syntax, control characters, Windows-invalid punctuation and trailing characters, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when followed by extensions.
 - Original filesystem paths and machine identifiers are prohibited.
 - Cueson-owned keys use lowercase `snake_case`; JSON Schema keywords keep standards-defined spelling.

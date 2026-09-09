@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-09
 
-**Status**: Complete (local, awaiting publication approval)
+**Status**: Complete (round-one findings resolved and verified)
 
 **Input**: User description: "Using Spec Kit and the shruggie-speckit autopilot protocol, make the README badges truthful, complete bootstrap bookkeeping, and ratify the v0.0.0 architecture, schema, CLI, and format boundaries without shipped product implementation; halt before push and public pull request."
 
@@ -64,6 +64,7 @@ As a project operator, I can see that the bootstrap is closure-ready and the con
 - A shipped command receives a schema-recognized format for which the required codec is absent: return a runtime capability error that distinguishes this case from an unknown format.
 - A third-party producer emits a conforming document: its producer version may differ from the schema version it targets.
 - A local task completes but its branch is not public: Project and issue wording must not claim a pull request or remote branch exists.
+- A basename is harmless on the producing platform but maps to a Windows device or alternate data stream: reject it through the portable schema contract before restoration constructs any output path.
 
 ## Requirements *(mandatory)*
 
@@ -77,7 +78,7 @@ As a project operator, I can see that the bootstrap is closure-ready and the con
 - **FR-006**: The schema baseline MUST use `subrip` and `webvtt` as the initial format keys and MUST define the completed v0.0.0 milestone capability state as `envelope_only`, with native ingest and render unsupported and exact restoration supported for valid source envelopes.
 - **FR-007**: The schema baseline MUST define `format_support` as the official Cueson release capability declaration for a document's format, not as a claim about arbitrary third-party producer capabilities.
 - **FR-008**: The schema baseline MUST require each cue to contain an `ocr_observations` array, allowing zero or more independently provenanced derived observations without replacing native cue text or source assets.
-- **FR-009**: The schema baseline MUST preserve a multi-asset source envelope, safe basenames, exact byte length, SHA-256 identity, original bytes, and truthful timestamp provenance without recording an original filesystem path or machine identifier.
+- **FR-009**: The schema baseline MUST preserve a multi-asset source envelope, portable safe basenames, exact byte length, SHA-256 identity, original bytes, and truthful timestamp provenance without recording an original filesystem path or machine identifier; basename validation MUST reject Windows reserved device names and NTFS alternate-data-stream syntax on every platform before restoration constructs an output path.
 - **FR-010**: The schema baseline MUST preserve lowercase `snake_case` for Cueson-owned keys while retaining standards-defined JSON Schema keyword spelling.
 - **FR-011**: The CLI baseline MUST expose only commands implemented by the current executable in command listings and help; at the first executable foundation this means help and `version`, with `schema` added by the schema slice and generic `restore` added by the source-foundation slice.
 - **FR-012**: The CLI baseline MUST assign exit code `2` to invalid invocation or environment preconditions, including an unregistered command, and exit code `1` to runtime capability failures, including a shipped command that lacks a required codec.
@@ -90,6 +91,7 @@ As a project operator, I can see that the bootstrap is closure-ready and the con
 - **FR-019**: Issue #3 MUST be associated with slice `001-ratify-foundation-contracts`, moved to In progress during local work, and remain open until the eventual pull request is merged.
 - **FR-020**: The slice MUST complete Spec Kit specification, clarification, planning, task generation, analysis, implementation, and local verification, then commit locally and halt before push or public pull-request creation.
 - **FR-021**: The slice MUST NOT add shipped Go code, a root Go module, schema implementation, CI workflows, repository rulesets, tags, releases, or production-domain changes.
+- **FR-022**: The v0.0.0 roadmap MUST include the multi-asset source envelope, integrity validation, and public generic exact restoration required by the ratified `restore_supported: true` capability while leaving codec-integrated round trips to the 0.x series.
 
 ## Success Criteria *(mandatory)*
 

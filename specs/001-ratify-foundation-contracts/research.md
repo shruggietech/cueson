@@ -32,6 +32,14 @@
 
 **Alternatives considered**: Registering the entire v1 command surface as placeholders was rejected because it advertises unavailable behavior. Treating a missing codec as invocation misuse was rejected because the input may be valid and the limitation belongs to the executable's runtime capability.
 
+## Portable basename safety
+
+**Decision**: Validate source asset basenames against a platform-independent safe subset before constructing restoration paths. Reject path syntax, control characters, Windows-invalid punctuation and trailing characters, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when a reserved stem has an extension.
+
+**Rationale**: Cue JSON is portable and untrusted. A name that behaves as an ordinary filename on one platform can address a device or alternate data stream on Windows, so host-dependent validation would make restoration safety depend on where a document is opened.
+
+**Alternatives considered**: Relying on path joining was rejected because Windows device names and alternate data streams do not require traversal. Validating only on Windows was rejected because it would allow documents with non-portable restoration semantics to pass elsewhere.
+
 ## Architecture boundaries
 
 **Decision**: Keep command wiring, version identity, common model, schema, source restoration, codecs, conversion, and future OCR providers as separate internal responsibilities. Exact restoration reads the source envelope directly and does not call a codec. No package is a public Go API in v0.0.0.

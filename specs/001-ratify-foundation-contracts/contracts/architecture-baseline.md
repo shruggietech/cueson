@@ -16,6 +16,7 @@ The published architecture document must define the following implementation bou
 ## Required separations
 
 - Exact restoration is independent from codecs and model rendering.
+- Restoration validates portable safe basenames before constructing output paths and rejects Windows device names and alternate-data-stream syntax on every platform.
 - Native format data complements rather than replaces the common model.
 - OCR observations never replace source assets or native cue content.
 - Public compatibility is limited to the CLI and Cue JSON Schema; Go packages remain internal.

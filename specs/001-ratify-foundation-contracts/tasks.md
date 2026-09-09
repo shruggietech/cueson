@@ -88,6 +88,18 @@
 
 ---
 
+## Phase 7: Round-One Review Resolution
+
+**Purpose**: Resolve every actionable first-round Codex finding before the single permitted second-round request.
+
+- [X] T019 Inspect and validate every first-round Codex finding against the ratified contracts and working project specification
+- [X] T020 Amend the portable safe-basename contract in `docs/architecture.md`, `docs/schema.md`, the working project specification, and the Spec Kit decision artifacts
+- [X] T021 Move generic exact restoration into the v0.0.0 roadmap while retaining codec-integrated round trips in the 0.x series
+- [X] T022 Amend GitHub issue #6 with the portable safe-basename acceptance boundary and read the published body back
+- [X] T023 Rerun the complete verification suite, prepare the review-resolution commit, and confirm both findings are addressed before the single permitted second-round request
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

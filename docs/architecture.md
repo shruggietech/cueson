@@ -34,7 +34,7 @@ Original source asset bytes are authoritative for exact restoration. Normalized 
 
 Exact restoration is not a codec operation. It validates and writes assets directly from the source envelope, verifies byte length and SHA-256 before acceptance, and applies supported filesystem timestamps only after the final bytes and output name are in place. This separation allows a conforming Cue JSON document to restore assets even when the executable has no native codec for the document's format.
 
-Paths stored in Cue JSON are safe basenames only. Runtime input paths, directories, drive or mount information, hostnames, usernames, and other machine identifiers never enter the document. Restoration rejects path separators, traversal components, NUL, drive prefixes, and URI-derived locations.
+Paths stored in Cue JSON are portable safe basenames only. Runtime input paths, directories, drive or mount information, hostnames, usernames, and other machine identifiers never enter the document. Restoration rejects path separators, traversal components, control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when they have extensions. This validation occurs before an output path is constructed on every operating system.
 
 ## Common model and native fidelity
 

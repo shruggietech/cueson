@@ -119,7 +119,7 @@ Each asset records:
 
 Semantic validation resolves `primary_asset_id`, enforces role and cardinality rules, decodes base64, compares exact length, and verifies SHA-256. Source bytes remain authoritative for exact restoration.
 
-The document prohibits original filesystem paths, source directories, drive or mount data, working directories, hostnames, usernames, and other machine identifiers. Basenames reject `/`, `\`, NUL, drive prefixes, URI prefixes, and traversal components.
+The document prohibits original filesystem paths, source directories, drive or mount data, working directories, hostnames, usernames, and other machine identifiers. A basename is non-empty, is neither `.` nor `..`, and rejects `/`, `\`, ASCII control characters, `<`, `>`, `:`, `"`, `|`, `?`, `*`, trailing spaces or periods, drive prefixes, URI prefixes, traversal components, and NTFS alternate-data-stream syntax. It also rejects the case-insensitive Windows device stems `CON`, `PRN`, `AUX`, `NUL`, `CLOCK$`, `CONIN$`, `CONOUT$`, `COM1` through `COM9`, and `LPT1` through `LPT9`, including those stems followed by an extension. These portable rules apply before restoration constructs an output path on any platform.
 
 Timestamp metadata distinguishes true creation or birth time, platform creation time, fallback observations, and unavailable values. Unix `ctime` is never mislabeled as creation time. Captured metadata remains in the document even when the destination cannot restore it.
 

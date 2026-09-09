@@ -236,7 +236,7 @@ The schema MUST NOT contain:
 
 The source asset stores only the original base file name.
 
-File names stored in the schema MUST be basenames only and MUST reject `/`, `\`, NUL, and traversal constructs that could become path traversal when restored.
+File names stored in the schema MUST be portable safe basenames. They MUST reject path separators, `.` and `..`, ASCII control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, traversal constructs, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when a device stem has an extension. Validation occurs before an output path is constructed on every operating system.
 
 Additional metadata is encouraged when it describes the media, subtitle track, source encoding, source format, language, tool version, or conversion process. Metadata MUST NOT be used to smuggle filesystem paths into the document.
 
@@ -645,7 +645,7 @@ Each asset MUST contain or explicitly null the stable fields required by the can
 
 `role` initially supports `primary` and `companion`.
 
-`file_name` is the original source basename. It MUST contain no directory path, path separator, NUL, drive prefix, URI prefix, or traversal component.
+`file_name` is the original source basename. It MUST satisfy the portable safe-basename contract, including rejection of directory paths, control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, traversal components, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when followed by an extension.
 
 `media_type` describes the source asset media type when known.
 
@@ -2314,6 +2314,8 @@ Required outcomes:
 - version command;
 - embedded schema plumbing;
 - canonical `0.0.0` schema;
+- multi-asset source envelope and integrity validation;
+- public generic exact restoration from a valid source envelope;
 - Spec Kit initialization;
 - project constitution;
 - `AGENTS.md`;
@@ -2345,7 +2347,7 @@ Expected work includes:
 - format detection;
 - normalized cue model;
 - diagnostics;
-- exact restore;
+- codec-to-envelope-to-restore round trips;
 - cross-format conversion;
 - loss reporting;
 - corpus hardening;
