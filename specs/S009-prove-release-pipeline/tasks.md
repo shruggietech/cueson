@@ -18,9 +18,9 @@
 
 **Purpose**: Establish the isolated verifier boundary and fixed tool identities.
 
-- [ ] T001 Create the dependency-free standalone verifier module in `scripts/release-verify/go.mod`
-- [ ] T002 [P] Record exact GoReleaser and Syft tool identities plus the release-proof command contract in `docs/release-verification.md`
-- [ ] T003 Verify `/dist/` and Go build output exclusions remain complete in `.gitignore` without broadening ignored source paths
+- [x] T001 Create the dependency-free standalone verifier module in `scripts/release-verify/go.mod`
+- [x] T002 [P] Record exact GoReleaser and Syft tool identities plus the release-proof command contract in `docs/release-verification.md`
+- [x] T003 Verify `/dist/` and Go build output exclusions remain complete in `.gitignore` without broadening ignored source paths
 
 ---
 
@@ -28,9 +28,9 @@
 
 **Purpose**: Define the target matrix and deterministic evidence model that every story uses.
 
-- [ ] T004 Write failing table-driven tests for the exact six-target catalog, filenames, archive formats, binary names, and evidence ordering in `scripts/release-verify/verify_test.go`
-- [ ] T005 Implement target, archive, checksum, SBOM, metadata, and evidence types plus the exact six-target catalog in `scripts/release-verify/verify.go`
-- [ ] T006 Implement strict verifier argument parsing, foreground diagnostics, and deterministic JSON evidence output in `scripts/release-verify/main.go`
+- [x] T004 Write failing table-driven tests for the exact six-target catalog, filenames, archive formats, binary names, and evidence ordering in `scripts/release-verify/verify_test.go`
+- [x] T005 Implement target, archive, checksum, SBOM, metadata, and evidence types plus the exact six-target catalog in `scripts/release-verify/verify.go`
+- [x] T006 Implement strict verifier argument parsing, foreground diagnostics, and deterministic JSON evidence output in `scripts/release-verify/main.go`
 
 **Checkpoint**: The verifier module builds and its target/evidence tests pass without any release artifacts.
 
@@ -44,14 +44,14 @@
 
 ### Tests for User Story 1
 
-- [ ] T007 [US1] Extend failing archive tests for missing, duplicate, unknown, wrong-format, snapshot-suffix, unsafe-member, wrong-binary, extra-member, and schema-byte-drift cases in `scripts/release-verify/verify_test.go`
+- [x] T007 [US1] Extend failing archive tests for missing, duplicate, unknown, wrong-format, snapshot-suffix, unsafe-member, wrong-binary, extra-member, and schema-byte-drift cases in `scripts/release-verify/verify_test.go`
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implement strict ZIP and tar.gz readers that reject unsafe or non-regular members and extract exact member bytes in `scripts/release-verify/verify.go`
-- [ ] T009 [US1] Implement matrix completeness, exact archive-name, four-member, binary-name, executable-mode, and canonical-schema verification in `scripts/release-verify/verify.go`
-- [ ] T010 [US1] Add the snapshot-only six-target pure-Go build, archive, legal-file, canonical-schema, source-timestamp, and disabled-release configuration in `.goreleaser.yaml`
-- [ ] T011 [US1] Validate `.goreleaser.yaml` with GoReleaser v2.18.1 and run the first foreground snapshot into `dist/`
+- [x] T008 [US1] Implement strict ZIP and tar.gz readers that reject unsafe or non-regular members and extract exact member bytes in `scripts/release-verify/verify.go`
+- [x] T009 [US1] Implement matrix completeness, exact archive-name, four-member, binary-name, executable-mode, and canonical-schema verification in `scripts/release-verify/verify.go`
+- [x] T010 [US1] Add the snapshot-only six-target pure-Go build, archive, legal-file, canonical-schema, source-timestamp, and disabled-release configuration in `.goreleaser.yaml`
+- [x] T011 [US1] Validate `.goreleaser.yaml` with GoReleaser v2.18.1 and run the first foreground snapshot into `dist/`
 
 **Checkpoint**: User Story 1 independently produces and structurally verifies the complete six-archive matrix with no remote mutation.
 
@@ -65,22 +65,22 @@
 
 ### Tests for User Story 2
 
-- [ ] T012 [US2] Add failing checksum tests for missing, duplicate, unknown, self-referential, malformed, uppercase, unsafe-name, and digest-mismatch entries in `scripts/release-verify/verify_test.go`
-- [ ] T013 [US2] Add failing metadata and build-information tests for wrong target, CGO enabled, missing trimpath, absent or mismatched VCS revision, dirty source, wrong version injection, and local-path leakage in `scripts/release-verify/verify_test.go`
-- [ ] T014 [US2] Add failing SBOM tests for missing, duplicate, malformed, wrong-format, wrong-target, untraceable-source, path-leaking, and publication-claim cases in `scripts/release-verify/verify_test.go`
-- [ ] T015 [US2] Add failing host-probe tests for nonzero exit, stderr output, extra stdout, wrong executable version, wrong schema version, and emitted-schema drift in `scripts/release-verify/verify_test.go`
+- [x] T012 [US2] Add failing checksum tests for missing, duplicate, unknown, self-referential, malformed, uppercase, unsafe-name, and digest-mismatch entries in `scripts/release-verify/verify_test.go`
+- [x] T013 [US2] Add failing metadata and build-information tests for wrong target, CGO enabled, missing trimpath, absent or mismatched VCS revision, dirty source, wrong version injection, and local-path leakage in `scripts/release-verify/verify_test.go`
+- [x] T014 [US2] Add failing SBOM tests for missing, duplicate, malformed, wrong-format, wrong-target, untraceable-source, path-leaking, and publication-claim cases in `scripts/release-verify/verify_test.go`
+- [x] T015 [US2] Add failing host-probe tests for nonzero exit, stderr output, extra stdout, wrong executable version, wrong schema version, and emitted-schema drift in `scripts/release-verify/verify_test.go`
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Implement exact checksum-manifest parsing and archive-to-digest bijection verification in `scripts/release-verify/verify.go`
-- [ ] T017 [US2] Implement Go build-information, target, CGO, trimpath, VCS revision, dirty-state, and injected-version verification in `scripts/release-verify/verify.go`
-- [ ] T018 [US2] Implement SPDX JSON identity, archive association, source-version, target, and prohibited-publication-claim verification in `scripts/release-verify/verify.go`
-- [ ] T019 [US2] Implement structural and caller-supplied local-identifier scans across names, members, binaries, metadata, and SBOMs in `scripts/release-verify/verify.go`
-- [ ] T020 [P] [US2] Implement hidden non-interactive Windows process execution in `scripts/release-verify/process_windows.go`
-- [ ] T021 [P] [US2] Implement ordinary foreground non-Windows process execution in `scripts/release-verify/process_other.go`
-- [ ] T022 [US2] Implement compatible-host `version`, `schema --version`, and schema-byte probes plus truthful foreign-target skipping in `scripts/release-verify/verify.go`
-- [ ] T023 [US2] Configure one target-bound SPDX JSON SBOM per archive and one six-entry SHA-256 manifest in `.goreleaser.yaml`
-- [ ] T024 [US2] Verify the complete real snapshot and write accepted `dist/release-evidence.json` through `scripts/release-verify/main.go`
+- [x] T016 [US2] Implement exact checksum-manifest parsing and archive-to-digest bijection verification in `scripts/release-verify/verify.go`
+- [x] T017 [US2] Implement Go build-information, target, CGO, trimpath, VCS revision, dirty-state, and injected-version verification in `scripts/release-verify/verify.go`
+- [x] T018 [US2] Implement SPDX JSON identity, archive association, source-version, target, and prohibited-publication-claim verification in `scripts/release-verify/verify.go`
+- [x] T019 [US2] Implement structural and caller-supplied local-identifier scans across names, members, binaries, metadata, and SBOMs in `scripts/release-verify/verify.go`
+- [x] T020 [P] [US2] Implement hidden non-interactive Windows process execution in `scripts/release-verify/process_windows.go`
+- [x] T021 [P] [US2] Implement ordinary foreground non-Windows process execution in `scripts/release-verify/process_other.go`
+- [x] T022 [US2] Implement compatible-host `version`, `schema --version`, and schema-byte probes plus truthful foreign-target skipping in `scripts/release-verify/verify.go`
+- [x] T023 [US2] Configure one target-bound SPDX JSON SBOM per archive and one six-entry SHA-256 manifest in `.goreleaser.yaml`
+- [x] T024 [US2] Verify the complete real snapshot and write accepted `dist/release-evidence.json` through `scripts/release-verify/main.go`
 
 **Checkpoint**: User Story 2 independently rejects every seeded invalid candidate and accepts the complete real candidate with exact schema and source identity.
 
@@ -94,13 +94,13 @@
 
 ### Tests for User Story 3
 
-- [ ] T025 [US3] Add repository-contract tests for exact tool pins, release disablement, mandatory snapshot arguments, safe events, read-only permissions, immutable GitHub-owned actions, and absent secret or publication surfaces in `scripts/release-verify/policy_test.go`
+- [x] T025 [US3] Add repository-contract tests for exact tool pins, release disablement, mandatory snapshot arguments, safe events, read-only permissions, immutable GitHub-owned actions, and absent secret or publication surfaces in `scripts/release-verify/policy_test.go`
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Add the read-only pull-request and manual release-proof job with exact tool installs, snapshot verification, PR-scoped concurrency, and successful-only short retention in `.github/workflows/release-proof.yml`
-- [ ] T027 [US3] Add release-verifier formatting and tests to routine repository gates and cache inputs in `.github/workflows/ci.yml`
-- [ ] T028 [US3] Complete the local installation, snapshot, verification, evidence, and non-publication guide in `docs/release-verification.md`
+- [x] T026 [US3] Add the read-only pull-request and manual release-proof job with exact tool installs, snapshot verification, PR-scoped concurrency, and successful-only short retention in `.github/workflows/release-proof.yml`
+- [x] T027 [US3] Add release-verifier formatting and tests to routine repository gates and cache inputs in `.github/workflows/ci.yml`
+- [x] T028 [US3] Complete the local installation, snapshot, verification, evidence, and non-publication guide in `docs/release-verification.md`
 
 **Checkpoint**: User Story 3 has one reproducible local contract and one least-privilege hosted check using identical acceptance logic.
 
@@ -110,12 +110,12 @@
 
 **Purpose**: Reconcile architecture, release claims, Spec Kit evidence, and full repository quality.
 
-- [ ] T029 [P] Update hosted-delivery and release-candidate boundaries without changing product contracts in `docs/architecture.md`
-- [ ] T030 [P] Record the release-proof capability and pinned-tool/non-publication decision under `[Unreleased]` in `CHANGELOG.md`
-- [ ] T031 [P] Add the standalone verifier command and release-proof documentation link without claiming a public release in `README.md`
-- [ ] T032 Run Go formatting, repository text checks, root and standalone module tests, race detection, vet, GoReleaser validation, the full snapshot proof, workflow linting, `git diff --check`, UTF-8/BOM/line-ending checks, and mojibake scans
-- [ ] T033 Run Spec Kit convergence against `spec.md`, `plan.md`, and `tasks.md`; append and implement any remaining work before publication
-- [ ] T034 Confirm issue #11 and the `cueson Delivery` item remain at Stage `In progress` with Slice `S009` and default Status unused before publication
+- [x] T029 [P] Update hosted-delivery and release-candidate boundaries without changing product contracts in `docs/architecture.md`
+- [x] T030 [P] Record the release-proof capability and pinned-tool/non-publication decision under `[Unreleased]` in `CHANGELOG.md`
+- [x] T031 [P] Add the standalone verifier command and release-proof documentation link without claiming a public release in `README.md`
+- [x] T032 Run Go formatting, repository text checks, root and standalone module tests, race detection, vet, GoReleaser validation, the full snapshot proof, workflow linting, `git diff --check`, UTF-8/BOM/line-ending checks, and mojibake scans
+- [x] T033 Run Spec Kit convergence against `spec.md`, `plan.md`, and `tasks.md`; append and implement any remaining work before publication
+- [x] T034 Confirm issue #11 and the `cueson Delivery` item remain at Stage `In progress` with Slice `S009` and default Status unused before publication
 - [ ] T035 Format the official pull-request body through `scripts/github-format`, publish it with `Closes #11`, read it back, verify rendering, and move the Project item to `PR review`
 - [ ] T036 Wait for all hosted checks and first-round third-party reviews, address every finding, request at most one `@codex review` second round only when required, and stop for the operator's final merge ritual after all checks and reviews are satisfied
 

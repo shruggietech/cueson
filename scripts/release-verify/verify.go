@@ -169,8 +169,8 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	if err != nil {
 		return evidence, err
 	}
-	if len(checksums) != len(targets) {
-		return evidence, fmt.Errorf("checksum manifest has %d entries, want %d", len(checksums), len(targets))
+	if err := verifyChecksumCatalog(checksums, targets); err != nil {
+		return evidence, err
 	}
 
 	var hostExecuted *string
@@ -184,14 +184,9 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 		if err := scanForbidden(target.Archive, archiveBytes, forbidden); err != nil {
 			return evidence, err
 		}
-		digest := sha256.Sum256(archiveBytes)
-		target.ArchiveSHA = hex.EncodeToString(digest[:])
-		manifestDigest, ok := checksums[target.Archive]
-		if !ok {
-			return evidence, fmt.Errorf("checksum manifest is missing %s", target.Archive)
-		}
-		if manifestDigest != target.ArchiveSHA {
-			return evidence, fmt.Errorf("checksum mismatch for %s", target.Archive)
+		target.ArchiveSHA, err = verifyArchiveDigest(target.Archive, archiveBytes, checksums)
+		if err != nil {
+			return evidence, err
 		}
 		members, err := readArchive(target.Archive, archiveBytes)
 		if err != nil {
@@ -227,18 +222,6 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 			}
 			identity := target.GOOS + "/" + target.GOARCH
 			hostExecuted = &identity
-		}
-	}
-	for name := range checksums {
-		matched := false
-		for _, target := range targets {
-			if name == target.Archive {
-				matched = true
-				break
-			}
-		}
-		if !matched {
-			return evidence, fmt.Errorf("checksum manifest contains unexpected entry %s", name)
 		}
 	}
 	if config.ExecuteHost && hostExecuted == nil {
@@ -462,6 +445,38 @@ func parseChecksums(data []byte) (map[string]string, error) {
 		checksums[name] = digest
 	}
 	return checksums, nil
+}
+
+func verifyChecksumCatalog(checksums map[string]string, targets []Target) error {
+	if len(checksums) != len(targets) {
+		return fmt.Errorf("checksum manifest has %d entries, want %d", len(checksums), len(targets))
+	}
+	expected := make(map[string]bool, len(targets))
+	for _, target := range targets {
+		expected[target.Archive] = true
+		if _, ok := checksums[target.Archive]; !ok {
+			return fmt.Errorf("checksum manifest is missing %s", target.Archive)
+		}
+	}
+	for name := range checksums {
+		if !expected[name] {
+			return fmt.Errorf("checksum manifest contains unexpected entry %s", name)
+		}
+	}
+	return nil
+}
+
+func verifyArchiveDigest(name string, data []byte, checksums map[string]string) (string, error) {
+	digest := sha256.Sum256(data)
+	actual := hex.EncodeToString(digest[:])
+	want, ok := checksums[name]
+	if !ok {
+		return "", fmt.Errorf("checksum manifest is missing %s", name)
+	}
+	if actual != want {
+		return "", fmt.Errorf("checksum mismatch for %s", name)
+	}
+	return actual, nil
 }
 
 func verifySBOM(data []byte, target Target, version, commit string) error {

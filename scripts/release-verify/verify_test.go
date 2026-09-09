@@ -9,6 +9,7 @@ import (
 	"debug/buildinfo"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime/debug"
@@ -223,6 +224,39 @@ func TestParseChecksums(t *testing.T) {
 	}
 }
 
+func TestVerifyChecksumCatalogAndDigest(t *testing.T) {
+	t.Parallel()
+	targets := expectedTargets("0.0.0")
+	checksums := make(map[string]string, len(targets))
+	for _, target := range targets {
+		checksums[target.Archive] = strings.Repeat("a", 64)
+	}
+	if err := verifyChecksumCatalog(checksums, targets); err != nil {
+		t.Fatal(err)
+	}
+	missing := cloneChecksums(checksums)
+	delete(missing, targets[0].Archive)
+	if err := verifyChecksumCatalog(missing, targets); err == nil {
+		t.Fatal("accepted missing checksum")
+	}
+	unknown := cloneChecksums(checksums)
+	delete(unknown, targets[0].Archive)
+	unknown["cueson_0.0.0_checksums.txt"] = strings.Repeat("b", 64)
+	if err := verifyChecksumCatalog(unknown, targets); err == nil {
+		t.Fatal("accepted self-referential or unknown checksum")
+	}
+	data := []byte("archive")
+	digest := sha256.Sum256(data)
+	valid := map[string]string{targets[0].Archive: fmt.Sprintf("%x", digest)}
+	if _, err := verifyArchiveDigest(targets[0].Archive, data, valid); err != nil {
+		t.Fatal(err)
+	}
+	valid[targets[0].Archive] = strings.Repeat("0", 64)
+	if _, err := verifyArchiveDigest(targets[0].Archive, data, valid); err == nil {
+		t.Fatal("accepted digest mismatch")
+	}
+}
+
 func TestVerifySBOM(t *testing.T) {
 	t.Parallel()
 	target := expectedTargets("0.0.0")[0]
@@ -379,6 +413,14 @@ func makeZIP(t *testing.T, entries map[string][]byte) []byte {
 
 func cloneMembers(source map[string]archiveMember) map[string]archiveMember {
 	result := make(map[string]archiveMember, len(source))
+	for key, value := range source {
+		result[key] = value
+	}
+	return result
+}
+
+func cloneChecksums(source map[string]string) map[string]string {
+	result := make(map[string]string, len(source))
 	for key, value := range source {
 		result[key] = value
 	}
