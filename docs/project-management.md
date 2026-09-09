@@ -24,6 +24,16 @@ A work slice may close multiple atomic issues when they share a clear purpose, b
 
 Normal pull requests contain at least one complete closing reference. Eligible non-Dependabot pull requests use the two-round Codex review protocol in `AGENTS.md`. Final merge authority remains with the human operator unless a single-use override explicitly identifies the pull request.
 
+The pull-request policy consumes GitHub's resolved closing-issue references rather than maintaining a separate Markdown parser. A normal pull request with no resolved closing issue fails `Cueson PR policy / Issue link`. Dependabot passes through an explicit automated-source exception. Any other exception requires an exact `skip: issue-link - <reason>` comment from the configured human operator.
+
+`Cueson PR policy / Codex review` reconciles the native integration's evidence against the current pull-request head. Draft, acknowledged, incomplete, or reaction-only work without current-head terminal evidence remains pending. Unresolved findings, failed or ambiguous evidence, stale terminal results, and protocol violations remain blocking. A clean first round passes without another request.
+
+After a finding-bearing first review, automation may post exactly one marked `@codex review` request only when every resolvable finding is resolved, the reviewed commit is an ancestor of the remediation head, and the configured CI gates pass on that head. Only a marker attributed to the exact GitHub Actions bot or a configured-operator second request consumes the allowance permanently; marker-shaped comments from other actors fail closed. A second-round failure or finding never causes an automatic third request. Only the configured human operator may waive the link or review policy, and every exception is pull-request-specific with a non-empty reason.
+
+The trusted workflow uses current GitHub evidence for every reconciliation and writes only current-head statuses plus the single permitted review comment. Pull-request and comment events provide normal wakeups. A non-hourly schedule recovers reaction-only completion and review-thread changes, while a configured-operator `/cueson reconcile` comment requests immediate recovery. Unknown evidence and incomplete API pagination fail closed without mutation.
+
+The workflow becomes active only after its implementation reaches the default branch. Its introducing pull request receives read-only live API validation plus fixture-backed mutation proof. Hosted status and Actions-bot request behavior must be demonstrated on the first eligible post-merge pull request before repository rules make either context required.
+
 ## Bootstrap state
 
 The initial planning structure is established before shipped product code begins. CI-required checks, repository rulesets, security automation, Codex review automation, and release dry runs are tracked outcomes that are activated only after their implementation exists.

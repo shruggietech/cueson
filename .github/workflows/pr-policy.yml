@@ -1,0 +1,67 @@
+name: Pull request policy
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+      - converted_to_draft
+      - ready_for_review
+      - closed
+  issue_comment:
+    types:
+      - created
+      - edited
+      - deleted
+  schedule:
+    - cron: "23 */6 * * *"
+
+permissions:
+  checks: read
+  contents: read
+  issues: write
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: cueson-pr-policy
+  cancel-in-progress: false
+
+env:
+  GO_COMPAT_VERSION: 1.25.x
+
+jobs:
+  reconcile:
+    name: Reconcile
+    if: github.event_name != 'issue_comment' || github.event.issue.pull_request != null
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out trusted default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache: false
+      - name: Reconcile event pull request
+        if: github.event_name != 'schedule'
+        env:
+          CUESON_GITHUB_TOKEN: ${{ github.token }}
+          CUESON_REPOSITORY: ${{ github.repository }}
+          CUESON_PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+        run: go -C scripts/pr-policy run . -repo "${CUESON_REPOSITORY}" -pr "${CUESON_PR_NUMBER}"
+      - name: Reconcile open pull requests
+        if: github.event_name == 'schedule'
+        env:
+          CUESON_GITHUB_TOKEN: ${{ github.token }}
+          CUESON_REPOSITORY: ${{ github.repository }}
+        run: go -C scripts/pr-policy run . -repo "${CUESON_REPOSITORY}" -all-open

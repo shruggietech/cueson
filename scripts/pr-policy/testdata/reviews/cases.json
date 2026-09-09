@@ -1,0 +1,98 @@
+[
+  {
+    "name": "draft",
+    "scenario": "draft",
+    "expected_state": "pending",
+    "request_second": false
+  },
+  {
+    "name": "round-one-pending",
+    "scenario": "round-one-pending",
+    "expected_state": "pending",
+    "request_second": false
+  },
+  {
+    "name": "eyes-is-acknowledgement",
+    "scenario": "round-one-eyes",
+    "expected_state": "pending",
+    "request_second": false
+  },
+  {
+    "name": "current-head-clean",
+    "scenario": "round-one-clean",
+    "expected_state": "success",
+    "request_second": false
+  },
+  {
+    "name": "stale-clean",
+    "scenario": "round-one-stale-clean",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "round-one-failure",
+    "scenario": "round-one-failed",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "unresolved-round-one-finding",
+    "scenario": "round-one-unresolved",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "resolved-round-one-findings-ready",
+    "scenario": "round-two-ready",
+    "expected_state": "pending",
+    "request_second": true
+  },
+  {
+    "name": "reserved-round-two",
+    "scenario": "round-two-reserved",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "round-two-pending",
+    "scenario": "round-two-pending",
+    "expected_state": "pending",
+    "request_second": false
+  },
+  {
+    "name": "round-two-clean",
+    "scenario": "round-two-clean",
+    "expected_state": "success",
+    "request_second": false
+  },
+  {
+    "name": "round-two-unresolved",
+    "scenario": "round-two-unresolved",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "round-two-resolved-findings",
+    "scenario": "round-two-resolved",
+    "expected_state": "success",
+    "request_second": false
+  },
+  {
+    "name": "round-two-failed",
+    "scenario": "round-two-failed",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "round-two-stale-after-head-change",
+    "scenario": "round-two-stale",
+    "expected_state": "failure",
+    "request_second": false
+  },
+  {
+    "name": "duplicate-round-two-requests",
+    "scenario": "protocol-violation",
+    "expected_state": "failure",
+    "request_second": false
+  }
+]

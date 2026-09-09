@@ -1,0 +1,32 @@
+[
+  {
+    "name": "operator-review-waiver",
+    "scenario": "operator-review-waiver",
+    "expected_state": "success",
+    "request_second": false
+  },
+  {
+    "name": "other-owner-cannot-waive",
+    "scenario": "other-owner-waiver",
+    "expected_state": "pending",
+    "request_second": false
+  },
+  {
+    "name": "pull-request-author-cannot-self-waive",
+    "scenario": "author-self-waiver",
+    "expected_state": "pending",
+    "request_second": false
+  },
+  {
+    "name": "empty-reason-is-invalid",
+    "scenario": "missing-reason",
+    "expected_state": "pending",
+    "request_second": false
+  },
+  {
+    "name": "dependabot-is-excluded",
+    "scenario": "dependabot",
+    "expected_state": "success",
+    "request_second": false
+  }
+]
