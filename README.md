@@ -52,6 +52,15 @@ The repository publication formatter remains an intentionally separate module wi
 go -C scripts/github-format test ./...
 ```
 
+The non-publishing release proof builds and inspects the complete v0.0.0 candidate matrix through a separate verifier module:
+
+```text
+goreleaser release --snapshot --clean --skip=publish
+go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 0.0.0 -commit <full-commit> -execute-host
+```
+
+See [release verification](docs/release-verification.md) for exact tool versions, artifact contents, checksums, SBOM expectations, and the boundary between CI evidence and an authorized public release.
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes. Report security concerns privately through [GitHub Security Advisories](https://github.com/shruggietech/cueson/security/advisories/new) rather than a public issue.
 
 ## License

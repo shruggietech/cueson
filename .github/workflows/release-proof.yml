@@ -1,0 +1,62 @@
+name: Release proof
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-proof-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  GO_COMPAT_VERSION: 1.25.x
+
+jobs:
+  release-proof:
+    name: Non-publishing snapshot
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache-dependency-path: |
+            go.sum
+            scripts/release-verify/go.mod
+      - name: Install exact release tools
+        shell: bash
+        env:
+          GOBIN: ${{ runner.temp }}/release-tools
+        run: |
+          mkdir -p "${GOBIN}"
+          go install github.com/goreleaser/goreleaser/v2@v2.18.1
+          go install github.com/anchore/syft/cmd/syft@v1.51.1
+          printf '%s\n' "${GOBIN}" >> "${GITHUB_PATH}"
+      - name: Validate release configuration
+        run: goreleaser check
+      - name: Build non-publishing snapshot
+        run: goreleaser release --snapshot --clean --skip=publish
+      - name: Verify release candidate
+        shell: bash
+        run: |
+          source_commit="$(git rev-parse HEAD)"
+          go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 0.0.0 -commit "${source_commit}" -execute-host
+      - name: Retain verified release evidence
+        if: ${{ success() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cueson-0.0.0-release-proof-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 3

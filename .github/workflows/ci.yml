@@ -65,6 +65,7 @@ jobs:
             go.sum
             scripts/github-format/go.mod
             scripts/pr-policy/go.mod
+            scripts/release-verify/go.mod
       - name: Reject controlled failure probe
         shell: bash
         run: |
@@ -78,6 +79,8 @@ jobs:
         run: go -C scripts/github-format test -count=1 ./...
       - name: Test pull-request policy automation
         run: go -C scripts/pr-policy test -count=1 ./...
+      - name: Test release verifier
+        run: go -C scripts/release-verify test -count=1 ./...
       - name: Check repository whitespace
         shell: bash
         run: |
