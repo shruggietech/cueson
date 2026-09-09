@@ -1,0 +1,247 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  GO_COMPAT_VERSION: 1.25.x
+  ACTIONLINT_VERSION: v1.7.12
+  STATICCHECK_VERSION: v0.7.0
+  GOVULNCHECK_VERSION: v1.8.0
+
+jobs:
+  formatting:
+    name: Formatting
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up current Go for workflow linting
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: stable
+          cache: false
+      - name: Check Go formatting
+        shell: bash
+        run: |
+          unformatted="$(gofmt -l cmd internal scripts)"
+          if [[ -n "${unformatted}" ]]; then
+            printf '%s\n' "${unformatted}"
+            exit 1
+          fi
+      - name: Lint GitHub Actions workflows
+        run: go run "github.com/rhysd/actionlint/cmd/actionlint@${ACTIONLINT_VERSION}"
+
+  repository-text:
+    name: Repository text
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache-dependency-path: |
+            go.sum
+            scripts/github-format/go.mod
+      - name: Reject controlled failure probe
+        shell: bash
+        run: |
+          if [[ -e .github/ci-failure-probe ]]; then
+            echo "controlled CI failure probe is present" >&2
+            exit 1
+          fi
+      - name: Check repository-authored text
+        run: go run ./scripts/github-format/main.go .
+      - name: Test publication formatter
+        run: go -C scripts/github-format test -count=1 ./...
+      - name: Check repository whitespace
+        shell: bash
+        run: |
+          empty_tree="$(git hash-object -t tree /dev/null)"
+          git diff --check "${empty_tree}" HEAD
+
+  vet:
+    name: Vet
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache-dependency-path: go.sum
+      - name: Run vet
+        run: go vet ./...
+
+  schema-conformance:
+    name: Schema and conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache-dependency-path: go.sum
+      - name: Run schema and conformance tests
+        run: go test -count=1 ./internal/schema ./internal/conformance ./internal/testutil
+
+  static-analysis:
+    name: Static analysis
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache-dependency-path: go.sum
+      - name: Run Staticcheck
+        run: go run "honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION}" ./...
+
+  vulnerability-scan:
+    name: Vulnerability scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up current Go for vulnerability analysis
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: stable
+          cache-dependency-path: go.sum
+      - name: Run govulncheck
+        run: go run "golang.org/x/vuln/cmd/govulncheck@${GOVULNCHECK_VERSION}" ./...
+
+  native-tests:
+    name: Native tests (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Linux
+            runner: ubuntu-24.04
+          - platform: Windows
+            runner: windows-2025
+          - platform: macOS
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache-dependency-path: go.sum
+      - name: Run native test suite
+        run: go test -count=1 ./...
+
+  race-detection:
+    name: Race detection
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache-dependency-path: go.sum
+      - name: Run race detector
+        run: go test -race -count=1 ./...
+
+  pure-go-build:
+    name: Pure-Go build (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-amd64
+            goos: linux
+            goarch: amd64
+            suffix: ""
+          - target: linux-arm64
+            goos: linux
+            goarch: arm64
+            suffix: ""
+          - target: windows-amd64
+            goos: windows
+            goarch: amd64
+            suffix: .exe
+          - target: windows-arm64
+            goos: windows
+            goarch: arm64
+            suffix: .exe
+          - target: darwin-amd64
+            goos: darwin
+            goarch: amd64
+            suffix: ""
+          - target: darwin-arm64
+            goos: darwin
+            goarch: arm64
+            suffix: ""
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_COMPAT_VERSION }}
+          cache-dependency-path: go.sum
+      - name: Build temporary executable
+        shell: bash
+        env:
+          CGO_ENABLED: "0"
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          OUTPUT: ${{ runner.temp }}/cueson-${{ matrix.target }}${{ matrix.suffix }}
+        run: |
+          go build -trimpath -o "${OUTPUT}" ./cmd/cueson
+          test -s "${OUTPUT}"

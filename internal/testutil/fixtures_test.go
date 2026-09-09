@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 )
@@ -122,11 +121,14 @@ func TestVerifyFixturesRejectsCanonicalAliasInInventory(t *testing.T) {
 
 	root := createCorpus(t, []byte("hello\n"))
 	manifest := readManifest(t, root)
-	if runtime.GOOS == "windows" {
+	aliasPath := filepath.Join(root, filepath.FromSlash("fixtures/basic/source/INPUT.TXT"))
+	if _, err := os.Stat(aliasPath); err == nil {
 		manifest.Fixtures[0].Artifacts[0].Path = "fixtures/basic/source/INPUT.TXT"
 		writeManifest(t, root, manifest)
+	} else if os.IsNotExist(err) {
+		writeFile(t, aliasPath, []byte("hello\n"))
 	} else {
-		writeFile(t, filepath.Join(root, filepath.FromSlash("fixtures/basic/source/INPUT.TXT")), []byte("hello\n"))
+		t.Fatalf("inspect canonical alias path: %v", err)
 	}
 	_, err := VerifyFixtures(root)
 	if err == nil || !strings.Contains(err.Error(), "collides with the declared portable path") {

@@ -14,11 +14,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added the canonical Draft 2020-12 Cue JSON `0.0.0` schema, representative contract document, internal common model and semantic validation, embedded schema access, software/schema lockstep checks, and the `schema` command with explicit safe output replacement.
 - Added canonical source-integrity validation, portable canonical-caseless collision protection, rollback-safe staged restoration, capture-before-read timestamp boundaries, native Windows/Linux/macOS timestamp adapters, and the public codec-independent `restore` command.
 - Added a manifest-governed, byte-stable fixture corpus with explicit provenance and redistribution decisions, reusable path-free golden comparisons, accepted and malformed cross-package conformance cases, and bounded fuzz boundaries for Cue JSON and source-envelope validation.
+- Added stable least-privilege CI and independent CodeQL workflows with pinned actions and analysis tools, native Windows/macOS/Linux tests, race and conformance gates, vulnerability scanning, and six-target pure-Go build proof.
 
 ### Changed
 
 - Replaced unavailable dynamic CI and release badges with truthful planned and unreleased state badges until those public resources exist.
 - Changed the v0.0.0 envelope capability to advertise generic exact restoration while native ingest, model-driven render, and OCR-required capabilities remain false.
+- Replaced the planned CI badge with the live workflow badge and refined the draft CI roadmap so codec, conversion, review-automation, and release gates activate only when their owning implementations exist.
+- Raised the minimum Go version from 1.24 to 1.25 and upgraded `golang.org/x/text` to the first compatible fixed release after the vulnerability gate found reachable issues that could not be corrected on the old floor.
+
+### Fixed
+
+- Made fixture-alias and closed-descriptor tests portable across case-insensitive macOS filesystems and Linux timestamp syscall behavior exposed by the first hosted native matrix.
 
 ### Decisions
 
@@ -34,6 +41,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-09: Set `restore_supported` true in S004 only after canonical integrity checks, complete destination planning, safe publication, rollback, and the public restore command pass together.
 - 2026-09-09: Keep hosted native Windows, Linux, and macOS execution in downstream issue #8 while S004 provides native-selectable tests, current-host Windows proof, and CGO-disabled foreign-platform compilation to avoid a circular dependency.
 - 2026-09-09: Govern root test payloads through one strict provenance and integrity manifest, keep generic comparisons domain-neutral under `internal/testutil`, and reserve codec grammar fixtures plus hosted execution for their downstream slices.
+- 2026-09-09: Establish immutable-action, least-privilege hosted gates with native three-platform tests and separate six-target pure-Go build proof; defer empty codec, conversion, review-automation, release, and repository-control checks to their owning issues.
+- 2026-09-09: Raise the compatibility floor to Go 1.25 rather than suppress reachable Go standard-library and Unicode-normalization vulnerabilities discovered while establishing the mandatory vulnerability gate.
 
 ## [0.0.0]
 

@@ -254,7 +254,7 @@ func filetimeToUnixNS(raw uint64) (int64, error) {
 
 func unixNSToFiletime(unixNS int64) (windows.Filetime, error) {
 	if unixNS%filetimeQuantum != 0 {
-		return windows.Filetime{}, fmt.Errorf("Unix nanoseconds %d are not representable at 100ns precision", unixNS)
+		return windows.Filetime{}, fmt.Errorf("unix nanoseconds %d are not representable at 100ns precision", unixNS)
 	}
 	raw := uint64(unixNS/filetimeQuantum + int64(filetimeEpochTicks))
 	return windows.Filetime{LowDateTime: uint32(raw), HighDateTime: uint32(raw >> 32)}, nil

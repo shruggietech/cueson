@@ -345,10 +345,6 @@ func cleanupFailedStages(staged []stagedAsset, hooks transactionHooks) error {
 	return errors.Join(failures...)
 }
 
-func inspectFile(path string) (int64, string, error) {
-	return inspectFileContext(context.Background(), path)
-}
-
 func inspectFileContext(ctx context.Context, path string) (int64, string, error) {
 	file, err := openRegularNoFollow(path, false)
 	if err != nil {

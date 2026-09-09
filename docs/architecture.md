@@ -66,7 +66,7 @@ The target remains pure Go with `CGO_ENABLED=0` unless a separately recorded dec
 
 Windows captures and attempts creation, modification, and access timestamps through no-follow handles at 100-nanosecond precision. Linux captures descriptor-visible modification and access timestamps, captures birth time when `statx` exposes it, and reports birth-time setting as unsupported. The macOS v0.0.0 adapter captures birth, modification, and access timestamps but restores only descriptor-based modification and access at its effective microsecond precision, reporting creation restoration as unsupported. Default restore warns for unsupported captured values, strict mode rolls back, and no-metadata mode makes no timestamp claim.
 
-S004 supplies native-selectable adapter tests, runs Windows behavior natively in the development environment, and proves Linux and macOS build selection through CGO-disabled cross-compilation. Hosted native execution on all three operating systems remains issue [#8](https://github.com/shruggietech/cueson/issues/8), which is intentionally downstream of the source and test foundations.
+S004 supplied native-selectable adapter tests, ran Windows behavior natively in the development environment, and proved Linux and macOS build selection through CGO-disabled cross-compilation. S006 now supplies the hosted three-operating-system execution described in [Hosted delivery automation](#hosted-delivery-automation), after the source and test foundations removed the earlier sequencing dependency.
 
 Windows process launches for console applications must use `CREATE_NO_WINDOW` or an equivalent hidden-process guarantee and disable interactive prompts.
 
@@ -78,7 +78,17 @@ Repository-authored fixture metadata and normalized JSON expectations remain UTF
 
 `internal/testutil` remains domain-neutral to avoid import cycles and incompatible format-specific assertion dialects. It compares semantic JSON, ordered diagnostics, exact bytes, integrity values, and explicit timestamp outcomes using fixture IDs and logical surface names. Cross-package tests under `internal/conformance` own projections from the Cueson model and source reports, prove exact restoration from the accepted seed, exercise parse, structure, semantics, and integrity rejection stages, and reject explicit native, slash, backslash, and JSON-escaped local identifiers.
 
-The embedded `internal/schema/testdata/representative.cueson.json` remains the canonical schema contract example owned by `internal/schema`; it is intentionally outside the root manifest rather than an undeclared corpus payload. Initial fuzz boundaries exercise complete Cue JSON decoding, canonical source-envelope base64 integrity, and safe basenames with callback guards and no restoration writes. Native SRT and WebVTT grammar coverage remains downstream codec work, and hosted platform automation remains issue [#8](https://github.com/shruggietech/cueson/issues/8).
+The embedded `internal/schema/testdata/representative.cueson.json` remains the canonical schema contract example owned by `internal/schema`; it is intentionally outside the root manifest rather than an undeclared corpus payload. Initial fuzz boundaries exercise complete Cue JSON decoding, canonical source-envelope base64 integrity, and safe basenames with callback guards and no restoration writes. Native SRT and WebVTT grammar coverage remains downstream codec work. S006 supplies the hosted platform automation described below.
+
+## Hosted delivery automation
+
+The `CI` workflow provides stable, independently visible gates for Go formatting, repository-authored text and publication formatting, vet, schema and conformance tests, Staticcheck, govulncheck, native tests, race detection, and pure-Go cross-builds. It runs on every pull request to `main` and every `main` update with read-only repository permission. Superseded pull-request runs cancel only within the same workflow and pull request.
+
+Native root-module tests run on explicit Linux, Windows, and macOS runner generations using the latest patch in the Go 1.25 compatibility line. These jobs own platform-behavior evidence. S006 raises the minimum from Go 1.24 because reachable standard-library vulnerabilities and the fixed `golang.org/x/text` release cannot retain that obsolete compatibility floor. A separate six-target matrix builds the executable for Windows, macOS, and Linux on amd64 and arm64 with `CGO_ENABLED=0`; those temporary binaries prove buildability only and are never uploaded or published.
+
+Staticcheck, govulncheck, and actionlint use explicit Go module versions. External actions use immutable full commit identifiers with readable release comments, and checkout credential persistence is disabled before repository-controlled code runs. The independent `CodeQL` workflow receives only read access plus the narrow `security-events: write` permission required to publish analysis, and ordinary CI receives no write authority or secrets.
+
+The stable check names are recorded in `specs/S006-establish-ci-gates/contracts/check-contract.md` for later repository protection work. S006 does not create empty gates for native SRT/WebVTT parsing, model-driven rendering, cross-format conversion, Codex-review automation, release packaging, or repository settings. Those names appear only after their owning implementation exists.
 
 ## Work ownership after ratification
 
@@ -88,5 +98,6 @@ The embedded `internal/schema/testdata/representative.cueson.json` remains the c
 | [#5](https://github.com/shruggietech/cueson/issues/5) | Canonical v0.0.0 schema, representative document, embedding, structural and semantic validation foundation, lockstep tests, and `schema` |
 | [#6](https://github.com/shruggietech/cueson/issues/6) | Source integrity, capture-before-read metadata, safe generic exact restoration, public `restore` command, and platform timestamp adapters/results |
 | [#7](https://github.com/shruggietech/cueson/issues/7) | Fixture provenance, golden helpers, conformance infrastructure, malformed corpus conventions, and fuzz boundaries |
+| [#8](https://github.com/shruggietech/cueson/issues/8) | Stable CI, native Windows/macOS/Linux execution, pure-Go cross-build proof, pinned analysis, vulnerability scanning, and independent CodeQL |
 
 SRT and WebVTT codecs, model-driven render, and cross-format conversion are deliberately deferred to later implementation slices. This document does not authorize placeholder commands or premature capability claims.
