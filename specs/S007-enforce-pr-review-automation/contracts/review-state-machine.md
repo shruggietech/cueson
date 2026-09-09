@@ -2,7 +2,8 @@
 
 ## Evidence authority
 
-- Codex REST identity: login `chatgpt-codex-connector[bot]`, numeric user ID `199175422`, type `Bot`
+- Codex REST comment/review identity: login `chatgpt-codex-connector[bot]`, numeric user ID `199175422`, type `Bot`
+- Codex REST reaction identity: the same exact login and numeric ID can be returned as type `User`; only this transport-specific tuple is normalized to the configured bot identity
 - Codex GraphQL identity: exact login `chatgpt-codex-connector` after removing only the known REST `[bot]` suffix
 - Summary marker: `<!-- codex-pull-request-review-summary -->`
 - Automated second-round marker: `<!-- cueson-codex-review-request:v1 round=2 pr=<number> head=<full-sha> -->`, accepted only from the exact GitHub Actions bot identity

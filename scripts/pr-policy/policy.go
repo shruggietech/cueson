@@ -319,16 +319,20 @@ func ParseCodexSummary(comment Comment) (CodexSummary, bool, error) {
 	}
 
 	status := SummaryStatus("")
-	for candidate, marker := range map[SummaryStatus]string{
-		SummaryCompleted: "**Completed**",
-		SummaryFailed:    "**Failed**",
-		SummaryPending:   "**In progress**",
+	for _, candidate := range []struct {
+		status SummaryStatus
+		marker string
+	}{
+		{status: SummaryCompleted, marker: "**Completed**"},
+		{status: SummaryFailed, marker: "**Failed**"},
+		{status: SummaryPending, marker: "**Running**"},
+		{status: SummaryPending, marker: "**In progress**"},
 	} {
-		if strings.Contains(comment.Body, marker) {
-			if status != "" {
+		if strings.Contains(comment.Body, candidate.marker) {
+			if status != "" && status != candidate.status {
 				return CodexSummary{}, true, errors.New("codex summary contains contradictory states")
 			}
-			status = candidate
+			status = candidate.status
 		}
 	}
 	matches := commitPrefixPattern.FindAllStringSubmatch(comment.Body, -1)

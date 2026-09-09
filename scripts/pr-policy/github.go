@@ -716,7 +716,11 @@ func reviewFromGitHub(review githubReview) (Review, error) {
 }
 
 func reactionFromGitHub(reaction githubReaction, target string) Reaction {
-	return Reaction{Author: actorFromGitHub(reaction.User), Content: reaction.Content, Target: target, CreatedAt: reaction.CreatedAt}
+	author := actorFromGitHub(reaction.User)
+	if author.Login == CodexRESTLogin && author.ID == CodexUserID && author.Type == "User" {
+		author.Type = "Bot"
+	}
+	return Reaction{Author: author, Content: reaction.Content, Target: target, CreatedAt: reaction.CreatedAt}
 }
 
 func isRawCodexActor(actor githubActor) bool {

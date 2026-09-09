@@ -36,7 +36,7 @@ The marked round-two comment, operator exceptions, Codex summary, review commit 
 
 ## Decision: Parse only narrow Codex evidence and normalize the known bot identity
 
-REST represents the app as `chatgpt-codex-connector[bot]`, while GraphQL can expose `chatgpt-codex-connector`. The policy canonicalizes only that exact optional `[bot]` suffix and rejects every other actor. A summary is recognized only by `<!-- codex-pull-request-review-summary -->`; its latest row must name a recognized state and current-head commit. Reactions alone cannot prove commit attribution. Review threads use their Codex review commit, and `isResolved`, not `isOutdated`, determines resolution.
+REST represents the app as `chatgpt-codex-connector[bot]`, while GraphQL can expose `chatgpt-codex-connector`. The REST reactions endpoint empirically reports that exact login and immutable numeric ID with type `User`, even though comment and review payloads report type `Bot`; the adapter narrowly normalizes only that exact reaction tuple back to the configured bot identity. The policy canonicalizes only the exact optional `[bot]` suffix and rejects every other actor. A summary is recognized only by `<!-- codex-pull-request-review-summary -->`; its latest row must name a recognized `Running`, `In progress`, `Completed`, or `Failed` state and current-head commit. Reactions alone cannot prove commit attribution. Review threads use their Codex review commit, and `isResolved`, not `isOutdated`, determines resolution.
 
 **Rationale:** The Codex summary is edited in place and retains only latest activity, so it is terminal evidence rather than a round ledger. The marked round-two request is the round boundary.
 

@@ -180,9 +180,9 @@ func TestCollectSnapshotJoinsCurrentReviewEvidence(t *testing.T) {
 		case r.Method == http.MethodGet && strings.HasSuffix(r.URL.Path, "/pulls/9/reviews"):
 			_, _ = io.WriteString(w, `[{"id":8,"node_id":"PRR_example","body":"finding","commit_id":"`+old+`","submitted_at":"2026-09-09T12:01:00Z","user":{"login":"chatgpt-codex-connector[bot]","id":199175422,"type":"Bot"}}]`)
 		case r.Method == http.MethodGet && strings.HasSuffix(r.URL.Path, "/issues/9/reactions"):
-			_, _ = io.WriteString(w, `[{"id":1,"content":"eyes","created_at":"2026-09-09T12:01:00Z","user":{"login":"chatgpt-codex-connector[bot]","id":199175422,"type":"Bot"}}]`)
+			_, _ = io.WriteString(w, `[{"id":1,"content":"eyes","created_at":"2026-09-09T12:01:00Z","user":{"login":"chatgpt-codex-connector[bot]","id":199175422,"type":"User"}}]`)
 		case r.Method == http.MethodGet && strings.HasSuffix(r.URL.Path, "/issues/comments/77/reactions"):
-			_, _ = io.WriteString(w, `[{"id":2,"content":"+1","created_at":"2026-09-09T12:03:00Z","user":{"login":"chatgpt-codex-connector[bot]","id":199175422,"type":"Bot"}}]`)
+			_, _ = io.WriteString(w, `[{"id":2,"content":"+1","created_at":"2026-09-09T12:03:00Z","user":{"login":"chatgpt-codex-connector[bot]","id":199175422,"type":"User"}}]`)
 		case r.Method == http.MethodGet && strings.Contains(r.URL.Path, "/check-runs"):
 			_, _ = io.WriteString(w, `{"check_runs":[{"id":3,"name":"Formatting","head_sha":"`+head+`","status":"completed","conclusion":"success","started_at":"2026-09-09T12:00:00Z","completed_at":"2026-09-09T12:01:00Z"}]}`)
 		case r.Method == http.MethodGet && strings.Contains(r.URL.Path, "/statuses"):
@@ -230,6 +230,11 @@ func TestCollectSnapshotJoinsCurrentReviewEvidence(t *testing.T) {
 	}
 	if !pullReaction || !summaryReaction {
 		t.Fatalf("reaction targets were not preserved: %+v", snapshot.Reactions)
+	}
+	for _, reaction := range snapshot.Reactions {
+		if !IsCodexActor(reaction.Author) {
+			t.Fatalf("empirical REST reaction actor was not narrowly normalized: %+v", reaction.Author)
+		}
 	}
 }
 

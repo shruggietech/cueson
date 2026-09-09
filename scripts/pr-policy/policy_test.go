@@ -166,6 +166,11 @@ func TestCodexSummaryParsing(t *testing.T) {
 	if summary.Status != SummaryCompleted || summary.CommitPrefix != testHead[:7] {
 		t.Fatalf("unexpected summary: %+v", summary)
 	}
+	runningBody := strings.Replace(body, "✅ **Completed**", "🔄 **Running**", 1)
+	running, ok, err := ParseCodexSummary(Comment{ID: 6, Author: codex, Body: runningBody, UpdatedAt: testStart.Add(time.Minute)})
+	if err != nil || !ok || running.Status != SummaryPending {
+		t.Fatalf("empirical running summary failed: summary=%+v ok=%v err=%v", running, ok, err)
+	}
 
 	_, ok, err = ParseCodexSummary(Comment{ID: 4, Author: codex, Body: "<!-- codex-pull-request-review-summary -->\nunknown"})
 	if !ok || err == nil {
