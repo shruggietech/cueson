@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Initialized the repository, Spec Kit integration, governance documents, publication tooling, and GitHub planning foundation.
 - Added the v0.0.0 architecture, Cue JSON schema, and CLI implementation baselines with their Spec Kit decision and verification artifacts.
+- Added the dependency-free Go module and first buildable `cueson` executable with truthful root help, exact `cueson version` output, stable stream and exit-code handling, global diagnostic policy, and focused tests.
 
 ### Changed
 

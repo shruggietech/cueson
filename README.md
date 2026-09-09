@@ -7,11 +7,11 @@
   <a href="docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-repository-58A6FF"></a>
 </p>
 
-**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial target formats:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** Pre-release contract foundation
+**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial target formats:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** Pre-release executable foundation
 
 Cueson will convert subtitle and caption formats into and out of a canonical, versioned JSON representation called Cue JSON. Its common cue model is designed for direct use by search, analysis, automation, and AI systems, while a source envelope preserves the original assets for byte-exact restoration.
 
-The repository is currently establishing its specification, governance, and delivery system. It does not yet ship a working `cueson` executable or claim complete format support.
+The repository contains the first buildable `cueson` command-line foundation. It currently provides truthful help and `cueson version`; it does not yet provide a public release, an embedded schema, source restoration, or native subtitle-format support.
 
 ## Project direction
 
@@ -25,7 +25,27 @@ The ratified implementation baselines cover [architecture](docs/architecture.md)
 
 ## Development
 
-Development is specification-driven with [GitHub Spec Kit](https://github.com/github/spec-kit). Product implementation begins only after the initial repository and GitHub planning foundation is in place.
+Development is specification-driven with [GitHub Spec Kit](https://github.com/github/spec-kit). The current source requires Go 1.24.0 or newer and uses no third-party runtime dependencies.
+
+Run the available command directly from source:
+
+```text
+go run ./cmd/cueson --help
+go run ./cmd/cueson version
+```
+
+Run the product tests and build:
+
+```text
+go test ./...
+go build ./cmd/cueson
+```
+
+The repository publication formatter remains an intentionally separate module with its own test command:
+
+```text
+go -C scripts/github-format test ./...
+```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes. Report security concerns privately through [GitHub Security Advisories](https://github.com/shruggietech/cueson/security/advisories/new) rather than a public issue.
 
