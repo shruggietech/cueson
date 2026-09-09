@@ -349,6 +349,63 @@ func TestOperatorReviewRequestRequiresOneHistoricalHead(t *testing.T) {
 	}
 }
 
+func TestEditedOperatorRequestUsesEditTimeAsRoundBoundary(t *testing.T) {
+	t.Parallel()
+
+	snapshot := baseSnapshot()
+	addCompletedSummary(&snapshot, testHead, testStart.Add(2*time.Minute), "+1")
+	snapshot.Comments = append(snapshot.Comments, Comment{
+		ID:        21,
+		Author:    operator,
+		Body:      "@codex review\n\nReviewed commit: `" + testHead[:10] + "`",
+		CreatedAt: testStart,
+		UpdatedAt: testStart.Add(3 * time.Minute),
+	})
+	reservation := EvaluateCodexReview(snapshot)
+	if reservation.State != StatusPending || reservation.Description != RoundTwoReservationDescription(snapshot.Number, snapshot.HeadSHA) {
+		t.Fatalf("edited request did not reserve consumption: %+v", reservation)
+	}
+	snapshot.Checks = append(snapshot.Checks, CheckResult{
+		Context:     CodexReviewContext,
+		State:       string(StatusPending),
+		Description: reservation.Description,
+		SHA:         snapshot.HeadSHA,
+		Creator:     Actor{Login: GitHubActionsLogin, ID: GitHubActionsUserID, Type: "Bot"},
+	})
+	result := EvaluateCodexReview(snapshot)
+	if result.State != StatusPending || result.RequestSecond {
+		t.Fatalf("pre-edit terminal evidence completed round two: %+v", result)
+	}
+}
+
+func TestDeletedOperatorRequestCannotRestoreReviewAllowance(t *testing.T) {
+	t.Parallel()
+
+	snapshot := baseSnapshot()
+	snapshot.Comments = []Comment{{
+		ID:        21,
+		Author:    operator,
+		Body:      "@codex review\n\nReviewed commit: `" + testHead[:10] + "`",
+		CreatedAt: testStart,
+	}}
+	reservation := EvaluateCodexReview(snapshot)
+	if reservation.State != StatusPending || reservation.Description != RoundTwoReservationDescription(snapshot.Number, snapshot.HeadSHA) {
+		t.Fatalf("operator request did not produce durable reservation: %+v", reservation)
+	}
+	snapshot.Checks = append(snapshot.Checks, CheckResult{
+		Context:     CodexReviewContext,
+		State:       string(StatusPending),
+		Description: reservation.Description,
+		SHA:         snapshot.HeadSHA,
+		Creator:     Actor{Login: GitHubActionsLogin, ID: GitHubActionsUserID, Type: "Bot"},
+	})
+	snapshot.Comments = nil
+	result := EvaluateCodexReview(snapshot)
+	if result.State != StatusFailure || result.RequestSecond {
+		t.Fatalf("deleted request restored review allowance: %+v", result)
+	}
+}
+
 func TestTenfoldReplayRequestsAtMostOneSecondRound(t *testing.T) {
 	t.Parallel()
 
@@ -551,6 +608,8 @@ func reviewScenario(t *testing.T, scenario string) Snapshot {
 	case "round-two-stale":
 		addRoundTwoRequest(&snapshot)
 		snapshot.Comments[len(snapshot.Comments)-1].Body = RoundTwoComment(snapshot.Number, testOld)
+		snapshot.Checks[len(snapshot.Checks)-1].Description = RoundTwoReservationDescription(snapshot.Number, testOld)
+		snapshot.Checks[len(snapshot.Checks)-1].SHA = testOld
 	case "protocol-violation":
 		addRoundTwoRequest(&snapshot)
 		snapshot.Comments = append(snapshot.Comments, Comment{ID: 31, Author: operator, Body: "@codex review\n\nReviewed commit: `" + testHead[:10] + "`", CreatedAt: testStart.Add(4 * time.Minute)})
@@ -612,6 +671,12 @@ func addGreenBridge(snapshot *Snapshot) {
 
 func addRoundTwoRequest(snapshot *Snapshot) {
 	snapshot.Comments = append(snapshot.Comments, Comment{ID: 30, Author: Actor{Login: "github-actions[bot]", ID: 41898282, Type: "Bot"}, Body: RoundTwoComment(snapshot.Number, snapshot.HeadSHA), CreatedAt: testStart.Add(3 * time.Minute), UpdatedAt: testStart.Add(3 * time.Minute)})
+	for _, check := range snapshot.Checks {
+		if check.Context == CodexReviewContext && check.Description == RoundTwoReservationDescription(snapshot.Number, snapshot.HeadSHA) {
+			return
+		}
+	}
+	snapshot.Checks = append(snapshot.Checks, CheckResult{Context: CodexReviewContext, State: string(StatusPending), Description: RoundTwoReservationDescription(snapshot.Number, snapshot.HeadSHA), SHA: snapshot.HeadSHA, Creator: Actor{Login: GitHubActionsLogin, ID: GitHubActionsUserID, Type: "Bot"}})
 }
 
 func addSecondFinding(snapshot *Snapshot, resolved bool) {

@@ -396,12 +396,12 @@ func classifyReviewEvidence(snapshot Snapshot) (reviewEvidence, error) {
 			}
 			evidence.requestCount++
 			evidence.requestHead = markerHead
-			evidence.requestAt = comment.CreatedAt
+			evidence.requestAt = latestTime(comment.UpdatedAt, comment.CreatedAt)
 			evidence.requestEvidence = append(evidence.requestEvidence, fmt.Sprintf("marked request comment %d", comment.ID))
 		} else if comment.Author.Login == OperatorLogin && comment.Author.Type == "User" && standaloneInvocationCount(comment.Body) != 0 {
 			invocations := standaloneInvocationCount(comment.Body)
 			evidence.requestCount += invocations
-			evidence.requestAt = comment.CreatedAt
+			evidence.requestAt = latestTime(comment.UpdatedAt, comment.CreatedAt)
 			evidence.requestEvidence = append(evidence.requestEvidence, fmt.Sprintf("operator request comment %d", comment.ID))
 			if invocations == 1 {
 				head, err := operatorRequestHead(comment.Body, snapshot.HistoricalHeads, snapshot.HeadSHA)
@@ -543,6 +543,9 @@ func evaluateRoundTwo(snapshot Snapshot, evidence reviewEvidence) PolicyResult {
 	}
 	if evidence.reservation != nil && evidence.requestCount == 0 {
 		return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Round-two reservation has ambiguous publication", evidence.reservation.Description)
+	}
+	if evidence.requestCount == 1 && evidence.reservation == nil {
+		return result(CodexReviewContext, snapshot.HeadSHA, StatusPending, RoundTwoReservationDescription(snapshot.Number, snapshot.HeadSHA), "second-round request observed", "persisting permanent consumption before terminal attribution")
 	}
 
 	var roundTwoThreads []ReviewThread

@@ -31,7 +31,7 @@
 
 ## Round attribution
 
-The summary is edited in place and is only latest terminal evidence. It is not a historical ledger. Reviews and threads retain their reviewed commit; the second-round marker and status-history reservation establish the round-two boundary. A configured-operator request must cite exactly one backticked commit prefix that uniquely resolves within the collected pull-request head history; an unbound request consumes the allowance but cannot be rebound to a later head. `isResolved` controls finding resolution, while outdated findings remain blocking until resolved.
+The summary is edited in place and is only latest terminal evidence. It is not a historical ledger. Reviews and threads retain their reviewed commit; the second-round marker and status-history reservation establish the round-two boundary. A configured-operator request must cite exactly one backticked commit prefix that uniquely resolves within the collected pull-request head history, and the later of its creation or edit time establishes the boundary; an unbound request consumes the allowance but cannot be rebound to a later head. `isResolved` controls finding resolution, while outdated findings remain blocking until resolved.
 
 The first-round remediation bridge requires GitHub comparison evidence that the finding review commit is an ancestor of and older than the current head, plus successful current-head results for every configured S006 CI gate. This is the only transition that may use finding evidence from a prior head. Divergent or force-pushed history, missing gates, or top-level findings without resolvable threads remain blocking.
 
@@ -41,7 +41,7 @@ A top-level Codex review that signals findings but has no resolvable thread cann
 
 Any authenticated S007 marker, authenticated round-two reservation status, or configured-operator comment containing a standalone `@codex review` invocation consumes round two. A marker-shaped comment from another actor fails closed without becoming authoritative. Automation never emits another invocation after any authoritative evidence exists.
 
-Before posting, the reconciler refetches the head, all comments, and status history; then it writes and reads back a pending reservation in the Codex policy context. The marked request comment atomically publishes the invocation and durable visible marker. After posting, the reconciler refetches comments and requires exactly one matching marker and invocation before replacing the status with a verified pending result.
+Before posting, the reconciler refetches the head, all comments, and status history; then it writes and reads back a pending reservation in the Codex policy context. The marked request comment atomically publishes the invocation and durable visible marker. After posting, the reconciler refetches comments and requires exactly one matching marker and invocation before replacing the status with a verified pending result. When a configured-operator request is observed without a reservation, the first reconciliation publishes and reads back that same authenticated reservation before later terminal evidence can complete the round; deletion of the comment therefore leaves a consumed, fail-closed state.
 
 One global non-canceling workflow concurrency group serializes every ordinary event and scheduled sweep. If any mutation response is ambiguous, the reservation remains consumed and the policy fails closed without retry.
 
