@@ -115,11 +115,9 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 
 	switch parsed.help {
 	case rootHelp:
-		fmt.Fprint(stdout, rootHelpText)
-		return ExitSuccess
+		return writeStdout(stdout, diagnostics, rootHelpText)
 	case versionHelp:
-		fmt.Fprint(stdout, versionHelpText)
-		return ExitSuccess
+		return writeStdout(stdout, diagnostics, versionHelpText)
 	}
 
 	select {
@@ -129,7 +127,18 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 	default:
 	}
 
-	fmt.Fprintln(stdout, version.String())
+	return writeStdout(stdout, diagnostics, version.String()+"\n")
+}
+
+func writeStdout(stdout io.Writer, diagnostics diagnosticWriter, payload string) int {
+	written, err := io.WriteString(stdout, payload)
+	if err == nil && written != len(payload) {
+		err = io.ErrShortWrite
+	}
+	if err != nil {
+		diagnostics.write(diagnosticError, fmt.Sprintf("write stdout: %v", err))
+		return ExitRuntimeFailure
+	}
 	return ExitSuccess
 }
 

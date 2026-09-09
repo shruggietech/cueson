@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"errors"
 	"strings"
 	"testing"
 )
@@ -214,6 +215,42 @@ func TestDiagnosticColorRendering(t *testing.T) {
 	if got := output.String(); !strings.Contains(got, "\x1b[31merror:\x1b[0m failed\n") {
 		t.Errorf("colored diagnostic = %q, want red error label", got)
 	}
+}
+
+func TestRunStdoutWriteFailure(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		args []string
+	}{
+		{name: "root help"},
+		{name: "version", args: []string{"version"}},
+		{name: "version help", args: []string{"version", "--help"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var stderr bytes.Buffer
+			status := Run(context.Background(), tt.args, strings.NewReader(""), errorWriter{err: errors.New("output unavailable")}, &stderr)
+			if status != ExitRuntimeFailure {
+				t.Errorf("Run() status = %d, want %d", status, ExitRuntimeFailure)
+			}
+			if !strings.Contains(stderr.String(), "write stdout: output unavailable") {
+				t.Errorf("Run() stderr = %q, want stdout write diagnostic", stderr.String())
+			}
+		})
+	}
+}
+
+type errorWriter struct {
+	err error
+}
+
+func (writer errorWriter) Write([]byte) (int, error) {
+	return 0, writer.err
 }
 
 func runForTest(ctx context.Context, args []string) (int, string, string) {

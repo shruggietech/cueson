@@ -150,3 +150,9 @@ Task T013: Update CHANGELOG.md with the Unreleased S002 addition.
 - Completed tasks are marked `[X]` during the implementation phase.
 - Tests precede the corresponding implementation within every behavior phase.
 - S002 adds no schema, source, codec, rendering, conversion, validation, inspection, completion, CI, release, or production-domain implementation.
+
+## Phase 7: Review Remediation
+
+**Purpose**: Resolve verified first-round review findings without expanding S002 scope.
+
+- [X] T015 Add command-level regression coverage for stdout write rejection in `internal/cli/cli_test.go` and map failed help or version writes to runtime failure in `internal/cli/cli.go`
