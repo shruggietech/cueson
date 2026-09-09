@@ -122,7 +122,7 @@
 - [X] T036 Verify the hosted `CI / Repository text` check and overall `CI` workflow fail specifically because `.github/ci-failure-probe` exists, then retain the failed run URL in `specs/S006-establish-ci-gates/tasks.md`.
 - [X] T037 Remove `.github/ci-failure-probe`, commit and push the correction, and verify the final pull-request diff contains no probe.
 - [X] T038 Wait for every corrected CI and CodeQL check in `specs/S006-establish-ci-gates/contracts/check-contract.md` to complete successfully within the 20-minute success-criterion window, record elapsed time, investigate every failure, and push fixes until green.
-- [ ] T039 Mark the pull request ready for review only after the corrected checks are green so third-party Codex and security bots evaluate the intended tree.
+- [X] T039 Mark the pull request ready for review only after the corrected checks are green so third-party Codex and security bots evaluate the intended tree.
 
 **Checkpoint**: Hosted failure and recovery are proven, the final tree is green, and automated review may begin.
 
@@ -132,9 +132,9 @@
 
 **Purpose**: Address every external finding under the recorded maximum-two-round protocol and stop before human merge.
 
-- [ ] T040 Inspect every first-round review, inline thread, security-bot result, pull-request reaction, and CI check; respond to every actionable finding and record remediation tasks in `specs/S006-establish-ci-gates/tasks.md`.
-- [ ] T041 Implement every valid first-round remediation, rerun the complete relevant foreground verification, push the fixes, reply with commit evidence, and resolve threads only after the concern is handled.
-- [ ] T042 If round one had findings, post exactly one formatter-verified `@codex review` request, read it back, and do not request any third automated review; if round one was clean, record why no second request was needed in `specs/S006-establish-ci-gates/tasks.md`.
+- [X] T040 Inspect every first-round review, inline thread, security-bot result, pull-request reaction, and CI check; respond to every actionable finding and record remediation tasks in `specs/S006-establish-ci-gates/tasks.md`.
+- [X] T041 Implement every valid first-round remediation, rerun the complete relevant foreground verification, push the fixes, reply with commit evidence, and resolve threads only after the concern is handled.
+- [ ] T042 If round one had findings or failed without producing a verdict, post exactly one formatter-verified `@codex review` request, read it back, and do not request any third automated review; if round one was clean, record why no second request was needed in `specs/S006-establish-ci-gates/tasks.md`.
 - [ ] T043 Inspect and resolve every second-round finding and security result with the same fix, verification, evidence, push, reply, and thread-resolution discipline in `specs/S006-establish-ci-gates/tasks.md`.
 - [ ] T044 Re-run final Spec Kit convergence and the complete applicable verification suite, mark all completed tasks in `specs/S006-establish-ci-gates/tasks.md`, and push final evidence updates.
 - [ ] T045 Set issue #8 Project `Stage: PR review` with `Slice: S006` and empty default `Status`, verify all checks and review threads are clear, and notify the operator for the final review and merge ritual without merging.
@@ -199,7 +199,7 @@ Task: "Implement independent least-privilege CodeQL workflow in .github/workflow
 
 - The draft failure-probe revision is delivery evidence, not a review target.
 - Every first-round finding is handled before the sole permitted second request.
-- A clean first round receives no second request.
+- A clean first round receives no second request; a failed round that produces no verdict may use the sole second request.
 - A second round, when needed, is the final automated round.
 - No AI merge, auto-merge, release, tag, ruleset, or production mutation occurs.
 
@@ -217,6 +217,7 @@ Task: "Implement independent least-privilege CodeQL workflow in .github/workflow
 - 2026-09-09 Project read-back confirmed issue #8 item `PVTI_lADOBpohEc4Bi59Izg6FU8k` has `Slice: S006`, `Stage: In progress`, and an empty default `Status` field.
 - 2026-09-09 draft pull request [#18](https://github.com/shruggietech/cueson/pull/18) was published with a formatter-verified and read-back-verified body. Controlled CI run [34379737911](https://github.com/shruggietech/cueson/actions/runs/34379737911) failed only at `CI / Repository text`, whose log named `.github/ci-failure-probe`; the other 15 CI jobs passed. Companion CodeQL run [34379738261](https://github.com/shruggietech/cueson/actions/runs/34379738261) completed successfully.
 - 2026-09-09 corrected CI run [34380003957](https://github.com/shruggietech/cueson/actions/runs/34380003957) passed all 16 jobs in 1 minute 37 seconds, including native Windows, macOS, and Linux tests plus all six pure-Go builds. Corrected CodeQL run [34380003962](https://github.com/shruggietech/cueson/actions/runs/34380003962) passed in 1 minute 9 seconds. Both satisfy the 20-minute success criterion.
+- 2026-09-09 pull request #18 was marked ready only after the evidence-only head remained fully green. The first automatic Codex round reported `Failed` on commit `58d42b6` without producing a review, finding, inline thread, or thumbs-up verdict. CI, CodeQL, and the GitHub Advanced Security check remained green, so no first-round remediation existed. The operator-authorized second request is used as the final opportunity to obtain an actual Codex verdict; no third request is permitted.
 
 ## Hosted-Discovered Remediation
 
