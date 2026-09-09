@@ -164,3 +164,9 @@ Complete each chronological checkpoint before advancing. Keep commits aligned to
 - [x] T043 Downgrade equal macOS birth and change timestamps to explicit `ctime_fallback` provenance with platform-selected coverage per FR-018 and review thread `PRRT_kwDOUTHZE86grJkF`
 - [x] T044 Reject whitespace-only literal output paths and output directories before resolution or filesystem mutation per the path edge case and review thread `PRRT_kwDOUTHZE86grJkL`
 - [x] T045 Reject Windows superscript COM and LPT device aliases in schema and source validation with portable coverage per FR-004 and review thread `PRRT_kwDOUTHZE86grJkP`
+
+## Phase 12: Round-Two Review Remediation
+
+- [x] T046 Use bounded destination-independent staging and rollback names, with long-basename coverage for new and forced output-directory restoration per FR-011 and review thread `PRRT_kwDOUTHZE86gruw6`
+- [x] T047 Classify a successful Linux timestamp application whose exact value cannot be represented on the destination filesystem as unsupported, with focused readback coverage per FR-020, FR-021, and review thread `PRRT_kwDOUTHZE86gruxC`
+- [x] T048 Retain stage cleanup ownership until final stage inspection succeeds and prove deterministic inspection failure leaves no staging artifact per FR-011, SC-004, and review thread `PRRT_kwDOUTHZE86gruxJ`

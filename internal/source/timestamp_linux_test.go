@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -134,6 +135,24 @@ func TestApplyNativeTimestampsReportsUnavailableFields(t *testing.T) {
 		if result.Status != TimestampUnavailable {
 			t.Fatalf("results[%d] = %#v, want unavailable", index, result)
 		}
+	}
+}
+
+func TestVerifyLinuxTimestampClassifiesUnrepresentablePrecisionAsUnsupported(t *testing.T) {
+	requested := &model.Timestamp{UnixNS: 1_704_067_200_123_456_789}
+	actual := unix.NsecToTimespec(1_704_067_200_120_000_000)
+	result := TimestampResult{Kind: TimestampModified, EffectivePrecision: linuxTimestampPrecision}
+
+	verifyLinuxTimestamp(&result, requested, actual)
+
+	if result.Status != TimestampUnsupported {
+		t.Fatalf("status = %q, want %q", result.Status, TimestampUnsupported)
+	}
+	if result.EffectivePrecision != "" {
+		t.Fatalf("effective precision = %q, want unknown", result.EffectivePrecision)
+	}
+	if !strings.Contains(result.Detail, "destination filesystem represented") {
+		t.Fatalf("detail = %q, want destination precision explanation", result.Detail)
 	}
 }
 

@@ -98,6 +98,42 @@ func TestRestoreMultipleAssetsToDirectory(t *testing.T) {
 	assertNoTransactionFiles(t, directory)
 }
 
+func TestRestoreSupportsLongStoredBasenames(t *testing.T) {
+	t.Parallel()
+
+	document := testDocument(t)
+	document.Source.Assets[0].FileName = strings.Repeat("a", 240)
+	want, err := base64.StdEncoding.DecodeString(document.Source.Assets[0].DataBase64)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, test := range []struct {
+		name     string
+		existing bool
+	}{
+		{name: "new destination"},
+		{name: "forced destination", existing: true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			directory := t.TempDir()
+			output := filepath.Join(directory, document.Source.Assets[0].FileName)
+			if test.existing {
+				if err := os.WriteFile(output, []byte("existing"), 0o600); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if _, err := Restore(context.Background(), document, RestoreOptions{OutputDir: directory, Force: test.existing, Metadata: MetadataNone}); err != nil {
+				t.Fatalf("Restore() error = %v", err)
+			}
+			if got, err := os.ReadFile(output); err != nil || !bytes.Equal(got, want) {
+				t.Fatalf("restored bytes = %q, error = %v", got, err)
+			}
+			assertNoTransactionFiles(t, directory)
+		})
+	}
+}
+
 func TestRestoreMetadataPolicyAndRollback(t *testing.T) {
 	t.Parallel()
 
@@ -309,6 +345,27 @@ func TestRestoreReportsFailedPartialStageCleanupFault(t *testing.T) {
 	if err := os.Remove(filepath.Join(directory, entries[0].Name())); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestRestoreCleansStageWhenFinalStageInspectionFails(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	output := filepath.Join(directory, "failed-inspection.srt")
+	fault := errors.New("injected stage inspection failure")
+	hooks := transactionHooks{fail: func(point, _ string) error {
+		if point == "stage-inspect" {
+			return fault
+		}
+		return nil
+	}}
+	if _, err := restoreWithHooks(context.Background(), testDocument(t), RestoreOptions{Output: output, Metadata: MetadataNone}, hooks); !errors.Is(err, fault) {
+		t.Fatalf("restoreWithHooks() error = %v, want inspection failure", err)
+	}
+	if _, err := os.Lstat(output); !os.IsNotExist(err) {
+		t.Fatalf("inspection failure left output: %v", err)
+	}
+	assertNoTransactionFiles(t, directory)
 }
 
 func TestRestorePostPlanningRaceIsRuntimeFailure(t *testing.T) {

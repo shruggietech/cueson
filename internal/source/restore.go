@@ -27,6 +27,11 @@ type transactionHooks struct {
 	fail func(point, path string) error
 }
 
+const (
+	stagePattern  = ".cueson-stage-*"
+	backupPattern = ".cueson-backup-*"
+)
+
 func (hooks transactionHooks) at(point, path string) error {
 	if hooks.fail == nil {
 		return nil
@@ -136,8 +141,7 @@ func restoreWithHooks(ctx context.Context, document model.Document, options Rest
 }
 
 func stage(ctx context.Context, plan destinationPlan, hooks transactionHooks) (item stagedAsset, result error) {
-	base := filepath.Base(plan.destination)
-	file, err := os.CreateTemp(filepath.Dir(plan.destination), "."+base+".cueson-stage-*")
+	file, err := os.CreateTemp(filepath.Dir(plan.destination), stagePattern)
 	if err != nil {
 		return stagedAsset{}, fmt.Errorf("create staging file for %q: %w", plan.destination, err)
 	}
@@ -188,11 +192,17 @@ func stage(ctx context.Context, plan destinationPlan, hooks transactionHooks) (i
 	if err != nil || verifiedCount != count || digest != plan.asset.asset.Hashes.SHA256 {
 		return stagedAsset{}, fmt.Errorf("reopen staging file for %q failed verification: %v", plan.destination, err)
 	}
-	remove = false
-	stageInfo, err := os.Lstat(path)
-	if err != nil || !stageInfo.Mode().IsRegular() {
+	if err := hooks.at("stage-inspect", path); err != nil {
 		return stagedAsset{}, fmt.Errorf("inspect staging file for %q: %w", plan.destination, err)
 	}
+	stageInfo, err := os.Lstat(path)
+	if err != nil {
+		return stagedAsset{}, fmt.Errorf("inspect staging file for %q: %w", plan.destination, err)
+	}
+	if !stageInfo.Mode().IsRegular() {
+		return stagedAsset{}, fmt.Errorf("inspect staging file for %q: staging path is not a regular file", plan.destination)
+	}
+	remove = false
 	return stagedAsset{plan: plan, stagePath: path, stageInfo: stageInfo}, nil
 }
 
@@ -247,7 +257,7 @@ func commit(item *stagedAsset, hooks transactionHooks) error {
 
 func createBackupLink(destination string) (string, error) {
 	for attempt := 0; attempt < 8; attempt++ {
-		placeholder, err := os.CreateTemp(filepath.Dir(destination), "."+filepath.Base(destination)+".cueson-backup-*")
+		placeholder, err := os.CreateTemp(filepath.Dir(destination), backupPattern)
 		if err != nil {
 			return "", err
 		}

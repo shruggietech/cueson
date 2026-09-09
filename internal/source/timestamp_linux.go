@@ -182,8 +182,9 @@ func verifyLinuxTimestamp(result *TimestampResult, requested *model.Timestamp, a
 		return
 	}
 	if actualNS != requested.UnixNS {
-		result.Status = TimestampFailed
-		result.Detail = fmt.Sprintf("readback timestamp is %d, want %d", actualNS, requested.UnixNS)
+		result.Status = TimestampUnsupported
+		result.EffectivePrecision = ""
+		result.Detail = fmt.Sprintf("destination filesystem represented requested timestamp %d as %d", requested.UnixNS, actualNS)
 		return
 	}
 	result.Status = TimestampRestored
