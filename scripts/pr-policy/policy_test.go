@@ -343,6 +343,11 @@ func TestOperatorReviewRequestRequiresOneHistoricalHead(t *testing.T) {
 	snapshot := baseSnapshot()
 	snapshot.HistoricalHeads = []string{testOld, testHead}
 	snapshot.Comments = []Comment{{ID: 21, Author: operator, Body: "@codex review\n\nReviewed commit: `" + testOld[:10] + "`", CreatedAt: testStart}}
+	reservation := EvaluateCodexReview(snapshot)
+	if reservation.State != StatusPending || reservation.Description != RoundTwoReservationDescription(snapshot.Number, testOld) || reservation.RequestSecond {
+		t.Fatalf("historical operator request was not durably reserved: %+v", reservation)
+	}
+	snapshot.Checks = append(snapshot.Checks, CheckResult{Context: CodexReviewContext, State: string(StatusPending), Description: reservation.Description, SHA: snapshot.HeadSHA, Creator: Actor{Login: GitHubActionsLogin, ID: GitHubActionsUserID, Type: "Bot"}})
 	result := EvaluateCodexReview(snapshot)
 	if result.State != StatusFailure || !strings.Contains(result.Description, "stale") || result.RequestSecond {
 		t.Fatalf("historical operator request was rebound to current head: %+v", result)
@@ -403,6 +408,20 @@ func TestDeletedOperatorRequestCannotRestoreReviewAllowance(t *testing.T) {
 	result := EvaluateCodexReview(snapshot)
 	if result.State != StatusFailure || result.RequestSecond {
 		t.Fatalf("deleted request restored review allowance: %+v", result)
+	}
+
+	stale := baseSnapshot()
+	stale.HistoricalHeads = []string{testOld, testHead}
+	stale.Comments = []Comment{{ID: 22, Author: operator, Body: "@codex review\n\nReviewed commit: `" + testOld[:10] + "`", CreatedAt: testStart}}
+	staleReservation := EvaluateCodexReview(stale)
+	if staleReservation.State != StatusPending || staleReservation.Description != RoundTwoReservationDescription(stale.Number, testOld) {
+		t.Fatalf("late-observed stale request was not reserved: %+v", staleReservation)
+	}
+	stale.Checks = append(stale.Checks, CheckResult{Context: CodexReviewContext, State: string(StatusPending), Description: staleReservation.Description, SHA: stale.HeadSHA, Creator: Actor{Login: GitHubActionsLogin, ID: GitHubActionsUserID, Type: "Bot"}})
+	stale.Comments = nil
+	staleResult := EvaluateCodexReview(stale)
+	if staleResult.State != StatusFailure || staleResult.RequestSecond {
+		t.Fatalf("deleted stale request restored review allowance: %+v", staleResult)
 	}
 }
 
@@ -607,6 +626,7 @@ func reviewScenario(t *testing.T, scenario string) Snapshot {
 		addSummary(&snapshot, SummaryFailed, testHead, testStart.Add(4*time.Minute))
 	case "round-two-stale":
 		addRoundTwoRequest(&snapshot)
+		snapshot.HistoricalHeads = append(snapshot.HistoricalHeads, testOld)
 		snapshot.Comments[len(snapshot.Comments)-1].Body = RoundTwoComment(snapshot.Number, testOld)
 		snapshot.Checks[len(snapshot.Checks)-1].Description = RoundTwoReservationDescription(snapshot.Number, testOld)
 		snapshot.Checks[len(snapshot.Checks)-1].SHA = testOld

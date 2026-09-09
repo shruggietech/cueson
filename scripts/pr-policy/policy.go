@@ -468,7 +468,7 @@ func classifyReviewEvidence(snapshot Snapshot) (reviewEvidence, error) {
 			continue
 		}
 		number, head, ok := parseReservation(check.Description)
-		if !ok || number != snapshot.Number || check.SHA != head || check.State != string(StatusPending) || !IsGitHubActionsActor(check.Creator) {
+		if !ok || number != snapshot.Number || !isKnownHead(snapshot, head) || !isKnownHead(snapshot, check.SHA) || check.State != string(StatusPending) || !IsGitHubActionsActor(check.Creator) {
 			return reviewEvidence{}, errors.New("round-two reservation status is malformed")
 		}
 		if evidence.reservation != nil {
@@ -538,14 +538,14 @@ func evaluateRoundTwo(snapshot Snapshot, evidence reviewEvidence) PolicyResult {
 	if requestHead == "" && evidence.reservation != nil {
 		_, requestHead, _ = parseReservation(evidence.reservation.Description)
 	}
+	if evidence.requestCount == 1 && evidence.reservation == nil {
+		return result(CodexReviewContext, snapshot.HeadSHA, StatusPending, RoundTwoReservationDescription(snapshot.Number, requestHead), "second-round request observed", "persisting permanent consumption before terminal attribution")
+	}
 	if requestHead != snapshot.HeadSHA {
 		return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Round-two evidence is stale after a head change", requestHead)
 	}
 	if evidence.reservation != nil && evidence.requestCount == 0 {
 		return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Round-two reservation has ambiguous publication", evidence.reservation.Description)
-	}
-	if evidence.requestCount == 1 && evidence.reservation == nil {
-		return result(CodexReviewContext, snapshot.HeadSHA, StatusPending, RoundTwoReservationDescription(snapshot.Number, snapshot.HeadSHA), "second-round request observed", "persisting permanent consumption before terminal attribution")
 	}
 
 	var roundTwoThreads []ReviewThread
@@ -779,6 +779,21 @@ func operatorRequestHead(body string, historicalHeads []string, currentHead stri
 		return head, nil
 	}
 	return "", errors.New("cited commit did not resolve")
+}
+
+func isKnownHead(snapshot Snapshot, wanted string) bool {
+	if !commitSHAExpression.MatchString(wanted) {
+		return false
+	}
+	if wanted == snapshot.HeadSHA {
+		return true
+	}
+	for _, head := range snapshot.HistoricalHeads {
+		if head == wanted {
+			return true
+		}
+	}
+	return false
 }
 
 func standaloneInvocationCount(body string) int {
