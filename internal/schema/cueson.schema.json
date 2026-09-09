@@ -161,7 +161,7 @@
           "const": false
         },
         "restore_supported": {
-          "const": false
+          "const": true
         },
         "ocr_required_for_semantic_output": {
           "const": false

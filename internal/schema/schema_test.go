@@ -94,6 +94,23 @@ func TestValidateRejectsMalformedJSON(t *testing.T) {
 	}
 }
 
+func TestDecodeReturnsTypedDocumentAndRejectsInvalidUTF8(t *testing.T) {
+	t.Parallel()
+
+	document, err := Decode(Representative())
+	if err != nil {
+		t.Fatalf("Decode(Representative()) error = %v", err)
+	}
+	if document.SchemaVersion != Version() || !document.FormatSupport.RestoreSupported {
+		t.Fatalf("Decode() returned unexpected document: version = %q, restore = %t", document.SchemaVersion, document.FormatSupport.RestoreSupported)
+	}
+	invalid := append([]byte{}, Representative()...)
+	invalid[len(invalid)-2] = 0xff
+	if _, err := Decode(invalid); err == nil || !strings.Contains(err.Error(), "UTF-8") {
+		t.Fatalf("Decode(invalid UTF-8) error = %v, want UTF-8 rejection", err)
+	}
+}
+
 func TestValidateRejectsSemanticViolations(t *testing.T) {
 	t.Parallel()
 

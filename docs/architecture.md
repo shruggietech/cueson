@@ -34,6 +34,8 @@ Original source asset bytes are authoritative for exact restoration. Normalized 
 
 Exact restoration is not a codec operation. It validates and writes assets directly from the source envelope, verifies byte length and SHA-256 before acceptance, and applies supported filesystem timestamps only after the final bytes and output name are in place. This separation allows a conforming Cue JSON document to restore assets even when the executable has no native codec for the document's format.
 
+Restoration preflights the complete bundle, writes every asset to a same-directory private staging file, flushes and reopens each stage for integrity verification, and publishes only after every stage is ready. New destinations use exclusive hard-link publication so a raced-in path is never replaced. Forced regular-file destinations receive a same-filesystem hard-link rollback copy before atomic replacement. Controlled failures roll committed assets back in reverse order by recorded file identity; cleanup failure after the complete transaction is accepted is reported as a warning. This boundary does not claim crash atomicity or isolation from unrelated processes mutating the same paths.
+
 Paths stored in Cue JSON are portable safe basenames only. Runtime input paths, directories, drive or mount information, hostnames, usernames, and other machine identifiers never enter the document. Restoration rejects path separators, traversal components, control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when they have extensions.
 
 Before opening any output, restoration builds the complete destination plan and rejects duplicate destinations. Stored basenames in one source bundle must be unique under Unicode canonical caseless matching, defined as NFD normalization, default Unicode case folding, then NFD normalization again, so case-insensitive and normalization-insensitive filesystems cannot collapse distinct assets. Default destinations and paths beneath `--output-dir` derive from stored basenames. A single-asset `--output` is an explicit caller-selected runtime path, is validated separately, and may rename the restored file.
@@ -59,6 +61,10 @@ Invalid invocation and missing pre-execution requirements use exit code 2. Failu
 ## Platform boundary
 
 The target remains pure Go with `CGO_ENABLED=0` unless a separately recorded decision proves a native dependency necessary. Timestamp capture and restoration use platform-selected internal adapters because portable APIs cannot make identical claims on Windows, macOS, and Linux. Native tests prove supported behavior; cross-compilation alone is insufficient.
+
+Windows captures and attempts creation, modification, and access timestamps through no-follow handles at 100-nanosecond precision. Linux captures descriptor-visible modification and access timestamps, captures birth time when `statx` exposes it, and reports birth-time setting as unsupported. The macOS v0.0.0 adapter captures birth, modification, and access timestamps but restores only descriptor-based modification and access at its effective microsecond precision, reporting creation restoration as unsupported. Default restore warns for unsupported captured values, strict mode rolls back, and no-metadata mode makes no timestamp claim.
+
+S004 supplies native-selectable adapter tests, runs Windows behavior natively in the development environment, and proves Linux and macOS build selection through CGO-disabled cross-compilation. Hosted native execution on all three operating systems remains issue [#8](https://github.com/shruggietech/cueson/issues/8), which is intentionally downstream of the source and test foundations.
 
 Windows process launches for console applications must use `CREATE_NO_WINDOW` or an equivalent hidden-process guarantee and disable interactive prompts.
 

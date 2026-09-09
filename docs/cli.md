@@ -80,7 +80,7 @@ cueson schema --output PATH
 ## `restore`
 
 ```text
-cueson restore INPUT.cueson.json [options]
+cueson [global options] restore [options] INPUT.cueson.json
 ```
 
 `restore` validates the source envelope and recreates its exact asset bytes without calling a format codec. With no destination option, a single asset uses its stored portable safe basename in the current directory. `--output-dir` places one or more assets beneath the caller-selected directory using their stored basenames. `--output` is valid only for a single-asset document and supplies a separately validated literal runtime destination that may rename the file; it is not required to match the stored basename. `--output` and `--output-dir` are mutually exclusive.
@@ -102,6 +102,10 @@ Baseline options are:
 ```
 
 Restoration verifies length and SHA-256 before acceptance. Timestamp application occurs after bytes, integrity, and final name are established. Without `--strict-metadata`, unsupported timestamp restoration produces a warning. With strict metadata enabled, a requested timestamp that cannot be reproduced fails with exit code 1 and must not leave a partially accepted artifact.
+
+Successful restoration writes no stdout payload. It emits stderr only for warnings and errors according to the global diagnostic filters. Input parsing, schema validation, semantic validation, encoded-byte integrity, runtime I/O, and metadata application failures use exit code 1. Invalid option combinations and destination preconditions known before execution use exit code 2.
+
+All caller-selected output directories and parents must already exist. Existing symbolic links, directories, devices, and other non-regular entries are refused even with `--force`. The command stages and verifies the complete bundle before publication, preserves forced regular-file destinations for rollback, and does not claim cross-process transaction isolation or crash atomicity.
 
 ## Future command contract
 

@@ -55,7 +55,7 @@ func TestDocumentValidateRejectsSemanticViolations(t *testing.T) {
 		{name: "ocr source", mutate: func(doc *Document) {
 			doc.Cues[0].OCRObservations = []OCRObservation{{ID: "ocr-0", Derived: true, Engine: "test", SourceAssetID: "missing", Text: "x", Lines: []string{"x"}}}
 		}, want: "source_asset_id"},
-		{name: "capability", mutate: func(doc *Document) { doc.FormatSupport.RestoreSupported = true }, want: "restore_supported"},
+		{name: "capability", mutate: func(doc *Document) { doc.FormatSupport.RestoreSupported = false }, want: "restore_supported"},
 		{name: "diagnostic counts", mutate: func(doc *Document) { doc.Stats.WarningCount = 1 }, want: "warning_count"},
 		{name: "media bounds", mutate: func(doc *Document) { value := int64(10); doc.Document.MediaStartMilliseconds = &value }, want: "media_start_milliseconds"},
 	}
@@ -100,7 +100,7 @@ func representativeDocument() Document {
 		Schema:        "https://cueson.io/schema/v0.0.0/cueson.schema.json",
 		SchemaVersion: "0.0.0",
 		Format:        "subrip",
-		FormatSupport: FormatSupport{Status: "envelope_only"},
+		FormatSupport: FormatSupport{Status: "envelope_only", RestoreSupported: true},
 		Producer:      Producer{Name: "test", Version: "1.2.3"},
 		Source: SourceEnvelope{PrimaryAssetID: "asset-0", Assets: []SourceAsset{{
 			ID: "asset-0", Role: "primary", FileName: "captions.srt", MediaType: stringPointer("application/x-subrip"),

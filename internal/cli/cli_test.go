@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"errors"
 	"os"
 	"path/filepath"
@@ -82,10 +83,96 @@ func TestRunRootHelp(t *testing.T) {
 		if !strings.Contains(stdout, "\n  schema") {
 			t.Errorf("Run(%q) help does not expose schema command:\n%s", args, stdout)
 		}
-		for _, deferred := range []string{"restore", "encode", "render", "convert", "validate", "inspect", "completion"} {
+		if !strings.Contains(stdout, "\n  restore") {
+			t.Errorf("Run(%q) help does not expose restore command:\n%s", args, stdout)
+		}
+		for _, deferred := range []string{"encode", "render", "convert", "validate", "inspect", "completion"} {
 			if strings.Contains(stdout, "\n  "+deferred) {
 				t.Errorf("Run(%q) help exposes deferred command %q:\n%s", args, deferred, stdout)
 			}
+		}
+	}
+}
+
+func TestRunRestore(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	input := filepath.Join(directory, "document.cueson.json")
+	output := filepath.Join(directory, "restored.srt")
+	if err := os.WriteFile(input, schema.Representative(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"restore", "--no-metadata", "--output", output, input})
+	if status != ExitSuccess || stdout != "" || stderr != "" {
+		t.Fatalf("restore = (%d, %q, %q), want silent success", status, stdout, stderr)
+	}
+	document, err := schema.Decode(schema.Representative())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, err := base64.StdEncoding.DecodeString(document.Source.Assets[0].DataBase64)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, err := os.ReadFile(output); err != nil || !bytes.Equal(got, want) {
+		t.Fatalf("restored bytes = %q, error = %v", got, err)
+	}
+
+	status, stdout, stderr = runForTest(context.Background(), []string{"--silent", "restore", "--no-metadata", "--output", output, input})
+	if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, "already exists") {
+		t.Fatalf("refused restore = (%d, %q, %q)", status, stdout, stderr)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"restore", "--no-metadata", "--output", output, "--force", input})
+	if status != ExitSuccess || stdout != "" || stderr != "" {
+		t.Fatalf("forced restore = (%d, %q, %q)", status, stdout, stderr)
+	}
+}
+
+func TestRunRestoreHelpAndInvalidInvocation(t *testing.T) {
+	t.Parallel()
+
+	for _, args := range [][]string{{"restore", "--help"}, {"restore", "-h"}} {
+		status, stdout, stderr := runForTest(context.Background(), args)
+		if status != ExitSuccess || stderr != "" || !strings.Contains(stdout, "--strict-metadata") || !strings.Contains(stdout, "--output-dir") {
+			t.Errorf("Run(%q) = (%d, %q, %q), want restore help", args, status, stdout, stderr)
+		}
+	}
+	tests := []struct {
+		args []string
+		want string
+	}{
+		{args: []string{"restore"}, want: "requires one INPUT"},
+		{args: []string{"restore", "--output", "x", "--output-dir", "y", "in"}, want: "mutually exclusive"},
+		{args: []string{"restore", "--strict-metadata", "--no-metadata", "in"}, want: "mutually exclusive"},
+		{args: []string{"restore", "a", "b"}, want: "no additional arguments"},
+		{args: []string{"restore", "--bogus", "in"}, want: "unknown option"},
+	}
+	for _, tt := range tests {
+		status, stdout, stderr := runForTest(context.Background(), tt.args)
+		if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, tt.want) || !strings.Contains(stderr, "cueson [global options] restore") {
+			t.Errorf("Run(%q) = (%d, %q, %q), want invocation error containing %q", tt.args, status, stdout, stderr, tt.want)
+		}
+	}
+}
+
+func TestRunRestorePreExecutionPathFailures(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	input := filepath.Join(directory, "document.cueson.json")
+	if err := os.WriteFile(input, schema.Representative(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{
+		{"restore", filepath.Join(directory, "missing.cueson.json")},
+		{"restore", directory},
+		{"restore", "--no-metadata", "--output", filepath.Join(directory, "missing", "out.srt"), input},
+		{"restore", "--no-metadata", "--output-dir", filepath.Join(directory, "missing"), input},
+	} {
+		status, stdout, stderr := runForTest(context.Background(), args)
+		if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, "cueson [global options] restore") {
+			t.Errorf("Run(%q) = (%d, %q, %q), want pre-execution failure", args, status, stdout, stderr)
 		}
 	}
 }

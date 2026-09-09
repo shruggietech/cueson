@@ -263,8 +263,8 @@ func validateCapability(support FormatSupport) error {
 	if support.RenderSupported {
 		return fmt.Errorf("format_support.render_supported must remain false")
 	}
-	if support.RestoreSupported {
-		return fmt.Errorf("format_support.restore_supported must remain false until restore ships")
+	if !support.RestoreSupported {
+		return fmt.Errorf("format_support.restore_supported must be true")
 	}
 	if support.OCRRequiredForSemanticOutput {
 		return fmt.Errorf("format_support.ocr_required_for_semantic_output must be false")
