@@ -199,7 +199,7 @@ func TestSetLinuxDescriptorTimesRejectsClosedFile(t *testing.T) {
 	if err := file.Close(); err != nil {
 		t.Fatal(err)
 	}
-	err = setLinuxDescriptorTimes(file, []unix.Timespec{{Nsec: unix.UTIME_OMIT}, {Nsec: unix.UTIME_OMIT}})
+	err = setLinuxDescriptorTimes(file, []unix.Timespec{{Sec: 1}, {Nsec: unix.UTIME_OMIT}})
 	if err == nil {
 		t.Fatal("setLinuxDescriptorTimes accepted a closed file")
 	}

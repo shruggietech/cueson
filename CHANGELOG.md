@@ -23,6 +23,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Replaced the planned CI badge with the live workflow badge and refined the draft CI roadmap so codec, conversion, review-automation, and release gates activate only when their owning implementations exist.
 - Raised the minimum Go version from 1.24 to 1.25 and upgraded `golang.org/x/text` to the first compatible fixed release after the vulnerability gate found reachable issues that could not be corrected on the old floor.
 
+### Fixed
+
+- Made fixture-alias and closed-descriptor tests portable across case-insensitive macOS filesystems and Linux timestamp syscall behavior exposed by the first hosted native matrix.
+
 ### Decisions
 
 - Treat the project specification as a working pre-release draft until its contracts are ratified through the constitution and implementation slices.

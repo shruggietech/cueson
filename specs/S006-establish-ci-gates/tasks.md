@@ -215,3 +215,8 @@ Task: "Implement independent least-privilege CodeQL workflow in .github/workflow
 - 2026-09-09 independent specification, workflow, and security audits were reconciled by removing stale issue #8 future-tense architecture prose, making quickstart verification fail closed, enumerating all six local cross-builds, measuring hosted duration, upgrading the analyzer pins, disabling checkout credential persistence, and recording durable vulnerability evidence.
 - 2026-09-09 Spec Kit convergence found all 17 functional requirements and 8 success criteria covered by the chronological task plan, with no unresolved clarification marker, constitution conflict, or missing pre-publication work. T034 through T045 remain intentionally pending because they own authorized publication, hosted proof, automated review, and final handoff.
 - 2026-09-09 Project read-back confirmed issue #8 item `PVTI_lADOBpohEc4Bi59Izg6FU8k` has `Slice: S006`, `Stage: In progress`, and an empty default `Status` field.
+
+## Hosted-Discovered Remediation
+
+- [X] T046 [US2] Make `TestVerifyFixturesRejectsCanonicalAliasInInventory` select its setup from the temporary filesystem's observed case behavior instead of `runtime.GOOS`, so case-insensitive macOS and Windows filesystems exercise the same collision path while case-sensitive filesystems create a distinct alias.
+- [ ] T047 [US2] Make `TestSetLinuxDescriptorTimesRejectsClosedFile` request one real timestamp change because Linux may validly short-circuit two `UTIME_OMIT` values without consulting the closed descriptor; rerun native-equivalent Linux tests through hosted CI.
