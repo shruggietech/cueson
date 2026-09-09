@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added a manifest-governed, byte-stable fixture corpus with explicit provenance and redistribution decisions, reusable path-free golden comparisons, accepted and malformed cross-package conformance cases, and bounded fuzz boundaries for Cue JSON and source-envelope validation.
 - Added stable least-privilege CI and independent CodeQL workflows with pinned actions and analysis tools, native Windows/macOS/Linux tests, race and conformance gates, vulnerability scanning, and six-target pure-Go build proof.
 - Added a standalone pull-request policy engine and trusted-default-branch workflow for GitHub-resolved issue links, current-head Codex review state, operator-only exceptions, scheduled recovery, and one idempotent second-round request.
+- Added a versioned repository-control contract covering secure Actions defaults, dependency and secret protections, private vulnerability reporting, squash-only delivery, automatic merged-branch cleanup, and evidence-backed default-branch rules.
 
 ### Changed
 
@@ -28,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Made fixture-alias and closed-descriptor tests portable across case-insensitive macOS filesystems and Linux timestamp syscall behavior exposed by the first hosted native matrix.
+- Allowed a resolved second-round Codex finding to complete on a proven descendant remediation head with green required checks, removing the contradiction between stale-head rejection and the no-third-review rule.
 
 ### Decisions
 
@@ -46,6 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-09: Establish immutable-action, least-privilege hosted gates with native three-platform tests and separate six-target pure-Go build proof; defer empty codec, conversion, review-automation, release, and repository-control checks to their owning issues.
 - 2026-09-09: Raise the compatibility floor to Go 1.25 rather than suppress reachable Go standard-library and Unicode-normalization vulnerabilities discovered while establishing the mandatory vulnerability gate.
 - 2026-09-09: Reconcile native Codex round one from trusted default-branch code, use current-head GitHub evidence as the idempotency authority, and permit exactly one marked second-round request after resolved findings and green remediation-head CI.
+- 2026-09-09: Layer a Cueson-owned default-branch ruleset over the unchanged organization baseline, require only successful current-head checks with verified providers, and retain one organization-administrator recovery path without granting normal agent merge authority.
 
 ## [0.0.0]
 

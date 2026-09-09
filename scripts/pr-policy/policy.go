@@ -541,9 +541,6 @@ func evaluateRoundTwo(snapshot Snapshot, evidence reviewEvidence) PolicyResult {
 	if evidence.requestCount == 1 && evidence.reservation == nil {
 		return result(CodexReviewContext, snapshot.HeadSHA, StatusPending, RoundTwoReservationDescription(snapshot.Number, requestHead), "second-round request observed", "persisting permanent consumption before terminal attribution")
 	}
-	if requestHead != snapshot.HeadSHA {
-		return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Round-two evidence is stale after a head change", requestHead)
-	}
 	if evidence.reservation != nil && evidence.requestCount == 0 {
 		return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Round-two reservation has ambiguous publication", evidence.reservation.Description)
 	}
@@ -559,6 +556,23 @@ func evaluateRoundTwo(snapshot Snapshot, evidence reviewEvidence) PolicyResult {
 	}
 	for _, review := range evidence.unthreaded {
 		return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Codex finding has no resolvable thread", review.ID)
+	}
+	if requestHead != snapshot.HeadSHA {
+		if len(roundTwoThreads) == 0 {
+			return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Round-two evidence is stale after a head change", requestHead)
+		}
+		for _, thread := range roundTwoThreads {
+			if thread.CommitSHA != requestHead {
+				return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Round-two finding belongs to an unexpected head", thread.CommitSHA)
+			}
+		}
+		if !isProvenDescendant(snapshot, requestHead) {
+			return result(CodexReviewContext, snapshot.HeadSHA, StatusFailure, "Round-two remediation head is not a proven newer descendant", requestHead)
+		}
+		if missing := missingSuccessfulChecks(snapshot.Checks, snapshot.HeadSHA); len(missing) != 0 {
+			return result(CodexReviewContext, snapshot.HeadSHA, StatusPending, "Round-two remediation waits for required CI", missing...)
+		}
+		return result(CodexReviewContext, snapshot.HeadSHA, StatusSuccess, "Round-two findings are resolved on descendant remediation head", "no third review is permitted")
 	}
 	if len(roundTwoThreads) != 0 {
 		for _, thread := range roundTwoThreads {

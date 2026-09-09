@@ -472,7 +472,7 @@ func (c *githubClient) publishStatus(ctx context.Context, sha string, desired co
 		if status.Context != desired.Context {
 			continue
 		}
-		if status.State == desired.State && status.Description == desired.Description {
+		if statusMatchesDesired(status, desired) {
 			return false, nil
 		}
 		break
@@ -489,12 +489,20 @@ func (c *githubClient) publishStatus(ctx context.Context, sha string, desired co
 		if status.Context != desired.Context {
 			continue
 		}
-		if status.ID != created.ID || status.SHA != sha || status.State != desired.State || status.Description != desired.Description {
+		if status.ID != created.ID || !statusMatchesDesired(status, desired) {
 			return true, errors.New("status mutation read-back did not match the accepted result")
 		}
 		return true, nil
 	}
 	return true, errors.New("status mutation was absent from read-back")
+}
+
+func statusMatchesDesired(status githubStatus, desired commitStatus) bool {
+	return status.Context == desired.Context &&
+		status.State == desired.State &&
+		status.Description == desired.Description &&
+		status.TargetURL == desired.TargetURL &&
+		IsGitHubActionsActor(actorFromGitHub(status.Creator))
 }
 
 func (c *githubClient) createReviewRequest(ctx context.Context, number int, body string) (githubComment, error) {

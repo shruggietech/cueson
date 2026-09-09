@@ -256,7 +256,7 @@ func TestPostStatusIsNoOpWhenLatestMatches(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case r.Method == http.MethodGet && strings.HasSuffix(r.URL.Path, "/statuses"):
-			_, _ = io.WriteString(w, `[{"id":7,"sha":"`+sha+`","state":"success","context":"Cueson PR policy / Issue link","description":"linked to #9"}]`)
+			_, _ = io.WriteString(w, `[{"id":7,"state":"success","context":"Cueson PR policy / Issue link","description":"linked to #9","target_url":"https://github.example/run/2","creator":{"login":"github-actions[bot]","id":41898282,"type":"Bot"}}]`)
 		case r.Method == http.MethodPost:
 			posts++
 			w.WriteHeader(http.StatusCreated)
@@ -294,11 +294,11 @@ func TestPostStatusReadsMutationBack(t *testing.T) {
 				_, _ = io.WriteString(w, `[]`)
 				return
 			}
-			_, _ = io.WriteString(w, `[{"id":8,"sha":"`+sha+`","state":"failure","context":"Cueson PR policy / Issue link","description":"missing closing reference"}]`)
+			_, _ = io.WriteString(w, `[{"id":8,"state":"failure","context":"Cueson PR policy / Issue link","description":"missing closing reference","target_url":"https://github.example/run/2","creator":{"login":"github-actions[bot]","id":41898282,"type":"Bot"}}]`)
 		case r.Method == http.MethodPost && strings.Contains(r.URL.Path, "/statuses/"):
 			posted = true
 			w.WriteHeader(http.StatusCreated)
-			_, _ = io.WriteString(w, `{"id":8,"sha":"`+sha+`","state":"failure","context":"Cueson PR policy / Issue link","description":"missing closing reference"}`)
+			_, _ = io.WriteString(w, `{"id":8,"state":"failure","context":"Cueson PR policy / Issue link","description":"missing closing reference","target_url":"https://github.example/run/2","creator":{"login":"github-actions[bot]","id":41898282,"type":"Bot"}}`)
 		default:
 			http.NotFound(w, r)
 		}
@@ -310,6 +310,45 @@ func TestPostStatusReadsMutationBack(t *testing.T) {
 		Context:     IssueLinkContext,
 		State:       "failure",
 		Description: "missing closing reference",
+		TargetURL:   "https://github.example/run/2",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed || !posted {
+		t.Fatalf("changed=%v posted=%v", changed, posted)
+	}
+}
+
+func TestPostStatusReplacesMatchingUntrustedStatus(t *testing.T) {
+	t.Parallel()
+
+	const sha = "0123456789abcdef0123456789abcdef01234567"
+	var posted bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodGet && strings.HasSuffix(r.URL.Path, "/statuses"):
+			if !posted {
+				_, _ = io.WriteString(w, `[{"id":7,"state":"success","context":"Cueson PR policy / Issue link","description":"linked to #9","target_url":"https://github.example/run/2","creator":{"login":"mallory","id":9001,"type":"User"}}]`)
+				return
+			}
+			_, _ = io.WriteString(w, `[{"id":8,"state":"success","context":"Cueson PR policy / Issue link","description":"linked to #9","target_url":"https://github.example/run/2","creator":{"login":"github-actions[bot]","id":41898282,"type":"Bot"}}]`)
+		case r.Method == http.MethodPost && strings.Contains(r.URL.Path, "/statuses/"):
+			posted = true
+			w.WriteHeader(http.StatusCreated)
+			_, _ = io.WriteString(w, `{"id":8,"state":"success","context":"Cueson PR policy / Issue link","description":"linked to #9","target_url":"https://github.example/run/2","creator":{"login":"github-actions[bot]","id":41898282,"type":"Bot"}}`)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	t.Cleanup(server.Close)
+
+	client := newTestGitHubClient(t, server.URL, "test-token")
+	changed, err := client.publishStatus(context.Background(), sha, commitStatus{
+		Context:     IssueLinkContext,
+		State:       "success",
+		Description: "linked to #9",
+		TargetURL:   "https://github.example/run/2",
 	})
 	if err != nil {
 		t.Fatal(err)
