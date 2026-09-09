@@ -14,6 +14,8 @@
 
 This document is the project's initial working specification. During repository bootstrap and pre-release design, maintainers MAY revise its implementation details, sequencing, examples, and provisional schema shapes as contradictions or better approaches emerge. Explicit operator decisions and the ratified project constitution control when they conflict with this draft. Core product invariants remain binding unless deliberately amended and documented. Only tagged release schemas and released public contracts are immutable.
 
+The concise ratified implementation baselines are [architecture.md](architecture.md), [schema.md](schema.md), and [cli.md](cli.md). Those topic documents control implementation when this broader roadmap retains an older provisional alternative. Changes to a ratified baseline require a later Spec Kit decision and changelog entry.
+
 ## Executive summary
 
 Cueson is an official ShruggieTech utility for converting subtitle and caption formats into and out of a canonical, versioned JSON representation called Cue JSON. The first stable release targets complete SubRip (`.srt`) and WebVTT (`.vtt`) support, and the project is deliberately designed so additional text, XML, and bitmap subtitle families can be added without replacing the core document model.
@@ -210,7 +212,7 @@ Each OCR observation SHOULD be traceable to the source image or subtitle event f
 
 ### Original bytes are authoritative for lossless provenance
 
-Cueson MUST preserve original source bytes as base64 in the source envelope beginning with v1.
+Cueson MUST preserve original source bytes as base64 in the source envelope beginning with v0.0.0. Native SRT and WebVTT ingest remain deferred, so a v0.0.0 source envelope may be externally authored while still supporting generic integrity validation and exact restoration.
 
 This requirement is intentionally stronger than the existing PowerShell converters. SRT has no universal encoding requirement, mixed line endings can occur within one file, malformed real-world inputs exist, and text decoding can be lossy. A normalized Unicode representation plus a single encoding or line-ending label cannot prove byte-exact reversibility in all cases.
 
@@ -234,7 +236,7 @@ The schema MUST NOT contain:
 
 The source asset stores only the original base file name.
 
-File names stored in the schema MUST be basenames only and MUST reject `/`, `\`, NUL, and traversal constructs that could become path traversal when restored.
+File names stored in the schema MUST be portable safe basenames. They MUST reject path separators, `.` and `..`, ASCII control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, traversal constructs, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when a device stem has an extension. Within one source bundle, basenames MUST be unique under Unicode canonical caseless matching, defined as NFD normalization, default Unicode case folding, then NFD normalization again. Semantic validation completes these checks before restoration opens any output.
 
 Additional metadata is encouraged when it describes the media, subtitle track, source encoding, source format, language, tool version, or conversion process. Metadata MUST NOT be used to smuggle filesystem paths into the document.
 
@@ -452,6 +454,7 @@ A representative v1 document is:
       },
       "speakers": [],
       "tokens": [],
+      "ocr_observations": [],
       "placement": null,
       "format_data": {
         "subrip": {
@@ -486,6 +489,8 @@ The exact schema is developed through Spec Kit and becomes authoritative. The ex
 
 It MUST use the exact software/schema version.
 
+This instance member is distinct from the schema artifact's standards-defined `$schema` keyword, which identifies the JSON Schema Draft 2020-12 dialect. The schema artifact's `$id` and the Cue JSON instance's project-defined `$schema` member use the canonical versioned Cueson URI.
+
 ### `schema_version`
 
 `schema_version` is the semantic version of the document contract.
@@ -496,14 +501,14 @@ Documents emitted by the official Cueson executable MUST use the schema version 
 
 `format` identifies the source subtitle family.
 
-Initial stable values:
+Initial canonical format keys:
 
 ```text
 subrip
 webvtt
 ```
 
-Additional schema-recognized values may be declared before native ingest support arrives. Such values are still valid in the canonical schema when their document shape has been defined and the corresponding `format_support.status` truthfully reflects their maturity.
+These keys identify format families and do not claim stable codec support. Stable SRT and WebVTT support remains a v1.0.0 gate. Additional schema-recognized values may be declared before native ingest support arrives. Such values are still valid in the canonical schema when their document shape has been defined and the corresponding `format_support.status` truthfully reflects their maturity.
 
 Future values may include:
 
@@ -528,6 +533,8 @@ The schema MAY define document structures for additional formats ahead of implem
 ### `format_support`
 
 `format_support` describes the maturity and official capability state assigned to the document's `format` by the Cueson release associated with the document contract. It does not describe arbitrary capabilities of a third-party producer.
+
+For the completed v0.0.0 milestone, `subrip` and `webvtt` are `envelope_only`: native ingest and model-driven render are false, generic exact restoration is true for a valid source envelope, and OCR is not required for semantic output. Source-foundation issue #6 owns the public generic `restore` command required for that capability claim.
 
 Representative fields are:
 
@@ -638,13 +645,13 @@ Each asset MUST contain or explicitly null the stable fields required by the can
 
 `role` initially supports `primary` and `companion`.
 
-`file_name` is the original source basename. It MUST contain no directory path, path separator, NUL, drive prefix, URI prefix, or traversal component.
+`file_name` is the original source basename. It MUST satisfy the portable safe-basename contract, including rejection of directory paths, control characters, Windows-invalid punctuation and trailing characters, drive or URI prefixes, traversal components, NTFS alternate-data-stream syntax, and case-insensitive Windows reserved device names even when followed by an extension. Its portable collision key MUST be unique within `source.assets`.
 
 `media_type` describes the source asset media type when known.
 
 `size` groups exact byte size and an optional human-readable representation. `size.bytes` is authoritative for integrity validation. `size.text` is derived convenience metadata.
 
-`hashes` groups integrity digests. SHA-256 is required in v1. Digest values MUST have one canonical hexadecimal casing defined by the schema and used consistently by the implementation.
+`hashes` groups integrity digests. SHA-256 is required beginning with v0.0.0. Digest values MUST use lowercase hexadecimal consistently in the schema and implementation.
 
 `timestamps` preserves the source filesystem's observable date information and is discussed separately below.
 
@@ -903,7 +910,7 @@ A token SHOULD include normalized timing plus raw/native timing context when ava
 
 The common cue model SHOULD reserve space for OCR-derived observations so bitmap subtitle formats can mature into first-class semantic citizens rather than remaining blind envelopes.
 
-`ocr_observations` is an ordered array so results from multiple engines, models, languages, or processing passes can coexist without overwriting one another. For text-native formats this field is normally an empty array or omitted according to the final fixed schema rule.
+`ocr_observations` is a required ordered array so results from multiple engines, models, languages, or processing passes can coexist without overwriting one another. For text-native formats this field is an empty array when no observation exists.
 
 Each OCR observation SHOULD be able to represent:
 
@@ -1186,7 +1193,9 @@ cueson restore INPUT.cueson.json
 
 Restores the original source asset or asset set from `source.assets[].data_base64`.
 
-Default output names come from the stored safe basenames.
+With no destination option, a single asset uses its stored portable safe basename in the current directory. `--output-dir` restores one or more assets beneath the selected directory using their stored basenames. A single-asset `--output` supplies a separately validated literal runtime destination and may rename the file. `--output` and `--output-dir` are mutually exclusive.
+
+Before opening any output, Cueson MUST validate all stored basenames, compute the complete destination plan, and reject duplicate portable basename keys or destination paths. `--force` MUST NOT permit one source asset to replace another asset from the same bundle.
 
 The command MUST refuse to overwrite existing files unless `--force` is supplied.
 
@@ -1305,7 +1314,7 @@ Higher codes MUST NOT be introduced without updating the project constitution, C
 
 ### Commands
 
-The v1 command surface SHOULD include:
+The v1 target command surface SHOULD include:
 
 ```text
 cueson encode
@@ -1318,6 +1327,8 @@ cueson schema
 cueson version
 cueson completion
 ```
+
+Release help and command listings MUST expose only implemented commands. The v0.0.0 executable foundation begins with help and `version`; the schema slice adds `schema`; the source-foundation slice adds generic `restore`. Other target commands remain absent until their implementation slices provide truthful behavior. The release-specific authority is [cli.md](cli.md).
 
 #### `encode`
 
@@ -2305,6 +2316,8 @@ Required outcomes:
 - version command;
 - embedded schema plumbing;
 - canonical `0.0.0` schema;
+- multi-asset source envelope and integrity validation;
+- public generic exact restoration from a valid source envelope;
 - Spec Kit initialization;
 - project constitution;
 - `AGENTS.md`;
@@ -2323,12 +2336,12 @@ Required outcomes:
 
 ### `0.x` implementation series
 
-Pre-v1 minor releases add capabilities without breaking already released schema contracts.
+Pre-v1 minor releases may add compatible capabilities or introduce documented breaking contract changes. Patch releases remain non-breaking. Released schema artifacts themselves remain immutable.
 
 Expected work includes:
 
-- source asset envelope;
-- integrity validation;
+- native format ingest into the source asset envelope;
+- codec-integrated integrity validation;
 - SRT parser;
 - SRT renderer;
 - WebVTT parser;
@@ -2336,7 +2349,7 @@ Expected work includes:
 - format detection;
 - normalized cue model;
 - diagnostics;
-- exact restore;
+- codec-to-envelope-to-restore round trips;
 - cross-format conversion;
 - loss reporting;
 - corpus hardening;
