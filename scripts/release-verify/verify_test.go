@@ -182,6 +182,11 @@ func TestVerifyArtifactCatalog(t *testing.T) {
 		{"wrong target", func(items []artifactRecord) []artifactRecord { items[0].GOOS = "darwin"; return items }},
 		{"wrong type", func(items []artifactRecord) []artifactRecord { items[0].Type = "Binary"; return items }},
 		{"absolute path", func(items []artifactRecord) []artifactRecord { items[0].Path = `C:\\src\\archive.zip`; return items }},
+		{"unix absolute path", func(items []artifactRecord) []artifactRecord { items[0].Path = "/src/archive.zip"; return items }},
+		{"UNC path", func(items []artifactRecord) []artifactRecord {
+			items[0].Path = `\\server\share\archive.zip`
+			return items
+		}},
 		{"traversing path", func(items []artifactRecord) []artifactRecord { items[0].Path = "../archive.zip"; return items }},
 	}
 	for _, test := range tests {

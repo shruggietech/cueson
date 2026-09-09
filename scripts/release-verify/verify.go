@@ -23,7 +23,10 @@ import (
 
 const evidenceFilename = "release-evidence.json"
 
-var commitPattern = regexp.MustCompile(`^[0-9a-f]{40}$`)
+var (
+	commitPattern           = regexp.MustCompile(`^[0-9a-f]{40}$`)
+	windowsDrivePathPattern = regexp.MustCompile(`^[A-Za-z]:/`)
+)
 
 type Config struct {
 	DistDir     string
@@ -682,8 +685,13 @@ func safeMemberName(name string) bool {
 
 func safeRelativeArtifactPath(path string) bool {
 	normalized := strings.ReplaceAll(path, `\`, "/")
-	if strings.HasPrefix(normalized, "/") || strings.Contains(normalized, "../") || strings.Contains(normalized, "/..") {
+	if strings.HasPrefix(normalized, "/") || windowsDrivePathPattern.MatchString(normalized) {
 		return false
+	}
+	for _, component := range strings.Split(normalized, "/") {
+		if component == ".." || component == "" {
+			return false
+		}
 	}
 	return filepath.VolumeName(path) == ""
 }
