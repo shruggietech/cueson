@@ -118,9 +118,9 @@
 **Purpose**: Use the operator's explicit authorization to publish S006, prove real failure behavior, correct it, and expose only the final green tree to automated reviewers.
 
 - [X] T034 Commit the intended final implementation and Spec Kit evidence on `S006-establish-ci-gates`, then add `.github/ci-failure-probe` in a separate controlled-failure commit.
-- [ ] T035 Push `S006-establish-ci-gates`, publish the official pull request as a draft with a formatter-verified body containing `Closes #8`, and read the body back from GitHub.
-- [ ] T036 Verify the hosted `CI / Repository text` check and overall `CI` workflow fail specifically because `.github/ci-failure-probe` exists, then retain the failed run URL in `specs/S006-establish-ci-gates/tasks.md`.
-- [ ] T037 Remove `.github/ci-failure-probe`, commit and push the correction, and verify the final pull-request diff contains no probe.
+- [X] T035 Push `S006-establish-ci-gates`, publish the official pull request as a draft with a formatter-verified body containing `Closes #8`, and read the body back from GitHub.
+- [X] T036 Verify the hosted `CI / Repository text` check and overall `CI` workflow fail specifically because `.github/ci-failure-probe` exists, then retain the failed run URL in `specs/S006-establish-ci-gates/tasks.md`.
+- [X] T037 Remove `.github/ci-failure-probe`, commit and push the correction, and verify the final pull-request diff contains no probe.
 - [ ] T038 Wait for every corrected CI and CodeQL check in `specs/S006-establish-ci-gates/contracts/check-contract.md` to complete successfully within the 20-minute success-criterion window, record elapsed time, investigate every failure, and push fixes until green.
 - [ ] T039 Mark the pull request ready for review only after the corrected checks are green so third-party Codex and security bots evaluate the intended tree.
 
@@ -215,9 +215,10 @@ Task: "Implement independent least-privilege CodeQL workflow in .github/workflow
 - 2026-09-09 independent specification, workflow, and security audits were reconciled by removing stale issue #8 future-tense architecture prose, making quickstart verification fail closed, enumerating all six local cross-builds, measuring hosted duration, upgrading the analyzer pins, disabling checkout credential persistence, and recording durable vulnerability evidence.
 - 2026-09-09 Spec Kit convergence found all 17 functional requirements and 8 success criteria covered by the chronological task plan, with no unresolved clarification marker, constitution conflict, or missing pre-publication work. T034 through T045 remain intentionally pending because they own authorized publication, hosted proof, automated review, and final handoff.
 - 2026-09-09 Project read-back confirmed issue #8 item `PVTI_lADOBpohEc4Bi59Izg6FU8k` has `Slice: S006`, `Stage: In progress`, and an empty default `Status` field.
+- 2026-09-09 draft pull request [#18](https://github.com/shruggietech/cueson/pull/18) was published with a formatter-verified and read-back-verified body. Controlled CI run [34379737911](https://github.com/shruggietech/cueson/actions/runs/34379737911) failed only at `CI / Repository text`, whose log named `.github/ci-failure-probe`; the other 15 CI jobs passed. Companion CodeQL run [34379738261](https://github.com/shruggietech/cueson/actions/runs/34379738261) completed successfully.
 
 ## Hosted-Discovered Remediation
 
 - [X] T046 [US2] Make `TestVerifyFixturesRejectsCanonicalAliasInInventory` select its setup from the temporary filesystem's observed case behavior instead of `runtime.GOOS`, so case-insensitive macOS and Windows filesystems exercise the same collision path while case-sensitive filesystems create a distinct alias.
-- [ ] T047 [US2] Make `TestSetLinuxDescriptorTimesRejectsClosedFile` request one real timestamp change because Linux may validly short-circuit two `UTIME_OMIT` values without consulting the closed descriptor; rerun native-equivalent Linux tests through hosted CI.
-- [ ] T048 [US3] Change CodeQL Go extraction from unsupported `build-mode: none` to the pinned action's documented `build-mode: autobuild`, then verify the hosted `CodeQL / Analyze Go` check succeeds.
+- [X] T047 [US2] Make `TestSetLinuxDescriptorTimesRejectsClosedFile` request one real timestamp change because Linux may validly short-circuit two `UTIME_OMIT` values without consulting the closed descriptor; rerun native-equivalent Linux tests through hosted CI.
+- [X] T048 [US3] Change CodeQL Go extraction from unsupported `build-mode: none` to the pinned action's documented `build-mode: autobuild`, then verify the hosted `CodeQL / Analyze Go` check succeeds.
