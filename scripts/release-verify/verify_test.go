@@ -329,12 +329,20 @@ func TestScanForbiddenRecognizesEscapedAndStructuralPaths(t *testing.T) {
 	valid := [][]byte{
 		[]byte(`{"url":"https://cueson.io/schema/v0.0.0/cueson.schema.json"}`),
 		[]byte(`{"purl":"pkg:golang/github.com/shruggietech/cueson@v0.0.0"}`),
-		[]byte(`{"module":"github.com/shruggietech/cueson","fileName":"\\cueson","sourceInfo":"acquired package info from go module information: \\cueson"}`),
-		[]byte(`{"module":"github.com/shruggietech/cueson","fileName":"/cueson","sourceInfo":"acquired package info from go module information: /cueson"}`),
 	}
 	for _, data := range valid {
 		if err := scanForbidden("test", data, nil); err != nil {
 			t.Errorf("safe metadata rejected: %v", err)
+		}
+	}
+	virtualRoots := [][]byte{
+		[]byte(`{"fileName":"\\cueson","sourceInfo":"acquired package info from go module information: \\cueson"}`),
+		[]byte(`{"fileName":"/cueson","sourceInfo":"acquired package info from go module information: /cueson"}`),
+		[]byte(`{"fileName":"/cueson.exe","sourceInfo":"acquired package info from the following paths: /cueson.exe"}`),
+	}
+	for _, data := range virtualRoots {
+		if err := scanForbidden("test", data, nil, "cueson", "cueson.exe"); err != nil {
+			t.Errorf("Syft virtual root rejected: %v", err)
 		}
 	}
 }

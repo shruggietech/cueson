@@ -203,7 +203,7 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 			return evidence, fmt.Errorf("inspect %s build information: %w", target.Archive, err)
 		}
 
-		sbomRaw, err := readAndScan(filepath.Join(distDir, target.SBOM), forbidden)
+		sbomRaw, err := readAndScan(filepath.Join(distDir, target.SBOM), forbidden, target.Binary)
 		if err != nil {
 			return evidence, err
 		}
@@ -621,12 +621,12 @@ func verifyProbeOutput(args []string, stdout, stderr []byte, runErr error, want 
 	return nil
 }
 
-func readAndScan(path string, forbidden []string) ([]byte, error) {
+func readAndScan(path string, forbidden []string, syftVirtualRoots ...string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("read %s: %w", filepath.Base(path), err)
 	}
-	if err := scanForbidden(filepath.Base(path), data, forbidden); err != nil {
+	if err := scanForbidden(filepath.Base(path), data, forbidden, syftVirtualRoots...); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -659,7 +659,7 @@ func deriveForbidden(repoDir string, supplied []string) []string {
 	return result
 }
 
-func scanForbidden(label string, data []byte, forbidden []string) error {
+func scanForbidden(label string, data []byte, forbidden []string, syftVirtualRoots ...string) error {
 	text := strings.ToLower(string(data))
 	for _, needle := range forbidden {
 		if strings.Contains(text, needle) {
@@ -668,7 +668,7 @@ func scanForbidden(label string, data []byte, forbidden []string) error {
 	}
 	var decoded any
 	if json.Unmarshal(data, &decoded) == nil {
-		if containsAbsolutePathValue("", decoded) {
+		if containsAbsolutePathValue("", decoded, syftVirtualRoots) {
 			return fmt.Errorf("%s contains a structurally absolute path", label)
 		}
 	} else if containsAbsolutePath(string(data)) {
@@ -677,22 +677,22 @@ func scanForbidden(label string, data []byte, forbidden []string) error {
 	return nil
 }
 
-func containsAbsolutePathValue(field string, value any) bool {
+func containsAbsolutePathValue(field string, value any, syftVirtualRoots []string) bool {
 	switch typed := value.(type) {
 	case map[string]any:
 		for key, child := range typed {
-			if containsAbsolutePath(key) || containsAbsolutePathValue(key, child) {
+			if containsAbsolutePath(key) || containsAbsolutePathValue(key, child, syftVirtualRoots) {
 				return true
 			}
 		}
 	case []any:
 		for _, child := range typed {
-			if containsAbsolutePathValue(field, child) {
+			if containsAbsolutePathValue(field, child, syftVirtualRoots) {
 				return true
 			}
 		}
 	case string:
-		if isSyftVirtualRoot(field, typed) {
+		if isSyftVirtualRoot(field, typed, syftVirtualRoots) {
 			return false
 		}
 		return containsAbsolutePath(typed)
@@ -700,10 +700,24 @@ func containsAbsolutePathValue(field string, value any) bool {
 	return false
 }
 
-func isSyftVirtualRoot(field, value string) bool {
-	const sourcePrefix = "acquired package info from go module information: "
-	return field == "fileName" && (value == "/cueson" || value == `\cueson`) ||
-		field == "sourceInfo" && (value == sourcePrefix+"/cueson" || value == sourcePrefix+`\cueson`)
+func isSyftVirtualRoot(field, value string, roots []string) bool {
+	prefixes := []string{""}
+	if field == "sourceInfo" {
+		prefixes = []string{
+			"acquired package info from go module information: ",
+			"acquired package info from the following paths: ",
+		}
+	} else if field != "fileName" {
+		return false
+	}
+	for _, prefix := range prefixes {
+		for _, root := range roots {
+			if value == prefix+"/"+root || value == prefix+`\`+root {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func containsAbsolutePath(value string) bool {
