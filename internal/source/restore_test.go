@@ -258,6 +258,85 @@ func TestRestoreReportsRollbackAndAcceptedCleanupFaults(t *testing.T) {
 	assertNoTransactionFiles(t, directory)
 }
 
+func TestRestoreReportsFailedTransactionCleanupFault(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	output := filepath.Join(directory, "failed.srt")
+	fault := errors.New("injected cleanup failure")
+	hooks := transactionHooks{fail: func(point, _ string) error {
+		if point == "final-verify" || point == "failure-cleanup-stage" {
+			return fault
+		}
+		return nil
+	}}
+	_, err := restoreWithHooks(context.Background(), testDocument(t), RestoreOptions{Output: output, Metadata: MetadataNone}, hooks)
+	if err == nil || !strings.Contains(err.Error(), "cleanup failed staging files") {
+		t.Fatalf("restoreWithHooks() error = %v, want cleanup failure", err)
+	}
+	if _, err := os.Lstat(output); !os.IsNotExist(err) {
+		t.Fatalf("failed transaction left accepted output: %v", err)
+	}
+	entries, readErr := os.ReadDir(directory)
+	if readErr != nil || len(entries) != 1 || !strings.Contains(entries[0].Name(), ".cueson-stage-") {
+		t.Fatalf("cleanup fault entries = %v, error = %v", entries, readErr)
+	}
+	if err := os.Remove(filepath.Join(directory, entries[0].Name())); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestRestoreReportsFailedPartialStageCleanupFault(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	output := filepath.Join(directory, "failed-write.srt")
+	fault := errors.New("injected partial-stage cleanup failure")
+	hooks := transactionHooks{fail: func(point, _ string) error {
+		if point == "stage-write" || point == "failure-cleanup-stage" {
+			return fault
+		}
+		return nil
+	}}
+	_, err := restoreWithHooks(context.Background(), testDocument(t), RestoreOptions{Output: output, Metadata: MetadataNone}, hooks)
+	if err == nil || !strings.Contains(err.Error(), "remove failed staging file") {
+		t.Fatalf("restoreWithHooks() error = %v, want partial-stage cleanup failure", err)
+	}
+	entries, readErr := os.ReadDir(directory)
+	if readErr != nil || len(entries) != 1 || !strings.Contains(entries[0].Name(), ".cueson-stage-") {
+		t.Fatalf("partial-stage cleanup entries = %v, error = %v", entries, readErr)
+	}
+	if err := os.Remove(filepath.Join(directory, entries[0].Name())); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestRestorePostPlanningRaceIsRuntimeFailure(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	output := filepath.Join(directory, "raced.srt")
+	racedBytes := []byte("external file")
+	hooks := transactionHooks{fail: func(point, path string) error {
+		if point == "publish-link" {
+			return os.WriteFile(path, racedBytes, 0o600)
+		}
+		return nil
+	}}
+	_, err := restoreWithHooks(context.Background(), testDocument(t), RestoreOptions{Output: output, Metadata: MetadataNone}, hooks)
+	if err == nil {
+		t.Fatal("restoreWithHooks() accepted raced-in destination")
+	}
+	var precondition *PreconditionError
+	if errors.As(err, &precondition) {
+		t.Fatalf("post-planning race returned PreconditionError: %v", err)
+	}
+	if got, readErr := os.ReadFile(output); readErr != nil || !bytes.Equal(got, racedBytes) {
+		t.Fatalf("raced-in destination = %q, error = %v", got, readErr)
+	}
+	assertNoTransactionFiles(t, directory)
+}
+
 func assertNoTransactionFiles(t *testing.T, directory string) {
 	t.Helper()
 	entries, err := os.ReadDir(directory)

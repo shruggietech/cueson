@@ -10,7 +10,7 @@ func TestValidateSafeBasename(t *testing.T) {
 			t.Errorf("validateSafeBasename(%q) error = %v", name, err)
 		}
 	}
-	for _, name := range []string{"", ".", "..", "../x", `a\b`, "a:b", "x. ", "x.", "CON", "con.txt", "Lpt9.log", "bad\x00name"} {
+	for _, name := range []string{"", ".", "..", "../x", `a\b`, "a:b", "x. ", "x.", "CON", "con.txt", "Lpt9.log", "COM¹.srt", "com²", "LPT³.vtt", "bad\x00name"} {
 		if err := validateSafeBasename(name); err == nil {
 			t.Errorf("validateSafeBasename(%q) error = nil", name)
 		}

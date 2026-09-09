@@ -59,6 +59,8 @@ func TestPlanRejectsModeAndTargetViolations(t *testing.T) {
 		{Metadata: MetadataNone},
 		{Output: filepath.Join(directory, "one"), Metadata: MetadataNone},
 		{Output: "one", OutputDir: directory, Metadata: MetadataNone},
+		{Output: "   ", Metadata: MetadataNone},
+		{OutputDir: "\t", Metadata: MetadataNone},
 	} {
 		if _, err := planDestinations(assets, options); err == nil {
 			t.Errorf("planDestinations(%+v) error = nil", options)

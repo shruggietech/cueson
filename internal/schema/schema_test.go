@@ -53,6 +53,7 @@ func TestValidateRejectsStructuralViolations(t *testing.T) {
 		{name: "schema version", mutate: func(doc map[string]any) { doc["schema_version"] = "0.0.1" }, want: "schema_version"},
 		{name: "unsafe path", mutate: func(doc map[string]any) { firstAsset(doc)["file_name"] = "../captions.srt" }, want: "file_name"},
 		{name: "reserved device", mutate: func(doc map[string]any) { firstAsset(doc)["file_name"] = "CoN.txt" }, want: "file_name"},
+		{name: "superscript reserved device", mutate: func(doc map[string]any) { firstAsset(doc)["file_name"] = "COM¹.txt" }, want: "file_name"},
 		{name: "trailing period", mutate: func(doc map[string]any) { firstAsset(doc)["file_name"] = "captions." }, want: "file_name"},
 		{name: "uppercase digest", mutate: func(doc map[string]any) {
 			firstAsset(doc)["hashes"].(map[string]any)["sha256"] = strings.Repeat("A", 64)
@@ -109,6 +110,28 @@ func TestDecodeReturnsTypedDocumentAndRejectsInvalidUTF8(t *testing.T) {
 	if _, err := Decode(invalid); err == nil || !strings.Contains(err.Error(), "UTF-8") {
 		t.Fatalf("Decode(invalid UTF-8) error = %v, want UTF-8 rejection", err)
 	}
+}
+
+func TestDecodeRejectsUnpairedSurrogateEscapes(t *testing.T) {
+	t.Parallel()
+
+	for _, escapedName := range []string{`bad\ud800.srt`, `bad\udc00.srt`, `bad\ud800\u0041.srt`} {
+		input := bytes.Replace(schemaRepresentativeForEscapeTest(), []byte("captions.srt"), []byte(escapedName), 1)
+		if _, err := Decode(input); err == nil || !strings.Contains(err.Error(), "surrogate") {
+			t.Errorf("Decode(%q) error = %v, want surrogate rejection", escapedName, err)
+		}
+	}
+	paired := bytes.Replace(schemaRepresentativeForEscapeTest(), []byte("captions.srt"), []byte(`face\ud83d\ude00.srt`), 1)
+	if _, err := Decode(paired); err != nil {
+		t.Fatalf("Decode(paired surrogate) error = %v", err)
+	}
+	if err := validateUnicodeEscapes([]byte(`{"value":"literal\\ud800"}`)); err != nil {
+		t.Fatalf("validateUnicodeEscapes(escaped literal) error = %v", err)
+	}
+}
+
+func schemaRepresentativeForEscapeTest() []byte {
+	return append([]byte(nil), Representative()...)
 }
 
 func TestValidateRejectsSemanticViolations(t *testing.T) {

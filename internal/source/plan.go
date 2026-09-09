@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type destinationPlan struct {
@@ -15,6 +16,12 @@ type destinationPlan struct {
 }
 
 func planDestinations(assets []preparedAsset, options RestoreOptions) ([]destinationPlan, error) {
+	if options.Output != "" && strings.TrimSpace(options.Output) == "" {
+		return nil, preconditionf("--output path must not be whitespace-only")
+	}
+	if options.OutputDir != "" && strings.TrimSpace(options.OutputDir) == "" {
+		return nil, preconditionf("--output-dir path must not be whitespace-only")
+	}
 	if options.Output != "" && options.OutputDir != "" {
 		return nil, preconditionf("--output and --output-dir are mutually exclusive")
 	}

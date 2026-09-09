@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/shruggietech/cueson/internal/model"
+	"golang.org/x/sys/unix"
 )
 
 func TestDarwinOpenRegularNoFollowRejectsSymlinkAndDirectory(t *testing.T) {
@@ -129,6 +130,18 @@ func TestDarwinApplyNativeTimestampsReportsUnavailableValues(t *testing.T) {
 		if result.Status != TimestampUnavailable {
 			t.Fatalf("result = %#v, want unavailable", result)
 		}
+	}
+}
+
+func TestCapturedDarwinCreationDowngradesEqualBirthAndChange(t *testing.T) {
+	value := unix.Timespec{Sec: 1704067200, Nsec: 123456789}
+	created, provenance, err := capturedDarwinCreation(value, value)
+	if err != nil || created == nil || provenance != "ctime_fallback" {
+		t.Fatalf("capturedDarwinCreation(equal) = (%#v, %q, %v), want ctime fallback", created, provenance, err)
+	}
+	created, provenance, err = capturedDarwinCreation(value, unix.Timespec{Sec: value.Sec + 1})
+	if err != nil || created == nil || provenance != "birthtime" {
+		t.Fatalf("capturedDarwinCreation(distinct) = (%#v, %q, %v), want birthtime", created, provenance, err)
 	}
 }
 

@@ -155,3 +155,12 @@ Complete each chronological checkpoint before advancing. Keep commits aligned to
 ## Phase 10: Convergence
 
 - [x] T039 Mark the S004 feature specification implemented after local verification per the Spec Kit lifecycle record (partial)
+
+## Phase 11: Round-One Review Remediation
+
+- [x] T040 Reject unpaired UTF-16 surrogate escapes before typed JSON decoding and add paired or unpaired coverage per FR-001 and review thread `PRRT_kwDOUTHZE86grJj2`
+- [x] T041 Join failed-transaction staging cleanup errors into the returned failure and add deterministic cleanup-fault coverage per FR-011, SC-004, and review thread `PRRT_kwDOUTHZE86grJj-`
+- [x] T042 Classify destinations that appear or change after planning as runtime transaction failures and preserve raced-in paths per FR-015 and review thread `PRRT_kwDOUTHZE86grJkC`
+- [x] T043 Downgrade equal macOS birth and change timestamps to explicit `ctime_fallback` provenance with platform-selected coverage per FR-018 and review thread `PRRT_kwDOUTHZE86grJkF`
+- [x] T044 Reject whitespace-only literal output paths and output directories before resolution or filesystem mutation per the path edge case and review thread `PRRT_kwDOUTHZE86grJkL`
+- [x] T045 Reject Windows superscript COM and LPT device aliases in schema and source validation with portable coverage per FR-004 and review thread `PRRT_kwDOUTHZE86grJkP`

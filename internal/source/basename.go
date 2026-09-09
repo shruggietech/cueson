@@ -33,7 +33,9 @@ func validateSafeBasename(name string) error {
 	switch strings.ToUpper(stem) {
 	case "CON", "PRN", "AUX", "NUL", "CLOCK$", "CONIN$", "CONOUT$",
 		"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-		"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9":
+		"COM¹", "COM²", "COM³",
+		"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+		"LPT¹", "LPT²", "LPT³":
 		return fmt.Errorf("file_name %q uses a reserved Windows device stem", name)
 	}
 	return nil

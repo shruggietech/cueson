@@ -54,9 +54,15 @@ func restoreWithHooks(ctx context.Context, document model.Document, options Rest
 	staged := make([]stagedAsset, 0, len(plans))
 	defer func() {
 		if result != nil {
+			failures := []error{result}
 			if rollbackErr := rollback(staged, hooks); rollbackErr != nil {
-				result = fmt.Errorf("%w; rollback: %v", result, rollbackErr)
+				failures = append(failures, fmt.Errorf("rollback: %w", rollbackErr))
 			}
+			if cleanupErr := cleanupFailedStages(staged, hooks); cleanupErr != nil {
+				failures = append(failures, fmt.Errorf("cleanup failed staging files: %w", cleanupErr))
+			}
+			result = errors.Join(failures...)
+			return
 		}
 		for index := range staged {
 			if staged[index].stagePath != "" {
@@ -129,7 +135,7 @@ func restoreWithHooks(ctx context.Context, document model.Document, options Rest
 	return report, nil
 }
 
-func stage(ctx context.Context, plan destinationPlan, hooks transactionHooks) (stagedAsset, error) {
+func stage(ctx context.Context, plan destinationPlan, hooks transactionHooks) (item stagedAsset, result error) {
 	base := filepath.Base(plan.destination)
 	file, err := os.CreateTemp(filepath.Dir(plan.destination), "."+base+".cueson-stage-*")
 	if err != nil {
@@ -139,7 +145,11 @@ func stage(ctx context.Context, plan destinationPlan, hooks transactionHooks) (s
 	remove := true
 	defer func() {
 		if remove {
-			_ = os.Remove(path)
+			if err := hooks.at("failure-cleanup-stage", path); err != nil {
+				result = errors.Join(result, fmt.Errorf("remove failed staging file %q: %w", path, err))
+			} else if err := os.Remove(path); err != nil && !errors.Is(err, fs.ErrNotExist) {
+				result = errors.Join(result, fmt.Errorf("remove failed staging file %q: %w", path, err))
+			}
 		}
 	}()
 	if err := file.Chmod(0o600); err != nil {
@@ -197,7 +207,7 @@ func commit(item *stagedAsset, hooks transactionHooks) error {
 		}
 		if err := os.Link(item.stagePath, item.plan.destination); err != nil {
 			if errors.Is(err, fs.ErrExist) {
-				return preconditionf("destination %q appeared after planning", item.plan.destination)
+				return fmt.Errorf("destination %q appeared after planning", item.plan.destination)
 			}
 			return fmt.Errorf("publish destination %q: %w", item.plan.destination, err)
 		}
@@ -205,7 +215,7 @@ func commit(item *stagedAsset, hooks transactionHooks) error {
 	} else {
 		current, err := os.Lstat(item.plan.destination)
 		if err != nil || !current.Mode().IsRegular() || !os.SameFile(current, item.plan.existing) {
-			return preconditionf("destination %q changed after planning", item.plan.destination)
+			return fmt.Errorf("destination %q changed after planning", item.plan.destination)
 		}
 		backup, err := createBackupLink(item.plan.destination)
 		if err != nil {
@@ -214,7 +224,7 @@ func commit(item *stagedAsset, hooks transactionHooks) error {
 		item.backupPath = backup
 		current, err = os.Lstat(item.plan.destination)
 		if err != nil || !current.Mode().IsRegular() || !os.SameFile(current, item.plan.existing) {
-			return preconditionf("destination %q changed while preparing replacement", item.plan.destination)
+			return fmt.Errorf("destination %q changed while preparing replacement", item.plan.destination)
 		}
 		if err := hooks.at("replace-rename", item.plan.destination); err != nil {
 			return fmt.Errorf("replace destination %q: %w", item.plan.destination, err)
@@ -301,6 +311,26 @@ func rollback(staged []stagedAsset, hooks transactionHooks) error {
 			continue
 		}
 		item.backupPath = ""
+	}
+	return errors.Join(failures...)
+}
+
+func cleanupFailedStages(staged []stagedAsset, hooks transactionHooks) error {
+	var failures []error
+	for index := range staged {
+		if staged[index].stagePath == "" {
+			continue
+		}
+		path := staged[index].stagePath
+		if err := hooks.at("failure-cleanup-stage", path); err != nil {
+			failures = append(failures, fmt.Errorf("remove %q: %w", path, err))
+			continue
+		}
+		if err := os.Remove(path); err != nil && !errors.Is(err, fs.ErrNotExist) {
+			failures = append(failures, fmt.Errorf("remove %q: %w", path, err))
+			continue
+		}
+		staged[index].stagePath = ""
 	}
 	return errors.Join(failures...)
 }

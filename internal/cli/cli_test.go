@@ -167,6 +167,8 @@ func TestRunRestorePreExecutionPathFailures(t *testing.T) {
 	for _, args := range [][]string{
 		{"restore", filepath.Join(directory, "missing.cueson.json")},
 		{"restore", directory},
+		{"restore", "--no-metadata", "--output", "   ", input},
+		{"restore", "--no-metadata", "--output-dir", "\t", input},
 		{"restore", "--no-metadata", "--output", filepath.Join(directory, "missing", "out.srt"), input},
 		{"restore", "--no-metadata", "--output-dir", filepath.Join(directory, "missing"), input},
 	} {

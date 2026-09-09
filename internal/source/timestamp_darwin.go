@@ -63,24 +63,34 @@ func captureNativeTimestamps(file *os.File) (model.Timestamps, error) {
 		Accessed:      accessed,
 		CreatedSource: "unavailable",
 	}
-	if timespecAvailable(stat.Btim) {
-		created, err := modelTimestampFromDarwin(stat.Btim)
-		if err != nil {
-			return model.Timestamps{}, fmt.Errorf("capture birth time: %w", err)
-		}
-		timestamps.Created = created
-		timestamps.CreatedSource = "birthtime"
-		return timestamps, nil
+	created, provenance, err := capturedDarwinCreation(stat.Btim, stat.Ctim)
+	if err != nil {
+		return model.Timestamps{}, err
 	}
-	if timespecAvailable(stat.Ctim) {
-		created, err := modelTimestampFromDarwin(stat.Ctim)
-		if err != nil {
-			return model.Timestamps{}, fmt.Errorf("capture change-time fallback: %w", err)
-		}
-		timestamps.Created = created
-		timestamps.CreatedSource = "ctime_fallback"
-	}
+	timestamps.Created = created
+	timestamps.CreatedSource = provenance
 	return timestamps, nil
+}
+
+func capturedDarwinCreation(birth, change unix.Timespec) (*model.Timestamp, string, error) {
+	if timespecAvailable(birth) {
+		created, err := modelTimestampFromDarwin(birth)
+		if err != nil {
+			return nil, "", fmt.Errorf("capture birth time: %w", err)
+		}
+		if timespecAvailable(change) && birth.Sec == change.Sec && birth.Nsec == change.Nsec {
+			return created, "ctime_fallback", nil
+		}
+		return created, "birthtime", nil
+	}
+	if timespecAvailable(change) {
+		created, err := modelTimestampFromDarwin(change)
+		if err != nil {
+			return nil, "", fmt.Errorf("capture change-time fallback: %w", err)
+		}
+		return created, "ctime_fallback", nil
+	}
+	return nil, "unavailable", nil
 }
 
 func applyNativeTimestamps(file *os.File, timestamps model.Timestamps) []TimestampResult {

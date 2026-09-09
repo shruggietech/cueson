@@ -72,6 +72,9 @@ func Decode(data []byte) (model.Document, error) {
 	if !utf8.Valid(data) {
 		return document, fmt.Errorf("parse Cue JSON: input is not valid UTF-8")
 	}
+	if err := validateUnicodeEscapes(data); err != nil {
+		return document, fmt.Errorf("parse Cue JSON: %w", err)
+	}
 	instance, err := decodeOne(data)
 	if err != nil {
 		return document, fmt.Errorf("parse Cue JSON: %w", err)
@@ -90,6 +93,65 @@ func Decode(data []byte) (model.Document, error) {
 		return document, fmt.Errorf("validate Cue JSON semantics: %w", err)
 	}
 	return document, nil
+}
+
+func validateUnicodeEscapes(data []byte) error {
+	inString := false
+	for index := 0; index < len(data); index++ {
+		switch data[index] {
+		case '"':
+			inString = !inString
+		case '\\':
+			if !inString || index+1 >= len(data) {
+				continue
+			}
+			if data[index+1] != 'u' {
+				index++
+				continue
+			}
+			value, valid := decodeHexEscape(data, index+2)
+			if !valid {
+				continue
+			}
+			switch {
+			case value >= 0xd800 && value <= 0xdbff:
+				if index+12 > len(data) || data[index+6] != '\\' || data[index+7] != 'u' {
+					return fmt.Errorf("unpaired high-surrogate Unicode escape at byte %d", index)
+				}
+				low, lowValid := decodeHexEscape(data, index+8)
+				if !lowValid || low < 0xdc00 || low > 0xdfff {
+					return fmt.Errorf("unpaired high-surrogate Unicode escape at byte %d", index)
+				}
+				index += 11
+			case value >= 0xdc00 && value <= 0xdfff:
+				return fmt.Errorf("unpaired low-surrogate Unicode escape at byte %d", index)
+			default:
+				index += 5
+			}
+		}
+	}
+	return nil
+}
+
+func decodeHexEscape(data []byte, start int) (uint16, bool) {
+	if start+4 > len(data) {
+		return 0, false
+	}
+	var value uint16
+	for _, character := range data[start : start+4] {
+		value <<= 4
+		switch {
+		case character >= '0' && character <= '9':
+			value += uint16(character - '0')
+		case character >= 'a' && character <= 'f':
+			value += uint16(character-'a') + 10
+		case character >= 'A' && character <= 'F':
+			value += uint16(character-'A') + 10
+		default:
+			return 0, false
+		}
+	}
+	return value, true
 }
 
 // CheckLockstep verifies that official software and schema versions match.
