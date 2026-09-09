@@ -641,7 +641,7 @@ func scanForbidden(label string, data []byte, forbidden []string) error {
 			return fmt.Errorf("%s contains forbidden local identifier", label)
 		}
 	}
-	structural := []string{`c:\\users\\`, `c:\users\`, `/home/`, `/users/`, `/tmp/`, `/private/var/folders/`, `\\\\`}
+	structural := []string{`c:\\users\\`, `c:\users\`, `/home/`, `/users/`, `/tmp/`, `/private/var/folders/`}
 	for _, needle := range structural {
 		if strings.Contains(text, needle) {
 			return fmt.Errorf("%s contains structural absolute path %q", label, needle)

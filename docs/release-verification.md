@@ -46,7 +46,7 @@ goreleaser --version
 syft version
 ```
 
-The version commands must report the exact declared releases. A later stable tool is not an equivalent S009 proof until the versioned configuration and verification are reviewed together.
+The GoReleaser version command must report v2.18.1. A Syft binary built through the exact `go install` command can report `[not provided]` because the Go build path does not inject Syft's presentation version; the versioned module command is the reviewed identity in that case. A later stable tool is not an equivalent S009 proof until the versioned configuration and verification are reviewed together.
 
 ## Foreground snapshot
 

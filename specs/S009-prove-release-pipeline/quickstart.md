@@ -31,7 +31,7 @@ go install github.com/goreleaser/goreleaser/v2@v2.18.1
 go install github.com/anchore/syft/cmd/syft@v1.51.1
 ```
 
-Expected: `goreleaser --version` reports v2.18.1 and `syft version` reports v1.51.1. The tools remain outside the product module and release archives.
+Expected: `goreleaser --version` reports v2.18.1. Syft can report `[not provided]` when built by the exact `go install` command because that build path does not inject its presentation version; the pinned module command remains the reviewed v1.51.1 identity. The tools remain outside the product module and release archives.
 
 ## 3. Validate configuration and build the snapshot
 
