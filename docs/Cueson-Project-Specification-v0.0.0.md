@@ -2553,7 +2553,7 @@ GoReleaser is the preferred release orchestrator unless implementation planning 
 
 ## CI quality gates
 
-Pull-request CI MUST run at least:
+Pull-request CI MUST run the following foundation gates:
 
 ```text
 gofmt verification
@@ -2565,13 +2565,14 @@ static analysis
 govulncheck
 schema validation tests
 schema key-style conformance tests
-round-trip golden tests
-cross-format conversion tests
 source-path prohibition tests
 version-lockstep tests
 pull-request body formatting tests
-Codex review-gate automation tests
 ```
+
+Capability-specific gates activate only after their owning implementation exists. Native format round trips and cross-format conversion tests begin with their codec and conversion slices. Codex review-gate automation tests begin with issue #9. CI MUST NOT publish empty or falsely passing placeholders for these deferred surfaces.
+
+The foundation CI MUST run platform-selected tests natively on Windows, macOS, and Linux and MUST separately cross-build the supported Windows, macOS, and Linux amd64/arm64 matrix with `CGO_ENABLED=0`. Cross-build success is portability evidence and MUST NOT be presented as native behavioral proof.
 
 A pinned `golangci-lint` configuration MAY provide the static-analysis umbrella.
 

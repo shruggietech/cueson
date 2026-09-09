@@ -1,7 +1,7 @@
 # Cueson
 
 <p align="center">
-  <a href="https://github.com/shruggietech/cueson/issues/8"><img alt="CI: planned" src="https://img.shields.io/badge/CI-planned-9CA3AF"></a>
+  <a href="https://github.com/shruggietech/cueson/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/shruggietech/cueson/actions/workflows/ci.yml/badge.svg?branch=main&amp;event=push"></a>
   <a href="https://github.com/shruggietech/cueson/milestone/1"><img alt="Release: unreleased" src="https://img.shields.io/badge/release-unreleased-9CA3AF"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-62D9B7"></a>
   <a href="docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-repository-58A6FF"></a>
@@ -25,7 +25,7 @@ The ratified implementation baselines cover [architecture](docs/architecture.md)
 
 ## Development
 
-Development is specification-driven with [GitHub Spec Kit](https://github.com/github/spec-kit). The current source requires Go 1.24.0 or newer and remains pure Go with native dependencies disabled.
+Development is specification-driven with [GitHub Spec Kit](https://github.com/github/spec-kit). The current source requires Go 1.25.0 or newer and remains pure Go with native dependencies disabled. The minimum increased when the Go 1.24 line and its compatible text dependency could no longer satisfy the repository's vulnerability gate.
 
 Run the available command directly from source:
 
@@ -37,7 +37,7 @@ go run ./cmd/cueson schema
 go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
 
-The restore command validates canonical base64, byte length, SHA-256, portable names, the complete destination plan, and overwrite safety before accepting output. Timestamp restoration is platform-aware; use `--strict-metadata` to require reproducible captured timestamps or `--no-metadata` to skip metadata application. Hosted CI remains planned in issue [#8](https://github.com/shruggietech/cueson/issues/8).
+The restore command validates canonical base64, byte length, SHA-256, portable names, the complete destination plan, and overwrite safety before accepting output. Timestamp restoration is platform-aware; use `--strict-metadata` to require reproducible captured timestamps or `--no-metadata` to skip metadata application. Pull requests and `main` updates run stable quality, native Windows/macOS/Linux, pure-Go cross-build, vulnerability, and independent CodeQL gates. Repository protection and later codec-specific gates remain separately tracked work.
 
 Run the product tests and build:
 

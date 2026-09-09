@@ -34,10 +34,12 @@ func timestampResults(filePath string, timestamps model.Timestamps, mode Metadat
 	return results, warnings, nil
 }
 
+//lint:ignore U1000 Used by non-Windows adapters selected through build constraints.
 func unavailableResult(kind TimestampKind) TimestampResult {
 	return TimestampResult{Kind: kind, Status: TimestampUnavailable, Detail: "source timestamp was unavailable"}
 }
 
+//lint:ignore U1000 Used by non-Windows adapters selected through build constraints.
 func unsupportedResult(kind TimestampKind, detail string) TimestampResult {
 	return TimestampResult{Kind: kind, Status: TimestampUnsupported, Detail: detail}
 }
