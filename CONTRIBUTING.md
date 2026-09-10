@@ -2,7 +2,7 @@
 
 Cueson is an unreleased v0.0.0 foundation candidate. There is no supported installation package or public binary release, and native SubRip/WebVTT ingest, model-driven rendering, and conversion are not implemented. Development and verification use the Go 1.25 source tree.
 
-Start with an issue so the intended outcome, dependencies, and verification can be agreed before implementation begins. Read the [architecture](docs/architecture.md), [CLI contract](docs/cli.md), and [schema baseline](docs/schema.md) before changing their surfaces. Format work must also begin with the dedicated [SubRip](docs/formats/srt.md) or [WebVTT](docs/formats/webvtt.md) boundary, which distinguishes current envelope-only behavior from planned v1 work.
+Start with an issue so the intended outcome, dependencies, and verification can be agreed before implementation begins. Read the [architecture](docs/architecture.md), [CLI contract](docs/cli.md), and [schema baseline](docs/schema.md) before changing their surfaces. Format work must also begin with the dedicated [SubRip](docs/formats/srt.md) or [WebVTT](docs/formats/webvtt.md) boundary, which distinguishes current envelope-only behavior from planned v1 work. Read the [brand guide](docs/brand.md) before referencing, updating, or distributing Cueson identity assets.
 
 ## Development workflow
 
@@ -22,7 +22,11 @@ go run ./scripts/github-format/main.go .
 go -C scripts/github-format test -count=1 ./...
 go -C scripts/docs-verify test -count=1 ./...
 go -C scripts/docs-verify run . -repo ../..
+go -C scripts/brand-verify test -count=1 ./...
+go -C scripts/brand-verify run . -repo ../..
 ```
+
+The official brand archive and extracted kit are immutable byte-protected inputs. Do not format, optimize, repair, rename, or edit imported files in place. A revised official kit requires a separately specified versioned acquisition and a regenerated Cueson import manifest.
 
 The default branch accepts squash pull requests through active repository protection. Required CI and CodeQL checks must pass on the current head, and review conversations must be resolved. The pull-request policy reports issue-link and Codex-review state, but those two status contexts are not currently protection-required. The organization-administrator bypass is for recovery from broken controls rather than ordinary delivery.
 

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shruggietech/cueson/blob/main/specs/S011-import-brand-kit/contracts/import-manifest.schema.json",
+  "title": "Cueson Brand Import Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "brand", "kit_version", "source_url", "effective_url", "acquired_at", "archive", "payload_root", "entries", "references"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "brand": { "const": "cueson" },
+    "kit_version": { "const": "1.0.0" },
+    "source_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "effective_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "acquired_at": { "type": "string", "format": "date-time" },
+    "archive": { "$ref": "#/$defs/archive" },
+    "payload_root": { "$ref": "#/$defs/repository_path" },
+    "entries": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/entry" } },
+    "references": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/reference" } }
+  },
+  "$defs": {
+    "repository_path": { "type": "string", "minLength": 1, "pattern": "^[^\\\\/](?:[^\\\\]*[^\\\\/])?$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "archive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256", "entry_count", "uncompressed_bytes"],
+      "properties": {
+        "path": { "$ref": "#/$defs/repository_path" },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "entry_count": { "type": "integer", "minimum": 1 },
+        "uncompressed_bytes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/repository_path" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document", "asset", "reference", "purpose"],
+      "properties": {
+        "document": { "$ref": "#/$defs/repository_path" },
+        "asset": { "$ref": "#/$defs/repository_path" },
+        "reference": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

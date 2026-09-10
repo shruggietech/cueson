@@ -1,0 +1,4625 @@
+{
+  "schema_version": "1.0",
+  "brand": {
+    "slug": "cueson",
+    "title": "Cueson",
+    "version": "1.0.0",
+    "descriptor": "A lossless, structured interchange layer for subtitle and caption content.",
+    "idea": "Universal captions and subtitles",
+    "affiliation": "A ShruggieTech project",
+    "vendorBoundary": ""
+  },
+  "topics": [
+    {
+      "key": "overview",
+      "title": "Overview and foundations",
+      "label": "Overview",
+      "section": "Overview",
+      "order": 0,
+      "path": "/cueson/guidelines/",
+      "description": "One predictable Cue JSON surface"
+    },
+    {
+      "key": "voice",
+      "title": "Voice and messaging",
+      "label": "Voice",
+      "section": "Voice",
+      "order": 0,
+      "path": "/cueson/guidelines/voice/",
+      "description": "Principles for writing in the brand voice."
+    },
+    {
+      "key": "logos",
+      "title": "Logo system and usage",
+      "label": "Logo",
+      "section": "Identity",
+      "order": 0,
+      "path": "/cueson/guidelines/logos/",
+      "description": "Approved marks, lockups, clear space, and reduction rules."
+    },
+    {
+      "key": "color",
+      "title": "Color",
+      "label": "Color",
+      "section": "Identity",
+      "order": 1,
+      "path": "/cueson/guidelines/color/",
+      "description": "Canonical palette values and semantic roles."
+    },
+    {
+      "key": "typography",
+      "title": "Typography",
+      "label": "Typography",
+      "section": "Identity",
+      "order": 2,
+      "path": "/cueson/guidelines/typography/",
+      "description": "Approved type families, weights, and roles."
+    },
+    {
+      "key": "components",
+      "title": "Components and examples",
+      "label": "Components",
+      "section": "Components",
+      "order": 0,
+      "path": "/cueson/guidelines/components/",
+      "description": "Representative interface patterns for this identity."
+    },
+    {
+      "key": "assets",
+      "title": "Assets",
+      "label": "Assets",
+      "section": "Assets",
+      "order": 0,
+      "path": "/cueson/downloads/",
+      "description": "Task-oriented access to every verified delivery."
+    },
+    {
+      "key": "integration",
+      "title": "Platform integration",
+      "label": "Integration",
+      "section": "Integration",
+      "order": 0,
+      "path": "/cueson/guidelines/integration/",
+      "description": "Rendered instructions for delivered platform assets."
+    }
+  ],
+  "content": {
+    "overview": {
+      "foundation_title": "One predictable Cue JSON surface",
+      "foundation": "Cueson performs format-specific work at the file boundary. It exposes words, timing, speakers, provenance, layout, and other useful context while retaining the original file or subtitle graphics as authoritative evidence.",
+      "promises": [
+        "Subtitle and caption content reaches one predictable structured surface.",
+        "The original carrier and its native details remain available.",
+        "Bitmap subtitle text can be derived through OCR without replacing the images.",
+        "Downstream tools no longer need a separate parser for every supported format."
+      ],
+      "in_scope": [
+        "Text, XML, legacy binary, and bitmap subtitle formats",
+        "Cue timing, speakers, text, layout, provenance, and source envelopes",
+        "Derived plaintext from OCR and future transcription sources"
+      ],
+      "out_of_scope": [
+        "Replacing authoritative source files with normalized text",
+        "Claiming OCR output is lossless or authoritative",
+        "Activating cueson.io or changing the Cueson product repository in this slice"
+      ],
+      "sharp_edge": "OCR and transcription are derived interpretations. Preserve the original visual or audio evidence and label confidence and provenance instead of presenting inferred text as ground truth."
+    },
+    "voice": {
+      "principle": "Make the language inside media directly addressable without discarding its original carrier.",
+      "qualities": [
+        "precise",
+        "calm",
+        "format-literate",
+        "evidence-conscious"
+      ],
+      "lead_with": [
+        "the caption content",
+        "the source format and retained evidence",
+        "the normalized Cue JSON result"
+      ],
+      "avoid": [
+        "claims that normalization replaces the source",
+        "describing OCR output as authoritative",
+        "AI transformation hype",
+        "generic accessibility symbolism"
+      ],
+      "personality": [
+        [
+          "Precise",
+          "Names the source format, timing, and derivation method",
+          "Generic conversion claims"
+        ],
+        [
+          "Preserving",
+          "Keeps the source and normalized view together",
+          "Language that implies the original is discarded"
+        ],
+        [
+          "Readable",
+          "Makes caption content directly addressable",
+          "Format syntax presented as the user benefit"
+        ],
+        [
+          "Measured",
+          "Labels OCR and transcription as derived output",
+          "Claims of perfect recovery"
+        ]
+      ]
+    },
+    "logos": {
+      "guidance": "Cueframe places three unequal cue rails inside two open brackets. The brackets are the retained source envelope; the rails are directly readable structured caption content. The reduced master keeps the envelope and one rail for small sizes.",
+      "minimum_sizes": {
+        "mark": 24,
+        "horizontal": 160,
+        "stacked": 112,
+        "wordmark": 120
+      },
+      "reduced_below_px": 32,
+      "prohibitions": [
+        "Do not close the two brackets into a caption badge or screen.",
+        "Do not equalize, reorder, or add cue rails in the full master.",
+        "Do not remove the source envelope from the full master.",
+        "Do not replace Cue Teal with inherited orange, success green, or failure red.",
+        "Do not add play, microphone, waveform, speech-bubble, or CC symbols.",
+        "Do not use the full master below 24 pixels. Use the reduced master at and below 32 pixels.",
+        "Do not combine the Cueson and ShruggieTech marks into one lockup."
+      ]
+    },
+    "typography": {
+      "mode": "house",
+      "families": {
+        "display": {
+          "name": "Space Grotesk",
+          "weights": [
+            500,
+            700
+          ]
+        },
+        "body": {
+          "name": "Geist",
+          "weights": [
+            400,
+            500
+          ]
+        },
+        "mono": {
+          "name": "Geist Mono",
+          "weights": [
+            400
+          ]
+        }
+      }
+    },
+    "components": {
+      "CueRow": [
+        "id",
+        "start",
+        "end",
+        "speaker",
+        "text",
+        "source"
+      ],
+      "SourceEnvelope": [
+        "format",
+        "filename",
+        "sha256",
+        "bytes",
+        "preservation"
+      ],
+      "DerivationRecord": [
+        "method",
+        "input",
+        "output",
+        "confidence",
+        "provenance"
+      ]
+    }
+  },
+  "palettes": {
+    "dark": [
+      {
+        "token": "background",
+        "hex": "#080A14",
+        "rgb": "rgb(8 10 20)",
+        "hsl": "hsl(230.0 42.9% 5.5%)",
+        "oklch": "oklch(0.1481 0.0220 274.2)",
+        "lab": "lab(2.84% 0.81 -5.16) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Background",
+        "aliases": [
+          "popover",
+          "sidebar"
+        ]
+      },
+      {
+        "token": "foreground",
+        "hex": "#FFFFFF",
+        "rgb": "rgb(255 255 255)",
+        "hsl": "hsl(0.0 0.0% 100.0%)",
+        "oklch": "oklch(1.0000 0.0000 0.0)",
+        "lab": "lab(100.00% 0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Foreground",
+        "aliases": [
+          "card-foreground",
+          "popover-foreground",
+          "secondary-foreground",
+          "accent-foreground",
+          "sidebar-foreground",
+          "sidebar-accent-foreground"
+        ]
+      },
+      {
+        "token": "card",
+        "hex": "#101425",
+        "rgb": "rgb(16 20 37)",
+        "hsl": "hsl(228.6 39.6% 10.4%)",
+        "oklch": "oklch(0.1967 0.0349 272.8)",
+        "lab": "lab(6.58% 2.31 -12.41) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Card",
+        "aliases": []
+      },
+      {
+        "token": "primary",
+        "hex": "#62BEB2",
+        "rgb": "rgb(98 190 178)",
+        "hsl": "hsl(172.2 41.4% 56.5%)",
+        "oklch": "oklch(0.7414 0.0901 184.4)",
+        "lab": "lab(71.10% -30.97 -2.86) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Primary",
+        "aliases": [
+          "ring",
+          "sidebar-primary",
+          "sidebar-ring"
+        ]
+      },
+      {
+        "token": "primary-foreground",
+        "hex": "#000000",
+        "rgb": "rgb(0 0 0)",
+        "hsl": "hsl(0.0 0.0% 0.0%)",
+        "oklch": "oklch(0.0000 0.0000 0.0)",
+        "lab": "lab(0.00% 0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Primary Foreground",
+        "aliases": [
+          "sidebar-primary-foreground"
+        ]
+      },
+      {
+        "token": "secondary",
+        "hex": "#181D33",
+        "rgb": "rgb(24 29 51)",
+        "hsl": "hsl(228.9 36.0% 14.7%)",
+        "oklch": "oklch(0.2377 0.0430 273.0)",
+        "lab": "lab(11.17% 3.26 -15.48) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Secondary",
+        "aliases": [
+          "muted"
+        ]
+      },
+      {
+        "token": "muted-foreground",
+        "hex": "#9A9A9A",
+        "rgb": "rgb(154 154 154)",
+        "hsl": "hsl(0.0 0.0% 60.4%)",
+        "oklch": "oklch(0.6862 0.0000 0.0)",
+        "lab": "lab(63.60% 0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Muted Foreground",
+        "aliases": []
+      },
+      {
+        "token": "accent",
+        "hex": "#222944",
+        "rgb": "rgb(34 41 68)",
+        "hsl": "hsl(227.6 33.3% 20.0%)",
+        "oklch": "oklch(0.2881 0.0505 271.9)",
+        "lab": "lab(16.97% 3.44 -18.24) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Accent",
+        "aliases": [
+          "sidebar-accent"
+        ]
+      },
+      {
+        "token": "destructive",
+        "hex": "#E9505F",
+        "rgb": "rgb(233 80 95)",
+        "hsl": "hsl(354.1 77.7% 61.4%)",
+        "oklch": "oklch(0.6437 0.1882 18.6)",
+        "lab": "lab(56.66% 60.52 26.02) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Destructive",
+        "aliases": []
+      },
+      {
+        "token": "border",
+        "hex": "#262626",
+        "rgb": "rgb(38 38 38)",
+        "hsl": "hsl(0.0 0.0% 14.9%)",
+        "oklch": "oklch(0.2686 0.0000 0.0)",
+        "lab": "lab(15.16% -0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Border",
+        "aliases": [
+          "input",
+          "sidebar-border"
+        ]
+      },
+      {
+        "token": "chart-1",
+        "hex": "#4DAA9F",
+        "rgb": "rgb(77 170 159)",
+        "hsl": "hsl(172.9 37.7% 48.4%)",
+        "oklch": "oklch(0.6787 0.0899 184.9)",
+        "lab": "lab(63.81% -30.91 -3.15) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 1",
+        "aliases": []
+      },
+      {
+        "token": "chart-2",
+        "hex": "#85A36E",
+        "rgb": "rgb(133 163 110)",
+        "hsl": "hsl(94.0 22.4% 53.5%)",
+        "oklch": "oklch(0.6790 0.0819 132.2)",
+        "lab": "lab(63.69% -18.14 24.05) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 2",
+        "aliases": []
+      },
+      {
+        "token": "chart-3",
+        "hex": "#64A0C5",
+        "rgb": "rgb(100 160 197)",
+        "hsl": "hsl(202.9 45.5% 58.2%)",
+        "oklch": "oklch(0.6792 0.0831 236.9)",
+        "lab": "lab(62.86% -12.47 -25.55) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 3",
+        "aliases": []
+      },
+      {
+        "token": "chart-4",
+        "hex": "#B3935B",
+        "rgb": "rgb(179 147 91)",
+        "hsl": "hsl(38.2 36.7% 52.9%)",
+        "oklch": "oklch(0.6801 0.0833 80.6)",
+        "lab": "lab(62.99% 7.08 34.24) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 4",
+        "aliases": []
+      },
+      {
+        "token": "chart-5",
+        "hex": "#9690C9",
+        "rgb": "rgb(150 144 201)",
+        "hsl": "hsl(246.3 34.5% 67.6%)",
+        "oklch": "oklch(0.6798 0.0834 288.8)",
+        "lab": "lab(61.93% 11.69 -28.85) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 5",
+        "aliases": []
+      },
+      {
+        "token": "brand-accent-deep",
+        "hex": "#2F9388",
+        "rgb": "rgb(47 147 136)",
+        "hsl": "hsl(173.4 51.5% 38.0%)",
+        "oklch": "oklch(0.6035 0.0920 184.6)",
+        "lab": "lab(55.12% -31.78 -3.02) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Brand Accent Deep",
+        "aliases": []
+      },
+      {
+        "token": "brand-emphasis",
+        "hex": "#FF5300",
+        "rgb": "rgb(255 83 0)",
+        "hsl": "hsl(19.5 100.0% 50.0%)",
+        "oklch": "oklch(0.6738 0.2190 38.3)",
+        "lab": "lab(60.29% 64.46 71.50) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Brand Emphasis",
+        "aliases": []
+      },
+      {
+        "token": "brand-cta",
+        "hex": "#C24000",
+        "rgb": "rgb(194 64 0)",
+        "hsl": "hsl(19.8 100.0% 38.0%)",
+        "oklch": "oklch(0.5519 0.1759 39.3)",
+        "lab": "lab(46.55% 51.32 58.37) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Brand Cta",
+        "aliases": []
+      }
+    ],
+    "light": [
+      {
+        "token": "background",
+        "hex": "#F8F8F6",
+        "rgb": "rgb(248 248 246)",
+        "hsl": "hsl(60.0 12.5% 96.9%)",
+        "oklch": "oklch(0.9786 0.0026 106.4)",
+        "lab": "lab(97.54% -0.26 0.96) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Background",
+        "aliases": []
+      },
+      {
+        "token": "foreground",
+        "hex": "#0A0A0A",
+        "rgb": "rgb(10 10 10)",
+        "hsl": "hsl(0.0 0.0% 3.9%)",
+        "oklch": "oklch(0.1448 0.0000 0.0)",
+        "lab": "lab(2.74% 0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Foreground",
+        "aliases": [
+          "card-foreground",
+          "popover-foreground",
+          "secondary-foreground",
+          "accent-foreground",
+          "sidebar-foreground",
+          "sidebar-accent-foreground"
+        ]
+      },
+      {
+        "token": "card",
+        "hex": "#FFFFFF",
+        "rgb": "rgb(255 255 255)",
+        "hsl": "hsl(0.0 0.0% 100.0%)",
+        "oklch": "oklch(1.0000 0.0000 0.0)",
+        "lab": "lab(100.00% 0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Card",
+        "aliases": [
+          "popover",
+          "primary-foreground",
+          "sidebar",
+          "sidebar-primary-foreground"
+        ]
+      },
+      {
+        "token": "primary",
+        "hex": "#005D55",
+        "rgb": "rgb(0 93 85)",
+        "hsl": "hsl(174.8 100.0% 18.2%)",
+        "oklch": "oklch(0.4300 0.0759 184.7)",
+        "lab": "lab(34.80% -26.31 -2.54) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Primary",
+        "aliases": [
+          "ring",
+          "chart-1",
+          "sidebar-primary",
+          "sidebar-ring"
+        ]
+      },
+      {
+        "token": "secondary",
+        "hex": "#F0EFED",
+        "rgb": "rgb(240 239 237)",
+        "hsl": "hsl(40.0 9.1% 93.5%)",
+        "oklch": "oklch(0.9523 0.0029 84.6)",
+        "lab": "lab(94.48% 0.08 1.09) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Secondary",
+        "aliases": [
+          "accent",
+          "sidebar-accent"
+        ]
+      },
+      {
+        "token": "muted",
+        "hex": "#F5F5F5",
+        "rgb": "rgb(245 245 245)",
+        "hsl": "hsl(0.0 0.0% 96.1%)",
+        "oklch": "oklch(0.9702 0.0000 0.0)",
+        "lab": "lab(96.54% 0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Muted",
+        "aliases": []
+      },
+      {
+        "token": "muted-foreground",
+        "hex": "#6B6B6B",
+        "rgb": "rgb(107 107 107)",
+        "hsl": "hsl(0.0 0.0% 42.0%)",
+        "oklch": "oklch(0.5278 0.0000 0.0)",
+        "lab": "lab(45.22% 0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Muted Foreground",
+        "aliases": []
+      },
+      {
+        "token": "destructive",
+        "hex": "#C0293A",
+        "rgb": "rgb(192 41 58)",
+        "hsl": "hsl(353.2 64.8% 45.7%)",
+        "oklch": "oklch(0.5308 0.1857 20.9)",
+        "lab": "lab(43.62% 59.48 30.04) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Destructive",
+        "aliases": []
+      },
+      {
+        "token": "border",
+        "hex": "#E5E5E5",
+        "rgb": "rgb(229 229 229)",
+        "hsl": "hsl(0.0 0.0% 89.8%)",
+        "oklch": "oklch(0.9219 0.0000 0.0)",
+        "lab": "lab(90.94% 0.00 0.00) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Border",
+        "aliases": [
+          "input",
+          "sidebar-border"
+        ]
+      },
+      {
+        "token": "chart-2",
+        "hex": "#41582F",
+        "rgb": "rgb(65 88 47)",
+        "hsl": "hsl(93.7 30.4% 26.5%)",
+        "oklch": "oklch(0.4304 0.0695 132.6)",
+        "lab": "lab(34.69% -15.31 20.77) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 2",
+        "aliases": []
+      },
+      {
+        "token": "chart-3",
+        "hex": "#255571",
+        "rgb": "rgb(37 85 113)",
+        "hsl": "hsl(202.1 50.7% 29.4%)",
+        "oklch": "oklch(0.4293 0.0696 237.1)",
+        "lab": "lab(33.83% -9.54 -21.28) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 3",
+        "aliases": []
+      },
+      {
+        "token": "chart-4",
+        "hex": "#634B1E",
+        "rgb": "rgb(99 75 30)",
+        "hsl": "hsl(39.1 53.5% 25.3%)",
+        "oklch": "oklch(0.4286 0.0694 80.7)",
+        "lab": "lab(33.77% 6.56 30.10) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 4",
+        "aliases": []
+      },
+      {
+        "token": "chart-5",
+        "hex": "#4E4974",
+        "rgb": "rgb(78 73 116)",
+        "hsl": "hsl(247.0 22.8% 37.1%)",
+        "oklch": "oklch(0.4294 0.0704 288.4)",
+        "lab": "lab(32.98% 10.39 -24.18) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Chart 5",
+        "aliases": []
+      },
+      {
+        "token": "brand-accent-deep",
+        "hex": "#2F9388",
+        "rgb": "rgb(47 147 136)",
+        "hsl": "hsl(173.4 51.5% 38.0%)",
+        "oklch": "oklch(0.6035 0.0920 184.6)",
+        "lab": "lab(55.12% -31.78 -3.02) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Brand Accent Deep",
+        "aliases": []
+      },
+      {
+        "token": "brand-emphasis",
+        "hex": "#C24000",
+        "rgb": "rgb(194 64 0)",
+        "hsl": "hsl(19.8 100.0% 38.0%)",
+        "oklch": "oklch(0.5519 0.1759 39.3)",
+        "lab": "lab(46.55% 51.32 58.37) (D50)",
+        "print": "CMYK: output profile required",
+        "role": "Brand Emphasis",
+        "aliases": [
+          "brand-cta"
+        ]
+      }
+    ]
+  },
+  "asset_families": [
+    {
+      "key": "logos",
+      "title": "Logos and lockups",
+      "summary": "Choose by purpose, then open details for every delivered size and format.",
+      "assets": [
+        {
+          "id": "asset-logo-identity-lockup-full-black-lockup-black-full",
+          "title": "Lockup Full Lockup Black",
+          "role": "lockup",
+          "platform": "identity",
+          "appearance": "black",
+          "surface": "light",
+          "summary": "Use this lockup for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "lockup",
+            "variant": "full",
+            "colourway": "black",
+            "role": "lockup",
+            "appearance": "black",
+            "source_variant": "full",
+            "format": "svg",
+            "width": 493,
+            "height": 351,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-stacked-black.svg",
+            "sha256": "ff98d6cf8605c966fa9ca9d6686b346220f81e901ef1ef59710f74a55a3b46c2"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "black",
+              "role": "lockup",
+              "appearance": "black",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 300,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-horizontal-black-1024.png",
+              "sha256": "172cdd0e919c14ae75f0347bd5ed4786c7ceb4ea14bc6825f035a16c5b0c5749"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "black",
+              "role": "lockup",
+              "appearance": "black",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 731,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-stacked-black-1024.png",
+              "sha256": "6d1454858d6e6780a790efe0b56b59d658a69f94b0daf254a9ba8c96fb490c10"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "black",
+              "role": "lockup",
+              "appearance": "black",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 683,
+              "height": 200,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-horizontal-black.svg",
+              "sha256": "14327d52927608c4247ab86e9963df2b6239c4fb52e5ce4d061ee9116e8d7740"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "black",
+              "role": "lockup",
+              "appearance": "black",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 493,
+              "height": 351,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-stacked-black.svg",
+              "sha256": "ff98d6cf8605c966fa9ca9d6686b346220f81e901ef1ef59710f74a55a3b46c2"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-lockup-full-color-lockup-color-full",
+          "title": "Lockup Full Lockup Color",
+          "role": "lockup",
+          "platform": "identity",
+          "appearance": "color",
+          "surface": "dark",
+          "summary": "Use this lockup for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "lockup",
+            "variant": "full",
+            "colourway": "color",
+            "role": "lockup",
+            "appearance": "color",
+            "source_variant": "full",
+            "format": "svg",
+            "width": 1280,
+            "height": 640,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-social-preview.svg",
+            "sha256": "b216b278ff727a3ce3ed1295b2cfccb161f0f39a346b23d33e22e26b99e33620"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "color",
+              "role": "lockup",
+              "appearance": "color",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 300,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-horizontal-color-1024.png",
+              "sha256": "0971bc26e02141b15384ce3283ad7eae213705fb17c8b14dff1c8adb2271b8d9"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "color",
+              "role": "lockup",
+              "appearance": "color",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1280,
+              "height": 640,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-social-preview-1280.png",
+              "sha256": "6040836977950468af0edf1173b52dbe55078cb7d1338d85db787a29f0002669"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "color",
+              "role": "lockup",
+              "appearance": "color",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 731,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-stacked-color-1024.png",
+              "sha256": "0341ffee293d887a4bc7249cd12dafca9c2b1019d370f13a18d48deffb4ca25d"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "color",
+              "role": "lockup",
+              "appearance": "color",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 683,
+              "height": 200,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-horizontal-color.svg",
+              "sha256": "e6bbfe92e3d3c53728866823317d1cc2c0ec5b3b02923d5b80816bd5545adb83"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "color",
+              "role": "lockup",
+              "appearance": "color",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 1280,
+              "height": 640,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-social-preview.svg",
+              "sha256": "b216b278ff727a3ce3ed1295b2cfccb161f0f39a346b23d33e22e26b99e33620"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "color",
+              "role": "lockup",
+              "appearance": "color",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 493,
+              "height": 351,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-stacked-color.svg",
+              "sha256": "9f6e349deca6877e3d7720071e4d00d363c95a4ec0353089a25364a7df49aeb0"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-lockup-full-light-lockup-light-full",
+          "title": "Lockup Full Lockup Light",
+          "role": "lockup",
+          "platform": "identity",
+          "appearance": "light",
+          "surface": "light",
+          "summary": "Use this lockup for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "lockup",
+            "variant": "full",
+            "colourway": "light",
+            "role": "lockup",
+            "appearance": "light",
+            "source_variant": "full",
+            "format": "svg",
+            "width": 493,
+            "height": 351,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-stacked-light.svg",
+            "sha256": "ea063cb3d824203cf2ad793b11d163bbf8f751eea57198d192626886e3f0a1d6"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "light",
+              "role": "lockup",
+              "appearance": "light",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 300,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-horizontal-light-1024.png",
+              "sha256": "22fd70d73ea3cbb50476df5873ddbfecbbb9604761b18319f0c88520a38f960d"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "light",
+              "role": "lockup",
+              "appearance": "light",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 731,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-stacked-light-1024.png",
+              "sha256": "346f48d9f61c1ac45312af9a966afea0a72877895129f45cf2ba15126379098a"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "light",
+              "role": "lockup",
+              "appearance": "light",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 683,
+              "height": 200,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-horizontal-light.svg",
+              "sha256": "55f7ce4cd171f691a49d053c011608f59176bf5dfa5542ceef9f360a8adde037"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "light",
+              "role": "lockup",
+              "appearance": "light",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 493,
+              "height": 351,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-stacked-light.svg",
+              "sha256": "ea063cb3d824203cf2ad793b11d163bbf8f751eea57198d192626886e3f0a1d6"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-lockup-full-white-lockup-white-full",
+          "title": "Lockup Full Lockup White",
+          "role": "lockup",
+          "platform": "identity",
+          "appearance": "white",
+          "surface": "dark",
+          "summary": "Use this lockup for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "lockup",
+            "variant": "full",
+            "colourway": "white",
+            "role": "lockup",
+            "appearance": "white",
+            "source_variant": "full",
+            "format": "svg",
+            "width": 493,
+            "height": 351,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-stacked-white.svg",
+            "sha256": "ac1dfaa404ce2146677217518741de2f55be8ee7c7645bc087d3fbdcde7b717f"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "white",
+              "role": "lockup",
+              "appearance": "white",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 300,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-horizontal-white-1024.png",
+              "sha256": "e60f1ae2eb675331599872e0370edd0372dbccf69a63a3c81d887328e2649d8d"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "white",
+              "role": "lockup",
+              "appearance": "white",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 731,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-stacked-white-1024.png",
+              "sha256": "91f4b757175678ac720e8fad3585405b2ddc8875b2885460cb4a6d81f46ab1f3"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "white",
+              "role": "lockup",
+              "appearance": "white",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 683,
+              "height": 200,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-horizontal-white.svg",
+              "sha256": "aa09368778b3ef85f157fcdeeb34422f6171f03e58b5f90d55d0eeb589d1cec4"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "lockup",
+              "variant": "full",
+              "colourway": "white",
+              "role": "lockup",
+              "appearance": "white",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 493,
+              "height": 351,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-stacked-white.svg",
+              "sha256": "ac1dfaa404ce2146677217518741de2f55be8ee7c7645bc087d3fbdcde7b717f"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-wordmark-default-black-wordmark-black-default",
+          "title": "Wordmark Wordmark Black",
+          "role": "wordmark",
+          "platform": "identity",
+          "appearance": "black",
+          "surface": "light",
+          "summary": "Use this wordmark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "default"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "wordmark",
+            "variant": null,
+            "colourway": "black",
+            "role": "wordmark",
+            "appearance": "black",
+            "source_variant": null,
+            "format": "svg",
+            "width": 742,
+            "height": 260,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-wordmark-black.svg",
+            "sha256": "25b2ea896f122fde9196d5125a20b1667043c0bfc39718fa14589a17a84a245b"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "wordmark",
+              "variant": null,
+              "colourway": "black",
+              "role": "wordmark",
+              "appearance": "black",
+              "source_variant": null,
+              "format": "png",
+              "width": 1024,
+              "height": 359,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-wordmark-black-1024.png",
+              "sha256": "6f642212142d1e31957eb7985b89f393a58a037f0277268e873a4aa508d493b5"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "wordmark",
+              "variant": null,
+              "colourway": "black",
+              "role": "wordmark",
+              "appearance": "black",
+              "source_variant": null,
+              "format": "svg",
+              "width": 742,
+              "height": 260,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-wordmark-black.svg",
+              "sha256": "25b2ea896f122fde9196d5125a20b1667043c0bfc39718fa14589a17a84a245b"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-wordmark-default-color-wordmark-color-default",
+          "title": "Wordmark Wordmark Color",
+          "role": "wordmark",
+          "platform": "identity",
+          "appearance": "color",
+          "surface": "dark",
+          "summary": "Use this wordmark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "default"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "wordmark",
+            "variant": null,
+            "colourway": "color",
+            "role": "wordmark",
+            "appearance": "color",
+            "source_variant": null,
+            "format": "svg",
+            "width": 742,
+            "height": 260,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-wordmark-color.svg",
+            "sha256": "a9934ad4f68375ee86e84fb1e9dc3cc309a8d4e6fbe682ca9178eb8d79023d60"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "wordmark",
+              "variant": null,
+              "colourway": "color",
+              "role": "wordmark",
+              "appearance": "color",
+              "source_variant": null,
+              "format": "png",
+              "width": 1024,
+              "height": 359,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-wordmark-color-1024.png",
+              "sha256": "b18dde6d8191e9430b679f5af85e06c35b5c4c997be0409f70993c075f6ba25b"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "wordmark",
+              "variant": null,
+              "colourway": "color",
+              "role": "wordmark",
+              "appearance": "color",
+              "source_variant": null,
+              "format": "svg",
+              "width": 742,
+              "height": 260,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-wordmark-color.svg",
+              "sha256": "a9934ad4f68375ee86e84fb1e9dc3cc309a8d4e6fbe682ca9178eb8d79023d60"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-wordmark-default-light-wordmark-light-default",
+          "title": "Wordmark Wordmark Light",
+          "role": "wordmark",
+          "platform": "identity",
+          "appearance": "light",
+          "surface": "light",
+          "summary": "Use this wordmark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "default"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "wordmark",
+            "variant": null,
+            "colourway": "light",
+            "role": "wordmark",
+            "appearance": "light",
+            "source_variant": null,
+            "format": "svg",
+            "width": 742,
+            "height": 260,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-wordmark-light.svg",
+            "sha256": "80503388cf4f5373cba6feda6b949004cb3772473ede97eeca85e0a0e0cabb35"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "wordmark",
+              "variant": null,
+              "colourway": "light",
+              "role": "wordmark",
+              "appearance": "light",
+              "source_variant": null,
+              "format": "png",
+              "width": 1024,
+              "height": 359,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-wordmark-light-1024.png",
+              "sha256": "2a51e40d9bf82fe4cc430afbb54da4577689682ff094d37f8cc47002e0fb1f90"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "wordmark",
+              "variant": null,
+              "colourway": "light",
+              "role": "wordmark",
+              "appearance": "light",
+              "source_variant": null,
+              "format": "svg",
+              "width": 742,
+              "height": 260,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-wordmark-light.svg",
+              "sha256": "80503388cf4f5373cba6feda6b949004cb3772473ede97eeca85e0a0e0cabb35"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-wordmark-default-white-wordmark-white-default",
+          "title": "Wordmark Wordmark White",
+          "role": "wordmark",
+          "platform": "identity",
+          "appearance": "white",
+          "surface": "dark",
+          "summary": "Use this wordmark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "default"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "wordmark",
+            "variant": null,
+            "colourway": "white",
+            "role": "wordmark",
+            "appearance": "white",
+            "source_variant": null,
+            "format": "svg",
+            "width": 742,
+            "height": 260,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-wordmark-white.svg",
+            "sha256": "9a2f077b4ad89c600030b3b35a36047dbd1ae55be76ea06764248cdc918d6c9a"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "wordmark",
+              "variant": null,
+              "colourway": "white",
+              "role": "wordmark",
+              "appearance": "white",
+              "source_variant": null,
+              "format": "png",
+              "width": 1024,
+              "height": 359,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-wordmark-white-1024.png",
+              "sha256": "91e7182be689ecea9d4ee2851714753b8ffe8e70ad754afbb3ac0ff7fd6f4c9d"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "wordmark",
+              "variant": null,
+              "colourway": "white",
+              "role": "wordmark",
+              "appearance": "white",
+              "source_variant": null,
+              "format": "svg",
+              "width": 742,
+              "height": 260,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-wordmark-white.svg",
+              "sha256": "9a2f077b4ad89c600030b3b35a36047dbd1ae55be76ea06764248cdc918d6c9a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "marks",
+      "title": "Marks",
+      "summary": "Choose by purpose, then open details for every delivered size and format.",
+      "assets": [
+        {
+          "id": "asset-logo-identity-mark-full-black-mark-black-full",
+          "title": "Mark Full Mark Black",
+          "role": "mark",
+          "platform": "identity",
+          "appearance": "black",
+          "surface": "light",
+          "summary": "Use this mark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "mark",
+            "variant": "full",
+            "colourway": "black",
+            "role": "mark",
+            "appearance": "black",
+            "source_variant": "full",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-mark-black.svg",
+            "sha256": "1f7231891b6ecd22f111745ecd5480b4b5829a2b42a146b5c9df79af95fe5888"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "full",
+              "colourway": "black",
+              "role": "mark",
+              "appearance": "black",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-mark-black-1024.png",
+              "sha256": "c63c395a5350f2bbd4b15890b0fca8e2b3873ec5f1f35aed3cb30053e72e6714"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "full",
+              "colourway": "black",
+              "role": "mark",
+              "appearance": "black",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-mark-black.svg",
+              "sha256": "1f7231891b6ecd22f111745ecd5480b4b5829a2b42a146b5c9df79af95fe5888"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-mark-full-color-mark-color-full",
+          "title": "Mark Full Mark Color",
+          "role": "mark",
+          "platform": "identity",
+          "appearance": "color",
+          "surface": "dark",
+          "summary": "Use this mark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "mark",
+            "variant": "full",
+            "colourway": "color",
+            "role": "mark",
+            "appearance": "color",
+            "source_variant": "full",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-mark-color.svg",
+            "sha256": "073b4e9603325420e4810f8ee0e54d6c8d339cee8dbc0a7f4ed4f05fdc2170d1"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "full",
+              "colourway": "color",
+              "role": "mark",
+              "appearance": "color",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-mark-color-1024.png",
+              "sha256": "d3d6dea2bc06bdf891b47d3d50f127ff11351a8a5b3f5bb543f1e803912cb2f6"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "full",
+              "colourway": "color",
+              "role": "mark",
+              "appearance": "color",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-mark-color.svg",
+              "sha256": "073b4e9603325420e4810f8ee0e54d6c8d339cee8dbc0a7f4ed4f05fdc2170d1"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-mark-full-light-mark-light-full",
+          "title": "Mark Full Mark Light",
+          "role": "mark",
+          "platform": "identity",
+          "appearance": "light",
+          "surface": "light",
+          "summary": "Use this mark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "mark",
+            "variant": "full",
+            "colourway": "light",
+            "role": "mark",
+            "appearance": "light",
+            "source_variant": "full",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-mark-light.svg",
+            "sha256": "4d5f0a982aaa750c2b2c5c4f4f5379b79268efc36d5fe58891347a873116b01d"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "full",
+              "colourway": "light",
+              "role": "mark",
+              "appearance": "light",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-mark-light-1024.png",
+              "sha256": "024fab259d47b147d11f3f358b179b530f65ae9288c7a2a5282ef3fbfe8d2749"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "full",
+              "colourway": "light",
+              "role": "mark",
+              "appearance": "light",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-mark-light.svg",
+              "sha256": "4d5f0a982aaa750c2b2c5c4f4f5379b79268efc36d5fe58891347a873116b01d"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-mark-full-white-mark-white-full",
+          "title": "Mark Full Mark White",
+          "role": "mark",
+          "platform": "identity",
+          "appearance": "white",
+          "surface": "dark",
+          "summary": "Use this mark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "mark",
+            "variant": "full",
+            "colourway": "white",
+            "role": "mark",
+            "appearance": "white",
+            "source_variant": "full",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-mark-white.svg",
+            "sha256": "21a3538ca28e4f949f5aeadbc2c99ba994293d95415e536766189ef7fc509254"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "full",
+              "colourway": "white",
+              "role": "mark",
+              "appearance": "white",
+              "source_variant": "full",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-mark-white-1024.png",
+              "sha256": "d7d0444b251988a2ff0a118610717ba76eb04c7ff5582c46bec43703f8d88165"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "full",
+              "colourway": "white",
+              "role": "mark",
+              "appearance": "white",
+              "source_variant": "full",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-mark-white.svg",
+              "sha256": "21a3538ca28e4f949f5aeadbc2c99ba994293d95415e536766189ef7fc509254"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-mark-reduced-black-mark-black-reduced",
+          "title": "Mark Reduced Mark Black",
+          "role": "mark",
+          "platform": "identity",
+          "appearance": "black",
+          "surface": "light",
+          "summary": "Use this mark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "reduced"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "mark",
+            "variant": "reduced",
+            "colourway": "black",
+            "role": "mark",
+            "appearance": "black",
+            "source_variant": "reduced",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-mark-reduced-black.svg",
+            "sha256": "785b9dbe9f81067266405686c9670e58248e6791e0d54aca152ed1bd16fd9c21"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "reduced",
+              "colourway": "black",
+              "role": "mark",
+              "appearance": "black",
+              "source_variant": "reduced",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-mark-reduced-black-1024.png",
+              "sha256": "5fac9aa77e604b8a69db5d63700784dbcbac116a91ac0bd0ca65654858f5d60e"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "reduced",
+              "colourway": "black",
+              "role": "mark",
+              "appearance": "black",
+              "source_variant": "reduced",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-mark-reduced-black.svg",
+              "sha256": "785b9dbe9f81067266405686c9670e58248e6791e0d54aca152ed1bd16fd9c21"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-mark-reduced-color-mark-color-reduced",
+          "title": "Mark Reduced Mark Color",
+          "role": "mark",
+          "platform": "identity",
+          "appearance": "color",
+          "surface": "dark",
+          "summary": "Use this mark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "reduced"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "mark",
+            "variant": "reduced",
+            "colourway": "color",
+            "role": "mark",
+            "appearance": "color",
+            "source_variant": "reduced",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-mark-reduced-color.svg",
+            "sha256": "ab68c4f343ec44bffe33431f911dab9a2055bfcef0c61b01a8afb692971e49ad"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "reduced",
+              "colourway": "color",
+              "role": "mark",
+              "appearance": "color",
+              "source_variant": "reduced",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-mark-reduced-color-1024.png",
+              "sha256": "de08940335af6d6556e2a1a6c51ec75f5cc48c3324f3e3cf4428cc37eb03cb8f"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "reduced",
+              "colourway": "color",
+              "role": "mark",
+              "appearance": "color",
+              "source_variant": "reduced",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-mark-reduced-color.svg",
+              "sha256": "ab68c4f343ec44bffe33431f911dab9a2055bfcef0c61b01a8afb692971e49ad"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-mark-reduced-light-mark-light-reduced",
+          "title": "Mark Reduced Mark Light",
+          "role": "mark",
+          "platform": "identity",
+          "appearance": "light",
+          "surface": "light",
+          "summary": "Use this mark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "reduced"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "mark",
+            "variant": "reduced",
+            "colourway": "light",
+            "role": "mark",
+            "appearance": "light",
+            "source_variant": "reduced",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-mark-reduced-light.svg",
+            "sha256": "dd716ee3976648e1634a65cffbae0c7f12702cf381ad94f3aa6828c01162d961"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "reduced",
+              "colourway": "light",
+              "role": "mark",
+              "appearance": "light",
+              "source_variant": "reduced",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-mark-reduced-light-1024.png",
+              "sha256": "c633dcf0f177cabdb48b034bc52ccf9b904cf215d4de5faa9f03f0a4553c1ae4"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "reduced",
+              "colourway": "light",
+              "role": "mark",
+              "appearance": "light",
+              "source_variant": "reduced",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-mark-reduced-light.svg",
+              "sha256": "dd716ee3976648e1634a65cffbae0c7f12702cf381ad94f3aa6828c01162d961"
+            }
+          ]
+        },
+        {
+          "id": "asset-logo-identity-mark-reduced-white-mark-white-reduced",
+          "title": "Mark Reduced Mark White",
+          "role": "mark",
+          "platform": "identity",
+          "appearance": "white",
+          "surface": "dark",
+          "summary": "Use this mark for brand identity.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "reduced"
+          ],
+          "preview": {
+            "family": "logo",
+            "platform": "identity",
+            "kind": "mark",
+            "variant": "reduced",
+            "colourway": "white",
+            "role": "mark",
+            "appearance": "white",
+            "source_variant": "reduced",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "destination": "Brand identity",
+            "path": "logos/svg/cueson-mark-reduced-white.svg",
+            "sha256": "a735ce9ccf04e1ee0980931802ada8d6bf313aa79e1c6abc378f3ed1ab9cc516"
+          },
+          "deliveries": [
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "reduced",
+              "colourway": "white",
+              "role": "mark",
+              "appearance": "white",
+              "source_variant": "reduced",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "destination": "Brand identity",
+              "path": "logos/png/cueson-mark-reduced-white-1024.png",
+              "sha256": "32f73ab823eba8e4f76c42a3e204e6a282386b752c1c08bfa0ef7e40c2b8fc2e"
+            },
+            {
+              "family": "logo",
+              "platform": "identity",
+              "kind": "mark",
+              "variant": "reduced",
+              "colourway": "white",
+              "role": "mark",
+              "appearance": "white",
+              "source_variant": "reduced",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "destination": "Brand identity",
+              "path": "logos/svg/cueson-mark-reduced-white.svg",
+              "sha256": "a735ce9ccf04e1ee0980931802ada8d6bf313aa79e1c6abc378f3ed1ab9cc516"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "web",
+      "title": "Web icons",
+      "summary": "Choose by purpose, then open details for every delivered size and format.",
+      "assets": [
+        {
+          "id": "asset-icon-web-default-default-default-web-icon-default-full",
+          "title": "Favicon",
+          "role": "favicon",
+          "platform": "web",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this favicon for web root or document icon link.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/web/favicon-full.svg",
+            "platform": "web",
+            "role": "favicon",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "Web root or document icon link",
+            "family": "icon",
+            "sha256": "549fc18e4b0a43bc4e2ed2eddb5393ef93ffe82277af581dddc3e71e338a1d4b"
+          },
+          "deliveries": [
+            {
+              "path": "favicons/android-chrome-192x192.png",
+              "platform": "web",
+              "role": "installable",
+              "format": "png",
+              "width": 192,
+              "height": 192,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/android-chrome-192x192.png",
+              "family": "icon",
+              "sha256": "a616604532b3c58fb7b2eb44163d13b166da1ee5541601bee58807d39a936027"
+            },
+            {
+              "path": "favicons/android-chrome-512x512.png",
+              "platform": "web",
+              "role": "installable",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/android-chrome-512x512.png",
+              "family": "icon",
+              "sha256": "0b81f22210b6cbbe5a84e791443b85ed19613dac805675b25499ed7903f30805"
+            },
+            {
+              "path": "favicons/apple-touch-icon.png",
+              "platform": "web",
+              "role": "apple-touch",
+              "format": "png",
+              "width": 180,
+              "height": 180,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/apple-touch-icon.png",
+              "family": "icon",
+              "sha256": "9752b5e852b40155017b10e2d3882b5c78b624078d61366a609cadc8c49cf82f"
+            },
+            {
+              "path": "favicons/favicon-128x128.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 128,
+              "height": 128,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/favicon-128x128.png",
+              "family": "icon",
+              "sha256": "533b64a42d953a5691e906fa0cde000535f0d6f44c4f94bba92bd50081179ebc"
+            },
+            {
+              "path": "favicons/favicon-180x180.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 180,
+              "height": 180,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/favicon-180x180.png",
+              "family": "icon",
+              "sha256": "9752b5e852b40155017b10e2d3882b5c78b624078d61366a609cadc8c49cf82f"
+            },
+            {
+              "path": "favicons/favicon-192x192.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 192,
+              "height": 192,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/favicon-192x192.png",
+              "family": "icon",
+              "sha256": "a616604532b3c58fb7b2eb44163d13b166da1ee5541601bee58807d39a936027"
+            },
+            {
+              "path": "favicons/favicon-256x256.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/favicon-256x256.png",
+              "family": "icon",
+              "sha256": "cf15dda3062e3054f88f1adaf70ccb926892ade44c5b50a7e16fb712c4df9443"
+            },
+            {
+              "path": "favicons/favicon-48x48.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 48,
+              "height": 48,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/favicon-48x48.png",
+              "family": "icon",
+              "sha256": "eb687c42a03b254c59394c1c75ac3e657dad6f1f462ca593c01d9b10498ff040"
+            },
+            {
+              "path": "favicons/favicon-512x512.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/favicon-512x512.png",
+              "family": "icon",
+              "sha256": "0b81f22210b6cbbe5a84e791443b85ed19613dac805675b25499ed7903f30805"
+            },
+            {
+              "path": "favicons/favicon-64x64.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 64,
+              "height": 64,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/favicon-64x64.png",
+              "family": "icon",
+              "sha256": "368aa8612c61a511eddf6750a7066a1d495fd1adf3838135aafd84161c9de28e"
+            },
+            {
+              "path": "favicons/favicon-full.svg",
+              "platform": "web",
+              "role": "favicon",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Compatibility alias for icons/web/favicon-full.svg",
+              "family": "icon",
+              "sha256": "549fc18e4b0a43bc4e2ed2eddb5393ef93ffe82277af581dddc3e71e338a1d4b"
+            },
+            {
+              "path": "icons/web/android-chrome-192x192.png",
+              "platform": "web",
+              "role": "installable",
+              "format": "png",
+              "width": 192,
+              "height": 192,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "a616604532b3c58fb7b2eb44163d13b166da1ee5541601bee58807d39a936027"
+            },
+            {
+              "path": "icons/web/android-chrome-512x512.png",
+              "platform": "web",
+              "role": "installable",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "0b81f22210b6cbbe5a84e791443b85ed19613dac805675b25499ed7903f30805"
+            },
+            {
+              "path": "icons/web/apple-touch-icon.png",
+              "platform": "web",
+              "role": "apple-touch",
+              "format": "png",
+              "width": 180,
+              "height": 180,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "9752b5e852b40155017b10e2d3882b5c78b624078d61366a609cadc8c49cf82f"
+            },
+            {
+              "path": "icons/web/favicon-128x128.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 128,
+              "height": 128,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "533b64a42d953a5691e906fa0cde000535f0d6f44c4f94bba92bd50081179ebc"
+            },
+            {
+              "path": "icons/web/favicon-180x180.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 180,
+              "height": 180,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "9752b5e852b40155017b10e2d3882b5c78b624078d61366a609cadc8c49cf82f"
+            },
+            {
+              "path": "icons/web/favicon-192x192.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 192,
+              "height": 192,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "a616604532b3c58fb7b2eb44163d13b166da1ee5541601bee58807d39a936027"
+            },
+            {
+              "path": "icons/web/favicon-256x256.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "cf15dda3062e3054f88f1adaf70ccb926892ade44c5b50a7e16fb712c4df9443"
+            },
+            {
+              "path": "icons/web/favicon-48x48.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 48,
+              "height": 48,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "eb687c42a03b254c59394c1c75ac3e657dad6f1f462ca593c01d9b10498ff040"
+            },
+            {
+              "path": "icons/web/favicon-512x512.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "0b81f22210b6cbbe5a84e791443b85ed19613dac805675b25499ed7903f30805"
+            },
+            {
+              "path": "icons/web/favicon-64x64.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 64,
+              "height": 64,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "368aa8612c61a511eddf6750a7066a1d495fd1adf3838135aafd84161c9de28e"
+            },
+            {
+              "path": "icons/web/favicon-full.svg",
+              "platform": "web",
+              "role": "favicon",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Web root or document icon link",
+              "family": "icon",
+              "sha256": "549fc18e4b0a43bc4e2ed2eddb5393ef93ffe82277af581dddc3e71e338a1d4b"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-web-default-default-default-web-icon-default-reduced",
+          "title": "Favicon",
+          "role": "favicon",
+          "platform": "web",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this favicon for web root or document icon link.",
+          "formats": [
+            "png",
+            "svg"
+          ],
+          "variants": [
+            "reduced"
+          ],
+          "preview": {
+            "path": "icons/web/favicon.svg",
+            "platform": "web",
+            "role": "favicon",
+            "format": "svg",
+            "width": 512,
+            "height": 512,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "reduced",
+            "destination": "Web root or document icon link",
+            "family": "icon",
+            "sha256": "0d5dff14b7fc04a8bcfce0a80d57c68471b85a8d07b217a139ea4e62c4450028"
+          },
+          "deliveries": [
+            {
+              "path": "favicons/favicon-16x16.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 16,
+              "height": 16,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "Compatibility alias for icons/web/favicon-16x16.png",
+              "family": "icon",
+              "sha256": "ed09fc504e2c7b57ef0f2b4ecd27ed3f92d13e8781210debe53238f731cc7197"
+            },
+            {
+              "path": "favicons/favicon-24x24.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 24,
+              "height": 24,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "Compatibility alias for icons/web/favicon-24x24.png",
+              "family": "icon",
+              "sha256": "833ba944ae1026f6d355b76324d899a0949151b4c6bbfbf05494170aa5c3f22e"
+            },
+            {
+              "path": "favicons/favicon-32x32.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "Compatibility alias for icons/web/favicon-32x32.png",
+              "family": "icon",
+              "sha256": "9245873363dcd8118247934618f5b1d7245f3d87c4070a6f078d28d7cbf2b9aa"
+            },
+            {
+              "path": "favicons/favicon.svg",
+              "platform": "web",
+              "role": "favicon",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "Compatibility alias for icons/web/favicon.svg",
+              "family": "icon",
+              "sha256": "0d5dff14b7fc04a8bcfce0a80d57c68471b85a8d07b217a139ea4e62c4450028"
+            },
+            {
+              "path": "icons/web/favicon-16x16.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 16,
+              "height": 16,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "ed09fc504e2c7b57ef0f2b4ecd27ed3f92d13e8781210debe53238f731cc7197"
+            },
+            {
+              "path": "icons/web/favicon-24x24.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 24,
+              "height": 24,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "833ba944ae1026f6d355b76324d899a0949151b4c6bbfbf05494170aa5c3f22e"
+            },
+            {
+              "path": "icons/web/favicon-32x32.png",
+              "platform": "web",
+              "role": "favicon",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "Web root",
+              "family": "icon",
+              "sha256": "9245873363dcd8118247934618f5b1d7245f3d87c4070a6f078d28d7cbf2b9aa"
+            },
+            {
+              "path": "icons/web/favicon.svg",
+              "platform": "web",
+              "role": "favicon",
+              "format": "svg",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "Web root or document icon link",
+              "family": "icon",
+              "sha256": "0d5dff14b7fc04a8bcfce0a80d57c68471b85a8d07b217a139ea4e62c4450028"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "android",
+      "title": "Android",
+      "summary": "Choose by purpose, then open details for every delivered size and format.",
+      "assets": [
+        {
+          "id": "asset-icon-android-default-default-default-adaptive-foreground-default-full",
+          "title": "Adaptive Foreground",
+          "role": "adaptive-foreground",
+          "platform": "android",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this adaptive foreground for android res/drawable-nodpi.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/android/app/src/main/res/drawable-nodpi/ic_launcher_foreground.png",
+            "platform": "android",
+            "role": "adaptive-foreground",
+            "format": "png",
+            "width": 432,
+            "height": 432,
+            "appearance": "default",
+            "alpha": "transparent",
+            "source_variant": "full",
+            "destination": "Android res/drawable-nodpi",
+            "family": "icon",
+            "sha256": "afad733426f9dc897cbe71a8bfb8e80d5717d8bb2fd8009673215db5fda19433"
+          },
+          "deliveries": [
+            {
+              "path": "icons/android/app/src/main/res/drawable-nodpi/ic_launcher_foreground.png",
+              "platform": "android",
+              "role": "adaptive-foreground",
+              "format": "png",
+              "width": 432,
+              "height": 432,
+              "appearance": "default",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "Android res/drawable-nodpi",
+              "family": "icon",
+              "sha256": "afad733426f9dc897cbe71a8bfb8e80d5717d8bb2fd8009673215db5fda19433"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-android-default-default-default-adaptive-monochrome-default-monochrome",
+          "title": "Adaptive Monochrome",
+          "role": "adaptive-monochrome",
+          "platform": "android",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this adaptive monochrome for android res/drawable-nodpi.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "monochrome"
+          ],
+          "preview": {
+            "path": "icons/android/app/src/main/res/drawable-nodpi/ic_launcher_monochrome.png",
+            "platform": "android",
+            "role": "adaptive-monochrome",
+            "format": "png",
+            "width": 432,
+            "height": 432,
+            "appearance": "default",
+            "alpha": "transparent",
+            "source_variant": "monochrome",
+            "destination": "Android res/drawable-nodpi",
+            "family": "icon",
+            "sha256": "7fbbae80ca2e444547929701a3f4f46e3820c7ff828a6cc9a89ea2045d5bb885"
+          },
+          "deliveries": [
+            {
+              "path": "icons/android/app/src/main/res/drawable-nodpi/ic_launcher_monochrome.png",
+              "platform": "android",
+              "role": "adaptive-monochrome",
+              "format": "png",
+              "width": 432,
+              "height": 432,
+              "appearance": "default",
+              "alpha": "transparent",
+              "source_variant": "monochrome",
+              "destination": "Android res/drawable-nodpi",
+              "family": "icon",
+              "sha256": "7fbbae80ca2e444547929701a3f4f46e3820c7ff828a6cc9a89ea2045d5bb885"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-android-default-default-default-legacy-launcher-default-full",
+          "title": "Legacy Launcher",
+          "role": "legacy-launcher",
+          "platform": "android",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this legacy launcher for android res/mipmap-xxxhdpi.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+            "platform": "android",
+            "role": "legacy-launcher",
+            "format": "png",
+            "width": 192,
+            "height": 192,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "Android res/mipmap-xxxhdpi",
+            "family": "icon",
+            "sha256": "a616604532b3c58fb7b2eb44163d13b166da1ee5541601bee58807d39a936027"
+          },
+          "deliveries": [
+            {
+              "path": "icons/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+              "platform": "android",
+              "role": "legacy-launcher",
+              "format": "png",
+              "width": 72,
+              "height": 72,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Android res/mipmap-hdpi",
+              "family": "icon",
+              "sha256": "3871e753898af268a5b9e24bca601ebc87ef18e53a13714fc086a4aa85598f6a"
+            },
+            {
+              "path": "icons/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+              "platform": "android",
+              "role": "legacy-launcher",
+              "format": "png",
+              "width": 48,
+              "height": 48,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Android res/mipmap-mdpi",
+              "family": "icon",
+              "sha256": "eb687c42a03b254c59394c1c75ac3e657dad6f1f462ca593c01d9b10498ff040"
+            },
+            {
+              "path": "icons/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+              "platform": "android",
+              "role": "legacy-launcher",
+              "format": "png",
+              "width": 96,
+              "height": 96,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Android res/mipmap-xhdpi",
+              "family": "icon",
+              "sha256": "6238ef527d9159aa84465bac1f4317a5df31729e401855383f4744ccc734441c"
+            },
+            {
+              "path": "icons/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+              "platform": "android",
+              "role": "legacy-launcher",
+              "format": "png",
+              "width": 144,
+              "height": 144,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Android res/mipmap-xxhdpi",
+              "family": "icon",
+              "sha256": "ee9dcf37882536132ca14562d0bf32ec6ee9c6a542e41118fb93a33c5b9bc2cd"
+            },
+            {
+              "path": "icons/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+              "platform": "android",
+              "role": "legacy-launcher",
+              "format": "png",
+              "width": 192,
+              "height": 192,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Android res/mipmap-xxxhdpi",
+              "family": "icon",
+              "sha256": "a616604532b3c58fb7b2eb44163d13b166da1ee5541601bee58807d39a936027"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-android-default-default-default-play-store-default-full",
+          "title": "Play Store",
+          "role": "play-store",
+          "platform": "android",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this play store for google play console.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/android/play-store/google-play-512.png",
+            "platform": "android",
+            "role": "play-store",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "Google Play Console",
+            "family": "icon",
+            "sha256": "6860f3c05660c25327a42228448e6f77f45462b2ca0cd3ae46f82f6659280dcc"
+          },
+          "deliveries": [
+            {
+              "path": "icons/android/play-store/google-play-512.png",
+              "platform": "android",
+              "role": "play-store",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Google Play Console",
+              "family": "icon",
+              "sha256": "6860f3c05660c25327a42228448e6f77f45462b2ca0cd3ae46f82f6659280dcc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ios",
+      "title": "iOS",
+      "summary": "Choose by purpose, then open details for every delivered size and format.",
+      "assets": [
+        {
+          "id": "asset-icon-apple-ios-default-default-default-app-icon-dark-full",
+          "title": "App Icon Dark",
+          "role": "app-icon",
+          "platform": "apple-ios",
+          "appearance": "dark",
+          "surface": "dark",
+          "summary": "Use this app icon for xcode appicon.appiconset.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/apple/ios/Assets.xcassets/AppIcon.appiconset/AppIcon-1024-dark.png",
+            "platform": "apple-ios",
+            "role": "app-icon",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "appearance": "dark",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "Xcode AppIcon.appiconset",
+            "family": "icon",
+            "sha256": "320c8ab70dd9b2570daa05d1cb9a9c79f0e9d7cceeaaea0bdce6555d3b37abab"
+          },
+          "deliveries": [
+            {
+              "path": "icons/apple/ios/Assets.xcassets/AppIcon.appiconset/AppIcon-1024-dark.png",
+              "platform": "apple-ios",
+              "role": "app-icon",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "appearance": "dark",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "320c8ab70dd9b2570daa05d1cb9a9c79f0e9d7cceeaaea0bdce6555d3b37abab"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-apple-ios-default-default-default-app-icon-default-full",
+          "title": "App Icon",
+          "role": "app-icon",
+          "platform": "apple-ios",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this app icon for xcode appicon.appiconset.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/apple/ios/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png",
+            "platform": "apple-ios",
+            "role": "app-icon",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "Xcode AppIcon.appiconset",
+            "family": "icon",
+            "sha256": "d21f0be20ef74f45c2699c64a89add7ca359b483c1e941f1856d14a8b9def246"
+          },
+          "deliveries": [
+            {
+              "path": "icons/apple/ios/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png",
+              "platform": "apple-ios",
+              "role": "app-icon",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "d21f0be20ef74f45c2699c64a89add7ca359b483c1e941f1856d14a8b9def246"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-apple-ios-default-default-default-app-icon-tinted-monochrome",
+          "title": "App Icon Tinted",
+          "role": "app-icon",
+          "platform": "apple-ios",
+          "appearance": "tinted",
+          "surface": "light",
+          "summary": "Use this app icon for xcode appicon.appiconset.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "monochrome"
+          ],
+          "preview": {
+            "path": "icons/apple/ios/Assets.xcassets/AppIcon.appiconset/AppIcon-1024-tinted.png",
+            "platform": "apple-ios",
+            "role": "app-icon",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "appearance": "tinted",
+            "alpha": "opaque",
+            "source_variant": "monochrome",
+            "destination": "Xcode AppIcon.appiconset",
+            "family": "icon",
+            "sha256": "7427f8acee2571e44fcafaff051bdcc4252eb7796cea14bdc7fb358952f22981"
+          },
+          "deliveries": [
+            {
+              "path": "icons/apple/ios/Assets.xcassets/AppIcon.appiconset/AppIcon-1024-tinted.png",
+              "platform": "apple-ios",
+              "role": "app-icon",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "appearance": "tinted",
+              "alpha": "opaque",
+              "source_variant": "monochrome",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "7427f8acee2571e44fcafaff051bdcc4252eb7796cea14bdc7fb358952f22981"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "macos",
+      "title": "macOS",
+      "summary": "Choose by purpose, then open details for every delivered size and format.",
+      "assets": [
+        {
+          "id": "asset-icon-apple-macos-default-default-default-app-icon-default-full",
+          "title": "Asset Catalog Icon",
+          "role": "asset-catalog-icon",
+          "platform": "apple-macos",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this asset catalog icon for xcode appicon.appiconset.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png",
+            "platform": "apple-macos",
+            "role": "asset-catalog-icon",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "Xcode AppIcon.appiconset",
+            "family": "icon",
+            "sha256": "d21f0be20ef74f45c2699c64a89add7ca359b483c1e941f1856d14a8b9def246"
+          },
+          "deliveries": [
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_128x128.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 128,
+              "height": 128,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "533b64a42d953a5691e906fa0cde000535f0d6f44c4f94bba92bd50081179ebc"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_128x128@2x.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "cf15dda3062e3054f88f1adaf70ccb926892ade44c5b50a7e16fb712c4df9443"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_16x16.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 16,
+              "height": 16,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "4e3ceb85b662b8bbabc031a0031ab0604b7d74a38d2e6377947205e3cb894d4e"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_16x16@2x.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "4656b3c24726c5cf94c22878362aa4baa0618e572b301d84468e78cc9109cc3b"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_256x256.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "cf15dda3062e3054f88f1adaf70ccb926892ade44c5b50a7e16fb712c4df9443"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_256x256@2x.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "0b81f22210b6cbbe5a84e791443b85ed19613dac805675b25499ed7903f30805"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_32x32.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "4656b3c24726c5cf94c22878362aa4baa0618e572b301d84468e78cc9109cc3b"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_32x32@2x.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 64,
+              "height": 64,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "368aa8612c61a511eddf6750a7066a1d495fd1adf3838135aafd84161c9de28e"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_512x512.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "0b81f22210b6cbbe5a84e791443b85ed19613dac805675b25499ed7903f30805"
+            },
+            {
+              "path": "icons/apple/macos/AppIcon.iconset/icon_512x512@2x.png",
+              "platform": "apple-macos",
+              "role": "iconset-icon",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "macOS AppIcon.iconset",
+              "family": "icon",
+              "sha256": "d21f0be20ef74f45c2699c64a89add7ca359b483c1e941f1856d14a8b9def246"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_128x128.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 128,
+              "height": 128,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "533b64a42d953a5691e906fa0cde000535f0d6f44c4f94bba92bd50081179ebc"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "cf15dda3062e3054f88f1adaf70ccb926892ade44c5b50a7e16fb712c4df9443"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_16x16.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 16,
+              "height": 16,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "4e3ceb85b662b8bbabc031a0031ab0604b7d74a38d2e6377947205e3cb894d4e"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "4656b3c24726c5cf94c22878362aa4baa0618e572b301d84468e78cc9109cc3b"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_256x256.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "cf15dda3062e3054f88f1adaf70ccb926892ade44c5b50a7e16fb712c4df9443"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "0b81f22210b6cbbe5a84e791443b85ed19613dac805675b25499ed7903f30805"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_32x32.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "4656b3c24726c5cf94c22878362aa4baa0618e572b301d84468e78cc9109cc3b"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 64,
+              "height": 64,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "368aa8612c61a511eddf6750a7066a1d495fd1adf3838135aafd84161c9de28e"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_512x512.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 512,
+              "height": 512,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "0b81f22210b6cbbe5a84e791443b85ed19613dac805675b25499ed7903f30805"
+            },
+            {
+              "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png",
+              "platform": "apple-macos",
+              "role": "asset-catalog-icon",
+              "format": "png",
+              "width": 1024,
+              "height": 1024,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "Xcode AppIcon.appiconset",
+              "family": "icon",
+              "sha256": "d21f0be20ef74f45c2699c64a89add7ca359b483c1e941f1856d14a8b9def246"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "windows",
+      "title": "Windows",
+      "summary": "Choose by purpose, then open details for every delivered size and format.",
+      "assets": [
+        {
+          "id": "asset-icon-windows-default-default-default-msix-scale-default-full",
+          "title": "Msix Scale",
+          "role": "msix-scale",
+          "platform": "windows",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this msix scale for msix assets.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/windows/msix/Assets/Square150x150Logo.scale-400.png",
+            "platform": "windows",
+            "role": "msix-scale",
+            "format": "png",
+            "width": 600,
+            "height": 600,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "MSIX Assets",
+            "family": "icon",
+            "sha256": "f0b3fe41017c522c9117b0d42c55d91c91b4aca1d93e7aca37f471e526049dfd"
+          },
+          "deliveries": [
+            {
+              "path": "icons/windows/msix/Assets/Square150x150Logo.scale-100.png",
+              "platform": "windows",
+              "role": "msix-scale",
+              "format": "png",
+              "width": 150,
+              "height": 150,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "59e220b0bd9dcd27c7adf7e4b0c75f96074c10b9d416c9f30670e45678d02ea9"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square150x150Logo.scale-200.png",
+              "platform": "windows",
+              "role": "msix-scale",
+              "format": "png",
+              "width": 300,
+              "height": 300,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "4c8306a83df7b66d5dcd1df82b24e2b5f5a37bf17a6acff45810eaa25ad738e8"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square150x150Logo.scale-400.png",
+              "platform": "windows",
+              "role": "msix-scale",
+              "format": "png",
+              "width": 600,
+              "height": 600,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "f0b3fe41017c522c9117b0d42c55d91c91b4aca1d93e7aca37f471e526049dfd"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.scale-100.png",
+              "platform": "windows",
+              "role": "msix-scale",
+              "format": "png",
+              "width": 44,
+              "height": 44,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "dc0278921324b9bb0237c239605b1b0728514629cadef2c54355813a1fd24392"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.scale-200.png",
+              "platform": "windows",
+              "role": "msix-scale",
+              "format": "png",
+              "width": 88,
+              "height": 88,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "1d0aa1dac46be2df79b8c6a8350bcfbc52d4b39a3de40188729b2b821eed4ce3"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.scale-400.png",
+              "platform": "windows",
+              "role": "msix-scale",
+              "format": "png",
+              "width": 176,
+              "height": 176,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "527314737b1d3f6a99450b4b32d49eebd957571c8458e00f98447ff46a3c542f"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-windows-default-default-default-store-logo-default-full",
+          "title": "Store Logo",
+          "role": "store-logo",
+          "platform": "windows",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this store logo for msix assets.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/windows/msix/Assets/StoreLogo.scale-400.png",
+            "platform": "windows",
+            "role": "store-logo",
+            "format": "png",
+            "width": 200,
+            "height": 200,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "MSIX Assets",
+            "family": "icon",
+            "sha256": "9821edb51a823e6235b23eb185f984c18c9efa317bf3e5bb1fbce3d5e38ecc41"
+          },
+          "deliveries": [
+            {
+              "path": "icons/windows/msix/Assets/StoreLogo.scale-100.png",
+              "platform": "windows",
+              "role": "store-logo",
+              "format": "png",
+              "width": 50,
+              "height": 50,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "c3ab631185963e58546d17b9aa29ec7d1bdf6f1191c31585338b008a76ed80ee"
+            },
+            {
+              "path": "icons/windows/msix/Assets/StoreLogo.scale-200.png",
+              "platform": "windows",
+              "role": "store-logo",
+              "format": "png",
+              "width": 100,
+              "height": 100,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "fcaa0c63a6db4c53344c2b67222dbe896b3b763f4fcc676d55b6fabff164952d"
+            },
+            {
+              "path": "icons/windows/msix/Assets/StoreLogo.scale-400.png",
+              "platform": "windows",
+              "role": "store-logo",
+              "format": "png",
+              "width": 200,
+              "height": 200,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "9821edb51a823e6235b23eb185f984c18c9efa317bf3e5bb1fbce3d5e38ecc41"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-windows-default-default-default-target-size-dark-unplated-full",
+          "title": "Target Size Dark Unplated",
+          "role": "target-size",
+          "platform": "windows",
+          "appearance": "dark-unplated",
+          "surface": "dark",
+          "summary": "Use this target size for msix assets.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
+            "platform": "windows",
+            "role": "target-size",
+            "format": "png",
+            "width": 256,
+            "height": 256,
+            "appearance": "dark-unplated",
+            "alpha": "transparent",
+            "source_variant": "full",
+            "destination": "MSIX Assets",
+            "family": "icon",
+            "sha256": "1e627af1d05ad825555f910e9fc0fc98771551b0898662ca6b48187c2b17f88c"
+          },
+          "deliveries": [
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "1e627af1d05ad825555f910e9fc0fc98771551b0898662ca6b48187c2b17f88c"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-36_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 36,
+              "height": 36,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "a02491bf3e28cfd357153979535048ac157c915e57d4b1035413e92c3d7252a9"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-40_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 40,
+              "height": 40,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "f9e56b709d4519c5395bc49d90c8d83962858caa7417bb8457274357c4e7548e"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-48_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 48,
+              "height": 48,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "1b1f3a30c60c46d179e7ec4a93dfe927a3daf52e603e9fa690e8aed288a806a7"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-60_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 60,
+              "height": 60,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "228a04d04ec9168ff25bb99dd0fdee34701243524de046ab40af4e9d0f261d94"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-64_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 64,
+              "height": 64,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "6bc02d0bd6f9809ad5f8bbfd4233c58301f61b716d65245fe471ad9441996336"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-72_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 72,
+              "height": 72,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "64dc2cc9f7e922c54a60513fb7c23fd1a1d0a81bd2ebc5a5ac01693085ee6cec"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-80_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 80,
+              "height": 80,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "41c98ea59160ca7d8b106382afc1f305658e8b5a75da95afc88e13374c61babe"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-96_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 96,
+              "height": 96,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "bea4cb1746eb3b06f05c7f9d994abf92b5d955262fe748865992dafcf7bb19f1"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-windows-default-default-default-target-size-dark-unplated-reduced",
+          "title": "Target Size Dark Unplated",
+          "role": "target-size",
+          "platform": "windows",
+          "appearance": "dark-unplated",
+          "surface": "dark",
+          "summary": "Use this target size for msix assets.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "reduced"
+          ],
+          "preview": {
+            "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-32_altform-unplated.png",
+            "platform": "windows",
+            "role": "target-size",
+            "format": "png",
+            "width": 32,
+            "height": 32,
+            "appearance": "dark-unplated",
+            "alpha": "transparent",
+            "source_variant": "reduced",
+            "destination": "MSIX Assets",
+            "family": "icon",
+            "sha256": "7fc443e58a0db4e731d236dd5f78bac643c16f8bbc5a553bcebae18b63d7ef99"
+          },
+          "deliveries": [
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-16_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 16,
+              "height": 16,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "8f0ff7805d372b175a7181821fef4e2c0230ff10421df06d585966ad0880bebf"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-20_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 20,
+              "height": 20,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "3905814cb3492fd1484760186230cf9d86f93f9dc2a5b8efdd1e9328a43cf2bb"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-24_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 24,
+              "height": 24,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "8ff4c48f0e9183be42a5f4dc9a58a69dbea4cdf5ac0fc1af46d0288199eace7a"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-30_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 30,
+              "height": 30,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "44f6b8f4f691a87c19a5850ad5821ce80dc77ec17500a9bdaa2550f647f2563a"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-32_altform-unplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "dark-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "7fc443e58a0db4e731d236dd5f78bac643c16f8bbc5a553bcebae18b63d7ef99"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-windows-default-default-default-target-size-default-full",
+          "title": "Target Size",
+          "role": "target-size",
+          "platform": "windows",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this target size for msix assets.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-256.png",
+            "platform": "windows",
+            "role": "target-size",
+            "format": "png",
+            "width": 256,
+            "height": 256,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "full",
+            "destination": "MSIX Assets",
+            "family": "icon",
+            "sha256": "cf15dda3062e3054f88f1adaf70ccb926892ade44c5b50a7e16fb712c4df9443"
+          },
+          "deliveries": [
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-256.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "cf15dda3062e3054f88f1adaf70ccb926892ade44c5b50a7e16fb712c4df9443"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-36.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 36,
+              "height": 36,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "6067f655165bb0a9ef224b59cf10e53c6f68e500796f1a7ccf10987547f923d6"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-40.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 40,
+              "height": 40,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "3823e7086fa75c2de2fc7b76326915b0f292c3ce936db85bf860fd62c2bcd5f0"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-48.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 48,
+              "height": 48,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "eb687c42a03b254c59394c1c75ac3e657dad6f1f462ca593c01d9b10498ff040"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-60.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 60,
+              "height": 60,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "4e0aacdddbb8168da7b5fefc730455aa5193617d91ada2091a392523e520f42e"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-64.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 64,
+              "height": 64,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "368aa8612c61a511eddf6750a7066a1d495fd1adf3838135aafd84161c9de28e"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-72.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 72,
+              "height": 72,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "3871e753898af268a5b9e24bca601ebc87ef18e53a13714fc086a4aa85598f6a"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-80.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 80,
+              "height": 80,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "2a42d483ab4001b72d5165d521c2eed2ed760714fd15a3231cde6e7100a19b27"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-96.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 96,
+              "height": 96,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "6238ef527d9159aa84465bac1f4317a5df31729e401855383f4744ccc734441c"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-windows-default-default-default-target-size-default-reduced",
+          "title": "Target Size",
+          "role": "target-size",
+          "platform": "windows",
+          "appearance": "default",
+          "surface": "dark",
+          "summary": "Use this target size for msix assets.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "reduced"
+          ],
+          "preview": {
+            "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-32.png",
+            "platform": "windows",
+            "role": "target-size",
+            "format": "png",
+            "width": 32,
+            "height": 32,
+            "appearance": "default",
+            "alpha": "opaque",
+            "source_variant": "reduced",
+            "destination": "MSIX Assets",
+            "family": "icon",
+            "sha256": "9245873363dcd8118247934618f5b1d7245f3d87c4070a6f078d28d7cbf2b9aa"
+          },
+          "deliveries": [
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-16.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 16,
+              "height": 16,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "ed09fc504e2c7b57ef0f2b4ecd27ed3f92d13e8781210debe53238f731cc7197"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-20.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 20,
+              "height": 20,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "0fbbb39c5c58babab6e091dc299402cd4da654675ffb385946576f4eeae7b012"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-24.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 24,
+              "height": 24,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "833ba944ae1026f6d355b76324d899a0949151b4c6bbfbf05494170aa5c3f22e"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-30.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 30,
+              "height": 30,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "0fdf7bf3af13ecd37103877433d88e06b69029b8f973d0f0977b50290d012809"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-32.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "default",
+              "alpha": "opaque",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "9245873363dcd8118247934618f5b1d7245f3d87c4070a6f078d28d7cbf2b9aa"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-windows-default-default-default-target-size-light-unplated-full",
+          "title": "Target Size Light Unplated",
+          "role": "target-size",
+          "platform": "windows",
+          "appearance": "light-unplated",
+          "surface": "light",
+          "summary": "Use this target size for msix assets.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "full"
+          ],
+          "preview": {
+            "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-256_altform-lightunplated.png",
+            "platform": "windows",
+            "role": "target-size",
+            "format": "png",
+            "width": 256,
+            "height": 256,
+            "appearance": "light-unplated",
+            "alpha": "transparent",
+            "source_variant": "full",
+            "destination": "MSIX Assets",
+            "family": "icon",
+            "sha256": "1e627af1d05ad825555f910e9fc0fc98771551b0898662ca6b48187c2b17f88c"
+          },
+          "deliveries": [
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-256_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 256,
+              "height": 256,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "1e627af1d05ad825555f910e9fc0fc98771551b0898662ca6b48187c2b17f88c"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-36_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 36,
+              "height": 36,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "a02491bf3e28cfd357153979535048ac157c915e57d4b1035413e92c3d7252a9"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-40_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 40,
+              "height": 40,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "f9e56b709d4519c5395bc49d90c8d83962858caa7417bb8457274357c4e7548e"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-48_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 48,
+              "height": 48,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "1b1f3a30c60c46d179e7ec4a93dfe927a3daf52e603e9fa690e8aed288a806a7"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-60_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 60,
+              "height": 60,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "228a04d04ec9168ff25bb99dd0fdee34701243524de046ab40af4e9d0f261d94"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-64_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 64,
+              "height": 64,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "6bc02d0bd6f9809ad5f8bbfd4233c58301f61b716d65245fe471ad9441996336"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-72_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 72,
+              "height": 72,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "64dc2cc9f7e922c54a60513fb7c23fd1a1d0a81bd2ebc5a5ac01693085ee6cec"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-80_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 80,
+              "height": 80,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "41c98ea59160ca7d8b106382afc1f305658e8b5a75da95afc88e13374c61babe"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-96_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 96,
+              "height": 96,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "full",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "bea4cb1746eb3b06f05c7f9d994abf92b5d955262fe748865992dafcf7bb19f1"
+            }
+          ]
+        },
+        {
+          "id": "asset-icon-windows-default-default-default-target-size-light-unplated-reduced",
+          "title": "Target Size Light Unplated",
+          "role": "target-size",
+          "platform": "windows",
+          "appearance": "light-unplated",
+          "surface": "light",
+          "summary": "Use this target size for msix assets.",
+          "formats": [
+            "png"
+          ],
+          "variants": [
+            "reduced"
+          ],
+          "preview": {
+            "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-32_altform-lightunplated.png",
+            "platform": "windows",
+            "role": "target-size",
+            "format": "png",
+            "width": 32,
+            "height": 32,
+            "appearance": "light-unplated",
+            "alpha": "transparent",
+            "source_variant": "reduced",
+            "destination": "MSIX Assets",
+            "family": "icon",
+            "sha256": "7fc443e58a0db4e731d236dd5f78bac643c16f8bbc5a553bcebae18b63d7ef99"
+          },
+          "deliveries": [
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-16_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 16,
+              "height": 16,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "8f0ff7805d372b175a7181821fef4e2c0230ff10421df06d585966ad0880bebf"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-20_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 20,
+              "height": 20,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "3905814cb3492fd1484760186230cf9d86f93f9dc2a5b8efdd1e9328a43cf2bb"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-24_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 24,
+              "height": 24,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "8ff4c48f0e9183be42a5f4dc9a58a69dbea4cdf5ac0fc1af46d0288199eace7a"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-30_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 30,
+              "height": 30,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "44f6b8f4f691a87c19a5850ad5821ce80dc77ec17500a9bdaa2550f647f2563a"
+            },
+            {
+              "path": "icons/windows/msix/Assets/Square44x44Logo.targetsize-32_altform-lightunplated.png",
+              "platform": "windows",
+              "role": "target-size",
+              "format": "png",
+              "width": 32,
+              "height": 32,
+              "appearance": "light-unplated",
+              "alpha": "transparent",
+              "source_variant": "reduced",
+              "destination": "MSIX Assets",
+              "family": "icon",
+              "sha256": "7fc443e58a0db4e731d236dd5f78bac643c16f8bbc5a553bcebae18b63d7ef99"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "path": "favicons/favicon.ico",
+      "platform": "web",
+      "role": "favicon-ico",
+      "format": "ico",
+      "width": null,
+      "height": null,
+      "appearance": "default",
+      "alpha": "opaque",
+      "source_variant": "mixed",
+      "destination": "Compatibility alias for icons/web/favicon.ico",
+      "family": "icon",
+      "embedded_sizes": [
+        16,
+        24,
+        32,
+        48,
+        64,
+        128,
+        256
+      ],
+      "sha256": "a8df37c7d9e8501014b005579c0dbf14c5eba4087e626ad5289250224233b19a",
+      "id": "resource-favicons-favicon-ico",
+      "title": "Favicon",
+      "resource_kind": "code-or-container",
+      "summary": "Compatibility alias for icons/web/favicon.ico"
+    },
+    {
+      "path": "favicons/site.webmanifest",
+      "platform": "web",
+      "role": "web-manifest",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Compatibility alias for icons/web/site.webmanifest",
+      "family": "icon",
+      "sha256": "ba09793d635e6503a2fbca2c91dd633eef0be766a13bcb44b0ac2744897bb5f0",
+      "id": "resource-favicons-site-webmanifest",
+      "title": "Site",
+      "resource_kind": "code-or-container",
+      "summary": "Compatibility alias for icons/web/site.webmanifest"
+    },
+    {
+      "path": "icons/.iconkit-generated.json",
+      "platform": "web",
+      "role": "icon-index",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Generation ownership marker",
+      "family": "icon",
+      "sha256": "caf77af49a2add6dfc466b67567ac63e1abe2bafaf0b6a676c5249c36080c355",
+      "id": "resource-icons-iconkit-generated-json",
+      "title": ".Iconkit Generated",
+      "resource_kind": "code-or-container",
+      "summary": "Generation ownership marker"
+    },
+    {
+      "path": "icons/README.md",
+      "platform": "web",
+      "role": "icon-index",
+      "format": "markdown",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Kit root navigation",
+      "family": "icon",
+      "sha256": "1f276cf2f03b3eef2e07ecc368247ad779bba200b5ba21c3684ec649c48aa448",
+      "id": "resource-icons-readme-md",
+      "title": "Readme",
+      "resource_kind": "instructions",
+      "summary": "Kit root navigation"
+    },
+    {
+      "path": "icons/android/README.md",
+      "platform": "android",
+      "role": "instructions",
+      "format": "markdown",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "204229c59eecb46c21c2bd1cf2060fda329d09b3ce427ca0ed9d2ce747d2f30f",
+      "id": "resource-icons-android-readme-md",
+      "title": "Readme",
+      "resource_kind": "instructions",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/android/app/src/main/res/drawable/ic_launcher_background.xml",
+      "platform": "android",
+      "role": "adaptive-background",
+      "format": "xml",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Android res/drawable",
+      "family": "icon",
+      "sha256": "f85842023e76ae651b068f90b0a9ec729a8beff5fcbf8b19214b11f1ae5ff9c4",
+      "id": "resource-icons-android-app-src-main-res-drawable-ic-launcher-background-xml",
+      "title": "Ic Launcher Background",
+      "resource_kind": "code-or-container",
+      "summary": "Android res/drawable"
+    },
+    {
+      "path": "icons/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "platform": "android",
+      "role": "adaptive-declaration",
+      "format": "xml",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Android res/mipmap-anydpi-v26",
+      "family": "icon",
+      "sha256": "4946f2433c32155d8759fd762757df243b5f6268ca5f88cae12b56b647752956",
+      "id": "resource-icons-android-app-src-main-res-mipmap-anydpi-v26-ic-launcher-xml",
+      "title": "Ic Launcher",
+      "resource_kind": "code-or-container",
+      "summary": "Android res/mipmap-anydpi-v26"
+    },
+    {
+      "path": "icons/android/app/src/main/res/values/ic_launcher_colors.xml",
+      "platform": "android",
+      "role": "color-resource",
+      "format": "xml",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Android res/values",
+      "family": "icon",
+      "sha256": "efed328217db6d66838bb25a0feccb86d72c5fc0d92fbee33565231f58dd4d3d",
+      "id": "resource-icons-android-app-src-main-res-values-ic-launcher-colors-xml",
+      "title": "Ic Launcher Colors",
+      "resource_kind": "code-or-container",
+      "summary": "Android res/values"
+    },
+    {
+      "path": "icons/android/manifest.json",
+      "platform": "android",
+      "role": "platform-manifest",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "200443ccabfcd55c3c7fc01cce52e47a3064dd19661aa6ba12d71f5123ec9c98",
+      "id": "resource-icons-android-manifest-json",
+      "title": "Manifest",
+      "resource_kind": "code-or-container",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/apple/ios/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "platform": "apple-ios",
+      "role": "asset-catalog",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Xcode AppIcon.appiconset",
+      "family": "icon",
+      "sha256": "6c867e2c65c91d8b44bba0dd7aa0fec9c371c8e1216729efddd66c813730d50f",
+      "id": "resource-icons-apple-ios-assets-xcassets-appicon-appiconset-contents-json",
+      "title": "Contents",
+      "resource_kind": "code-or-container",
+      "summary": "Xcode AppIcon.appiconset"
+    },
+    {
+      "path": "icons/apple/ios/README.md",
+      "platform": "apple-ios",
+      "role": "instructions",
+      "format": "markdown",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "61afaab8977050aa916212a40926d8c12f8f681ecd1363a92af3a03e81ae05b3",
+      "id": "resource-icons-apple-ios-readme-md",
+      "title": "Readme",
+      "resource_kind": "instructions",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/apple/ios/manifest.json",
+      "platform": "apple-ios",
+      "role": "platform-manifest",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "3da492f954da24b1c0f308e7032e17f05fbf5ff43a21da50426ba507255106f0",
+      "id": "resource-icons-apple-ios-manifest-json",
+      "title": "Manifest",
+      "resource_kind": "code-or-container",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/apple/macos/AppIcon.icns",
+      "platform": "apple-macos",
+      "role": "icns",
+      "format": "icns",
+      "width": null,
+      "height": null,
+      "appearance": "default",
+      "alpha": "opaque",
+      "source_variant": "full",
+      "destination": "macOS application bundle",
+      "family": "icon",
+      "embedded_sizes": [
+        16,
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024
+      ],
+      "sha256": "9157e39ffc7c1c1ad923b07992381c4591d9912f513c83b726ca9e7c1fad4139",
+      "id": "resource-icons-apple-macos-appicon-icns",
+      "title": "Appicon",
+      "resource_kind": "code-or-container",
+      "summary": "macOS application bundle"
+    },
+    {
+      "path": "icons/apple/macos/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "platform": "apple-macos",
+      "role": "asset-catalog",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Xcode AppIcon.appiconset",
+      "family": "icon",
+      "sha256": "13b1c7461192863c9f3ab3ceab313acd6f6531898360983495bf13d48dfc967f",
+      "id": "resource-icons-apple-macos-assets-xcassets-appicon-appiconset-contents-json",
+      "title": "Contents",
+      "resource_kind": "code-or-container",
+      "summary": "Xcode AppIcon.appiconset"
+    },
+    {
+      "path": "icons/apple/macos/README.md",
+      "platform": "apple-macos",
+      "role": "instructions",
+      "format": "markdown",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "a51148ec8aa277e4f57512ec42099175d7c249a383ece5536e0a8d9eb4f9c19e",
+      "id": "resource-icons-apple-macos-readme-md",
+      "title": "Readme",
+      "resource_kind": "instructions",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/apple/macos/manifest.json",
+      "platform": "apple-macos",
+      "role": "platform-manifest",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "09a58d46549fb33a47c34297bed46fa7ded9f0ca15ddc41c5a595c59ae830557",
+      "id": "resource-icons-apple-macos-manifest-json",
+      "title": "Manifest",
+      "resource_kind": "code-or-container",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/web/README.md",
+      "platform": "web",
+      "role": "instructions",
+      "format": "markdown",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "ae5245a152fa44c9c5131f6cc1e52b078e76e41efd1715510fd38f0e640d56e9",
+      "id": "resource-icons-web-readme-md",
+      "title": "Readme",
+      "resource_kind": "instructions",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/web/favicon.ico",
+      "platform": "web",
+      "role": "favicon-ico",
+      "format": "ico",
+      "width": null,
+      "height": null,
+      "appearance": "default",
+      "alpha": "opaque",
+      "source_variant": "mixed",
+      "destination": "Web root",
+      "family": "icon",
+      "embedded_sizes": [
+        16,
+        24,
+        32,
+        48,
+        64,
+        128,
+        256
+      ],
+      "sha256": "a8df37c7d9e8501014b005579c0dbf14c5eba4087e626ad5289250224233b19a",
+      "id": "resource-icons-web-favicon-ico",
+      "title": "Favicon",
+      "resource_kind": "code-or-container",
+      "summary": "Web root"
+    },
+    {
+      "path": "icons/web/manifest.json",
+      "platform": "web",
+      "role": "platform-manifest",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "b9ff22c2584d09eb3d9ed5d2fadcaac408c292910b0acde9e1bf21fc0213ab48",
+      "id": "resource-icons-web-manifest-json",
+      "title": "Manifest",
+      "resource_kind": "code-or-container",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/web/site.webmanifest",
+      "platform": "web",
+      "role": "web-manifest",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Web root",
+      "family": "icon",
+      "sha256": "ba09793d635e6503a2fbca2c91dd633eef0be766a13bcb44b0ac2744897bb5f0",
+      "id": "resource-icons-web-site-webmanifest",
+      "title": "Site",
+      "resource_kind": "code-or-container",
+      "summary": "Web root"
+    },
+    {
+      "path": "icons/windows/README.md",
+      "platform": "windows",
+      "role": "instructions",
+      "format": "markdown",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "b6b7cdb5ae147fbc5699333d7309b8e1a11964cd75c4e181375ca348d5462694",
+      "id": "resource-icons-windows-readme-md",
+      "title": "Readme",
+      "resource_kind": "instructions",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/windows/classic/app.ico",
+      "platform": "windows",
+      "role": "classic-ico",
+      "format": "ico",
+      "width": null,
+      "height": null,
+      "appearance": "default",
+      "alpha": "opaque",
+      "source_variant": "mixed",
+      "destination": "Win32 application",
+      "family": "icon",
+      "embedded_sizes": [
+        16,
+        24,
+        32,
+        48,
+        64,
+        128,
+        256
+      ],
+      "sha256": "a8df37c7d9e8501014b005579c0dbf14c5eba4087e626ad5289250224233b19a",
+      "id": "resource-icons-windows-classic-app-ico",
+      "title": "App",
+      "resource_kind": "code-or-container",
+      "summary": "Win32 application"
+    },
+    {
+      "path": "icons/windows/manifest.json",
+      "platform": "windows",
+      "role": "platform-manifest",
+      "format": "json",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "See suite README",
+      "family": "icon",
+      "sha256": "575e08320fda80f9054a80ff2e7804012d904335761b66f975120904a1d69c3b",
+      "id": "resource-icons-windows-manifest-json",
+      "title": "Manifest",
+      "resource_kind": "code-or-container",
+      "summary": "See suite README"
+    },
+    {
+      "path": "icons/windows/msix/ApplicationVisualElements.fragment.xml",
+      "platform": "windows",
+      "role": "manifest-fragment",
+      "format": "xml",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Merge into Applications/Application",
+      "family": "icon",
+      "sha256": "332504c9e4c57e311996b9d87c36a2d33ec99d70df6b56547939d5a2991219a6",
+      "id": "resource-icons-windows-msix-applicationvisualelements-fragment-xml",
+      "title": "Applicationvisualelements.Fragment",
+      "resource_kind": "code-or-container",
+      "summary": "Merge into Applications/Application"
+    },
+    {
+      "path": "icons/windows/msix/PackageProperties.fragment.xml",
+      "platform": "windows",
+      "role": "manifest-fragment",
+      "format": "xml",
+      "width": null,
+      "height": null,
+      "appearance": null,
+      "alpha": null,
+      "source_variant": "metadata",
+      "destination": "Merge into Package",
+      "family": "icon",
+      "sha256": "92648dae3c48db301387280c04fcd6456d75b17522729e1fc87181993c453f4c",
+      "id": "resource-icons-windows-msix-packageproperties-fragment-xml",
+      "title": "Packageproperties.Fragment",
+      "resource_kind": "code-or-container",
+      "summary": "Merge into Package"
+    }
+  ],
+  "instructions": [
+    {
+      "key": "web",
+      "title": "Readme",
+      "platform": "web",
+      "source_path": "icons/README.md",
+      "markdown": "# Cueson application icons\n\nChoose the platform directory below. Browser assets remain mirrored in `../favicons/` for compatibility.\n\n| Path | Use |\n|---|---|\n| `web` | Browser, touch, and installable web |\n| `android` | Android launcher and Play Store |\n| `apple/ios` | iOS and iPadOS asset catalog |\n| `apple/macos` | macOS catalog, iconset, and ICNS |\n| `windows` | Win32 ICO and MSIX package assets |\n| `domain` | Source-preserved product interface symbols, when supplied |\n"
+    },
+    {
+      "key": "android",
+      "title": "Readme",
+      "platform": "android",
+      "source_path": "icons/android/README.md",
+      "markdown": "# Android icons\n\nCopy the `app/src/main/res` tree into an Android application and upload the separate Play image in Play Console.\n\n| Path | Use |\n|---|---|\n| `app/src/main/res` | Launcher and adaptive resources |\n| `play-store/google-play-512.png` | Google Play listing artwork |\n"
+    },
+    {
+      "key": "apple-ios",
+      "title": "Readme",
+      "platform": "apple-ios",
+      "source_path": "icons/apple/ios/README.md",
+      "markdown": "# iOS and iPadOS icons\n\nCopy `Assets.xcassets/AppIcon.appiconset` into an Xcode asset catalog and select it as the primary app icon set.\n\n| Path | Use |\n|---|---|\n| `Assets.xcassets/AppIcon.appiconset` | Current single-size default, dark, and tinted inputs |\n"
+    },
+    {
+      "key": "apple-macos",
+      "title": "Readme",
+      "platform": "apple-macos",
+      "source_path": "icons/apple/macos/README.md",
+      "markdown": "# macOS icons\n\nUse the asset catalog in Xcode, the conventional iconset with `iconutil`, or the ready `AppIcon.icns` container.\n\n| Path | Use |\n|---|---|\n| `Assets.xcassets/AppIcon.appiconset` | Xcode all-sizes catalog |\n| `AppIcon.iconset` | Conventional iconset |\n| `AppIcon.icns` | Application icon container |\n"
+    },
+    {
+      "key": "web",
+      "title": "Readme",
+      "platform": "web",
+      "source_path": "icons/web/README.md",
+      "markdown": "# Web icons\n\nBrowser, touch, and installable-web assets. `favicon.svg` is preferred; PNG and ICO files are fallbacks.\n\n| Path | Use |\n|---|---|\n| `favicon.svg` | Preferred reduced-mark browser favicon |\n| `favicon-full.svg` | Full-mark vector alternative |\n| `favicon.ico` | Classic multi-size fallback |\n| `apple-touch-icon.png` | Apple touch icon |\n| `site.webmanifest` | Installable web metadata |\n"
+    },
+    {
+      "key": "windows",
+      "title": "Readme",
+      "platform": "windows",
+      "source_path": "icons/windows/README.md",
+      "markdown": "# Windows icons\n\nUse `classic/app.ico` for Win32 and the `msix` directory for packaged Windows applications.\n\n| Path | Use |\n|---|---|\n| `classic/app.ico` | Classic application icon |\n| `msix/Assets` | MSIX scale, target-size, and store assets |\n| `msix/ApplicationVisualElements.fragment.xml` | Merge into Applications/Application |\n| `msix/PackageProperties.fragment.xml` | Merge into Package for the Store logo |\n"
+    }
+  ],
+  "capability_suites": [
+    {
+      "id": "web",
+      "root": "icons/web",
+      "readme": "icons/web/README.md",
+      "manifest": "icons/web/manifest.json",
+      "status": "generated",
+      "reason": null
+    },
+    {
+      "id": "android",
+      "root": "icons/android",
+      "readme": "icons/android/README.md",
+      "manifest": "icons/android/manifest.json",
+      "status": "generated",
+      "reason": null
+    },
+    {
+      "id": "apple-ios",
+      "root": "icons/apple/ios",
+      "readme": "icons/apple/ios/README.md",
+      "manifest": "icons/apple/ios/manifest.json",
+      "status": "generated",
+      "reason": null
+    },
+    {
+      "id": "apple-macos",
+      "root": "icons/apple/macos",
+      "readme": "icons/apple/macos/README.md",
+      "manifest": "icons/apple/macos/manifest.json",
+      "status": "generated",
+      "reason": null
+    },
+    {
+      "id": "windows",
+      "root": "icons/windows",
+      "readme": "icons/windows/README.md",
+      "manifest": "icons/windows/manifest.json",
+      "status": "generated",
+      "reason": null
+    }
+  ],
+  "aliases": {
+    "favicons/android-chrome-192x192.png": "icons/web/android-chrome-192x192.png",
+    "favicons/android-chrome-512x512.png": "icons/web/android-chrome-512x512.png",
+    "favicons/apple-touch-icon.png": "icons/web/apple-touch-icon.png",
+    "favicons/favicon-128x128.png": "icons/web/favicon-128x128.png",
+    "favicons/favicon-16x16.png": "icons/web/favicon-16x16.png",
+    "favicons/favicon-180x180.png": "icons/web/favicon-180x180.png",
+    "favicons/favicon-192x192.png": "icons/web/favicon-192x192.png",
+    "favicons/favicon-24x24.png": "icons/web/favicon-24x24.png",
+    "favicons/favicon-256x256.png": "icons/web/favicon-256x256.png",
+    "favicons/favicon-32x32.png": "icons/web/favicon-32x32.png",
+    "favicons/favicon-48x48.png": "icons/web/favicon-48x48.png",
+    "favicons/favicon-512x512.png": "icons/web/favicon-512x512.png",
+    "favicons/favicon-64x64.png": "icons/web/favicon-64x64.png",
+    "favicons/favicon-full.svg": "icons/web/favicon-full.svg",
+    "favicons/favicon.ico": "icons/web/favicon.ico",
+    "favicons/favicon.svg": "icons/web/favicon.svg",
+    "favicons/site.webmanifest": "icons/web/site.webmanifest"
+  },
+  "portable_guide": "guidelines/index.html"
+}

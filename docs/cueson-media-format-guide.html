@@ -4,31 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#080A14">
   <title>Cueson | Making Media Content Directly Readable to AI</title>
   <meta name="description" content="A plain-English guide to what Cueson unlocks and the subtitle and caption formats it is designed to understand.">
+  <link rel="icon" href="../brand/cueson/1.0.0/kit/icons/web/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../brand/cueson/1.0.0/kit/fonts/fonts.css">
   <style>
-    @import url("https://cdn.shruggie.tech/brand/typography.css");
-
     :root {
-      --color-black: #000000;
-      --color-green-bright: #2BCC73;
-      --color-green-deep: #00AB21;
-      --color-orange: #FF5300;
-      --color-gray-light: #D1D3D4;
-      --color-white: #FFFFFF;
-      --color-gray-950: #0A0A0A;
-      --color-gray-900: #111111;
-      --color-gray-850: #161616;
-      --color-gray-800: #1A1A1A;
-      --color-gray-600: #6B6B6B;
-      --color-gray-500: #858585;
-      --color-gray-400: #9A9A9A;
-      --text-primary: var(--color-white);
-      --text-muted: var(--color-gray-400);
-      --text-accent: var(--color-green-bright);
-      --border-subtle: rgba(255,255,255,0.09);
-      --border-strong: rgba(255,255,255,0.18);
+      --identity-accent: #62BEB2;
+      --identity-active: #2F9388;
+      --identity-dim: #8FB8B1;
+      --emphasis: #FF5300;
+      --status-success: #2BCC73;
+      --surface-base: #080A14;
+      --surface-card: #101425;
+      --surface-secondary: #181D33;
+      --surface-hover: #222944;
+      --text-primary: #F4F6FF;
+      --text-muted: #A7AEC7;
+      --line: #596181;
+      --border-subtle: rgb(89 97 129 / 45%);
+      --border-strong: rgb(89 97 129 / 80%);
       --font-display: "Space Grotesk", system-ui, sans-serif;
       --font-body: "Geist", system-ui, sans-serif;
       --font-mono: "Geist Mono", ui-monospace, monospace;
@@ -40,7 +36,7 @@
 
     * { box-sizing: border-box; }
     html {
-      background: var(--color-black);
+      background: var(--surface-base);
       color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
@@ -51,9 +47,9 @@
       font-family: var(--font-body);
       line-height: 1.55;
       background:
-        radial-gradient(circle at 12% -5%, rgba(43,204,115,0.15), transparent 30rem),
+        radial-gradient(circle at 12% -5%, rgba(98,190,178,0.15), transparent 30rem),
         radial-gradient(circle at 92% 2%, rgba(255,83,0,0.10), transparent 25rem),
-        var(--color-black);
+        var(--surface-base);
       color: var(--text-primary);
     }
     .container {
@@ -64,7 +60,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: rgba(0,0,0,0.88);
+      background: rgba(8,10,20,0.92);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border-subtle);
     }
@@ -77,20 +73,22 @@
     }
     .brand {
       display: flex;
-      align-items: baseline;
-      gap: 0.8rem;
-      font-family: var(--font-display);
-      font-weight: 700;
+      align-items: center;
+      gap: 1rem;
     }
-    .brand-product {
+    .brand-logo {
+      display: block;
+      width: clamp(10rem, 19vw, 14rem);
+      height: auto;
+    }
+    .brand-endorsement {
       font-family: var(--font-mono);
-      color: var(--text-accent);
-      font-size: 0.76rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
     }
     .header-note {
-      color: var(--color-gray-500);
+      color: var(--text-muted);
       font-size: 0.82rem;
     }
     .hero {
@@ -102,7 +100,7 @@
       font-size: 0.73rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--text-accent);
+      color: var(--identity-accent);
       margin-bottom: 0.9rem;
     }
     h1, h2, h3 {
@@ -116,11 +114,11 @@
       max-width: 1180px;
       margin-bottom: 1.65rem;
     }
-    h1 .accent { color: var(--text-accent); }
+    h1 .accent { color: var(--identity-accent); }
     .lede {
       max-width: 950px;
       font-size: clamp(1.13rem, 2.1vw, 1.42rem);
-      color: var(--color-gray-light);
+      color: var(--text-primary);
       margin: 0;
     }
     .hero-note {
@@ -140,7 +138,7 @@
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 1.25rem 1.35rem;
-      background: rgba(17,17,17,0.92);
+      background: rgba(16,20,37,0.92);
     }
     .pipeline-box strong {
       display: block;
@@ -152,18 +150,18 @@
       font-size: 0.9rem;
     }
     .pipeline-box.cueson {
-      border-color: rgba(43,204,115,0.38);
-      background: linear-gradient(145deg, rgba(43,204,115,0.12), rgba(17,17,17,0.95));
+      border-color: rgba(98,190,178,0.38);
+      background: linear-gradient(145deg, rgba(98,190,178,0.12), rgba(16,20,37,0.95));
     }
     .pipeline-box.ai {
       border-color: rgba(255,83,0,0.30);
-      background: linear-gradient(145deg, rgba(255,83,0,0.09), rgba(17,17,17,0.95));
+      background: linear-gradient(145deg, rgba(255,83,0,0.09), rgba(16,20,37,0.95));
     }
     .pipeline-arrow {
       display: grid;
       place-items: center;
       font-family: var(--font-mono);
-      color: var(--color-orange);
+      color: var(--emphasis);
       font-size: 1.3rem;
     }
     .why-grid {
@@ -176,7 +174,7 @@
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 1.3rem 1.4rem;
-      background: rgba(10,10,10,0.93);
+      background: rgba(16,20,37,0.93);
     }
     .why-card h3 {
       font-size: 1.05rem;
@@ -193,7 +191,7 @@
     .section-alt {
       border-top: 1px solid var(--border-subtle);
       border-bottom: 1px solid var(--border-subtle);
-      background: rgba(10,10,10,0.72);
+      background: rgba(8,10,20,0.72);
     }
     .section-heading {
       display: flex;
@@ -229,41 +227,41 @@
       margin-right: 0.28rem;
     }
     .status-v1 {
-      color: var(--color-green-bright);
+      color: var(--status-success);
       background: rgba(43,204,115,0.13);
       border-color: rgba(43,204,115,0.28);
     }
     .status-future {
-      color: var(--color-gray-light);
+      color: var(--text-primary);
       background: rgba(255,255,255,0.05);
       border-color: rgba(255,255,255,0.12);
     }
     .status-ocr {
-      color: #ff9565;
+      color: var(--emphasis);
       background: rgba(255,83,0,0.12);
       border-color: rgba(255,83,0,0.3);
     }
     .kind-text {
-      color: #a8c0ff;
-      background: rgba(80,130,255,0.12);
-      border-color: rgba(80,130,255,0.25);
+      color: var(--identity-accent);
+      background: rgba(98,190,178,0.12);
+      border-color: rgba(98,190,178,0.25);
     }
     .kind-binary {
-      color: #ffd77e;
-      background: rgba(255,199,64,0.12);
-      border-color: rgba(255,199,64,0.25);
+      color: var(--emphasis);
+      background: rgba(255,83,0,0.12);
+      border-color: rgba(255,83,0,0.25);
     }
     .kind-bitmap {
-      color: #d4a7ff;
-      background: rgba(190,110,255,0.12);
-      border-color: rgba(190,110,255,0.25);
+      color: var(--identity-dim);
+      background: rgba(143,184,177,0.12);
+      border-color: rgba(143,184,177,0.25);
     }
     .badge-row { display: flex; flex-wrap: wrap; gap: 0.1rem; }
     .table-shell {
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       overflow: hidden;
-      background: var(--color-gray-950);
+      background: var(--surface-base);
       box-shadow: 0 30px 90px rgba(0,0,0,0.35);
     }
     .table-scroll { overflow-x: auto; }
@@ -286,8 +284,8 @@
       font-size: 0.69rem;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: var(--color-gray-light);
-      background: #0D0D0D;
+      color: var(--text-primary);
+      background: var(--surface-card);
       border-bottom: 1px solid var(--border-strong);
     }
     td {
@@ -300,7 +298,7 @@
     tr:last-child td { border-bottom: 0; }
     td:last-child { border-right: 0; }
     tbody tr:nth-child(even) td { background: rgba(255,255,255,0.017); }
-    tbody tr:hover td { background: rgba(43,204,115,0.035); }
+    tbody tr:hover td { background: rgba(98,190,178,0.035); }
     .format-cell { background: rgba(255,255,255,0.021); }
     .format-name {
       font-family: var(--font-display);
@@ -310,7 +308,7 @@
     }
     .extensions {
       font-family: var(--font-mono);
-      color: var(--color-orange);
+      color: var(--emphasis);
       font-size: 0.75rem;
       margin-bottom: 0.68rem;
     }
@@ -330,7 +328,7 @@
       padding: 1.45rem 1.55rem;
       border-radius: var(--radius-md);
       border: 1px solid var(--border-subtle);
-      background: var(--color-gray-900);
+      background: var(--surface-card);
     }
     .callout h3 {
       font-size: 1.08rem;
@@ -341,29 +339,29 @@
       color: var(--text-muted);
     }
     .callout.green {
-      border-color: rgba(43,204,115,0.26);
-      background: linear-gradient(145deg, rgba(43,204,115,0.07), var(--color-gray-900) 58%);
+      border-color: rgba(98,190,178,0.26);
+      background: linear-gradient(145deg, rgba(98,190,178,0.07), var(--surface-card) 58%);
     }
     .callout.orange {
       border-color: rgba(255,83,0,0.27);
-      background: linear-gradient(145deg, rgba(255,83,0,0.07), var(--color-gray-900) 58%);
+      background: linear-gradient(145deg, rgba(255,83,0,0.07), var(--surface-card) 58%);
     }
     .bottom-line {
       margin-top: 2.5rem;
       padding: 1.35rem 1.5rem;
-      border-left: 3px solid var(--color-green-bright);
-      background: rgba(43,204,115,0.055);
+      border-left: 3px solid var(--identity-accent);
+      background: rgba(98,190,178,0.055);
       max-width: 1050px;
-      color: var(--color-gray-light);
+      color: var(--text-primary);
     }
     .bottom-line strong {
-      color: var(--color-white);
+      color: var(--text-primary);
       font-family: var(--font-display);
     }
     .site-footer {
       border-top: 1px solid var(--border-subtle);
       padding: 2.4rem 0 3rem;
-      color: var(--color-gray-500);
+      color: var(--text-muted);
       font-size: 0.82rem;
     }
     .site-footer .container {
@@ -374,9 +372,8 @@
     }
     .tagline {
       font-family: var(--font-display);
-      color: var(--color-gray-400);
+      color: var(--text-muted);
     }
-    .tagline .shruggie { color: var(--text-accent); }
 
     @media (max-width: 900px) {
       .pipeline { grid-template-columns: 1fr; }
@@ -384,22 +381,22 @@
       .why-grid, .unlock { grid-template-columns: 1fr; }
       .section-heading { align-items: start; flex-direction: column; }
       .legend { justify-content: flex-start; }
-      .header-note { display: none; }
+      .brand-endorsement, .header-note { display: none; }
     }
     @media print {
       .site-header { position: static; }
       .table-scroll { overflow: visible; }
       table { min-width: 0; font-size: 7.5pt; }
-      body { background: #000000; }
+      body { background: #080A14; }
     }
   </style>
 </head>
 <body>
   <header class="site-header">
     <div class="container">
-      <div class="brand" aria-label="ShruggieTech Cueson">
-        <span>ShruggieTech</span>
-        <span class="brand-product">Cueson</span>
+      <div class="brand">
+        <img class="brand-logo" src="../brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-color.svg" alt="Cueson">
+        <span class="brand-endorsement">A ShruggieTech project</span>
       </div>
       <div class="header-note">Cue JSON for media content</div>
     </div>
@@ -636,8 +633,8 @@
 
   <footer class="site-footer">
     <div class="container">
-      <div>By ShruggieTech</div>
-      <div class="tagline"><span class="shruggie" aria-hidden="true">¯\_(ツ)_/¯</span> We'll figure it out.</div>
+      <div class="tagline">Universal captions and subtitles</div>
+      <div>A ShruggieTech project</div>
     </div>
   </footer>
 </body>

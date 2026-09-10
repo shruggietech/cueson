@@ -1,0 +1,12 @@
+{
+  "brand": "cueson",
+  "record_file_sha256": "d3a730b95120e3e5b16e45ca1a501713fb3a0161effd0dda23c38a40795589ce",
+  "record_path": "identity-continuity.json",
+  "record_sha256": "d1aa5126916960b10be579d4c59b046373d050b83caadfbb554bf3134eccd95a",
+  "report_sha256": "79920de90c897081d11b667912bf0a27d5e940f1059979a4730943da1507925f",
+  "schema_version": 1,
+  "snapshot_sha256": "7f7735f56584a0fa972c337eb85f139ef1dbcef304221f8971d28df9dd6cb980",
+  "source_class": "glyphkit-constructed",
+  "status": "historical-baseline",
+  "validation": "passed"
+}

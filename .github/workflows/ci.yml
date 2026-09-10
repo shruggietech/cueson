@@ -63,6 +63,7 @@ jobs:
           go-version: ${{ env.GO_COMPAT_VERSION }}
           cache-dependency-path: |
             go.sum
+            scripts/brand-verify/go.mod
             scripts/github-format/go.mod
             scripts/docs-verify/go.mod
             scripts/pr-policy/go.mod
@@ -82,6 +83,10 @@ jobs:
         run: go -C scripts/docs-verify test -count=1 ./...
       - name: Verify documentation links
         run: go -C scripts/docs-verify run . -repo ../..
+      - name: Test brand integrity verifier
+        run: go -C scripts/brand-verify test -count=1 ./...
+      - name: Verify retained brand kit
+        run: go -C scripts/brand-verify run . -repo ../..
       - name: Test pull-request policy automation
         run: go -C scripts/pr-policy test -count=1 ./...
       - name: Test release verifier

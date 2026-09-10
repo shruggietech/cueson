@@ -1,0 +1,27 @@
+:root {
+  --cu-space-1: 0.25rem;
+  --cu-space-2: 0.5rem;
+  --cu-space-3: 0.75rem;
+  --cu-space-4: 1rem;
+  --cu-space-5: 1.5rem;
+  --cu-space-6: 2rem;
+  --cu-space-7: 3rem;
+  --cu-space-8: 4rem;
+  --cu-space-9: 6rem;
+  --cu-space-10: 7.5rem;
+  --cu-radius-sm: 6px;
+  --cu-radius-md: 8px;
+  --cu-radius-xl: 12px;
+  --cu-radius-2xl: 16px;
+  --cu-radius-pill: 9999px;
+  --cu-stroke-hairline: 1px;
+  --cu-stroke-icon: 1.5px;
+  --cu-stroke-focus: 2px;
+  --cu-motion-fast: 120ms;
+  --cu-motion-normal: 180ms;
+  --cu-motion-slow: 240ms;
+  --cu-ease: cubic-bezier(.2,.6,.2,1);
+  --cu-content-max: 1200px;
+  --cu-content-narrow: 720px;
+  --cu-clearspace-ratio: 0.0938;
+}

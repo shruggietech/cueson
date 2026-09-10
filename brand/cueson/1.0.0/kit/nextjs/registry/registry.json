@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "cueson",
+  "homepage": "https://cueson.io",
+  "description": "Cueson registry.",
+  "items": [
+    {
+      "name": "theme",
+      "type": "registry:theme",
+      "files": []
+    },
+    {
+      "name": "fonts",
+      "type": "registry:font",
+      "files": []
+    },
+    {
+      "name": "cue-row",
+      "type": "registry:ui",
+      "files": []
+    },
+    {
+      "name": "source-envelope",
+      "type": "registry:ui",
+      "files": []
+    },
+    {
+      "name": "derivation-record",
+      "type": "registry:ui",
+      "files": []
+    }
+  ]
+}

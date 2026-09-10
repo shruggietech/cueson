@@ -1,0 +1,420 @@
+{
+  "approval": null,
+  "brand": "cueson",
+  "framing": {
+    "artwork_height": 338,
+    "artwork_width": 330,
+    "canvas_height": 512,
+    "canvas_width": 512,
+    "clear_space_units": 48,
+    "grid": 512,
+    "reduced_artwork_height": 302,
+    "reduced_artwork_width": 318,
+    "standalone_padding_units": {
+      "full": 87,
+      "reduced": 97
+    }
+  },
+  "historical_evidence": {
+    "approval_completeness": "partial",
+    "baseline_revision": "011f35303ef1d555dbbbcf6708447cc321df40db",
+    "basis": "current-authoritative-source",
+    "limitation": "This migration records current source facts and is not retrospective canonical approval.",
+    "migration_issue": 185
+  },
+  "identity_snapshot": {
+    "derivative_settings": {
+      "application_icon": {
+        "background": "#080A14"
+      },
+      "artwork_height": 338,
+      "artwork_width": 330,
+      "canvas_height": 512,
+      "canvas_width": 512,
+      "clear_space_units": 48,
+      "construction": "Cueframe preserves the approved cueframe-r1 centerlines on a 512-unit square grid. Two opposing 34-unit rounded bracket chains run through (168,104), (108,104), (108,408), (168,408) and their mirrored coordinates. Three rounded 32-unit cue rails run from x 184 to x 336, 304, and 352 at y 172, 256, and 340. The reduced master uses 42-unit brackets and one central rail. Production fills are direct glyphkit.capsule expansions of those approved centerline segments.",
+      "geometry_provenance": "glyphkit",
+      "grid": 512,
+      "min_px": {
+        "horizontal": 160,
+        "mark": 24,
+        "stacked": 112,
+        "wordmark": 120
+      },
+      "prohibitions": [
+        "Do not close the two brackets into a caption badge or screen.",
+        "Do not equalize, reorder, or add cue rails in the full master.",
+        "Do not remove the source envelope from the full master.",
+        "Do not replace Cue Teal with inherited orange, success green, or failure red.",
+        "Do not add play, microphone, waveform, speech-bubble, or CC symbols.",
+        "Do not use the full master below 24 pixels. Use the reduced master at and below 32 pixels.",
+        "Do not combine the Cueson and ShruggieTech marks into one lockup."
+      ],
+      "reduced_artwork_height": 302,
+      "reduced_artwork_width": 318,
+      "reduced_below_px": 32,
+      "role_colors": {
+        "black": {
+          "accent": "#000000",
+          "ink": "#000000",
+          "wordmark": "#000000"
+        },
+        "color": {
+          "accent": "#62BEB2",
+          "ink": "#F4F6FF",
+          "wordmark": "#F4F6FF"
+        },
+        "light": {
+          "accent": "#005D55",
+          "ink": "#14172A",
+          "wordmark": "#14172A"
+        },
+        "white": {
+          "accent": "#FFFFFF",
+          "ink": "#FFFFFF",
+          "wordmark": "#FFFFFF"
+        }
+      },
+      "source_mode": "constructed",
+      "standalone_padding_units": {
+        "full": 87,
+        "reduced": 97
+      }
+    },
+    "framing": {
+      "artwork_height": 338,
+      "artwork_width": 330,
+      "canvas_height": 512,
+      "canvas_width": 512,
+      "clear_space_units": 48,
+      "grid": 512,
+      "reduced_artwork_height": 302,
+      "reduced_artwork_width": 318,
+      "standalone_padding_units": {
+        "full": 87,
+        "reduced": 97
+      }
+    },
+    "geometry": {
+      "authoritative_input_ids": null,
+      "geometry_provenance": "glyphkit",
+      "paths": {
+        "full": [
+          {
+            "d": "M168 121 L108 121 C103.49 121 99.17 119.21 95.98 116.02 C92.79 112.83 91 108.51 91 104 C91 99.49 92.79 95.17 95.98 91.98 C99.17 88.79 103.49 87 108 87 L168 87 C172.51 87 176.83 88.79 180.02 91.98 C183.21 95.17 185 99.49 185 104 C185 108.51 183.21 112.83 180.02 116.02 C176.83 119.21 172.51 121 168 121 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M125 104 L125 408 C125 412.51 123.21 416.83 120.02 420.02 C116.83 423.21 112.51 425 108 425 C103.49 425 99.17 423.21 95.98 420.02 C92.79 416.83 91 412.51 91 408 L91 104 C91 99.49 92.79 95.17 95.98 91.98 C99.17 88.79 103.49 87 108 87 C112.51 87 116.83 88.79 120.02 91.98 C123.21 95.17 125 99.49 125 104 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M108 391 L168 391 C172.51 391 176.83 392.79 180.02 395.98 C183.21 399.17 185 403.49 185 408 C185 412.51 183.21 416.83 180.02 420.02 C176.83 423.21 172.51 425 168 425 L108 425 C103.49 425 99.17 423.21 95.98 420.02 C92.79 416.83 91 412.51 91 408 C91 403.49 92.79 399.17 95.98 395.98 C99.17 392.79 103.49 391 108 391 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M344 87 L404 87 C408.51 87 412.83 88.79 416.02 91.98 C419.21 95.17 421 99.49 421 104 C421 108.51 419.21 112.83 416.02 116.02 C412.83 119.21 408.51 121 404 121 L344 121 C339.49 121 335.17 119.21 331.98 116.02 C328.79 112.83 327 108.51 327 104 C327 99.49 328.79 95.17 331.98 91.98 C335.17 88.79 339.49 87 344 87 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M421 104 L421 408 C421 412.51 419.21 416.83 416.02 420.02 C412.83 423.21 408.51 425 404 425 C399.49 425 395.17 423.21 391.98 420.02 C388.79 416.83 387 412.51 387 408 L387 104 C387 99.49 388.79 95.17 391.98 91.98 C395.17 88.79 399.49 87 404 87 C408.51 87 412.83 88.79 416.02 91.98 C419.21 95.17 421 99.49 421 104 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M404 425 L344 425 C339.49 425 335.17 423.21 331.98 420.02 C328.79 416.83 327 412.51 327 408 C327 403.49 328.79 399.17 331.98 395.98 C335.17 392.79 339.49 391 344 391 L404 391 C408.51 391 412.83 392.79 416.02 395.98 C419.21 399.17 421 403.49 421 408 C421 412.51 419.21 416.83 416.02 420.02 C412.83 423.21 408.51 425 404 425 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M184 156 L336 156 C340.24 156 344.31 157.69 347.31 160.69 C350.31 163.69 352 167.76 352 172 C352 176.24 350.31 180.31 347.31 183.31 C344.31 186.31 340.24 188 336 188 L184 188 C179.76 188 175.69 186.31 172.69 183.31 C169.69 180.31 168 176.24 168 172 C168 167.76 169.69 163.69 172.69 160.69 C175.69 157.69 179.76 156 184 156 Z",
+            "role": "ink"
+          },
+          {
+            "d": "M184 240 L304 240 C308.24 240 312.31 241.69 315.31 244.69 C318.31 247.69 320 251.76 320 256 C320 260.24 318.31 264.31 315.31 267.31 C312.31 270.31 308.24 272 304 272 L184 272 C179.76 272 175.69 270.31 172.69 267.31 C169.69 264.31 168 260.24 168 256 C168 251.76 169.69 247.69 172.69 244.69 C175.69 241.69 179.76 240 184 240 Z",
+            "role": "ink"
+          },
+          {
+            "d": "M184 324 L352 324 C356.24 324 360.31 325.69 363.31 328.69 C366.31 331.69 368 335.76 368 340 C368 344.24 366.31 348.31 363.31 351.31 C360.31 354.31 356.24 356 352 356 L184 356 C179.76 356 175.69 354.31 172.69 351.31 C169.69 348.31 168 344.24 168 340 C168 335.76 169.69 331.69 172.69 328.69 C175.69 325.69 179.76 324 184 324 Z",
+            "role": "ink"
+          }
+        ],
+        "reduced": [
+          {
+            "d": "M174 147 L118 147 C112.43 147 107.09 144.79 103.15 140.85 C99.21 136.91 97 131.57 97 126 C97 120.43 99.21 115.09 103.15 111.15 C107.09 107.21 112.43 105 118 105 L174 105 C179.57 105 184.91 107.21 188.85 111.15 C192.79 115.09 195 120.43 195 126 C195 131.57 192.79 136.91 188.85 140.85 C184.91 144.79 179.57 147 174 147 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M139 126 L139 386 C139 391.57 136.79 396.91 132.85 400.85 C128.91 404.79 123.57 407 118 407 C112.43 407 107.09 404.79 103.15 400.85 C99.21 396.91 97 391.57 97 386 L97 126 C97 120.43 99.21 115.09 103.15 111.15 C107.09 107.21 112.43 105 118 105 C123.57 105 128.91 107.21 132.85 111.15 C136.79 115.09 139 120.43 139 126 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M118 365 L174 365 C179.57 365 184.91 367.21 188.85 371.15 C192.79 375.09 195 380.43 195 386 C195 391.57 192.79 396.91 188.85 400.85 C184.91 404.79 179.57 407 174 407 L118 407 C112.43 407 107.09 404.79 103.15 400.85 C99.21 396.91 97 391.57 97 386 C97 380.43 99.21 375.09 103.15 371.15 C107.09 367.21 112.43 365 118 365 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M338 105 L394 105 C399.57 105 404.91 107.21 408.85 111.15 C412.79 115.09 415 120.43 415 126 C415 131.57 412.79 136.91 408.85 140.85 C404.91 144.79 399.57 147 394 147 L338 147 C332.43 147 327.09 144.79 323.15 140.85 C319.21 136.91 317 131.57 317 126 C317 120.43 319.21 115.09 323.15 111.15 C327.09 107.21 332.43 105 338 105 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M415 126 L415 386 C415 391.57 412.79 396.91 408.85 400.85 C404.91 404.79 399.57 407 394 407 C388.43 407 383.09 404.79 379.15 400.85 C375.21 396.91 373 391.57 373 386 L373 126 C373 120.43 375.21 115.09 379.15 111.15 C383.09 107.21 388.43 105 394 105 C399.57 105 404.91 107.21 408.85 111.15 C412.79 115.09 415 120.43 415 126 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M394 407 L338 407 C332.43 407 327.09 404.79 323.15 400.85 C319.21 396.91 317 391.57 317 386 C317 380.43 319.21 375.09 323.15 371.15 C327.09 367.21 332.43 365 338 365 L394 365 C399.57 365 404.91 367.21 408.85 371.15 C412.79 375.09 415 380.43 415 386 C415 391.57 412.79 396.91 408.85 400.85 C404.91 404.79 399.57 407 394 407 Z",
+            "role": "accent"
+          },
+          {
+            "d": "M190 235 L322 235 C327.57 235 332.91 237.21 336.85 241.15 C340.79 245.09 343 250.43 343 256 C343 261.57 340.79 266.91 336.85 270.85 C332.91 274.79 327.57 277 322 277 L190 277 C184.43 277 179.09 274.79 175.15 270.85 C171.21 266.91 169 261.57 169 256 C169 250.43 171.21 245.09 175.15 241.15 C179.09 237.21 184.43 235 190 235 Z",
+            "role": "ink"
+          }
+        ]
+      },
+      "source_mode": "constructed"
+    },
+    "palette": {
+      "accent": {
+        "accessible": "#005D55",
+        "bright": "#62BEB2",
+        "deep": "#2F9388",
+        "dim": "#8FB8B1"
+      },
+      "chart_palette": {
+        "dark_target_lightness": 0.68,
+        "rationale": "Cue Teal anchors a derived functional sequence. Chart colors identify data series and never replace identity, state labels, or source-format labels."
+      },
+      "legacy_palette": {
+        "archive_night": "#080A14",
+        "card": "#101425",
+        "cue_teal": "#62BEB2",
+        "cue_teal_light": "#005D55",
+        "emphasis": "#FF5300",
+        "failure": "#E05F5F",
+        "hover": "#222944",
+        "light_card": "#FFFFFF",
+        "light_hover": "#E0E5FA",
+        "light_line": "#8A8FA8",
+        "light_secondary": "#ECEFFC",
+        "light_surface": "#F7F8FC",
+        "light_text": "#14172A",
+        "light_text_muted": "#5B6078",
+        "line": "#596181",
+        "secondary": "#181D33",
+        "success": "#2BCC73",
+        "text": "#F4F6FF",
+        "text_muted": "#A7AEC7"
+      },
+      "logo_role_colors": {
+        "black": {
+          "accent": "#000000",
+          "ink": "#000000",
+          "wordmark": "#000000"
+        },
+        "color": {
+          "accent": "#62BEB2",
+          "ink": "#F4F6FF",
+          "wordmark": "#F4F6FF"
+        },
+        "light": {
+          "accent": "#005D55",
+          "ink": "#14172A",
+          "wordmark": "#14172A"
+        },
+        "white": {
+          "accent": "#FFFFFF",
+          "ink": "#FFFFFF",
+          "wordmark": "#FFFFFF"
+        }
+      },
+      "surfaces": {
+        "base": "#080A14",
+        "card": "#101425",
+        "hover": "#222944",
+        "popover": "#080A14",
+        "secondary": "#181D33"
+      }
+    },
+    "sha256": "7f7735f56584a0fa972c337eb85f139ef1dbcef304221f8971d28df9dd6cb980",
+    "source_class": "glyphkit-constructed",
+    "topology": {
+      "full": {
+        "closed_subpaths": 9,
+        "command_counts": {
+          "C": 72,
+          "L": 18,
+          "M": 9,
+          "Z": 9
+        },
+        "fill_rules": {
+          "nonzero": 9
+        },
+        "path_count": 9,
+        "role_counts": {
+          "accent": 6,
+          "ink": 3
+        },
+        "subpath_count": 9
+      },
+      "reduced": {
+        "closed_subpaths": 7,
+        "command_counts": {
+          "C": 56,
+          "L": 14,
+          "M": 7,
+          "Z": 7
+        },
+        "fill_rules": {
+          "nonzero": 7
+        },
+        "path_count": 7,
+        "role_counts": {
+          "accent": 6,
+          "ink": 1
+        },
+        "subpath_count": 7
+      }
+    },
+    "typography": {
+      "typography": {
+        "families": {
+          "body": {
+            "name": "Geist",
+            "weights": [
+              400,
+              500
+            ]
+          },
+          "display": {
+            "name": "Space Grotesk",
+            "weights": [
+              500,
+              700
+            ]
+          },
+          "mono": {
+            "name": "Geist Mono",
+            "weights": [
+              400
+            ]
+          }
+        },
+        "mode": "house"
+      },
+      "wordmark_text": "Cueson"
+    }
+  },
+  "palette": {
+    "accent": {
+      "accessible": "#005D55",
+      "bright": "#62BEB2",
+      "deep": "#2F9388",
+      "dim": "#8FB8B1"
+    },
+    "chart_palette": {
+      "dark_target_lightness": 0.68,
+      "rationale": "Cue Teal anchors a derived functional sequence. Chart colors identify data series and never replace identity, state labels, or source-format labels."
+    },
+    "legacy_palette": {
+      "archive_night": "#080A14",
+      "card": "#101425",
+      "cue_teal": "#62BEB2",
+      "cue_teal_light": "#005D55",
+      "emphasis": "#FF5300",
+      "failure": "#E05F5F",
+      "hover": "#222944",
+      "light_card": "#FFFFFF",
+      "light_hover": "#E0E5FA",
+      "light_line": "#8A8FA8",
+      "light_secondary": "#ECEFFC",
+      "light_surface": "#F7F8FC",
+      "light_text": "#14172A",
+      "light_text_muted": "#5B6078",
+      "line": "#596181",
+      "secondary": "#181D33",
+      "success": "#2BCC73",
+      "text": "#F4F6FF",
+      "text_muted": "#A7AEC7"
+    },
+    "logo_role_colors": {
+      "black": {
+        "accent": "#000000",
+        "ink": "#000000",
+        "wordmark": "#000000"
+      },
+      "color": {
+        "accent": "#62BEB2",
+        "ink": "#F4F6FF",
+        "wordmark": "#F4F6FF"
+      },
+      "light": {
+        "accent": "#005D55",
+        "ink": "#14172A",
+        "wordmark": "#14172A"
+      },
+      "white": {
+        "accent": "#FFFFFF",
+        "ink": "#FFFFFF",
+        "wordmark": "#FFFFFF"
+      }
+    },
+    "surfaces": {
+      "base": "#080A14",
+      "card": "#101425",
+      "hover": "#222944",
+      "popover": "#080A14",
+      "secondary": "#181D33"
+    }
+  },
+  "proofs": [],
+  "record_sha256": "d1aa5126916960b10be579d4c59b046373d050b83caadfbb554bf3134eccd95a",
+  "recorded_on": "2026-09-09",
+  "renderer": null,
+  "schema_version": 1,
+  "source_class": "glyphkit-constructed",
+  "source_files": [
+    {
+      "bytes": 1772,
+      "path": "build/mk_paths.py",
+      "purpose": "identity construction source",
+      "sha256": "ac7580d13c0922e41e5ae1508deaa584d848a747d584b6a1928055005f79f20c"
+    }
+  ],
+  "source_revision": "011f35303ef1d555dbbbcf6708447cc321df40db",
+  "status": "historical-baseline",
+  "topology": {
+    "full": {
+      "closed_subpaths": 9,
+      "command_counts": {
+        "C": 72,
+        "L": 18,
+        "M": 9,
+        "Z": 9
+      },
+      "fill_rules": {
+        "nonzero": 9
+      },
+      "path_count": 9,
+      "role_counts": {
+        "accent": 6,
+        "ink": 3
+      },
+      "subpath_count": 9
+    },
+    "reduced": {
+      "closed_subpaths": 7,
+      "command_counts": {
+        "C": 56,
+        "L": 14,
+        "M": 7,
+        "Z": 7
+      },
+      "fill_rules": {
+        "nonzero": 7
+      },
+      "path_count": 7,
+      "role_counts": {
+        "accent": 6,
+        "ink": 1
+      },
+      "subpath_count": 7
+    }
+  }
+}

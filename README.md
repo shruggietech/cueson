@@ -1,6 +1,16 @@
 # Cueson
 
 <p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-color.svg">
+    <source media="(prefers-color-scheme: light)" srcset="brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-light.svg">
+    <img alt="Cueson" src="brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-light.svg" width="520">
+  </picture>
+</p>
+
+<p align="center"><strong>Universal captions and subtitles</strong></p>
+
+<p align="center">
   <a href="https://github.com/shruggietech/cueson/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/shruggietech/cueson/actions/workflows/ci.yml/badge.svg?branch=main&amp;event=push"></a>
   <a href="https://github.com/shruggietech/cueson/milestone/1"><img alt="Release: unreleased" src="https://img.shields.io/badge/release-unreleased-9CA3AF"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-62D9B7"></a>
@@ -22,6 +32,8 @@ The repository contains a buildable `cueson` executable and the [canonical Draft
 - Deliver portable native binaries for Windows, macOS, and Linux.
 
 The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages separate current envelope-only behavior from the planned [SubRip](docs/formats/srt.md) and [WebVTT](docs/formats/webvtt.md) v1 contracts. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
+
+The official Cueson identity is retained in the repository as the complete [brand kit](brand/cueson/1.0.0/kit/README.md). See the [Cueson brand guide](docs/brand.md) for provenance, integrity verification, asset selection, licensing boundaries, and the [official ShruggieTech download](https://brand.shruggie.tech/cueson/downloads/cueson-brand-1.0.0.zip).
 
 Release-candidate construction and inspection are documented in [release verification](docs/release-verification.md). The separately governed [release process](docs/release-process.md) describes future tag, GitHub Release, immutable schema-copy, milestone, and production-publication actions without authorizing them.
 
