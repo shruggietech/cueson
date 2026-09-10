@@ -2907,7 +2907,7 @@ Agents working on Cueson MUST:
 
 ## v0.0.0 foundation completion gate
 
-The initial scaffolding effort is complete. The checked items below are backed by the [README](../README.md), [architecture](architecture.md), [schema contract](schema.md), [CLI contract](cli.md), [repository controls](repository-controls.md), [release verification](release-verification.md), [project-management contract](project-management.md), [constitution](../.specify/memory/constitution.md), executable tests, and merged issue evidence. They establish a verified release candidate, not a public release.
+The checklist below is the foundation closeout ledger. Checked items are backed by the [README](../README.md), [architecture](architecture.md), [schema contract](schema.md), [CLI contract](cli.md), [repository controls](repository-controls.md), [release verification](release-verification.md), [project-management contract](project-management.md), [constitution](../.specify/memory/constitution.md), executable tests, and merged issue evidence. The unchecked review-automation item records the known GitHub Actions HTTP 403 limitation; it must remain visible until a later approved change either proves that hosted path or revises the gate. This ledger describes an unpublished candidate, not a public release.
 
 - [x] the `shruggietech/cueson` repository exists;
 - [x] the Go module builds;
@@ -2937,7 +2937,7 @@ The initial scaffolding effort is complete. The checked items below are backed b
 - [x] the GitHub Project is configured with the required `Stage` and `Slice` fields;
 - [x] PR issue-link enforcement exists;
 - [x] eligible non-Dependabot pull requests receive automatic first-round Codex review;
-- [x] automation can request at most one second Codex review after first-round findings are resolved;
+- [ ] automation can request at most one second Codex review after first-round findings are resolved;
 - [x] GitHub body publication readback is part of the agent contract;
 - [x] GitHub code-quality and security settings are enabled as applicable;
 - [x] protected-default-branch ruleset is configured;

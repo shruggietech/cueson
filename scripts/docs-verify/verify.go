@@ -206,7 +206,8 @@ func readDocument(root, name string) (string, error) {
 }
 
 func documentReferences(name, content string) []documentReference {
-	lines := sanitizedLines(content, strings.HasSuffix(strings.ToLower(name), ".md"))
+	markdown := strings.HasSuffix(strings.ToLower(name), ".md")
+	lines := sanitizedLines(content, markdown, markdown)
 	definitions := make(map[string]documentReference)
 	for index, line := range lines {
 		if match := referenceDefinition.FindStringSubmatch(line); match != nil {
@@ -252,7 +253,7 @@ func documentReferences(name, content string) []documentReference {
 	return references
 }
 
-func sanitizedLines(content string, markdown bool) []string {
+func sanitizedLines(content string, markdown, removeInlineCode bool) []string {
 	scanner := bufio.NewScanner(strings.NewReader(content))
 	scanner.Buffer(make([]byte, 4096), maximumDocumentSize)
 	var lines []string
@@ -277,7 +278,7 @@ func sanitizedLines(content string, markdown bool) []string {
 			continue
 		}
 		line = stripHTMLComments(line, &inComment)
-		if markdown {
+		if removeInlineCode {
 			line = stripInlineCode(line)
 		}
 		lines = append(lines, line)
@@ -488,7 +489,7 @@ func documentAnchors(name, content string) map[string]struct{} {
 			anchors[anchor] = struct{}{}
 		}
 	}
-	for _, line := range sanitizedLines(content, false) {
+	for _, line := range sanitizedLines(content, false, false) {
 		for _, match := range htmlAnchorPattern.FindAllStringSubmatch(line, -1) {
 			anchors[html.UnescapeString(firstNonempty(match[1:]...))] = struct{}{}
 		}
@@ -497,7 +498,7 @@ func documentAnchors(name, content string) map[string]struct{} {
 }
 
 func markdownAnchors(content string) map[string]struct{} {
-	lines := sanitizedLines(content, true)
+	lines := sanitizedLines(content, true, false)
 	anchors := make(map[string]struct{})
 	counts := make(map[string]int)
 	add := func(text string) {

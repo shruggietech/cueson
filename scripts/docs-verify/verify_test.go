@@ -197,8 +197,8 @@ func TestSymlinkTargetRejected(t *testing.T) {
 }
 
 func TestDuplicateAndSetextSlugs(t *testing.T) {
-	anchors := markdownAnchors("# Héllo, World!\n\n# Héllo, World!\n\nA Title\n=======\n")
-	for _, want := range []string{"héllo-world", "héllo-world-1", "a-title"} {
+	anchors := markdownAnchors("# Héllo, World!\n\n# Héllo, World!\n\nA Title\n=======\n\n## `version`\n")
+	for _, want := range []string{"héllo-world", "héllo-world-1", "a-title", "version"} {
 		if _, ok := anchors[want]; !ok {
 			t.Errorf("missing anchor %q in %v", want, anchors)
 		}
