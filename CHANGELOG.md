@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.0] - 2026-09-10
+
 ### Added
 
 - Initialized the repository, Spec Kit integration, governance documents, publication tooling, and GitHub planning foundation.
@@ -21,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added a dependency-free offline documentation verifier with a canonical maintained-document inventory, exact-case repository-confined path resolution, local-anchor validation, deterministic diagnostics, and CI coverage.
 - Added dedicated SubRip, WebVTT, and release-process documentation that separates the current envelope-only foundation from planned native format support and protected publication actions.
 - Added the complete official Cueson brand-kit 1.0.0 archive and byte-exact extraction, an independent 265-file import manifest, an offline integrity verifier, and repository brand guidance.
+- Added the versioned v0.0.0 schema candidate, concise release notes, schema-bound release evidence, and non-publishing proof for the eventual squash-merge commit on `main`.
 
 ### Changed
 
@@ -59,3 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-09: Keep the v0.0.0 release candidate under `[Unreleased]` until a separately authorized tag and GitHub Release exist; a completed foundation milestone is not publication.
 - 2026-09-09: Keep executable non-publishing candidate verification separate from the protected release process for tags, GitHub Releases, immutable schema copies, and production publication.
 - 2026-09-10: Treat the operator-designated ShruggieTech 1.0.0 ZIP as the sole S011 acquisition authority, retain its archive and every safe payload file byte for byte, and preserve bundled terms without a redundant separate legal-review gate.
+- 2026-09-10: Treat pull-request release proof as review evidence and bind the proposed publication target only after the S012 squash-merge commit passes its own non-publishing proof on `main`.
+
+[Unreleased]: https://github.com/shruggietech/cueson/compare/v0.0.0...HEAD
+[0.0.0]: https://github.com/shruggietech/cueson/releases/tag/v0.0.0

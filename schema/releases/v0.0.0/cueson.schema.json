@@ -1,0 +1,1038 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cueson.io/schema/v0.0.0/cueson.schema.json",
+  "title": "Cue JSON",
+  "description": "Canonical Cue JSON contract for Cueson v0.0.0.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schema_version",
+    "format",
+    "format_support",
+    "producer",
+    "source",
+    "metadata",
+    "document",
+    "cues",
+    "format_data",
+    "diagnostics",
+    "stats"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://cueson.io/schema/v0.0.0/cueson.schema.json"
+    },
+    "schema_version": {
+      "const": "0.0.0"
+    },
+    "format": {
+      "enum": [
+        "subrip",
+        "webvtt"
+      ]
+    },
+    "format_support": {
+      "$ref": "#/$defs/format_support"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+    "document": {
+      "$ref": "#/$defs/document_summary"
+    },
+    "cues": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/cue"
+      }
+    },
+    "format_data": {
+      "$ref": "#/$defs/document_format_data"
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/diagnostic"
+      }
+    },
+    "stats": {
+      "$ref": "#/$defs/stats"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "format": {
+            "const": "subrip"
+          }
+        },
+        "required": [
+          "format"
+        ]
+      },
+      "then": {
+        "properties": {
+          "format_data": {
+            "$ref": "#/$defs/subrip_document_format_data"
+          },
+          "cues": {
+            "items": {
+              "properties": {
+                "format_data": {
+                  "$ref": "#/$defs/subrip_cue_format_data"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "format": {
+            "const": "webvtt"
+          }
+        },
+        "required": [
+          "format"
+        ]
+      },
+      "then": {
+        "properties": {
+          "format_data": {
+            "$ref": "#/$defs/webvtt_document_format_data"
+          },
+          "cues": {
+            "items": {
+              "properties": {
+                "format_data": {
+                  "$ref": "#/$defs/webvtt_cue_format_data"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "nullable_string": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "non_negative_integer": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "format_support": {
+      "type": "object",
+      "required": [
+        "status",
+        "ingest_supported",
+        "render_supported",
+        "restore_supported",
+        "ocr_required_for_semantic_output"
+      ],
+      "properties": {
+        "status": {
+          "const": "envelope_only"
+        },
+        "ingest_supported": {
+          "const": false
+        },
+        "render_supported": {
+          "const": false
+        },
+        "restore_supported": {
+          "const": true
+        },
+        "ocr_required_for_semantic_output": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "producer": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "primary_asset_id",
+        "assets"
+      ],
+      "properties": {
+        "primary_asset_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "assets": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source_asset"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_asset": {
+      "type": "object",
+      "required": [
+        "id",
+        "role",
+        "file_name",
+        "media_type",
+        "size",
+        "hashes",
+        "timestamps",
+        "encoding",
+        "data_base64"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "role": {
+          "enum": [
+            "primary",
+            "companion"
+          ]
+        },
+        "file_name": {
+          "$ref": "#/$defs/safe_basename"
+        },
+        "media_type": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "size": {
+          "$ref": "#/$defs/asset_size"
+        },
+        "hashes": {
+          "$ref": "#/$defs/asset_hashes"
+        },
+        "timestamps": {
+          "$ref": "#/$defs/timestamps"
+        },
+        "encoding": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/encoding_observation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data_base64": {
+          "type": "string",
+          "contentEncoding": "base64"
+        }
+      },
+      "additionalProperties": false
+    },
+    "safe_basename": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[^<>:\"/\\\\|?*\u0000-\u001f\u007f]+$",
+      "not": {
+        "anyOf": [
+          {
+            "enum": [
+              ".",
+              ".."
+            ]
+          },
+          {
+            "pattern": "[ .]$"
+          },
+          {
+            "pattern": "^([cC][oO][nN]|[pP][rR][nN]|[aA][uU][xX]|[nN][uU][lL]|[cC][lL][oO][cC][kK]\\$|[cC][oO][nN][iI][nN]\\$|[cC][oO][nN][oO][uU][tT]\\$|[cC][oO][mM][1-9¹²³]|[lL][pP][tT][1-9¹²³])(\\..*)?$"
+          }
+        ]
+      }
+    },
+    "asset_size": {
+      "type": "object",
+      "required": [
+        "bytes",
+        "text"
+      ],
+      "properties": {
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "text": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "asset_hashes": {
+      "type": "object",
+      "required": [
+        "sha256"
+      ],
+      "properties": {
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "timestamps": {
+      "type": "object",
+      "required": [
+        "created",
+        "modified",
+        "accessed",
+        "created_source"
+      ],
+      "properties": {
+        "created": {
+          "$ref": "#/$defs/nullable_timestamp"
+        },
+        "modified": {
+          "$ref": "#/$defs/nullable_timestamp"
+        },
+        "accessed": {
+          "$ref": "#/$defs/nullable_timestamp"
+        },
+        "created_source": {
+          "enum": [
+            "birthtime",
+            "windows_creation_time",
+            "ctime_fallback",
+            "unavailable"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "nullable_timestamp": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "timestamp": {
+      "type": "object",
+      "required": [
+        "iso",
+        "unix_ns"
+      ],
+      "properties": {
+        "iso": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "unix_ns": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "encoding_observation": {
+      "type": "object",
+      "required": [
+        "bom",
+        "line_endings",
+        "detected_encoding",
+        "confidence"
+      ],
+      "properties": {
+        "bom": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "line_endings": {
+          "enum": [
+            "none",
+            "lf",
+            "crlf",
+            "cr",
+            "mixed",
+            "unknown"
+          ]
+        },
+        "detected_encoding": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "title",
+        "language",
+        "kind",
+        "description"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "language": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "kind": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "description": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "document_summary": {
+      "type": "object",
+      "required": [
+        "cue_count",
+        "media_start_milliseconds",
+        "media_end_milliseconds",
+        "media_span_milliseconds",
+        "has_word_level_timing"
+      ],
+      "properties": {
+        "cue_count": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "media_start_milliseconds": {
+          "$ref": "#/$defs/nullable_non_negative_integer"
+        },
+        "media_end_milliseconds": {
+          "$ref": "#/$defs/nullable_non_negative_integer"
+        },
+        "media_span_milliseconds": {
+          "$ref": "#/$defs/nullable_non_negative_integer"
+        },
+        "has_word_level_timing": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "nullable_non_negative_integer": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "cue": {
+      "type": "object",
+      "required": [
+        "id",
+        "ordinal",
+        "source_order",
+        "source_identifier",
+        "timing",
+        "payload",
+        "speakers",
+        "tokens",
+        "ocr_observations",
+        "placement",
+        "format_data"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "ordinal": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "source_order": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "source_identifier": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "timing": {
+          "$ref": "#/$defs/timing"
+        },
+        "payload": {
+          "$ref": "#/$defs/payload"
+        },
+        "speakers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/speaker"
+          }
+        },
+        "tokens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/token"
+          }
+        },
+        "ocr_observations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ocr_observation"
+          }
+        },
+        "placement": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/placement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "format_data": {
+          "$ref": "#/$defs/cue_format_data"
+        }
+      },
+      "additionalProperties": false
+    },
+    "timing": {
+      "type": "object",
+      "required": [
+        "start_milliseconds",
+        "end_milliseconds",
+        "duration_milliseconds"
+      ],
+      "properties": {
+        "start_milliseconds": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "end_milliseconds": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "duration_milliseconds": {
+          "$ref": "#/$defs/non_negative_integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "raw_text",
+        "plain_text",
+        "lines"
+      ],
+      "properties": {
+        "raw_text": {
+          "type": "string"
+        },
+        "plain_text": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "speaker": {
+      "type": "object",
+      "required": [
+        "name",
+        "origin"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "origin": {
+          "enum": [
+            "native",
+            "heuristic"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "token": {
+      "type": "object",
+      "required": [
+        "text",
+        "start_milliseconds",
+        "end_milliseconds",
+        "native_timing"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "start_milliseconds": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "end_milliseconds": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "native_timing": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ocr_observation": {
+      "type": "object",
+      "required": [
+        "id",
+        "derived",
+        "engine",
+        "text",
+        "lines",
+        "source_asset_id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "derived": {
+          "const": true
+        },
+        "engine": {
+          "type": "string",
+          "minLength": 1
+        },
+        "engine_version": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "model": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "language": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_asset_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "source_event_id": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "source_image_id": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "source_regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_region"
+          }
+        },
+        "processing_options": {
+          "$ref": "#/$defs/extension_map"
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_region": {
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "extension_map": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*:[a-z][a-z0-9_]*$"
+      }
+    },
+    "placement": {
+      "type": "object",
+      "required": [
+        "line",
+        "position",
+        "size",
+        "align"
+      ],
+      "properties": {
+        "line": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "position": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "size": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "align": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cue_format_data": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/subrip_cue_format_data"
+        },
+        {
+          "$ref": "#/$defs/webvtt_cue_format_data"
+        }
+      ]
+    },
+    "subrip_cue_format_data": {
+      "type": "object",
+      "required": [
+        "subrip"
+      ],
+      "properties": {
+        "subrip": {
+          "$ref": "#/$defs/subrip_cue_data"
+        }
+      },
+      "additionalProperties": false
+    },
+    "webvtt_cue_format_data": {
+      "type": "object",
+      "required": [
+        "webvtt"
+      ],
+      "properties": {
+        "webvtt": {
+          "$ref": "#/$defs/webvtt_cue_data"
+        }
+      },
+      "additionalProperties": false
+    },
+    "subrip_cue_data": {
+      "type": "object",
+      "required": [
+        "sequence_line_raw",
+        "timing_line_raw"
+      ],
+      "properties": {
+        "sequence_line_raw": {
+          "type": "string"
+        },
+        "timing_line_raw": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/$defs/coordinates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "coordinates": {
+      "type": "object",
+      "required": [
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
+      "properties": {
+        "x1": {
+          "type": "integer"
+        },
+        "x2": {
+          "type": "integer"
+        },
+        "y1": {
+          "type": "integer"
+        },
+        "y2": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "webvtt_cue_data": {
+      "type": "object",
+      "required": [
+        "identifier_raw",
+        "timing_line_raw",
+        "settings_raw",
+        "settings",
+        "raw_payload"
+      ],
+      "properties": {
+        "identifier_raw": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "timing_line_raw": {
+          "type": "string"
+        },
+        "settings_raw": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "raw_payload": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "document_format_data": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/subrip_document_format_data"
+        },
+        {
+          "$ref": "#/$defs/webvtt_document_format_data"
+        }
+      ]
+    },
+    "subrip_document_format_data": {
+      "type": "object",
+      "required": [
+        "subrip"
+      ],
+      "properties": {
+        "subrip": {
+          "$ref": "#/$defs/subrip_document_data"
+        }
+      },
+      "additionalProperties": false
+    },
+    "webvtt_document_format_data": {
+      "type": "object",
+      "required": [
+        "webvtt"
+      ],
+      "properties": {
+        "webvtt": {
+          "$ref": "#/$defs/webvtt_document_data"
+        }
+      },
+      "additionalProperties": false
+    },
+    "subrip_document_data": {
+      "type": "object",
+      "required": [
+        "dialect",
+        "decoding_notes"
+      ],
+      "properties": {
+        "dialect": {
+          "const": "subrip"
+        },
+        "decoding_notes": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "webvtt_document_data": {
+      "type": "object",
+      "required": [
+        "signature",
+        "description",
+        "metadata_lines",
+        "blocks"
+      ],
+      "properties": {
+        "signature": {
+          "const": "WEBVTT"
+        },
+        "description": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "metadata_lines": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/webvtt_block"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "webvtt_block": {
+      "type": "object",
+      "required": [
+        "type",
+        "source_order",
+        "raw"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "note",
+            "style",
+            "region",
+            "unrecognized"
+          ]
+        },
+        "source_order": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "raw": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": [
+        "severity",
+        "code",
+        "message",
+        "source_order",
+        "cue_id"
+      ],
+      "properties": {
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_order": {
+          "$ref": "#/$defs/nullable_non_negative_integer"
+        },
+        "cue_id": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "stats": {
+      "type": "object",
+      "required": [
+        "cue_count",
+        "diagnostic_count",
+        "warning_count",
+        "error_count",
+        "has_word_level_timing",
+        "media_span_milliseconds"
+      ],
+      "properties": {
+        "cue_count": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "diagnostic_count": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "warning_count": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "error_count": {
+          "$ref": "#/$defs/non_negative_integer"
+        },
+        "has_word_level_timing": {
+          "type": "boolean"
+        },
+        "media_span_milliseconds": {
+          "$ref": "#/$defs/nullable_non_negative_integer"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

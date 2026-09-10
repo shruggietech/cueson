@@ -31,6 +31,7 @@ var requiredDocuments = []string{
 	"docs/formats/webvtt.md",
 	"docs/project-management.md",
 	"docs/release-process.md",
+	"docs/releases/v0.0.0.md",
 }
 
 var (

@@ -356,6 +356,72 @@ func TestVerifySchemaIdentity(t *testing.T) {
 	if err := verifySchemaIdentity(valid, "0.1.0"); err == nil {
 		t.Fatal("accepted mismatched version")
 	}
+	wrongSuffix := []byte(`{"$id":"https://cueson.io/schema/v0.0.0/cueson.schema.json?draft=1","properties":{"schema_version":{"const":"0.0.0"}}}`)
+	if err := verifySchemaIdentity(wrongSuffix, "0.0.0"); err == nil {
+		t.Fatal("accepted schema identity with content after the release path")
+	}
+	if err := verifySchemaIdentity(append([]byte{0xef, 0xbb, 0xbf}, valid...), "0.0.0"); err == nil {
+		t.Fatal("accepted UTF-8 BOM")
+	}
+	if err := verifySchemaIdentity([]byte{'{', '"', 'x', '"', ':', '"', 0xff, '"', '}'}, "0.0.0"); err == nil {
+		t.Fatal("accepted invalid UTF-8")
+	}
+}
+
+func TestLoadRepositorySchemasRequiresExactVersionedCopy(t *testing.T) {
+	t.Parallel()
+	valid := []byte(`{"$id":"https://cueson.io/schema/v0.0.0/cueson.schema.json","properties":{"schema_version":{"const":"0.0.0"}}}` + "\n")
+	wantDigest := sha256.Sum256(valid)
+
+	t.Run("valid", func(t *testing.T) {
+		repository := makeSchemaRepository(t, valid, valid)
+		canonical, digest, err := loadRepositorySchemas(repository, "0.0.0")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(canonical, valid) {
+			t.Fatal("returned canonical schema differs")
+		}
+		if digest != fmt.Sprintf("%x", wantDigest) {
+			t.Fatalf("release schema digest = %q, want %x", digest, wantDigest)
+		}
+	})
+
+	t.Run("missing release schema", func(t *testing.T) {
+		repository := makeSchemaRepository(t, valid, nil)
+		if _, _, err := loadRepositorySchemas(repository, "0.0.0"); err == nil || !strings.Contains(err.Error(), "versioned release schema") {
+			t.Fatalf("error = %v", err)
+		}
+	})
+
+	t.Run("byte drift", func(t *testing.T) {
+		repository := makeSchemaRepository(t, valid, append(append([]byte(nil), valid...), '\n'))
+		if _, _, err := loadRepositorySchemas(repository, "0.0.0"); err == nil || !strings.Contains(err.Error(), "differs byte-for-byte") {
+			t.Fatalf("error = %v", err)
+		}
+	})
+
+	t.Run("canonical version mismatch", func(t *testing.T) {
+		repository := makeSchemaRepository(t, valid, valid)
+		if _, _, err := loadRepositorySchemas(repository, "0.0.1"); err == nil || !strings.Contains(err.Error(), "canonical schema") {
+			t.Fatalf("error = %v", err)
+		}
+	})
+
+	t.Run("release version mismatch", func(t *testing.T) {
+		wrong := []byte(`{"$id":"https://cueson.io/schema/v0.0.1/cueson.schema.json","properties":{"schema_version":{"const":"0.0.1"}}}` + "\n")
+		repository := makeSchemaRepository(t, valid, wrong)
+		if _, _, err := loadRepositorySchemas(repository, "0.0.0"); err == nil || !strings.Contains(err.Error(), "versioned release schema") {
+			t.Fatalf("error = %v", err)
+		}
+	})
+
+	t.Run("unsafe version", func(t *testing.T) {
+		repository := makeSchemaRepository(t, valid, valid)
+		if _, _, err := loadRepositorySchemas(repository, "../../escape"); err == nil || !strings.Contains(err.Error(), "safe semantic version") {
+			t.Fatalf("error = %v", err)
+		}
+	})
 }
 
 func TestVerifyProbeOutput(t *testing.T) {
@@ -385,25 +451,58 @@ func TestVerifyProbeOutput(t *testing.T) {
 
 func TestWriteEvidenceIsExclusiveAndDeterministic(t *testing.T) {
 	t.Parallel()
-	path := filepath.Join(t.TempDir(), evidenceFilename)
-	evidence := ReleaseEvidence{Version: "0.0.0", SourceRevision: testCommit, ArchiveCount: 6, SBOMCount: 6, ChecksumCount: 6}
-	if err := writeEvidence(path, evidence); err != nil {
+	directory := t.TempDir()
+	firstPath := filepath.Join(directory, "first.json")
+	secondPath := filepath.Join(directory, "second.json")
+	evidence := ReleaseEvidence{Version: "0.0.0", SourceRevision: testCommit, ReleaseSchemaSHA256: strings.Repeat("a", 64), ArchiveCount: 6, SBOMCount: 6, ChecksumCount: 6}
+	if err := writeEvidence(firstPath, evidence); err != nil {
 		t.Fatal(err)
 	}
-	first, err := os.ReadFile(path)
+	if err := writeEvidence(secondPath, evidence); err != nil {
+		t.Fatal(err)
+	}
+	first, err := os.ReadFile(firstPath)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := writeEvidence(path, evidence); err == nil {
+	second, err := os.ReadFile(secondPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(first, second) {
+		t.Fatal("identical evidence inputs produced different bytes")
+	}
+	if err := writeEvidence(firstPath, evidence); err == nil {
 		t.Fatal("second write replaced evidence")
 	}
-	wantHash := sha256.Sum256(first)
-	if got := sha256.Sum256(first); got != wantHash {
-		t.Fatal("evidence changed")
+	if !bytes.Contains(first, []byte(`"release_schema_sha256": "`+strings.Repeat("a", 64)+`"`)) {
+		t.Fatal("evidence omits release schema digest")
 	}
 	if !bytes.Contains(first, []byte(`"published": false`)) {
 		t.Fatal("evidence omits non-publication state")
 	}
+}
+
+func makeSchemaRepository(t *testing.T, canonical, release []byte) string {
+	t.Helper()
+	repository := t.TempDir()
+	canonicalPath := filepath.Join(repository, "internal", "schema", releaseSchemaFilename)
+	if err := os.MkdirAll(filepath.Dir(canonicalPath), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(canonicalPath, canonical, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if release != nil {
+		releasePath := filepath.Join(repository, "schema", "releases", "v0.0.0", releaseSchemaFilename)
+		if err := os.MkdirAll(filepath.Dir(releasePath), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(releasePath, release, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return repository
 }
 
 type tarEntry struct {

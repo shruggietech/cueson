@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cueson.io/contracts/release-evidence/v1.schema.json",
+  "title": "Cueson non-publishing release evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "source_revision", "release_schema_sha256", "archive_count", "sbom_count", "checksum_count", "host_executed", "targets", "published"],
+  "properties": {
+    "version": {"const": "0.0.0"},
+    "source_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "release_schema_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "archive_count": {"const": 6},
+    "sbom_count": {"const": 6},
+    "checksum_count": {"const": 6},
+    "host_executed": {"type": ["string", "null"], "pattern": "^(linux|darwin|windows)/(amd64|arm64)$"},
+    "targets": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/target"}},
+    "published": {"const": false}
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goos", "goarch", "archive", "binary", "sbom", "archive_sha256", "sbom_sha256"],
+      "properties": {
+        "goos": {"enum": ["linux", "darwin", "windows"]},
+        "goarch": {"enum": ["amd64", "arm64"]},
+        "archive": {"type": "string", "minLength": 1},
+        "binary": {"enum": ["cueson", "cueson.exe"]},
+        "sbom": {"type": "string", "minLength": 1},
+        "archive_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "sbom_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}
