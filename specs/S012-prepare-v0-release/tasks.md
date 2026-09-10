@@ -63,8 +63,8 @@
 - [x] T018 [P] [US2] Document versioned-schema verification, enriched evidence, and `main` push proof in `docs/release-verification.md`
 - [x] T019 [P] [US2] Reconcile current candidate and release-preparation status links in `README.md` without claiming that v0.0.0 is public
 - [x] T020 [US2] Run release policy tests, actionlint, GoReleaser configuration validation, and repository schema identity checks against the final configuration
-- [ ] T021 [US2] Commit the release-preparation implementation locally, build the complete snapshot with GoReleaser v2.18.1 and Syft v1.51.1 from that clean commit, and verify it with `scripts/release-verify` including compatible host execution
-- [ ] T022 [US2] Inspect `dist/release-evidence.json` and confirm exact revision, version, schema digest, six archives, six SBOMs, six checksums, complete target digests, host execution, and `published: false`
+- [x] T021 [US2] Commit the release-preparation implementation locally, build the complete snapshot with GoReleaser v2.18.1 and Syft v1.51.1 from that clean commit, and verify it with `scripts/release-verify` including compatible host execution
+- [x] T022 [US2] Inspect `dist/release-evidence.json` and confirm exact revision, version, schema digest, six archives, six SBOMs, six checksums, complete target digests, host execution, and `published: false`
 
 **Checkpoint**: User Story 2 is independently complete with exact clean-commit evidence and no publication action.
 
@@ -76,8 +76,8 @@
 
 **Independent Test**: Run every local and hosted gate, inspect issue and Project state, and confirm the pull request is green, fully reviewed, configured to close issue #25, and otherwise non-publishing.
 
-- [ ] T023 [US3] Run all quickstart verification including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, and mojibake checks from `specs/S012-prepare-v0-release/quickstart.md`
-- [ ] T024 [US3] Run Spec Kit convergence against `specs/S012-prepare-v0-release/` and append and execute any required remediation tasks until convergence is clean
+- [x] T023 [US3] Run all quickstart verification including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, and mojibake checks from `specs/S012-prepare-v0-release/quickstart.md`
+- [x] T024 [US3] Run Spec Kit convergence against `specs/S012-prepare-v0-release/` and append and execute any required remediation tasks until convergence is clean
 - [ ] T025 [US3] Push `S012-prepare-v0-release`, publish the formatted official pull request with `Closes #25`, and verify the rendered GitHub body
 - [ ] T026 [US3] Move issue #25 to Stage `PR review`, retain Slice `S012`, and verify default Status remains empty in `cueson Delivery`
 - [ ] T027 [US3] Monitor every current-head CI, CodeQL, release-proof, pull-request policy, Codex, security, and review result; address every round-one finding and resolve threads only after remediation
