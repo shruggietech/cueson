@@ -78,8 +78,8 @@
 
 - [x] T023 [US3] Run all quickstart verification including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, and mojibake checks from `specs/S012-prepare-v0-release/quickstart.md`
 - [x] T024 [US3] Run Spec Kit convergence against `specs/S012-prepare-v0-release/` and append and execute any required remediation tasks until convergence is clean
-- [ ] T025 [US3] Push `S012-prepare-v0-release`, publish the formatted official pull request with `Closes #25`, and verify the rendered GitHub body
-- [ ] T026 [US3] Move issue #25 to Stage `PR review`, retain Slice `S012`, and verify default Status remains empty in `cueson Delivery`
+- [x] T025 [US3] Push `S012-prepare-v0-release`, publish the formatted official pull request with `Closes #25`, and verify the rendered GitHub body
+- [x] T026 [US3] Move issue #25 to Stage `PR review`, retain Slice `S012`, and verify default Status remains empty in `cueson Delivery`
 - [ ] T027 [US3] Monitor every current-head CI, CodeQL, release-proof, pull-request policy, Codex, security, and review result; address every round-one finding and resolve threads only after remediation
 - [ ] T028 [US3] Request exactly one `@codex review` second round only if round one reports findings or a repository-documented condition requires it, then address that round without requesting a third
 - [ ] T029 [US3] Re-run convergence and the complete local verification suite after all remediation, push the final descendant head, and wait for every hosted gate to return green
