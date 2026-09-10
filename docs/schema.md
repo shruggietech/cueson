@@ -16,7 +16,7 @@ The schema artifact uses JSON Schema Draft 2020-12. Three similar-looking fields
 
 The canonical Cueson URI is an identifier before `cueson.io` serves public schema files. Before domain activation, consumers resolve the exact schema through the repository, executable embedding, or release artifact. Cueson never emits a mutable `latest` alias into a document.
 
-The unreleased development copy of v0.0.0 may be refined. Once v0.0.0 is released, the repository release copy, embedded copy, and release artifact are byte-identical and immutable.
+The v0.0.0 schema is currently an unreleased candidate and its repository development copy may still be refined through reviewed work. No immutable release copy exists and the canonical `cueson.io` URI is not a claim that the schema has been published there. Once an operator separately authorizes and completes v0.0.0 publication, the repository release copy, embedded copy, and release artifact must be byte-identical and immutable. The gated lifecycle is defined in the [release process](release-process.md).
 
 Before v1.0.0, a documented breaking contract change requires a minor-version increase and patch releases remain non-breaking. Additive compatible changes may occur in a minor release. At and after v1.0.0, breaking changes require a major-version increase. Official software and schema versions remain equal; a third-party producer version is independent from the schema version it targets.
 
@@ -54,7 +54,7 @@ webvtt
 
 File extensions and future CLI tokens `srt` and `vtt` may be accepted as explicit aliases, but they normalize to the canonical keys and never appear as schema format values.
 
-These keys identify format families; they do not claim stable codec support. Stable SRT and WebVTT support remains a v1.0.0 gate.
+These keys and their format-native data shapes identify format families; they do not claim stable codec support or prove that Cueson can construct those fields from a subtitle file. Stable SRT and WebVTT support remains a v1.0.0 gate. The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages separate the current schema and source-envelope contract from planned native grammar, fidelity, diagnostic, fixture, rendering, and conversion work.
 
 ## Official format capability
 
@@ -72,7 +72,7 @@ At the current v0.0.0 source-foundation milestone, both `subrip` and `webvtt` us
 }
 ```
 
-`envelope_only` means the release can represent an already-valid source envelope and recreate its exact assets through the generic public `restore` command. It does not claim native semantic ingest, model-driven rendering, cross-format conversion, or production subtitle-codec coverage.
+`envelope_only` means the current executable can accept a valid Cue JSON document with an already-populated source envelope and recreate its exact assets through the generic public `restore` command. It does not read an SRT or WebVTT file into Cue JSON, derive the document's semantic model, render from that model, convert formats, or claim production subtitle-codec coverage.
 
 Schema recognition, structural validity, native ingest, model-driven render, exact restoration, and OCR dependency are separate facts. Implementations and documentation must not infer one from another.
 
@@ -135,4 +135,4 @@ Schema implementation distinguishes:
 4. Source-envelope integrity validation, including canonical base64, decoded length, SHA-256, portable basename collision, and destination-plan checks.
 5. Official software/schema version equality.
 
-Schema validation does not infer codec availability. Native codec presence remains an executable capability concern described by [the architecture](architecture.md) and [CLI contract](cli.md).
+Schema validation does not infer codec availability. Native codec presence remains an executable capability concern described by [the architecture](architecture.md) and [CLI contract](cli.md). Maintained documentation paths and local heading links are checked offline by the repository's standalone documentation verifier; that check does not publish the schema or validate external network availability.

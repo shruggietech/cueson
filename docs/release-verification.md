@@ -99,7 +99,13 @@ The `Release proof` workflow runs on ordinary pull requests to `main` and explic
 
 The retained workflow artifact is CI evidence, not a GitHub Release asset. A failed verifier produces a failed check and uploads no candidate bundle. The workflow has no tag or release trigger, write permission, identity-token permission, signing step, or production deployment step.
 
-The repository ruleset does not automatically require this new check. S009 treats a green release-proof check on its official pull request as mandatory operational evidence; changing the protected required-check set remains separately governed repository-control work.
+The repository ruleset does not require this check. S009 nevertheless required it as operational evidence on its official pull request; changing the protected required-check set remains separately governed repository-control work.
+
+## Delivered evidence
+
+The `Non-publishing snapshot` job passed on the final head of pull request [#21](https://github.com/shruggietech/cueson/pull/21), together with all CI, CodeQL, and pull-request-policy gates. The operator then merged the pull request into `main` as `3da0a4b4eeae57024d837c5f46e9d62537ffab95` on 2026-09-10, closing issue [#11](https://github.com/shruggietech/cueson/issues/11). Post-merge [CI run 34421328445](https://github.com/shruggietech/cueson/actions/runs/34421328445) and [CodeQL run 34421328401](https://github.com/shruggietech/cueson/actions/runs/34421328401) also completed successfully.
+
+That evidence proves the reviewed snapshot pipeline and verifier reached the default branch. It does not convert the retained workflow artifact into a release asset, and no `v0.0.0` tag or GitHub Release exists. Public release preparation and publication remain governed by the separate release process.
 
 ## Complete local gate
 

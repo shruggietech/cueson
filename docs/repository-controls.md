@@ -73,7 +73,7 @@ GitHub's classic branch-protection endpoint returned `404 Branch not protected`,
 
 S008 treats the ruleset identifier, source, rules, bypass actors, and update timestamp as immutable comparison evidence.
 
-## Desired state
+## Recorded S008 target state
 
 ### Repository and Actions
 
@@ -101,9 +101,9 @@ S008 treats the ruleset identifier, source, rules, bypass actors, and update tim
 
 ### Repository-owned rules
 
-S008 will add one active branch ruleset named `cueson verified default branch`. It targets only the default branch, blocks deletion and non-fast-forward updates, requires pull requests and resolved review conversations, allows only squash merging, applies strict required status checks, and contains one `OrganizationAdmin` recovery bypass in `always` mode.
+S008 targeted one active branch ruleset named `cueson verified default branch`. It targets only the default branch, blocks deletion and non-fast-forward updates, requires pull requests and resolved review conversations, allows only squash merging, applies strict required status checks, and contains one `OrganizationAdmin` recovery bypass in `always` mode.
 
-The required-check candidates are the 17 stable S006 contexts recorded in `specs/S006-establish-ci-gates/contracts/check-contract.md`. Each candidate must succeed on the current S008 head from the expected GitHub Actions integration before admission.
+The required-check candidates were the 17 stable S006 contexts recorded in `specs/S006-establish-ci-gates/contracts/check-contract.md`. Each candidate had to succeed on the current S008 head from the expected GitHub Actions integration before admission.
 
 The `Cueson PR policy / Issue link` and `Cueson PR policy / Codex review` statuses are conditional candidates. S007 requires both hosted status-source evidence and GitHub Actions-authored second-round request evidence before either becomes required. A clean first review correctly produces no second request and therefore leaves both contexts deferred.
 
@@ -217,22 +217,28 @@ Organization ruleset `20478126` retained its original organization source, activ
 
 ### Boundary and mergeability audit
 
-Read-only inspection reported pull request #20 as mergeable without using the organization-administrator bypass. Its merge state remained unstable only because the non-required trusted-main `Reconcile` check exposed the adapter defect described above; all 17 admitted checks and the CodeQL security summary were successful on the inspected head.
+Read-only inspection reported pull request #20 as mergeable without using the organization-administrator bypass. Before merge, its merge state was temporarily unstable because the non-required trusted-main `Reconcile` check exposed the adapter defect described above; all 17 admitted checks and the CodeQL security summary were successful on the inspected head.
 
-S008 did not merge or enable auto-merge, create or move a tag, publish a release or schema, alter production-domain configuration, modify an organization policy, or touch another repository. Automatic merged-head deletion is configured but cannot be behaviorally observed until the operator performs the separately authorized final merge.
+S008 did not enable auto-merge, create or move a tag, publish a release or schema, alter production-domain configuration, modify an organization policy, or touch another repository. The operator subsequently authorized and completed the squash merge through pull request #20.
 
 ### Delivery record
 
-Issue #10 remains open and assigned to milestone `v0.0.0`. Its five acceptance checkboxes are complete, and the official pull request retains the closing reference that delegates issue closure to the final merge. Immediate Project read-back showed the issue exactly once in `cueson Delivery`, Stage `PR review`, Slice `S008`, and no value in the unused default Status field.
+Pull request [#20](https://github.com/shruggietech/cueson/pull/20) merged into `main` as `cc2bac00786bc6ae6a1f8d4503640cb3ad34f8b6` on 2026-09-09. Its closing reference closed issue [#10](https://github.com/shruggietech/cueson/issues/10), the Delivery Project records the issue at Stage `Done` with Slice `S008` and no value in the unused default Status field, and GitHub deleted the remote head branch.
 
 The single authorized second Codex review reported one P2 finding: the original T025 and SC-007 wording claimed the trusted-base policy workflow had completed even though its adapter fix cannot run from `main` until merge. Commit `86085eb` narrowed the hosted success claim to the 17 S006 CI and CodeQL contexts, preserved the explicit policy limitation, received a commit-specific reply, and resolved the review thread. No third review was requested. The final head-specific check and review inventory is published on pull request #20 because a source commit cannot name its own hash.
 
-That remediation exposed a second policy defect: the evaluator rejected every head newer than the second-review request before considering whether the second-round finding itself had been resolved. This made the required remediation commit permanently red while a third review remained forbidden. S008 adds test-first handling for the only safe success path: the request head must be a proven ancestor, every second-round thread must be resolved, and every S006 check must succeed on the current remediation head. Missing ancestry, incomplete CI, a clean review followed by unrelated changes, unresolved findings, and failed reviews continue to fail closed. The trusted workflow cannot exercise this correction until it reaches `main`, so clearing the existing red commit status before merge remains an operator recovery decision rather than a reason to run pull-request code with write credentials.
+That remediation exposed a second policy defect: the evaluator rejected every head newer than the second-review request before considering whether the second-round finding itself had been resolved. This made the required remediation commit permanently red while a third review remained forbidden. S008 added test-first handling for the only safe success path: the request head must be a proven ancestor, every second-round thread must be resolved, and every S006 check must succeed on the current remediation head. Missing ancestry, incomplete CI, a clean review followed by unrelated changes, unresolved findings, and failed reviews continue to fail closed.
 
 After the operator explicitly required every visible status to become green, comment `5609233818` applied the repository's pull-request-specific `codex-review` recovery directive. Its reason identifies the resolved second-round finding, green current-head gates, correction commit `0ca0e97`, and prohibition on a third review. GitHub Actions then published the successful waiver status from its trusted identity. The failed head-bound reconciliation run was retried after both statuses existed and completed successfully without another status mutation. This exception applies only to pull request #20 and does not weaken the corrected default policy shipped by S008.
+
+### Post-merge control proof
+
+S009 pull request [#21](https://github.com/shruggietech/cueson/pull/21) exercised the corrected adapter from trusted `main`. The issue-link status passed, the review policy reserved the single permitted second round, and the automatic comment attempt failed with HTTP 403. The operator used the documented pull-request-specific exception after the one manual second round produced a finding, that finding was corrected and resolved, and every current-head CI, CodeQL, and non-publishing release check passed. This proves trusted status reconciliation and fail-closed request reservation, but it does not prove successful Actions-authored review-comment publication; the two policy contexts therefore remain outside the repository's required checks.
+
+Pull request #21 merged into `main` as `3da0a4b4eeae57024d837c5f46e9d62537ffab95` on 2026-09-10. Post-merge [CI run 34421328445](https://github.com/shruggietech/cueson/actions/runs/34421328445) and [CodeQL run 34421328401](https://github.com/shruggietech/cueson/actions/runs/34421328401) completed successfully, and GitHub deleted the remote S009 head branch. No tag, GitHub Release, immutable release-schema copy, schema publication, milestone closure, or production mutation resulted from this control proof.
 
 ## Recovery and failure handling
 
 A mismatched or unavailable read-back stops dependent mutations. Earlier verified controls remain reported as partial progress. Recovery begins by reading current state again and never assumes that a failed request was atomic.
 
-The organization-administrator bypass exists only to recover from a broken policy configuration. S008 verification inspects mergeability without using that bypass, and the agent stops before final merge regardless of its technical ability to bypass.
+The organization-administrator bypass exists only to recover from a broken policy configuration. S008 verification inspected mergeability without using that bypass, and the operator performed the final merge through the governed pull-request path.

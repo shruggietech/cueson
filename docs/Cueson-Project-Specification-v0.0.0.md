@@ -2907,48 +2907,48 @@ Agents working on Cueson MUST:
 
 ## v0.0.0 foundation completion gate
 
-The initial scaffolding effort is complete when:
+The checklist below is the foundation closeout ledger. Checked items are backed by the [README](../README.md), [architecture](architecture.md), [schema contract](schema.md), [CLI contract](cli.md), [repository controls](repository-controls.md), [release verification](release-verification.md), [project-management contract](project-management.md), [constitution](../.specify/memory/constitution.md), executable tests, and merged issue evidence. The unchecked review-automation item records the known GitHub Actions HTTP 403 limitation; it must remain visible until a later approved change either proves that hosted path or revises the gate. This ledger describes an unpublished candidate, not a public release.
 
-- [ ] the `shruggietech/cueson` repository exists;
-- [ ] the Go module builds;
-- [ ] the project version is `0.0.0`;
-- [ ] the schema version is `0.0.0`;
-- [ ] the schema is embedded in the executable;
-- [ ] the representative root document example includes explicit cue timing and subtitle text;
-- [ ] the canonical schema defines the common cue payload baseline for subtitle text;
-- [ ] the schema defines `format_support` and its baseline maturity values;
-- [ ] `cueson version` reports `0.0.0`;
-- [ ] `cueson schema --version` reports `0.0.0`;
-- [ ] CI fails if those versions diverge;
-- [ ] Spec Kit is initialized;
-- [ ] the project constitution contains the required invariants;
-- [ ] `AGENTS.md` contains the Markdown wrapping ban;
-- [ ] `AGENTS.md` contains the `shruggie-speckit` requirement;
-- [ ] `AGENTS.md` contains the release-notes highlights-only rule;
-- [ ] `AGENTS.md` contains the multi-issue work-slice recommendation rule;
-- [ ] `AGENTS.md` contains the human-only final merge rule and single-use override semantics;
-- [ ] `AGENTS.md` defines the post-merge housekeeping protocol;
-- [ ] `AGENTS.md` contains the pre-push/pre-release halt;
-- [ ] `CHANGELOG.md` contains `[Unreleased]` and `[0.0.0]`;
-- [ ] `LICENSE` contains Apache License 2.0 and repository metadata uses `Apache-2.0`;
-- [ ] `NOTICE` exists;
-- [ ] `scripts/github-format` exists and supports `-stdin`;
-- [ ] issue templates follow the atomic outcome contract;
-- [ ] the GitHub Project is configured with the required `Stage` and `Slice` fields;
-- [ ] PR issue-link enforcement exists;
-- [ ] eligible non-Dependabot pull requests receive automatic first-round Codex review;
+- [x] the `shruggietech/cueson` repository exists;
+- [x] the Go module builds;
+- [x] the project version is `0.0.0`;
+- [x] the schema version is `0.0.0`;
+- [x] the schema is embedded in the executable;
+- [x] the representative root document example includes explicit cue timing and subtitle text;
+- [x] the canonical schema defines the common cue payload baseline for subtitle text;
+- [x] the schema defines `format_support` and its baseline maturity values;
+- [x] `cueson version` reports `0.0.0`;
+- [x] `cueson schema --version` reports `0.0.0`;
+- [x] CI fails if those versions diverge;
+- [x] Spec Kit is initialized;
+- [x] the project constitution contains the required invariants;
+- [x] `AGENTS.md` contains the Markdown wrapping ban;
+- [x] `AGENTS.md` contains the `shruggie-speckit` requirement;
+- [x] `AGENTS.md` contains the release-notes highlights-only rule;
+- [x] `AGENTS.md` contains the multi-issue work-slice recommendation rule;
+- [x] `AGENTS.md` contains the human-only final merge rule and single-use override semantics;
+- [x] `AGENTS.md` defines the post-merge housekeeping protocol;
+- [x] `AGENTS.md` contains the pre-push/pre-release halt;
+- [x] `CHANGELOG.md` records the candidate under `[Unreleased]` without a premature released-version heading;
+- [x] `LICENSE` contains Apache License 2.0 and repository metadata uses `Apache-2.0`;
+- [x] `NOTICE` exists;
+- [x] `scripts/github-format` exists and supports `-stdin`;
+- [x] issue templates follow the atomic outcome contract;
+- [x] the GitHub Project is configured with the required `Stage` and `Slice` fields;
+- [x] PR issue-link enforcement exists;
+- [x] eligible non-Dependabot pull requests receive automatic first-round Codex review;
 - [ ] automation can request at most one second Codex review after first-round findings are resolved;
-- [ ] GitHub body publication readback is part of the agent contract;
-- [ ] GitHub code-quality and security settings are enabled as applicable;
-- [ ] protected-default-branch ruleset is configured;
-- [ ] automatic head-branch deletion after merge is enabled;
-- [ ] cross-platform build jobs prove Windows, macOS, and Linux compilation;
-- [ ] release configuration exists but does not auto-publish without authorization;
-- [ ] repository-authored text files are UTF-8 without BOM, with line endings governed by `.gitattributes`;
-- [ ] no generated Cue JSON field stores an original filesystem path;
-- [ ] all Cueson-owned schema keys conform to the lowercase `snake_case` rule;
-- [ ] source assets capture timestamp metadata before reading source bytes;
-- [ ] platform timestamp capability tests exist for Windows, macOS, and Linux.
+- [x] GitHub body publication readback is part of the agent contract;
+- [x] GitHub code-quality and security settings are enabled as applicable;
+- [x] protected-default-branch ruleset is configured;
+- [x] automatic head-branch deletion after merge is enabled;
+- [x] cross-platform build jobs prove Windows, macOS, and Linux compilation;
+- [x] release configuration exists but does not auto-publish without authorization;
+- [x] repository-authored text files are UTF-8 without BOM, with line endings governed by `.gitattributes`;
+- [x] no generated Cue JSON field stores an original filesystem path;
+- [x] all Cueson-owned schema keys conform to the lowercase `snake_case` rule;
+- [x] source assets capture timestamp metadata before reading source bytes;
+- [x] platform timestamp capability tests exist for Windows, macOS, and Linux.
 
 ## v1.0.0 done gate
 
