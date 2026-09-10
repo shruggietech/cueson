@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "source-envelope",
+  "type": "registry:ui",
+  "title": "Cueson Source Envelope",
+  "description": "A dense, keyboard-friendly row for cueson surfaces.",
+  "files": [
+    {
+      "path": "components/cueson/source-envelope.jsx",
+      "type": "registry:ui",
+      "content": "export function SourceEnvelope({ format, filename, sha256, bytes, preservation }) {\n  return <div className=\"cu-source-envelope\" role=\"row\"><div className=\"cu-source-envelope__format\" role=\"cell\">{format}</div><div className=\"cu-source-envelope__filename\" role=\"cell\">{filename}</div><div className=\"cu-source-envelope__sha256\" role=\"cell\">{sha256}</div><div className=\"cu-source-envelope__bytes\" role=\"cell\">{bytes}</div><div className=\"cu-source-envelope__preservation\" role=\"cell\">{preservation}</div></div>;\n}\n"
+    }
+  ]
+}

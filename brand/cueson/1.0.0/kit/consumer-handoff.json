@@ -1,0 +1,160 @@
+{
+  "approval_ids": {
+    "gate_1": {
+      "candidate": "cueframe-r1",
+      "geometry_sha256": "779a7c79ec00a6b62b83468101f6ec6606804833d8c1fbd0b77b5d4baa795a49",
+      "palette": "cue-teal-r1",
+      "palette_sha256": "15bb46c278449a9b7dbd65238bcd5566abaaf4dcf60c4cfc56bb7a7ecc7c7be2",
+      "proposal_sha256": "d9424cd28f976b474d6bdf0087c80bafec1e4fd7705ee3c52162696e760256f3"
+    },
+    "gate_2": {
+      "attempt": 2,
+      "construction_continuity_sha256": "737e305b5ba5e854fde5467645e8c65a44cbd0ab0305e7975c8fd21a01bc3d72",
+      "derivative_manifest_sha256": "e9f3aef341ed8910426abd6d7876dac1f39f69afe370efc9c1cddb7af41f9dc5",
+      "packet_manifest_sha256": "78b8c33350fff5b541e476898b051d936fdc88ac04a4711572e8c723f725de19"
+    }
+  },
+  "brand": "cueson",
+  "brand_revision": {
+    "brand_json_sha256": "3e497f19d8f8f3393b08524ffa27c7c356918da80a9a519581722776ec40c035",
+    "derivative_configuration_sha256": "4c71cbf518a6de9d8861eea203e882469461feae18f576ea03e8c435ea71ab7c",
+    "last_nonmaterial_drift_revision": "cc2bac00786bc6ae6a1f8d4503640cb3ad34f8b6",
+    "path_generator_sha256": "ac7580d13c0922e41e5ae1508deaa584d848a747d584b6a1928055005f79f20c",
+    "product_evidence_revision": "d66d6a0cca92fc0a62f0e26df0ec5b9460ef22d6"
+  },
+  "consumer_destinations": {
+    "policy": "Copy only the generated assets listed above after every hash is verified in the future Cueson slice.",
+    "repository": "https://github.com/shruggietech/cueson"
+  },
+  "domain_boundary": {
+    "activation_authorized": false,
+    "cloudflare_changed_by_s026": false,
+    "dns_changed_by_s026": false,
+    "domain": "cueson.io",
+    "domain_changed_by_s026": false
+  },
+  "generated_assets": [
+    {
+      "destination": "assets/brand/cueson-mark.svg",
+      "sha256": "073b4e9603325420e4810f8ee0e54d6c8d339cee8dbc0a7f4ed4f05fdc2170d1",
+      "source": "logos/svg/cueson-mark-color.svg",
+      "use": "Primary product mark"
+    },
+    {
+      "destination": "assets/brand/cueson-mark-reduced.svg",
+      "sha256": "ab68c4f343ec44bffe33431f911dab9a2055bfcef0c61b01a8afb692971e49ad",
+      "source": "logos/svg/cueson-mark-reduced-color.svg",
+      "use": "Reduced product mark at 32 pixels and below"
+    },
+    {
+      "destination": "assets/brand/cueson-horizontal.svg",
+      "sha256": "e6bbfe92e3d3c53728866823317d1cc2c0ec5b3b02923d5b80816bd5545adb83",
+      "source": "logos/svg/cueson-horizontal-color.svg",
+      "use": "Primary horizontal lockup"
+    },
+    {
+      "destination": "assets/brand/cueson-stacked.svg",
+      "sha256": "9f6e349deca6877e3d7720071e4d00d363c95a4ec0353089a25364a7df49aeb0",
+      "source": "logos/svg/cueson-stacked-color.svg",
+      "use": "Stacked lockup"
+    },
+    {
+      "destination": "assets/brand/cueson-wordmark.svg",
+      "sha256": "a9934ad4f68375ee86e84fb1e9dc3cc309a8d4e6fbe682ca9178eb8d79023d60",
+      "source": "logos/svg/cueson-wordmark-color.svg",
+      "use": "Wordmark-only treatment"
+    },
+    {
+      "destination": "assets/brand/cueson-social-preview.png",
+      "sha256": "6040836977950468af0edf1173b52dbe55078cb7d1338d85db787a29f0002669",
+      "source": "logos/png/cueson-social-preview-1280.png",
+      "use": "Repository and social preview"
+    },
+    {
+      "destination": "public/favicon.svg",
+      "sha256": "0d5dff14b7fc04a8bcfce0a80d57c68471b85a8d07b217a139ea4e62c4450028",
+      "source": "icons/web/favicon.svg",
+      "use": "Scalable browser icon"
+    },
+    {
+      "destination": "public/site.webmanifest",
+      "sha256": "ba09793d635e6503a2fbca2c91dd633eef0be766a13bcb44b0ac2744897bb5f0",
+      "source": "icons/web/site.webmanifest",
+      "use": "Web application icon manifest"
+    },
+    {
+      "destination": "assets/brand/platform/android/google-play-512.png",
+      "sha256": "6860f3c05660c25327a42228448e6f77f45462b2ca0cd3ae46f82f6659280dcc",
+      "source": "icons/android/play-store/google-play-512.png",
+      "use": "Android store icon source"
+    },
+    {
+      "destination": "assets/brand/platform/apple/AppIcon-1024.png",
+      "sha256": "d21f0be20ef74f45c2699c64a89add7ca359b483c1e941f1856d14a8b9def246",
+      "source": "icons/apple/ios/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png",
+      "use": "Apple application icon source"
+    },
+    {
+      "destination": "assets/brand/platform/windows/Square150x150Logo.scale-400.png",
+      "sha256": "f0b3fe41017c522c9117b0d42c55d91c91b4aca1d93e7aca37f471e526049dfd",
+      "source": "icons/windows/msix/Assets/Square150x150Logo.scale-400.png",
+      "use": "Windows application icon source"
+    }
+  ],
+  "integration_issue": {
+    "repository": "shruggietech/cueson",
+    "required": true,
+    "required_scope": [
+      "hash verification",
+      "declared destinations",
+      "license notices",
+      "consumer tests",
+      "owner review"
+    ],
+    "title": "Import the approved Cueson identity kit"
+  },
+  "integration_slice": {
+    "depends_on": "the future Cueson integration issue",
+    "required": true,
+    "workflow": "repository-installed Spec Kit"
+  },
+  "licenses": {
+    "brand_assets": "Reserved ShruggieTech product identity. Use only for the Cueson project or accurate reference.",
+    "fonts": "Geist, Geist Mono, and Space Grotesk remain under the SIL Open Font License 1.1.",
+    "required_files": [
+      "LICENSE",
+      "NOTICE",
+      "LICENSE-BRAND.md"
+    ]
+  },
+  "repository_boundary": {
+    "integration_commit_created": false,
+    "remote_modified_by_s026": false,
+    "working_tree_modified_by_s026": false
+  },
+  "schema_version": 1,
+  "sha256": "825b4650b3db050781e76c0b280f33295d6ebb6797bd682174b25b08a25e25bf",
+  "source_assets": [
+    {
+      "path": "brands/cueson/brand.json",
+      "sha256": "3e497f19d8f8f3393b08524ffa27c7c356918da80a9a519581722776ec40c035"
+    },
+    {
+      "path": "brands/cueson/build/mk_paths.py",
+      "sha256": "ac7580d13c0922e41e5ae1508deaa584d848a747d584b6a1928055005f79f20c"
+    }
+  ],
+  "usage_limits": {
+    "backgrounds": "Use only the approved dark, light, black, white, and single-ink colorways for the corresponding surface.",
+    "clear_space_units": 48,
+    "mask": "Preserve the generated alpha silhouette. Do not hollow, clip, or reinterpret interior regions.",
+    "minimum_px": {
+      "full_mark": 24,
+      "horizontal": 160,
+      "reduced_mark_threshold": 32,
+      "stacked": 112,
+      "wordmark": 120
+    },
+    "transformations": "No redrawing, path normalization, non-uniform scaling, recoloring outside approved role maps, or derivation from raster files."
+  }
+}

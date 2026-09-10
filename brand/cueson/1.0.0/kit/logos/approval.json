@@ -1,0 +1,195 @@
+{
+  "brand": "cueson",
+  "derivatives": [
+    {
+      "path": "logos/png/cueson-horizontal-black-1024.png",
+      "rendered_from": "logos/svg/cueson-horizontal-black.svg",
+      "rendered_from_sha256": "14327d52927608c4247ab86e9963df2b6239c4fb52e5ce4d061ee9116e8d7740"
+    },
+    {
+      "path": "logos/png/cueson-horizontal-color-1024.png",
+      "rendered_from": "logos/svg/cueson-horizontal-color.svg",
+      "rendered_from_sha256": "e6bbfe92e3d3c53728866823317d1cc2c0ec5b3b02923d5b80816bd5545adb83"
+    },
+    {
+      "path": "logos/png/cueson-horizontal-light-1024.png",
+      "rendered_from": "logos/svg/cueson-horizontal-light.svg",
+      "rendered_from_sha256": "55f7ce4cd171f691a49d053c011608f59176bf5dfa5542ceef9f360a8adde037"
+    },
+    {
+      "path": "logos/png/cueson-horizontal-white-1024.png",
+      "rendered_from": "logos/svg/cueson-horizontal-white.svg",
+      "rendered_from_sha256": "aa09368778b3ef85f157fcdeeb34422f6171f03e58b5f90d55d0eeb589d1cec4"
+    },
+    {
+      "path": "logos/png/cueson-mark-black-1024.png",
+      "rendered_from": "logos/svg/cueson-mark-black.svg",
+      "rendered_from_sha256": "1f7231891b6ecd22f111745ecd5480b4b5829a2b42a146b5c9df79af95fe5888"
+    },
+    {
+      "path": "logos/png/cueson-mark-color-1024.png",
+      "rendered_from": "logos/svg/cueson-mark-color.svg",
+      "rendered_from_sha256": "073b4e9603325420e4810f8ee0e54d6c8d339cee8dbc0a7f4ed4f05fdc2170d1"
+    },
+    {
+      "path": "logos/png/cueson-mark-light-1024.png",
+      "rendered_from": "logos/svg/cueson-mark-light.svg",
+      "rendered_from_sha256": "4d5f0a982aaa750c2b2c5c4f4f5379b79268efc36d5fe58891347a873116b01d"
+    },
+    {
+      "path": "logos/png/cueson-mark-reduced-black-1024.png",
+      "rendered_from": "logos/svg/cueson-mark-reduced-black.svg",
+      "rendered_from_sha256": "785b9dbe9f81067266405686c9670e58248e6791e0d54aca152ed1bd16fd9c21"
+    },
+    {
+      "path": "logos/png/cueson-mark-reduced-color-1024.png",
+      "rendered_from": "logos/svg/cueson-mark-reduced-color.svg",
+      "rendered_from_sha256": "ab68c4f343ec44bffe33431f911dab9a2055bfcef0c61b01a8afb692971e49ad"
+    },
+    {
+      "path": "logos/png/cueson-mark-reduced-light-1024.png",
+      "rendered_from": "logos/svg/cueson-mark-reduced-light.svg",
+      "rendered_from_sha256": "dd716ee3976648e1634a65cffbae0c7f12702cf381ad94f3aa6828c01162d961"
+    },
+    {
+      "path": "logos/png/cueson-mark-reduced-white-1024.png",
+      "rendered_from": "logos/svg/cueson-mark-reduced-white.svg",
+      "rendered_from_sha256": "a735ce9ccf04e1ee0980931802ada8d6bf313aa79e1c6abc378f3ed1ab9cc516"
+    },
+    {
+      "path": "logos/png/cueson-mark-white-1024.png",
+      "rendered_from": "logos/svg/cueson-mark-white.svg",
+      "rendered_from_sha256": "21a3538ca28e4f949f5aeadbc2c99ba994293d95415e536766189ef7fc509254"
+    },
+    {
+      "path": "logos/png/cueson-social-preview-1280.png",
+      "rendered_from": "logos/svg/cueson-social-preview.svg",
+      "rendered_from_sha256": "b216b278ff727a3ce3ed1295b2cfccb161f0f39a346b23d33e22e26b99e33620"
+    },
+    {
+      "path": "logos/png/cueson-stacked-black-1024.png",
+      "rendered_from": "logos/svg/cueson-stacked-black.svg",
+      "rendered_from_sha256": "ff98d6cf8605c966fa9ca9d6686b346220f81e901ef1ef59710f74a55a3b46c2"
+    },
+    {
+      "path": "logos/png/cueson-stacked-color-1024.png",
+      "rendered_from": "logos/svg/cueson-stacked-color.svg",
+      "rendered_from_sha256": "9f6e349deca6877e3d7720071e4d00d363c95a4ec0353089a25364a7df49aeb0"
+    },
+    {
+      "path": "logos/png/cueson-stacked-light-1024.png",
+      "rendered_from": "logos/svg/cueson-stacked-light.svg",
+      "rendered_from_sha256": "ea063cb3d824203cf2ad793b11d163bbf8f751eea57198d192626886e3f0a1d6"
+    },
+    {
+      "path": "logos/png/cueson-stacked-white-1024.png",
+      "rendered_from": "logos/svg/cueson-stacked-white.svg",
+      "rendered_from_sha256": "ac1dfaa404ce2146677217518741de2f55be8ee7c7645bc087d3fbdcde7b717f"
+    },
+    {
+      "path": "logos/png/cueson-wordmark-black-1024.png",
+      "rendered_from": "logos/svg/cueson-wordmark-black.svg",
+      "rendered_from_sha256": "25b2ea896f122fde9196d5125a20b1667043c0bfc39718fa14589a17a84a245b"
+    },
+    {
+      "path": "logos/png/cueson-wordmark-color-1024.png",
+      "rendered_from": "logos/svg/cueson-wordmark-color.svg",
+      "rendered_from_sha256": "a9934ad4f68375ee86e84fb1e9dc3cc309a8d4e6fbe682ca9178eb8d79023d60"
+    },
+    {
+      "path": "logos/png/cueson-wordmark-light-1024.png",
+      "rendered_from": "logos/svg/cueson-wordmark-light.svg",
+      "rendered_from_sha256": "80503388cf4f5373cba6feda6b949004cb3772473ede97eeca85e0a0e0cabb35"
+    },
+    {
+      "path": "logos/png/cueson-wordmark-white-1024.png",
+      "rendered_from": "logos/svg/cueson-wordmark-white.svg",
+      "rendered_from_sha256": "9a2f077b4ad89c600030b3b35a36047dbd1ae55be76ea06764248cdc918d6c9a"
+    },
+    {
+      "path": "logos/svg/cueson-horizontal-black.svg",
+      "sha256": "14327d52927608c4247ab86e9963df2b6239c4fb52e5ce4d061ee9116e8d7740"
+    },
+    {
+      "path": "logos/svg/cueson-horizontal-color.svg",
+      "sha256": "e6bbfe92e3d3c53728866823317d1cc2c0ec5b3b02923d5b80816bd5545adb83"
+    },
+    {
+      "path": "logos/svg/cueson-horizontal-light.svg",
+      "sha256": "55f7ce4cd171f691a49d053c011608f59176bf5dfa5542ceef9f360a8adde037"
+    },
+    {
+      "path": "logos/svg/cueson-horizontal-white.svg",
+      "sha256": "aa09368778b3ef85f157fcdeeb34422f6171f03e58b5f90d55d0eeb589d1cec4"
+    },
+    {
+      "path": "logos/svg/cueson-mark-black.svg",
+      "sha256": "1f7231891b6ecd22f111745ecd5480b4b5829a2b42a146b5c9df79af95fe5888"
+    },
+    {
+      "path": "logos/svg/cueson-mark-color.svg",
+      "sha256": "073b4e9603325420e4810f8ee0e54d6c8d339cee8dbc0a7f4ed4f05fdc2170d1"
+    },
+    {
+      "path": "logos/svg/cueson-mark-light.svg",
+      "sha256": "4d5f0a982aaa750c2b2c5c4f4f5379b79268efc36d5fe58891347a873116b01d"
+    },
+    {
+      "path": "logos/svg/cueson-mark-reduced-black.svg",
+      "sha256": "785b9dbe9f81067266405686c9670e58248e6791e0d54aca152ed1bd16fd9c21"
+    },
+    {
+      "path": "logos/svg/cueson-mark-reduced-color.svg",
+      "sha256": "ab68c4f343ec44bffe33431f911dab9a2055bfcef0c61b01a8afb692971e49ad"
+    },
+    {
+      "path": "logos/svg/cueson-mark-reduced-light.svg",
+      "sha256": "dd716ee3976648e1634a65cffbae0c7f12702cf381ad94f3aa6828c01162d961"
+    },
+    {
+      "path": "logos/svg/cueson-mark-reduced-white.svg",
+      "sha256": "a735ce9ccf04e1ee0980931802ada8d6bf313aa79e1c6abc378f3ed1ab9cc516"
+    },
+    {
+      "path": "logos/svg/cueson-mark-white.svg",
+      "sha256": "21a3538ca28e4f949f5aeadbc2c99ba994293d95415e536766189ef7fc509254"
+    },
+    {
+      "path": "logos/svg/cueson-social-preview.svg",
+      "sha256": "b216b278ff727a3ce3ed1295b2cfccb161f0f39a346b23d33e22e26b99e33620"
+    },
+    {
+      "path": "logos/svg/cueson-stacked-black.svg",
+      "sha256": "ff98d6cf8605c966fa9ca9d6686b346220f81e901ef1ef59710f74a55a3b46c2"
+    },
+    {
+      "path": "logos/svg/cueson-stacked-color.svg",
+      "sha256": "9f6e349deca6877e3d7720071e4d00d363c95a4ec0353089a25364a7df49aeb0"
+    },
+    {
+      "path": "logos/svg/cueson-stacked-light.svg",
+      "sha256": "ea063cb3d824203cf2ad793b11d163bbf8f751eea57198d192626886e3f0a1d6"
+    },
+    {
+      "path": "logos/svg/cueson-stacked-white.svg",
+      "sha256": "ac1dfaa404ce2146677217518741de2f55be8ee7c7645bc087d3fbdcde7b717f"
+    },
+    {
+      "path": "logos/svg/cueson-wordmark-black.svg",
+      "sha256": "25b2ea896f122fde9196d5125a20b1667043c0bfc39718fa14589a17a84a245b"
+    },
+    {
+      "path": "logos/svg/cueson-wordmark-color.svg",
+      "sha256": "a9934ad4f68375ee86e84fb1e9dc3cc309a8d4e6fbe682ca9178eb8d79023d60"
+    },
+    {
+      "path": "logos/svg/cueson-wordmark-light.svg",
+      "sha256": "80503388cf4f5373cba6feda6b949004cb3772473ede97eeca85e0a0e0cabb35"
+    },
+    {
+      "path": "logos/svg/cueson-wordmark-white.svg",
+      "sha256": "9a2f077b4ad89c600030b3b35a36047dbd1ae55be76ea06764248cdc918d6c9a"
+    }
+  ],
+  "schema_version": 1
+}

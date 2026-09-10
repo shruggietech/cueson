@@ -74,6 +74,14 @@ S004 supplied native-selectable adapter tests, ran Windows behavior natively in 
 
 Windows process launches for console applications must use `CREATE_NO_WINDOW` or an equivalent hidden-process guarantee and disable interactive prompts.
 
+## Brand source boundary
+
+The operator-designated ShruggieTech Cueson brand-kit archive is retained byte for byte under `brand/cueson/1.0.0/archive`, and its complete safe extraction is retained under the adjacent `kit` directory. The Cueson-owned import manifest records the acquired archive identity, every extracted regular file, and every repository document that directly consumes a retained asset. The standalone `scripts/brand-verify` module independently proves archive, catalog, extraction, and consumer-reference identity without network access or repository writes.
+
+Imported brand content is immutable source evidence. Repository formatting and repair tooling excludes protected brand paths, and later kit revisions use new versioned directories rather than mutating or mixing snapshots. Repository documentation consumes selected assets directly from the retained kit so there is no duplicate consumer-copy authority.
+
+Brand assets remain repository source material rather than product runtime or release-archive members. Their import does not authorize changes to `cueson.io`, production metadata, repository social-preview settings, tags, releases, schemas, or other production surfaces. The detailed provenance, usage, licensing, verification, and update contract is recorded in the [brand guide](brand.md).
+
 ## Fixture and conformance foundation
 
 The root `testdata/manifest.json` is the only inventory authority for committed payloads beneath root `testdata/fixtures`, `testdata/malformed`, and the reserved `testdata/fuzz` tree. Each payload has one portable identity, explicit purpose and origin, redistribution approval, license and attribution, NOTICE decision, intentional byte characteristics, exact byte length, and lowercase SHA-256. Verification rejects unlisted or missing files, unsafe or colliding paths, links, non-regular files, incomplete provenance, disallowed redistribution, and byte drift before a conformance assertion begins.

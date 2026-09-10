@@ -15,7 +15,7 @@ func TestRunCLI(t *testing.T) {
 	if code := runCLI([]string{"-repo", repo}, &stdout, &stderr); code != 0 {
 		t.Fatalf("runCLI() = %d, stderr = %q", code, stderr.String())
 	}
-	if got := stdout.String(); !strings.Contains(got, "checked 13 documents") || !strings.Contains(got, "0 local links") {
+	if got := stdout.String(); !strings.Contains(got, "checked 14 documents") || !strings.Contains(got, "0 local links") {
 		t.Fatalf("unexpected success output: %q", got)
 	}
 

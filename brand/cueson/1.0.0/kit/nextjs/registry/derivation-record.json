@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "derivation-record",
+  "type": "registry:ui",
+  "title": "Cueson Derivation Record",
+  "description": "A dense, keyboard-friendly row for cueson surfaces.",
+  "files": [
+    {
+      "path": "components/cueson/derivation-record.jsx",
+      "type": "registry:ui",
+      "content": "export function DerivationRecord({ method, input, output, confidence, provenance }) {\n  return <div className=\"cu-derivation-record\" role=\"row\"><div className=\"cu-derivation-record__method\" role=\"cell\">{method}</div><div className=\"cu-derivation-record__input\" role=\"cell\">{input}</div><div className=\"cu-derivation-record__output\" role=\"cell\">{output}</div><div className=\"cu-derivation-record__confidence\" role=\"cell\">{confidence}</div><div className=\"cu-derivation-record__provenance\" role=\"cell\">{provenance}</div></div>;\n}\n"
+    }
+  ]
+}

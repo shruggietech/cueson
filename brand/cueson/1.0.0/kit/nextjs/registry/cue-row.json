@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "cue-row",
+  "type": "registry:ui",
+  "title": "Cueson Cue Row",
+  "description": "A dense, keyboard-friendly row for cueson surfaces.",
+  "files": [
+    {
+      "path": "components/cueson/cue-row.jsx",
+      "type": "registry:ui",
+      "content": "export function CueRow({ id, start, end, speaker, text, source }) {\n  return <div className=\"cu-cue-row\" role=\"row\"><div className=\"cu-cue-row__id\" role=\"cell\">{id}</div><div className=\"cu-cue-row__start\" role=\"cell\">{start}</div><div className=\"cu-cue-row__end\" role=\"cell\">{end}</div><div className=\"cu-cue-row__speaker\" role=\"cell\">{speaker}</div><div className=\"cu-cue-row__text\" role=\"cell\">{text}</div><div className=\"cu-cue-row__source\" role=\"cell\">{source}</div></div>;\n}\n"
+    }
+  ]
+}

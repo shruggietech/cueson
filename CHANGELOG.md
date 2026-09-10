@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added a snapshot-only six-target release proof with canonical schema and legal-file packaging, archive checksums, target-bound SPDX SBOMs, strict repository-owned artifact verification, and read-only hosted evidence retention.
 - Added a dependency-free offline documentation verifier with a canonical maintained-document inventory, exact-case repository-confined path resolution, local-anchor validation, deterministic diagnostics, and CI coverage.
 - Added dedicated SubRip, WebVTT, and release-process documentation that separates the current envelope-only foundation from planned native format support and protected publication actions.
+- Added the complete official Cueson brand-kit 1.0.0 archive and byte-exact extraction, an independent 265-file import manifest, an offline integrity verifier, and repository brand guidance.
 
 ### Changed
 
@@ -29,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Raised the minimum Go version from 1.24 to 1.25 and upgraded `golang.org/x/text` to the first compatible fixed release after the vulnerability gate found reachable issues that could not be corrected on the old floor.
 - Added the pull-request policy module to repository formatting and test gates while keeping it separate from the shipped Cueson module.
 - Reconciled maintained documentation and foundation delivery records with merged evidence through S009 while keeping the v0.0.0 candidate under `[Unreleased]`.
+- Adopted official local Cueson identity, palette, typography, favicon, slogan, and subordinate ShruggieTech endorsement across the README and media-format guide without adding brand assets to product release artifacts.
 
 ### Fixed
 
@@ -56,3 +58,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-09: Pin GoReleaser and Syft as build-only tools, keep the checked-in release configuration unable to publish, and verify stable SBOM meaning and source binding without claiming byte-identical upstream SBOM output.
 - 2026-09-09: Keep the v0.0.0 release candidate under `[Unreleased]` until a separately authorized tag and GitHub Release exist; a completed foundation milestone is not publication.
 - 2026-09-09: Keep executable non-publishing candidate verification separate from the protected release process for tags, GitHub Releases, immutable schema copies, and production publication.
+- 2026-09-10: Treat the operator-designated ShruggieTech 1.0.0 ZIP as the sole S011 acquisition authority, retain its archive and every safe payload file byte for byte, and preserve bundled terms without a redundant separate legal-review gate.

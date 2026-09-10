@@ -1589,8 +1589,15 @@ cueson/
 ├── cmd/
 │   └── cueson/
 │       └── main.go
+├── brand/
+│   └── cueson/
+│       └── 1.0.0/
+│           ├── archive/
+│           ├── kit/
+│           └── import-manifest.json
 ├── docs/
 │   ├── architecture.md
+│   ├── brand.md
 │   ├── cli.md
 │   ├── formats/
 │   │   ├── srt.md
@@ -2360,7 +2367,7 @@ Expected work includes:
 
 The exact minor-version allocation is managed through milestones and Spec Kit slices rather than frozen in this architecture document.
 
-The Cueson brand kit is produced outside the coding-agent workflow and will be made available through `https://brand.shruggie.tech`. Coding agents MUST NOT invent, redesign, or substitute temporary brand assets. Once the operator or external brand process adds the approved kit to the repository, agents may integrate and verify it. Absence of the approved brand kit is a v1 release blocker, not permission for an agent to create one.
+The Cueson brand kit is produced outside the coding-agent workflow and published through `https://brand.shruggie.tech`. Spec Kit slice S011 imports the operator-designated 1.0.0 archive, its complete safe extraction, and an independent Cueson inventory under the versioned repository `brand/` tree. Coding agents MUST NOT invent, redesign, normalize, optimize, or substitute temporary brand assets. Later official revisions require a new versioned acquisition rather than in-place edits or mixed snapshots.
 
 ### `1.0.0` stability gate
 
@@ -2730,6 +2737,7 @@ The bootstrap README SHOULD communicate:
 - the project roadmap and repository documentation;
 - project domain;
 - ShruggieTech attribution;
+- the official Cueson identity, exact slogan, and repository brand guidance;
 - contribution and security links.
 
 It SHOULD follow the ShruggieTech repository header pattern with truthful CI, release, license, and documentation badges. Badges MAY point to planned repository surfaces before their workflows or releases exist only when the README clearly labels the project as pre-release.
@@ -2750,7 +2758,7 @@ Apache-2.0
 
 `NOTICE` MUST be present and maintained when required by Apache 2.0 attribution obligations or bundled third-party material.
 
-Direct and bundled dependencies, fixtures, fonts, brand assets, and other redistributed material MUST be reviewed for license compatibility before release.
+Direct and bundled dependencies, fixtures, fonts, brand assets, and other redistributed material MUST retain their applicable licenses, reserved-mark boundaries, attribution, and redistribution evidence before release. Ownership does not require a separate legal-review gate for the official Cueson kit, but it does not permit bundled third-party terms to be dropped or misrepresented.
 
 Third-party notices MUST be included when dependencies or fixture licensing require them.
 
@@ -2983,7 +2991,7 @@ The v1 release MUST NOT ship until all of the following are true:
 - [ ] Linux binaries pass smoke tests;
 - [ ] amd64 and arm64 release artifacts are produced for the supported matrix;
 - [ ] CLI help documents every command, option, and exit code;
-- [ ] the approved externally produced Cueson brand kit is present in the repository;
+- [x] the approved externally produced Cueson brand kit is present in the repository with its original archive, complete safe extraction, independent integrity manifest, local consumer references, and offline verifier;
 - [ ] GitHub code-quality and security settings are verified;
 - [ ] eligible release pull requests satisfied the two-round Codex review protocol or have an explicit operator override;
 - [ ] no pull request was merged by an AI agent without a pull-request-specific single-use operator authorization;

@@ -1,0 +1,151 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "meta": {
+    "name": "Cueson",
+    "version": "1.0.0",
+    "parent": "ShruggieTech",
+    "affiliation": {
+      "ownership": "shruggietech-owned",
+      "showcase": "public",
+      "parent": "ShruggieTech",
+      "inheritance": "shruggietech-house",
+      "endorsement": "shruggietech-project",
+      "service_credit": "none"
+    },
+    "mode": "dark-first"
+  },
+  "color": {
+    "$type": "color",
+    "identity": {
+      "$value": "#62BEB2"
+    },
+    "identityDeep": {
+      "$value": "#2F9388"
+    },
+    "identityAccessible": {
+      "$value": "#005D55"
+    },
+    "dim": {
+      "$value": "#8FB8B1"
+    },
+    "background": {
+      "$value": "#080A14"
+    },
+    "surface": {
+      "$value": "#101425"
+    },
+    "surfaceRaised": {
+      "$value": "#181D33"
+    },
+    "border": {
+      "$value": "#262626"
+    },
+    "text": {
+      "$value": "#FFFFFF"
+    },
+    "textMuted": {
+      "$value": "#9A9A9A"
+    },
+    "emphasis": {
+      "$value": "#FF5300"
+    },
+    "action": {
+      "$value": "#C24000"
+    },
+    "fault": {
+      "$value": "#E9505F"
+    }
+  },
+  "fontFamily": {
+    "$type": "fontFamily",
+    "display": {
+      "$value": "Space Grotesk"
+    },
+    "body": {
+      "$value": "Geist"
+    },
+    "mono": {
+      "$value": "Geist Mono"
+    }
+  },
+  "dimension": {
+    "$type": "dimension",
+    "space1": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "space2": {
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "space3": {
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
+    "space4": {
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      }
+    },
+    "space5": {
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      }
+    },
+    "space6": {
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    },
+    "radiusSmall": {
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "radiusControl": {
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "radiusPanel": {
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    }
+  },
+  "logo": {
+    "grid": {
+      "$value": 512
+    },
+    "outerRadius": {
+      "$value": null
+    },
+    "ring": {
+      "$value": null
+    },
+    "aperture": {
+      "$value": null
+    },
+    "slot": {
+      "$value": null
+    },
+    "clearSpace": {
+      "$value": 48
+    },
+    "reducedBelow": {
+      "$value": 32
+    }
+  }
+}

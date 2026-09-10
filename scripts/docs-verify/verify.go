@@ -24,6 +24,7 @@ var requiredDocuments = []string{
 	"AGENTS.md",
 	"CHANGELOG.md",
 	"docs/architecture.md",
+	"docs/brand.md",
 	"docs/schema.md",
 	"docs/cli.md",
 	"docs/formats/srt.md",

@@ -1,0 +1,550 @@
+{
+  "$schema": "../../skill/references/canon.schema.json",
+  "id": "cueson",
+  "kind": "sub-brand",
+  "title": "Cueson",
+  "slug": "cueson",
+  "version": "1.0.0",
+  "showcase_surface": "card",
+  "affiliation": {
+    "ownership": "shruggietech-owned",
+    "showcase": "public",
+    "parent": "ShruggieTech",
+    "inheritance": "shruggietech-house",
+    "endorsement": "shruggietech-project",
+    "service_credit": "none"
+  },
+  "homepage": "https://cueson.io",
+  "registry_base": "https://brand.shruggie.tech/cueson/brand",
+  "descriptor": "A lossless, structured interchange layer for subtitle and caption content.",
+  "description_lines": [
+    "A lossless, structured interchange layer",
+    "for subtitle and caption content."
+  ],
+  "functional_descriptor": "Universal subtitle and caption interchange",
+  "category": "Media data infrastructure",
+  "role": "Parse, preserve, normalize, and expose subtitle and caption content through one predictable Cue JSON surface.",
+  "audience": "Developers, archivists, media-tool authors, accessibility teams, search systems, analytical software, and AI systems.",
+  "brand_idea": "Universal captions and subtitles",
+  "governing_principle": "Make the language inside media directly addressable without discarding its original carrier.",
+  "voice": {
+    "qualities": [
+      "precise",
+      "calm",
+      "format-literate",
+      "evidence-conscious"
+    ],
+    "lead_with": [
+      "the caption content",
+      "the source format and retained evidence",
+      "the normalized Cue JSON result"
+    ],
+    "avoid": [
+      "claims that normalization replaces the source",
+      "describing OCR output as authoritative",
+      "AI transformation hype",
+      "generic accessibility symbolism"
+    ]
+  },
+  "register": "precise-dry",
+  "shruggie_flourish": false,
+  "wordmark_text": "Cueson",
+  "assumptions": [
+    "Cue Teal is the Cueson identity accent. ShruggieTech orange remains a scarce inherited emphasis and warning role.",
+    "Cueframe keeps the source envelope and directly readable cue rails visible as separate but related structures.",
+    "The explainer images provide factual product context only and are not visual precedent.",
+    "The exact Gate 2 retry spread was approved on 2026-09-09; publication is limited to the eight recorded surfaces.",
+    "Standalone export padding preserves the approved 512-unit Gate 1 composition independently of the 48-unit external clear-space requirement."
+  ],
+  "accent": {
+    "bright": "#62BEB2",
+    "deep": "#2F9388",
+    "accessible": "#005D55",
+    "dim": "#8FB8B1"
+  },
+  "chart_palette": {
+    "dark_target_lightness": 0.68,
+    "rationale": "Cue Teal anchors a derived functional sequence. Chart colors identify data series and never replace identity, state labels, or source-format labels."
+  },
+  "surfaces": {
+    "base": "#080A14",
+    "card": "#101425",
+    "popover": "#080A14",
+    "secondary": "#181D33",
+    "hover": "#222944"
+  },
+  "legacy_palette": {
+    "cue_teal": "#62BEB2",
+    "cue_teal_light": "#005D55",
+    "archive_night": "#080A14",
+    "card": "#101425",
+    "secondary": "#181D33",
+    "hover": "#222944",
+    "text": "#F4F6FF",
+    "text_muted": "#A7AEC7",
+    "line": "#596181",
+    "light_surface": "#F7F8FC",
+    "light_card": "#FFFFFF",
+    "light_secondary": "#ECEFFC",
+    "light_hover": "#E0E5FA",
+    "light_text": "#14172A",
+    "light_text_muted": "#5B6078",
+    "light_line": "#8A8FA8",
+    "emphasis": "#FF5300",
+    "success": "#2BCC73",
+    "failure": "#E05F5F"
+  },
+  "typography": {
+    "mode": "house",
+    "families": {
+      "display": {
+        "name": "Space Grotesk",
+        "weights": [
+          500,
+          700
+        ]
+      },
+      "body": {
+        "name": "Geist",
+        "weights": [
+          400,
+          500
+        ]
+      },
+      "mono": {
+        "name": "Geist Mono",
+        "weights": [
+          400
+        ]
+      }
+    }
+  },
+  "domain_components": {
+    "CueRow": [
+      "id",
+      "start",
+      "end",
+      "speaker",
+      "text",
+      "source"
+    ],
+    "SourceEnvelope": [
+      "format",
+      "filename",
+      "sha256",
+      "bytes",
+      "preservation"
+    ],
+    "DerivationRecord": [
+      "method",
+      "input",
+      "output",
+      "confidence",
+      "provenance"
+    ]
+  },
+  "logo": {
+    "source_mode": "constructed",
+    "grid": 512,
+    "canvas_width": 512,
+    "canvas_height": 512,
+    "artwork_width": 330,
+    "artwork_height": 338,
+    "reduced_artwork_width": 318,
+    "reduced_artwork_height": 302,
+    "clear_space_units": 48,
+    "reduced_below_px": 32,
+    "min_px": {
+      "mark": 24,
+      "horizontal": 160,
+      "stacked": 112,
+      "wordmark": 120
+    },
+    "application_icon": {
+      "background": "#080A14"
+    },
+    "role_colors": {
+      "color": {
+        "accent": "#62BEB2",
+        "ink": "#F4F6FF",
+        "wordmark": "#F4F6FF"
+      },
+      "light": {
+        "accent": "#005D55",
+        "ink": "#14172A",
+        "wordmark": "#14172A"
+      },
+      "black": {
+        "accent": "#000000",
+        "ink": "#000000",
+        "wordmark": "#000000"
+      },
+      "white": {
+        "accent": "#FFFFFF",
+        "ink": "#FFFFFF",
+        "wordmark": "#FFFFFF"
+      }
+    },
+    "construction": "Cueframe preserves the approved cueframe-r1 centerlines on a 512-unit square grid. Two opposing 34-unit rounded bracket chains run through (168,104), (108,104), (108,408), (168,408) and their mirrored coordinates. Three rounded 32-unit cue rails run from x 184 to x 336, 304, and 352 at y 172, 256, and 340. The reduced master uses 42-unit brackets and one central rail. Production fills are direct glyphkit.capsule expansions of those approved centerline segments.",
+    "paths": {
+      "full": [
+        {
+          "role": "accent",
+          "d": "M168 121 L108 121 C103.49 121 99.17 119.21 95.98 116.02 C92.79 112.83 91 108.51 91 104 C91 99.49 92.79 95.17 95.98 91.98 C99.17 88.79 103.49 87 108 87 L168 87 C172.51 87 176.83 88.79 180.02 91.98 C183.21 95.17 185 99.49 185 104 C185 108.51 183.21 112.83 180.02 116.02 C176.83 119.21 172.51 121 168 121 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M125 104 L125 408 C125 412.51 123.21 416.83 120.02 420.02 C116.83 423.21 112.51 425 108 425 C103.49 425 99.17 423.21 95.98 420.02 C92.79 416.83 91 412.51 91 408 L91 104 C91 99.49 92.79 95.17 95.98 91.98 C99.17 88.79 103.49 87 108 87 C112.51 87 116.83 88.79 120.02 91.98 C123.21 95.17 125 99.49 125 104 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M108 391 L168 391 C172.51 391 176.83 392.79 180.02 395.98 C183.21 399.17 185 403.49 185 408 C185 412.51 183.21 416.83 180.02 420.02 C176.83 423.21 172.51 425 168 425 L108 425 C103.49 425 99.17 423.21 95.98 420.02 C92.79 416.83 91 412.51 91 408 C91 403.49 92.79 399.17 95.98 395.98 C99.17 392.79 103.49 391 108 391 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M344 87 L404 87 C408.51 87 412.83 88.79 416.02 91.98 C419.21 95.17 421 99.49 421 104 C421 108.51 419.21 112.83 416.02 116.02 C412.83 119.21 408.51 121 404 121 L344 121 C339.49 121 335.17 119.21 331.98 116.02 C328.79 112.83 327 108.51 327 104 C327 99.49 328.79 95.17 331.98 91.98 C335.17 88.79 339.49 87 344 87 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M421 104 L421 408 C421 412.51 419.21 416.83 416.02 420.02 C412.83 423.21 408.51 425 404 425 C399.49 425 395.17 423.21 391.98 420.02 C388.79 416.83 387 412.51 387 408 L387 104 C387 99.49 388.79 95.17 391.98 91.98 C395.17 88.79 399.49 87 404 87 C408.51 87 412.83 88.79 416.02 91.98 C419.21 95.17 421 99.49 421 104 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M404 425 L344 425 C339.49 425 335.17 423.21 331.98 420.02 C328.79 416.83 327 412.51 327 408 C327 403.49 328.79 399.17 331.98 395.98 C335.17 392.79 339.49 391 344 391 L404 391 C408.51 391 412.83 392.79 416.02 395.98 C419.21 399.17 421 403.49 421 408 C421 412.51 419.21 416.83 416.02 420.02 C412.83 423.21 408.51 425 404 425 Z"
+        },
+        {
+          "role": "ink",
+          "d": "M184 156 L336 156 C340.24 156 344.31 157.69 347.31 160.69 C350.31 163.69 352 167.76 352 172 C352 176.24 350.31 180.31 347.31 183.31 C344.31 186.31 340.24 188 336 188 L184 188 C179.76 188 175.69 186.31 172.69 183.31 C169.69 180.31 168 176.24 168 172 C168 167.76 169.69 163.69 172.69 160.69 C175.69 157.69 179.76 156 184 156 Z"
+        },
+        {
+          "role": "ink",
+          "d": "M184 240 L304 240 C308.24 240 312.31 241.69 315.31 244.69 C318.31 247.69 320 251.76 320 256 C320 260.24 318.31 264.31 315.31 267.31 C312.31 270.31 308.24 272 304 272 L184 272 C179.76 272 175.69 270.31 172.69 267.31 C169.69 264.31 168 260.24 168 256 C168 251.76 169.69 247.69 172.69 244.69 C175.69 241.69 179.76 240 184 240 Z"
+        },
+        {
+          "role": "ink",
+          "d": "M184 324 L352 324 C356.24 324 360.31 325.69 363.31 328.69 C366.31 331.69 368 335.76 368 340 C368 344.24 366.31 348.31 363.31 351.31 C360.31 354.31 356.24 356 352 356 L184 356 C179.76 356 175.69 354.31 172.69 351.31 C169.69 348.31 168 344.24 168 340 C168 335.76 169.69 331.69 172.69 328.69 C175.69 325.69 179.76 324 184 324 Z"
+        }
+      ],
+      "reduced": [
+        {
+          "role": "accent",
+          "d": "M174 147 L118 147 C112.43 147 107.09 144.79 103.15 140.85 C99.21 136.91 97 131.57 97 126 C97 120.43 99.21 115.09 103.15 111.15 C107.09 107.21 112.43 105 118 105 L174 105 C179.57 105 184.91 107.21 188.85 111.15 C192.79 115.09 195 120.43 195 126 C195 131.57 192.79 136.91 188.85 140.85 C184.91 144.79 179.57 147 174 147 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M139 126 L139 386 C139 391.57 136.79 396.91 132.85 400.85 C128.91 404.79 123.57 407 118 407 C112.43 407 107.09 404.79 103.15 400.85 C99.21 396.91 97 391.57 97 386 L97 126 C97 120.43 99.21 115.09 103.15 111.15 C107.09 107.21 112.43 105 118 105 C123.57 105 128.91 107.21 132.85 111.15 C136.79 115.09 139 120.43 139 126 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M118 365 L174 365 C179.57 365 184.91 367.21 188.85 371.15 C192.79 375.09 195 380.43 195 386 C195 391.57 192.79 396.91 188.85 400.85 C184.91 404.79 179.57 407 174 407 L118 407 C112.43 407 107.09 404.79 103.15 400.85 C99.21 396.91 97 391.57 97 386 C97 380.43 99.21 375.09 103.15 371.15 C107.09 367.21 112.43 365 118 365 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M338 105 L394 105 C399.57 105 404.91 107.21 408.85 111.15 C412.79 115.09 415 120.43 415 126 C415 131.57 412.79 136.91 408.85 140.85 C404.91 144.79 399.57 147 394 147 L338 147 C332.43 147 327.09 144.79 323.15 140.85 C319.21 136.91 317 131.57 317 126 C317 120.43 319.21 115.09 323.15 111.15 C327.09 107.21 332.43 105 338 105 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M415 126 L415 386 C415 391.57 412.79 396.91 408.85 400.85 C404.91 404.79 399.57 407 394 407 C388.43 407 383.09 404.79 379.15 400.85 C375.21 396.91 373 391.57 373 386 L373 126 C373 120.43 375.21 115.09 379.15 111.15 C383.09 107.21 388.43 105 394 105 C399.57 105 404.91 107.21 408.85 111.15 C412.79 115.09 415 120.43 415 126 Z"
+        },
+        {
+          "role": "accent",
+          "d": "M394 407 L338 407 C332.43 407 327.09 404.79 323.15 400.85 C319.21 396.91 317 391.57 317 386 C317 380.43 319.21 375.09 323.15 371.15 C327.09 367.21 332.43 365 338 365 L394 365 C399.57 365 404.91 367.21 408.85 371.15 C412.79 375.09 415 380.43 415 386 C415 391.57 412.79 396.91 408.85 400.85 C404.91 404.79 399.57 407 394 407 Z"
+        },
+        {
+          "role": "ink",
+          "d": "M190 235 L322 235 C327.57 235 332.91 237.21 336.85 241.15 C340.79 245.09 343 250.43 343 256 C343 261.57 340.79 266.91 336.85 270.85 C332.91 274.79 327.57 277 322 277 L190 277 C184.43 277 179.09 274.79 175.15 270.85 C171.21 266.91 169 261.57 169 256 C169 250.43 171.21 245.09 175.15 241.15 C179.09 237.21 184.43 235 190 235 Z"
+        }
+      ]
+    },
+    "prohibitions": [
+      "Do not close the two brackets into a caption badge or screen.",
+      "Do not equalize, reorder, or add cue rails in the full master.",
+      "Do not remove the source envelope from the full master.",
+      "Do not replace Cue Teal with inherited orange, success green, or failure red.",
+      "Do not add play, microphone, waveform, speech-bubble, or CC symbols.",
+      "Do not use the full master below 24 pixels. Use the reduced master at and below 32 pixels.",
+      "Do not combine the Cueson and ShruggieTech marks into one lockup."
+    ],
+    "geometry_provenance": "glyphkit",
+    "standalone_padding_units": {
+      "full": 87,
+      "reduced": 97
+    }
+  },
+  "guide": {
+    "idea": "Universal captions and subtitles",
+    "descriptor": "A lossless, structured interchange layer for subtitle and caption content.",
+    "foundation_title": "One predictable Cue JSON surface",
+    "foundation": "Cueson performs format-specific work at the file boundary. It exposes words, timing, speakers, provenance, layout, and other useful context while retaining the original file or subtitle graphics as authoritative evidence.",
+    "personality": [
+      [
+        "Precise",
+        "Names the source format, timing, and derivation method",
+        "Generic conversion claims"
+      ],
+      [
+        "Preserving",
+        "Keeps the source and normalized view together",
+        "Language that implies the original is discarded"
+      ],
+      [
+        "Readable",
+        "Makes caption content directly addressable",
+        "Format syntax presented as the user benefit"
+      ],
+      [
+        "Measured",
+        "Labels OCR and transcription as derived output",
+        "Claims of perfect recovery"
+      ]
+    ],
+    "promises": [
+      "Subtitle and caption content reaches one predictable structured surface.",
+      "The original carrier and its native details remain available.",
+      "Bitmap subtitle text can be derived through OCR without replacing the images.",
+      "Downstream tools no longer need a separate parser for every supported format."
+    ],
+    "in_scope": [
+      "Text, XML, legacy binary, and bitmap subtitle formats",
+      "Cue timing, speakers, text, layout, provenance, and source envelopes",
+      "Derived plaintext from OCR and future transcription sources"
+    ],
+    "out_of_scope": [
+      "Replacing authoritative source files with normalized text",
+      "Claiming OCR output is lossless or authoritative",
+      "Activating cueson.io or changing the Cueson product repository in this slice"
+    ],
+    "sharp_edge": "OCR and transcription are derived interpretations. Preserve the original visual or audio evidence and label confidence and provenance instead of presenting inferred text as ground truth.",
+    "logo": "Cueframe places three unequal cue rails inside two open brackets. The brackets are the retained source envelope; the rails are directly readable structured caption content. The reduced master keeps the envelope and one rail for small sizes.",
+    "palette": "Cue Teal carries product identity, focus, and selection. Archive Night and its raised surfaces keep structured content primary. ShruggieTech orange remains scarce for emphasis and warning, while success and failure retain explicit labels and shapes.",
+    "specimen_line": "A lossless, structured interchange layer",
+    "specimen_body": "for subtitle and caption content."
+  },
+  "approval_ledger": {
+    "source_hashes": {},
+    "gate_1": {
+      "status": "approved",
+      "approved_by": "identity owner",
+      "approved_on": "2026-09-09",
+      "scope": [
+        "horizontal-lockup",
+        "reduced-and-platform",
+        "single-ink",
+        "stacked-lockup",
+        "wordmark-only"
+      ],
+      "derivative_config_sha256": "4c71cbf518a6de9d8861eea203e882469461feae18f576ea03e8c435ea71ab7c"
+    },
+    "gate_2": {
+      "status": "approved",
+      "approved_by": "identity owner",
+      "approved_on": "2026-09-09",
+      "derivative_manifest_sha256": "e9f3aef341ed8910426abd6d7876dac1f39f69afe370efc9c1cddb7af41f9dc5",
+      "surfaces": [
+        "showcase-card",
+        "brand-landing-page",
+        "guideline-topics",
+        "downloads",
+        "registry-endpoints",
+        "public-metadata",
+        "structured-data",
+        "social-preview"
+      ]
+    }
+  },
+  "canon": "1.2.1",
+  "identity_continuity": {
+    "record": "identity-continuity.json",
+    "status": "historical-baseline"
+  },
+  "measured": {
+    "generated_by": "shruggie-brandbuilder/enrich_brand.py",
+    "rule": "Every number here is measured from the hex at generation time. Regenerate rather than edit; verify.py re-derives all of it.",
+    "dark_base": "#080A14",
+    "light_base": "#F8F8F6",
+    "identity_hue": 184.4,
+    "hue_separation_deg": {
+      "shruggietech": 31.4,
+      "fragcap": 31.3,
+      "go-schedule": 68.9,
+      "glitchpad": 88.2,
+      "covarity": 127.4,
+      "inherited-orange": 146.1
+    }
+  },
+  "color": {
+    "accent-bright": {
+      "hex": "#62BEB2",
+      "oklch": "oklch(0.7414 0.0901 184.42)",
+      "hue": 184.4,
+      "role": "identity accent, links, focus",
+      "contrast": {
+        "on_dark_base": 8.96,
+        "on_light_base": 2.07
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#000000",
+        "ratio": 9.53
+      }
+    },
+    "accent-deep": {
+      "hex": "#2F9388",
+      "oklch": "oklch(0.6035 0.0920 184.63)",
+      "hue": 184.6,
+      "role": "hover and active",
+      "contrast": {
+        "on_dark_base": 5.31,
+        "on_light_base": 3.5
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#000000",
+        "ratio": 5.65
+      }
+    },
+    "accent-accessible": {
+      "hex": "#005D55",
+      "oklch": "oklch(0.4300 0.0759 184.75)",
+      "hue": 184.7,
+      "role": "the accent on light surfaces",
+      "contrast": {
+        "on_dark_base": 2.53,
+        "on_light_base": 7.32
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#FFFFFF",
+        "ratio": 7.79
+      },
+      "note": "The bright accent measures 2.07:1 on the light base and is never text there."
+    },
+    "orange": {
+      "hex": "#FF5300",
+      "oklch": "oklch(0.6738 0.2190 38.33)",
+      "hue": 38.3,
+      "role": "shared emphasis and warning hue",
+      "contrast": {
+        "on_dark_base": 6.1,
+        "on_light_base": 3.04
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#000000",
+        "ratio": 6.49
+      },
+      "note": "inherited verbatim from canon 1.2.1"
+    },
+    "orange-cta": {
+      "hex": "#C24000",
+      "oklch": "oklch(0.5519 0.1759 39.26)",
+      "hue": 39.3,
+      "role": "CTA fill and required-field marks",
+      "contrast": {
+        "on_dark_base": 3.79,
+        "on_light_base": 4.9
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#FFFFFF",
+        "ratio": 5.21
+      },
+      "note": "inherited verbatim from canon 1.2.1"
+    },
+    "fault": {
+      "hex": "#E9505F",
+      "oklch": "oklch(0.6437 0.1882 18.59)",
+      "hue": 18.6,
+      "role": "failure state on dark surfaces",
+      "contrast": {
+        "on_dark_base": 5.43,
+        "on_light_base": 3.42
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#000000",
+        "ratio": 5.78
+      },
+      "note": "inherited verbatim from canon 1.2.1"
+    },
+    "fault-deep": {
+      "hex": "#C0293A",
+      "oklch": "oklch(0.5308 0.1857 20.87)",
+      "hue": 20.9,
+      "role": "failure state on light surfaces",
+      "contrast": {
+        "on_dark_base": 3.4,
+        "on_light_base": 5.46
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#FFFFFF",
+        "ratio": 5.8
+      },
+      "note": "inherited verbatim from canon 1.2.1"
+    },
+    "surface-base": {
+      "hex": "#080A14",
+      "oklch": "oklch(0.1481 0.0220 274.21)",
+      "hue": 274.2,
+      "role": "dark surface: base",
+      "contrast": {
+        "on_dark_base": 1.0,
+        "on_light_base": 18.56
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#FFFFFF",
+        "ratio": 19.74
+      }
+    },
+    "surface-card": {
+      "hex": "#101425",
+      "oklch": "oklch(0.1967 0.0349 272.77)",
+      "hue": 272.8,
+      "role": "dark surface: card",
+      "contrast": {
+        "on_dark_base": 1.08,
+        "on_light_base": 17.19
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#FFFFFF",
+        "ratio": 18.28
+      }
+    },
+    "surface-popover": {
+      "hex": "#080A14",
+      "oklch": "oklch(0.1481 0.0220 274.21)",
+      "hue": 274.2,
+      "role": "dark surface: popover",
+      "contrast": {
+        "on_dark_base": 1.0,
+        "on_light_base": 18.56
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#FFFFFF",
+        "ratio": 19.74
+      }
+    },
+    "surface-secondary": {
+      "hex": "#181D33",
+      "oklch": "oklch(0.2377 0.0430 273.02)",
+      "hue": 273.0,
+      "role": "dark surface: secondary",
+      "contrast": {
+        "on_dark_base": 1.19,
+        "on_light_base": 15.64
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#FFFFFF",
+        "ratio": 16.64
+      }
+    },
+    "surface-hover": {
+      "hex": "#222944",
+      "oklch": "oklch(0.2881 0.0505 271.87)",
+      "hue": 271.9,
+      "role": "dark surface: hover",
+      "contrast": {
+        "on_dark_base": 1.38,
+        "on_light_base": 13.45
+      },
+      "legal_foreground_when_used_as_fill": {
+        "color": "#FFFFFF",
+        "ratio": 14.3
+      }
+    }
+  }
+}

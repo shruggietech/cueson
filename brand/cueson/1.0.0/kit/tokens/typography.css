@@ -1,0 +1,23 @@
+:root {
+  --cu-font-display: "Space Grotesk", system-ui, sans-serif;
+  --cu-font-body: "Geist", system-ui, sans-serif;
+  --cu-font-mono: "Geist Mono", ui-monospace, monospace;
+  --cu-weight-regular: 400;
+  --cu-weight-medium: 500;
+  --cu-weight-bold: 700;
+  --cu-display-xl: 4.5rem;
+  --cu-display-lg: 3.5rem;
+  --cu-display-md: 2.5rem;
+  --cu-display-sm: 1.75rem;
+  --cu-display-xs: 1.25rem;
+  --cu-body-lg: 1.15rem;
+  --cu-body-md: 1rem;
+  --cu-body-sm: 0.875rem;
+  --cu-body-xs: 0.75rem;
+  --cu-tracking-display: -0.025em;
+  --cu-tracking-eyebrow: 0.12em;
+  --cu-tracking-mono: 0.08em;
+  --cu-leading-display: 1.1;
+  --cu-leading-body: 1.7;
+  --cu-leading-code: 1.6;
+}

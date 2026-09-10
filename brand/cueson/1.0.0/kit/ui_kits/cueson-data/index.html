@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cueson data-interface specimen</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../components/components.css">
+  <style>
+    body { background: var(--cu-bg); color: var(--cu-fg); min-height: 100vh; }
+    .shell { margin: 0 auto; max-width: 90rem; padding: var(--cu-space-6); }
+    .topbar { align-items: center; border-bottom: var(--cu-stroke-hairline) solid var(--cu-border); display: flex; gap: var(--cu-space-4); padding-bottom: var(--cu-space-5); }
+    .identity { align-items: center; display: flex; gap: var(--cu-space-3); margin-right: auto; }
+    .identity img { height: 2.5rem; width: 2.5rem; }
+    .identity strong { font-family: var(--cu-font-display); font-size: var(--cu-display-xs); }
+    .eyebrow { color: var(--cu-accent); font-family: var(--cu-font-mono); font-size: var(--cu-body-xs); letter-spacing: var(--cu-tracking-eyebrow); text-transform: uppercase; }
+    .status { align-items: center; border: var(--cu-stroke-hairline) solid var(--cu-border); border-radius: 999px; color: var(--cu-fg-muted); display: inline-flex; font-family: var(--cu-font-mono); font-size: var(--cu-body-xs); gap: var(--cu-space-2); padding: var(--cu-space-1) var(--cu-space-3); }
+    .status::before { background: var(--cu-accent); border-radius: 50%; content: ""; height: .5rem; width: .5rem; }
+    .hero { display: grid; gap: var(--cu-space-5); grid-template-columns: minmax(0, 1.4fr) minmax(18rem, .6fr); padding: var(--cu-space-7) 0; }
+    .hero h1 { font-size: clamp(2.5rem, 7vw, 5.5rem); letter-spacing: -.055em; line-height: .95; margin: var(--cu-space-3) 0 var(--cu-space-5); max-width: 12ch; }
+    .hero p { color: var(--cu-fg-muted); font-size: var(--cu-body-lg); max-width: 44rem; }
+    .source { align-self: end; background: var(--cu-panel); border: var(--cu-stroke-hairline) solid var(--cu-border); border-radius: var(--cu-radius-lg); padding: var(--cu-space-5); }
+    .source dl { display: grid; gap: var(--cu-space-3); margin: var(--cu-space-4) 0 0; }
+    .source div { display: grid; gap: var(--cu-space-1); grid-template-columns: 7rem minmax(0, 1fr); }
+    dt { color: var(--cu-fg-muted); font-family: var(--cu-font-mono); font-size: var(--cu-body-xs); }
+    dd { font-family: var(--cu-font-mono); font-size: var(--cu-body-xs); margin: 0; overflow-wrap: anywhere; }
+    .workbench { border: var(--cu-stroke-hairline) solid var(--cu-border); border-radius: var(--cu-radius-lg); overflow: hidden; }
+    .workbench-head { align-items: center; background: var(--cu-panel); border-bottom: var(--cu-stroke-hairline) solid var(--cu-border); display: flex; gap: var(--cu-space-4); padding: var(--cu-space-4) var(--cu-space-5); }
+    .workbench-head h2 { font-size: var(--cu-display-xs); margin: 0 auto 0 0; }
+    .cue { align-items: start; border-bottom: var(--cu-stroke-hairline) solid var(--cu-border); display: grid; gap: var(--cu-space-4); grid-template-columns: 7rem 7rem minmax(0, 1fr) 9rem; padding: var(--cu-space-4) var(--cu-space-5); }
+    .cue:last-child { border-bottom: 0; }
+    .cue:hover { background: var(--cu-hover); }
+    .time, .source-kind { color: var(--cu-fg-muted); font-family: var(--cu-font-mono); font-size: var(--cu-body-xs); }
+    .text strong { display: block; font-size: var(--cu-body-md); margin-bottom: var(--cu-space-1); }
+    .text span { color: var(--cu-fg-muted); font-size: var(--cu-body-sm); }
+    .derived { border: var(--cu-stroke-hairline) solid var(--cu-accent); border-radius: 999px; color: var(--cu-accent); font-family: var(--cu-font-mono); font-size: var(--cu-body-xs); justify-self: start; padding: var(--cu-space-1) var(--cu-space-2); }
+    .preservation { align-items: center; background: var(--cu-panel-raised); border-radius: var(--cu-radius-lg); display: grid; gap: var(--cu-space-4); grid-template-columns: auto minmax(0, 1fr); margin-top: var(--cu-space-5); padding: var(--cu-space-5); }
+    .preservation img { height: 4rem; width: 4rem; }
+    .preservation h2 { font-size: var(--cu-display-xs); margin-bottom: var(--cu-space-1); }
+    .preservation p { color: var(--cu-fg-muted); margin: 0; }
+    @media (max-width: 54rem) { .shell { padding: var(--cu-space-4); } .hero { grid-template-columns: 1fr; } .source { align-self: auto; } .cue { grid-template-columns: 6rem minmax(0, 1fr); } .source-kind, .derived { grid-column: 2; } }
+    @media (max-width: 34rem) { .topbar .status { display: none; } .hero h1 { font-size: 2.75rem; } .cue { grid-template-columns: 1fr; } .source-kind, .derived { grid-column: 1; } .source div { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="identity"><img src="../../logos/svg/cueson-mark-reduced-color.svg" alt=""><strong>Cueson</strong></div>
+      <span class="status">source preserved</span>
+    </header>
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <span class="eyebrow">Universal captions and subtitles</span>
+        <h1 id="page-title">Every cue, directly addressable.</h1>
+        <p>A lossless, structured interchange layer<br>for subtitle and caption content.</p>
+      </div>
+      <aside class="source" aria-label="Source envelope">
+        <span class="eyebrow">Source envelope</span>
+        <dl>
+          <div><dt>Format</dt><dd>PGS / SUP</dd></div>
+          <div><dt>Preservation</dt><dd>authoritative bytes retained</dd></div>
+          <div><dt>SHA-256</dt><dd>23f9…8c17</dd></div>
+          <div><dt>Derivation</dt><dd>OCR, confidence labeled</dd></div>
+        </dl>
+      </aside>
+    </section>
+    <section class="workbench" aria-labelledby="cue-heading">
+      <header class="workbench-head"><h2 id="cue-heading">Cue JSON</h2><span class="status">3 cues</span></header>
+      <article class="cue"><span class="time">00:18:04.120<br>00:18:06.980</span><span class="source-kind">cue_0042</span><div class="text"><strong>The archive keeps the original frame.</strong><span>speaker: narrator · region: lower-third</span></div><span class="derived">OCR 0.97</span></article>
+      <article class="cue"><span class="time">00:18:07.440<br>00:18:10.220</span><span class="source-kind">cue_0043</span><div class="text"><strong>The words become a predictable data surface.</strong><span>speaker: narrator · source: bitmap subtitle</span></div><span class="derived">OCR 0.94</span></article>
+      <article class="cue"><span class="time">00:18:11.000<br>00:18:13.640</span><span class="source-kind">cue_0044</span><div class="text"><strong>Downstream tools read one Cue JSON shape.</strong><span>speaker: narrator · provenance attached</span></div><span class="derived">OCR 0.99</span></article>
+    </section>
+    <section class="preservation" aria-labelledby="preservation-heading"><img src="../../logos/svg/cueson-mark-color.svg" alt=""><div><h2 id="preservation-heading">No information hostage</h2><p>Readable text and timing travel with the original graphics, metadata, layout, and provenance.</p></div></section>
+  </main>
+</body>
+</html>
