@@ -39,13 +39,17 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 
 	for _, required := range []string{
 		"pull_request:", "workflow_dispatch:", "contents: read", "persist-credentials: false",
-		"ref: ${{ github.event.pull_request.head.sha || github.sha }}",
+		"SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}",
+		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-0.0.0-release-proof-${{ env.SOURCE_COMMIT }}",
 		"github.com/goreleaser/goreleaser/v2@v2.18.1", "github.com/anchore/syft/cmd/syft@v1.51.1",
 		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "retention-days: 3",
 	} {
 		if !strings.Contains(workflow, required) {
 			t.Errorf("release-proof.yml missing %q", required)
 		}
+	}
+	if count := strings.Count(workflow, "${{ env.SOURCE_COMMIT }}"); count != 2 {
+		t.Errorf("release-proof.yml contains %d SOURCE_COMMIT consumers, want checkout and artifact name", count)
 	}
 	pushPattern := regexp.MustCompile(`(?m)^  push:\n((?: {4,}.*\n)*)`)
 	pushMatch := pushPattern.FindStringSubmatch(workflow)
