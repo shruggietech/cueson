@@ -536,7 +536,7 @@ func documentAnchors(name, content string) map[string]struct{} {
 			anchors[anchor] = struct{}{}
 		}
 	}
-	for _, line := range sanitizedLines(content, markdown, false) {
+	for _, line := range sanitizedLines(content, markdown, markdown) {
 		for _, match := range htmlAnchorPattern.FindAllStringSubmatch(line, -1) {
 			anchors[html.UnescapeString(firstNonempty(match[1:]...))] = struct{}{}
 		}
@@ -598,6 +598,9 @@ func stripMarkdownLinkDestinations(value string) string {
 	var output strings.Builder
 	start := 0
 	for _, link := range links {
+		if insideInlineCode(value, link.closingLabel) {
+			continue
+		}
 		output.WriteString(value[start : link.closingLabel+1])
 		start = link.destinationEnd
 		if start < len(value) {
@@ -606,6 +609,29 @@ func stripMarkdownLinkDestinations(value string) string {
 	}
 	output.WriteString(value[start:])
 	return output.String()
+}
+
+func insideInlineCode(value string, position int) bool {
+	for index := 0; index < len(value); {
+		if value[index] != '`' {
+			index++
+			continue
+		}
+		run := 1
+		for index+run < len(value) && value[index+run] == '`' {
+			run++
+		}
+		closing := strings.Index(value[index+run:], strings.Repeat("`", run))
+		if closing < 0 {
+			return false
+		}
+		end := index + run + closing + run
+		if position >= index && position < end {
+			return true
+		}
+		index = end
+	}
+	return false
 }
 
 func firstNonempty(values ...string) string {
