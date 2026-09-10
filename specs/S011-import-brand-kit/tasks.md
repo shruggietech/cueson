@@ -82,8 +82,8 @@
 - [x] T026 [US3] Add the brand-verifier module cache, tests, and offline run to `.github/workflows/ci.yml`
 - [x] T027 [US3] Run all quickstart verification including formatter, brand, documentation, product, policy, release, workflow, race, vet, whitespace, encoding, and mojibake checks
 - [x] T028 [US3] Run Spec Kit convergence and append and execute any required remediation tasks until convergence is clean
-- [ ] T029 [US3] Commit and push the verified S011 branch, publish the formatted official pull request with `Closes #23`, and verify its rendered body
-- [ ] T030 [US3] Move issue #23 to Stage `PR review`, retain Slice `S011`, and verify default Status remains empty
+- [x] T029 [US3] Commit and push the verified S011 branch, publish the formatted official pull request with `Closes #23`, and verify its rendered body
+- [x] T030 [US3] Move issue #23 to Stage `PR review`, retain Slice `S011`, and verify default Status remains empty
 - [ ] T031 [US3] Monitor every current-head CI, CodeQL, policy, Codex, and security result; address every round-one finding and resolve threads only after remediation
 - [ ] T032 [US3] Request exactly one `@codex review` second round only if round one reports findings, then address that round without requesting a third
 - [ ] T033 [US3] Confirm every required check is green, all reviews are satisfied, the pull request is mergeable, issue #23 remains open pending merge, and no merge, tag, release, schema publication, milestone closure, or production mutation occurred
