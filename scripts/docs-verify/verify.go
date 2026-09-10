@@ -339,7 +339,12 @@ func inlineMarkdownDestinations(line string) []string {
 		if offset < 0 {
 			break
 		}
-		start := search + offset + 2
+		closingLabel := search + offset
+		if isEscaped(line, closingLabel) || openingLabel(line, closingLabel) < 0 {
+			search = closingLabel + 2
+			continue
+		}
+		start := closingLabel + 2
 		depth := 1
 		end := start
 		for ; end < len(line); end++ {
@@ -367,6 +372,33 @@ func inlineMarkdownDestinations(line string) []string {
 		search = end
 	}
 	return destinations
+}
+
+func openingLabel(line string, closing int) int {
+	depth := 1
+	for index := closing - 1; index >= 0; index-- {
+		if isEscaped(line, index) {
+			continue
+		}
+		switch line[index] {
+		case ']':
+			depth++
+		case '[':
+			depth--
+			if depth == 0 {
+				return index
+			}
+		}
+	}
+	return -1
+}
+
+func isEscaped(value string, index int) bool {
+	slashes := 0
+	for index--; index >= 0 && value[index] == '\\'; index-- {
+		slashes++
+	}
+	return slashes%2 == 1
 }
 
 func linkDestination(value string) string {

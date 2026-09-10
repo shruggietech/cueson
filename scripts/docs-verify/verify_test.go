@@ -110,6 +110,8 @@ func TestAcceptedReferences(t *testing.T) {
 		"<a href=\"target%20file.md#explicit-anchor\"><img src='assets/pixel.png'></a>",
 		"[directory](assets/)",
 		"`[ignored](missing-inline.md)`",
+		"\\[literal](missing-literal.md)",
+		"[escaped close\\](missing-close.md)",
 		"```markdown",
 		"[ignored](missing-fenced.md)",
 		"```",
