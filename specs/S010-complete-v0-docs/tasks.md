@@ -105,7 +105,7 @@
 - [x] T027 Run Go formatting, repository text and documentation checks, root and all standalone module tests, race detection, vet, workflow linting, CLI/schema lockstep probes, `git diff --check`, UTF-8/BOM/line-ending checks, and mojibake scans using `specs/S010-complete-v0-docs/quickstart.md`
 - [x] T028 Run Spec Kit convergence against `spec.md`, `plan.md`, and `tasks.md`; append and implement any remaining work in `specs/S010-complete-v0-docs/tasks.md`
 - [x] T029 Confirm issues #12 and #2 remain open at Stage `In progress` with Slice `S010`, default Status unused, milestone `v0.0.0` open, and no tag/release/schema-copy/production mutation using `specs/S010-complete-v0-docs/contracts/milestone-contract.md`
-- [ ] T030 Format the official pull-request body through `scripts/github-format`, publish it with `Closes #12` and `Closes #2`, read it back, verify rendering, and move both Project items to `PR review` using `specs/S010-complete-v0-docs/contracts/milestone-contract.md`
+- [x] T030 Format the official pull-request body through `scripts/github-format`, publish it with `Closes #12` and `Closes #2`, read it back, verify rendering, and move both Project items to `PR review` using `specs/S010-complete-v0-docs/contracts/milestone-contract.md`
 - [ ] T031 Wait for all hosted checks and first-round third-party reviews, address every finding, request at most one `@codex review` second round only when required, and stop for the operator's final merge ritual after all checks and reviews are satisfied using `specs/S010-complete-v0-docs/contracts/milestone-contract.md`
 
 ---
