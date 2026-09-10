@@ -64,6 +64,7 @@ jobs:
           cache-dependency-path: |
             go.sum
             scripts/github-format/go.mod
+            scripts/docs-verify/go.mod
             scripts/pr-policy/go.mod
             scripts/release-verify/go.mod
       - name: Reject controlled failure probe
@@ -77,6 +78,10 @@ jobs:
         run: go run ./scripts/github-format/main.go .
       - name: Test publication formatter
         run: go -C scripts/github-format test -count=1 ./...
+      - name: Test documentation verifier
+        run: go -C scripts/docs-verify test -count=1 ./...
+      - name: Verify documentation links
+        run: go -C scripts/docs-verify run . -repo ../..
       - name: Test pull-request policy automation
         run: go -C scripts/pr-policy test -count=1 ./...
       - name: Test release verifier

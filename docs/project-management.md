@@ -32,16 +32,33 @@ After a finding-bearing first review, automation may post exactly one marked `@c
 
 The trusted workflow uses current GitHub evidence for every reconciliation and writes only current-head statuses plus the single permitted review comment. Pull-request and comment events provide normal wakeups. A non-hourly schedule recovers reaction-only completion and review-thread changes, while a configured-operator `/cueson reconcile` comment requests immediate recovery. Unknown evidence and incomplete API pagination fail closed without mutation.
 
-The workflow becomes active only after its implementation reaches the default branch. Its introducing pull request receives read-only live API validation plus fixture-backed mutation proof. Hosted status and Actions-bot request behavior must be demonstrated on the first eligible post-merge pull request before repository rules make either context required.
+The workflow became active when S007 merged through pull request [#19](https://github.com/shruggietech/cueson/pull/19). S008 and S009 subsequently demonstrated trusted current-head status publication from default-branch code. The S009 automatic second-round path reserved its one request but GitHub rejected the Actions-authored comment with HTTP 403, so that capability remains unproven and the two pull-request-policy contexts remain outside the required-check ruleset. Pull request [#21](https://github.com/shruggietech/cueson/pull/21) completed through the documented operator exception after its one manual second round and all remediation-head gates succeeded.
 
 ## Repository controls
 
-The stable S006 CI and CodeQL contexts may become required only after successful current-head runs are read back with their provider identities. The S007 issue-link and Codex-review contexts have an additional activation gate: neither becomes required until one eligible post-S007 pull request proves both trusted status publication and the GitHub Actions-authored second-round request path. A clean review leaves that pair deferred without weakening independently proven gates.
+The 17 stable S006 CI and CodeQL contexts became required only after successful current-head runs were read back with their provider identities during S008. The S007 issue-link and Codex-review contexts have an additional activation gate: neither becomes required until one eligible pull request proves both trusted status publication and the GitHub Actions-authored second-round request path. S009 proved trusted status publication but exposed the HTTP 403 limitation on Actions-authored review comments, so that pair remains deferred without weakening the 17 independently proven gates.
 
 Cueson-specific protection uses a repository-owned ruleset and does not modify the organization-owned baseline. The repository rule targets only `main`, requires pull requests and resolved conversations, blocks deletion and non-fast-forward updates, and contains one organization-administrator recovery bypass. Required checks use strict current-base policy and the exact evidence-backed contexts recorded in [repository controls](repository-controls.md).
 
-Repository configuration is changed in dependency order and each write is followed by a separate authoritative read. External-state evidence records both successful controls and plan or policy limitations. Automatic branch deletion is verified after the next operator merge; a successful setting read-back proves configuration, while the post-merge observation proves behavior.
+Repository configuration is changed in dependency order and each write is followed by a separate authoritative read. External-state evidence records both successful controls and plan or policy limitations. Automatic branch deletion was behaviorally verified after the operator merged pull requests [#20](https://github.com/shruggietech/cueson/pull/20) and [#21](https://github.com/shruggietech/cueson/pull/21); both remote head references are absent.
 
-## Bootstrap state
+## Foundation delivery state
 
-The initial planning structure is established before shipped product code begins. CI-required checks, repository rulesets, security automation, Codex review automation, and release dry runs are tracked outcomes that are activated only after their implementation exists.
+The repository bootstrap and work slices S001 through S009 are present on `main`. The resulting foundation includes the ratified constitution and planning structure, buildable CLI, canonical v0.0.0 schema, source restoration, conformance fixtures, native and cross-platform CI, CodeQL, pull-request policy, verified repository controls, and a non-publishing release proof.
+
+| Outcome | Delivery evidence on `main` |
+|---|---|
+| Issue [#1](https://github.com/shruggietech/cueson/issues/1), repository bootstrap | Bootstrap commit `1188b5e`, completed by pull request [#13](https://github.com/shruggietech/cueson/pull/13) at `ae796dd` |
+| Issue [#3](https://github.com/shruggietech/cueson/issues/3), ratified foundation contracts | Pull request [#13](https://github.com/shruggietech/cueson/pull/13), merge commit `ae796dd` |
+| Issue [#4](https://github.com/shruggietech/cueson/issues/4), CLI foundation | Pull request [#14](https://github.com/shruggietech/cueson/pull/14), merge commit `addcecb` |
+| Issue [#5](https://github.com/shruggietech/cueson/issues/5), schema foundation | Pull request [#15](https://github.com/shruggietech/cueson/pull/15), merge commit `0b60c52` |
+| Issue [#6](https://github.com/shruggietech/cueson/issues/6), source integrity and restoration | Pull request [#16](https://github.com/shruggietech/cueson/pull/16), merge commit `4c8513f` |
+| Issue [#7](https://github.com/shruggietech/cueson/issues/7), fixture and conformance foundation | Pull request [#17](https://github.com/shruggietech/cueson/pull/17), merge commit `2903824` |
+| Issue [#8](https://github.com/shruggietech/cueson/issues/8), CI and cross-platform gates | Pull request [#18](https://github.com/shruggietech/cueson/pull/18), merge commit `d66d6a0` |
+| Issue [#9](https://github.com/shruggietech/cueson/issues/9), pull-request policy automation | Pull request [#19](https://github.com/shruggietech/cueson/pull/19), merge commit `bce3ebe` |
+| Issue [#10](https://github.com/shruggietech/cueson/issues/10), repository controls | Pull request [#20](https://github.com/shruggietech/cueson/pull/20), merge commit `cc2bac0` |
+| Issue [#11](https://github.com/shruggietech/cueson/issues/11), non-publishing release proof | Pull request [#21](https://github.com/shruggietech/cueson/pull/21), merge commit `3da0a4b` |
+
+GitHub issues [#1](https://github.com/shruggietech/cueson/issues/1) and [#3](https://github.com/shruggietech/cueson/issues/3) through [#11](https://github.com/shruggietech/cueson/issues/11) are closed. Issue [#12](https://github.com/shruggietech/cueson/issues/12) remains the final open child of epic [#2](https://github.com/shruggietech/cueson/issues/2) while S010 completes documentation and milestone evidence. Closure of those two issues belongs to the official S010 pull request merge, not to preparation of the evidence.
+
+The `v0.0.0` milestone describes a repository foundation without production format-completeness claims. Candidate readiness does not create release authority: the milestone, any tag, any GitHub Release, any immutable release-schema copy, and production publication remain separate protected transitions.

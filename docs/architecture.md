@@ -30,6 +30,8 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 
 Dependencies point inward toward stable, dependency-light contracts. `internal/model` does not depend on CLI, source, codecs, conversion, or OCR. Codec availability is the authority for native ingest and render capability; schema recognition alone is not.
 
+The v0.0.0 source tree implements `cmd/cueson`, CLI, version, model, schema, source, test utility, and conformance boundaries. The `internal/codec`, `internal/convert`, and `internal/ocr` rows reserve future ownership; they do not assert that those packages or their runtime capabilities exist in v0.0.0.
+
 ## Source authority and restoration
 
 Original source asset bytes are authoritative for exact restoration. Normalized cues, format-native parsed data, speaker observations, token timing, and OCR observations are derived or interpreted surfaces and never replace the source envelope.
@@ -44,9 +46,11 @@ Before opening any output, restoration builds the complete destination plan and 
 
 ## Common model and native fidelity
 
-The common model exposes timing and semantic content without requiring consumers to decode source bytes or parse a subtitle grammar. Format-native data remains adjacent to the common model wherever normalization would otherwise lose information.
+The common model exposes timing and semantic content without requiring consumers to decode source bytes or parse a subtitle grammar. Format-native data remains adjacent to the common model wherever normalization would otherwise lose information. At v0.0.0 these are schema and externally authored model contracts, not output from a native parser.
 
 Unknown, malformed, unsupported, or non-representable source information is preserved when practical and reported through deterministic diagnostics. Strict conversion refuses known loss. A successful operation never silently discards information covered by the active contract.
+
+The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages distinguish the implemented source-envelope and schema boundary from each format's planned v1 grammar, diagnostics, fixtures, native ingest, rendering, and conversion obligations.
 
 ## Version and schema relationship
 
@@ -88,7 +92,7 @@ Native root-module tests run on explicit Linux, Windows, and macOS runner genera
 
 Staticcheck, govulncheck, and actionlint use explicit Go module versions. External actions use immutable full commit identifiers with readable release comments, and checkout credential persistence is disabled before repository-controlled code runs. The independent `CodeQL` workflow receives only read access plus the narrow `security-events: write` permission required to publish analysis, and ordinary CI receives no write authority or secrets.
 
-The stable check names are recorded in `specs/S006-establish-ci-gates/contracts/check-contract.md` for later repository protection work. S006 does not create empty gates for native SRT/WebVTT parsing, model-driven rendering, cross-format conversion, Codex-review automation, release packaging, or repository settings. Those names appear only after their owning implementation exists.
+The stable check names are recorded in `specs/S006-establish-ci-gates/contracts/check-contract.md` and the 17 CI and CodeQL contexts are now active required checks on `main`. S006 did not create empty gates for native SRT/WebVTT parsing, model-driven rendering, or cross-format conversion. Those names appear only after their owning implementation exists.
 
 ## Pull-request policy automation
 
@@ -100,13 +104,13 @@ Round one remains the native Codex integration's responsibility. Automation may 
 
 The `Pull request policy` workflow runs only trusted `main` code through `pull_request_target`, pull-request conversation comments, and a non-hourly recovery schedule. It never checks out a pull-request head or merge ref. Its token grants only repository, pull-request, and check-result read access plus issue-comment and commit-status write authority; checkout credentials and dependency caches are disabled. One non-canceling global concurrency group serializes mutations, while complete evidence refetches and mutation read-back make retries idempotent. Reaction-only completion and review-thread resolution converge through scheduled recovery, and the configured operator can request immediate recovery with `/cueson reconcile` on the pull request.
 
-Because GitHub does not activate a newly introduced trusted-default-branch workflow for its own pull request, S007 verifies that pull request with a read-only live adapter audit and fixture-backed mutation tests. The first eligible pull request after merge must prove the hosted status source and Actions-bot comment behavior before issue #10 makes either policy context required.
+Subsequent hosted pull requests proved current-head publication by the GitHub Actions identity for both policy statuses. The permitted GitHub Actions-authored second-round comment path returned HTTP 403 during S009, so the operator supplied the single manual second-round request and recorded a waiver after remediation. The automatic comment path therefore remains unproven, and neither policy status is protection-required.
 
 ## Repository protection
 
 Repository protection is cumulative. The existing organization-owned default-branch ruleset remains an immutable S008 input, while Cueson-specific resolved-conversation and required-check policy belongs to a repository-owned ruleset targeting only `main`. Classic branch protection is not treated as the sole authority when rulesets supply the effective policy.
 
-Required checks enter protection only after the exact context, pull-request head, successful terminal result, and provider identity are read back from GitHub. The 17 stable S006 CI and CodeQL contexts form the initial candidate set. Both S007 commit-status contexts remain conditional on the complete first-post-merge activation proof, including the GitHub Actions-authored second-round request path; if S008 receives a clean first review, neither policy context becomes required.
+Required checks enter protection only after the exact context, pull-request head, successful terminal result, and provider identity are read back from GitHub. The repository-owned ruleset requires the 17 verified S006 CI and CodeQL contexts on the current base. Both S007 commit-status contexts remain outside protection because the GitHub Actions-authored second-round request path lacks complete activation proof.
 
 Repository Actions default to read permission, pull-request approval remains disabled, action sources are limited to GitHub-owned actions, and immutable action references are required. Versioned workflows continue to declare their own minimum permissions. The versioned CodeQL workflow remains authoritative rather than enabling a competing default setup.
 
@@ -122,6 +126,14 @@ The `Release proof` workflow runs repository code through an ordinary unprivileg
 
 S009 proves candidate packaging but does not complete official release lockstep because no release tag exists. A real release, tag, signature, attestation, release asset, immutable release-schema copy, release note, or production-domain publication requires a later specification and explicit operator authority. Syft SBOMs are checked for stable meaning and source binding; they are not claimed byte-for-byte reproducible while upstream output includes variable timestamps and document identifiers.
 
+The runnable artifact contract remains in [release verification](release-verification.md). The broader [release process](release-process.md) separates candidate preparation from protected tag, GitHub Release, immutable schema-copy, milestone, and production actions.
+
+## Maintained documentation verification
+
+The standalone `scripts/docs-verify` module verifies the canonical documentation inventory and resolves maintained local file, directory, image, and heading-fragment links without network access. It remains outside the shipped product module and performs no repair. `scripts/github-format` separately owns repository text encoding, line endings, mojibake rejection, Markdown source layout, and GitHub publication formatting.
+
+The `Repository text` CI job runs both standalone modules. Historical Spec Kit artifacts remain formatter-governed delivery evidence but are not part of the maintained-document link graph.
+
 ## Work ownership after ratification
 
 | Issue | Implementation ownership |
@@ -132,5 +144,8 @@ S009 proves candidate packaging but does not complete official release lockstep 
 | [#7](https://github.com/shruggietech/cueson/issues/7) | Fixture provenance, golden helpers, conformance infrastructure, malformed corpus conventions, and fuzz boundaries |
 | [#8](https://github.com/shruggietech/cueson/issues/8) | Stable CI, native Windows/macOS/Linux execution, pure-Go cross-build proof, pinned analysis, vulnerability scanning, and independent CodeQL |
 | [#9](https://github.com/shruggietech/cueson/issues/9) | Issue-linked pull-request policy, native Codex review reconciliation, one bounded second-round request, and trusted recovery automation |
+| [#10](https://github.com/shruggietech/cueson/issues/10) | Active repository-owned `main` rules, verified required checks, Actions defaults, action-source restrictions, and recovery bypass |
+| [#11](https://github.com/shruggietech/cueson/issues/11) | Non-publishing six-target candidate packaging, checksums, SBOM generation, and standalone artifact verification |
+| [#12](https://github.com/shruggietech/cueson/issues/12) | Canonical documentation completion, offline link verification, and v0.0.0 milestone-readiness evidence |
 
 SRT and WebVTT codecs, model-driven render, and cross-format conversion are deliberately deferred to later implementation slices. This document does not authorize placeholder commands or premature capability claims.

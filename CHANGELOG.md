@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added a standalone pull-request policy engine and trusted-default-branch workflow for GitHub-resolved issue links, current-head Codex review state, operator-only exceptions, scheduled recovery, and one idempotent second-round request.
 - Added a versioned repository-control contract covering secure Actions defaults, dependency and secret protections, private vulnerability reporting, squash-only delivery, automatic merged-branch cleanup, and evidence-backed default-branch rules.
 - Added a snapshot-only six-target release proof with canonical schema and legal-file packaging, archive checksums, target-bound SPDX SBOMs, strict repository-owned artifact verification, and read-only hosted evidence retention.
+- Added a dependency-free offline documentation verifier with a canonical maintained-document inventory, exact-case repository-confined path resolution, local-anchor validation, deterministic diagnostics, and CI coverage.
+- Added dedicated SubRip, WebVTT, and release-process documentation that separates the current envelope-only foundation from planned native format support and protected publication actions.
 
 ### Changed
 
@@ -26,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Replaced the planned CI badge with the live workflow badge and refined the draft CI roadmap so codec, conversion, review-automation, and release gates activate only when their owning implementations exist.
 - Raised the minimum Go version from 1.24 to 1.25 and upgraded `golang.org/x/text` to the first compatible fixed release after the vulnerability gate found reachable issues that could not be corrected on the old floor.
 - Added the pull-request policy module to repository formatting and test gates while keeping it separate from the shipped Cueson module.
+- Reconciled maintained documentation and foundation delivery records with merged evidence through S009 while keeping the v0.0.0 candidate under `[Unreleased]`.
 
 ### Fixed
 
@@ -51,10 +54,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-09: Reconcile native Codex round one from trusted default-branch code, use current-head GitHub evidence as the idempotency authority, and permit exactly one marked second-round request after resolved findings and green remediation-head CI.
 - 2026-09-09: Layer a Cueson-owned default-branch ruleset over the unchanged organization baseline, require only successful current-head checks with verified providers, and retain one organization-administrator recovery path without granting normal agent merge authority.
 - 2026-09-09: Pin GoReleaser and Syft as build-only tools, keep the checked-in release configuration unable to publish, and verify stable SBOM meaning and source binding without claiming byte-identical upstream SBOM output.
-
-## [0.0.0]
-
-No public release has been published.
-
-[Unreleased]: https://github.com/shruggietech/cueson/compare/v0.0.0...HEAD
-[0.0.0]: https://github.com/shruggietech/cueson/releases/tag/v0.0.0
+- 2026-09-09: Keep the v0.0.0 release candidate under `[Unreleased]` until a separately authorized tag and GitHub Release exist; a completed foundation milestone is not publication.
+- 2026-09-09: Keep executable non-publishing candidate verification separate from the protected release process for tags, GitHub Releases, immutable schema copies, and production publication.

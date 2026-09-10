@@ -410,8 +410,8 @@
       <div class="container">
         <span class="eyebrow">The real reason Cueson exists</span>
         <h1>Make media content <span class="accent">directly readable to AI.</span></h1>
-        <p class="lede">A huge amount of what people say, read, watch, and archive is trapped behind subtitle formats that machines cannot treat as ordinary text. Some are simple text files. Some are dense XML. Some are old binary broadcast records. Some are literally pictures of words. Cueson turns that fractured universe into one predictable Cue JSON surface where the words, timing, speakers, provenance, layout, and other useful context are directly visible.</p>
-        <p class="hero-note">Cueson performs the format-specific work once, at the file boundary. After that, downstream AI does not need its own subtitle parser, bitmap-caption decoder, OCR glue, or custom conversion pipeline just to understand the content. It can reason over the resulting structured plaintext and timing data directly. Future transcription tools can emit the same Cue JSON shape for spoken audio, extending the same machine-readable surface beyond existing subtitle tracks.</p>
+        <p class="lede">A huge amount of what people say, read, watch, and archive is trapped behind subtitle formats that machines cannot treat as ordinary text. Some are simple text files. Some are dense XML. Some are old binary broadcast records. Some are literally pictures of words. Cueson is designed to turn that fractured universe into one predictable Cue JSON surface where the words, timing, speakers, provenance, layout, and other useful context are directly visible.</p>
+        <p class="hero-note"><strong>Current v0.0.0 boundary:</strong> Cueson validates Cue JSON, exposes its embedded schema, and restores exact source bytes from a valid source envelope. Native SRT or WebVTT ingest, model-driven rendering, conversion, OCR, and every other format capability illustrated below are roadmap intent, not current support.</p>
 
         <div class="pipeline" aria-label="How Cueson unlocks media for AI">
           <div class="pipeline-box">
@@ -421,7 +421,7 @@
           <div class="pipeline-arrow" aria-hidden="true">→</div>
           <div class="pipeline-box cueson">
             <strong>Cueson</strong>
-            <span>Parse, preserve, normalize, and when needed derive plaintext through OCR while retaining the original source.</span>
+            <span>Planned: parse, preserve, normalize, and when needed derive plaintext through OCR while retaining the original source.</span>
           </div>
           <div class="pipeline-arrow" aria-hidden="true">→</div>
           <div class="pipeline-box ai">
@@ -433,7 +433,7 @@
         <div class="why-grid">
           <article class="why-card">
             <h3>One reasoning surface</h3>
-            <p>AI sees the same predictable cue structure whether the source began as SRT text, broadcast XML, a legacy binary file, or a Blu-ray subtitle image.</p>
+            <p>The target model gives AI the same predictable cue structure whether the source began as SRT text, broadcast XML, a legacy binary file, or a Blu-ray subtitle image.</p>
           </article>
           <article class="why-card">
             <h3>No information hostage</h3>
@@ -441,7 +441,7 @@
           </article>
           <article class="why-card">
             <h3>No downstream format maze</h3>
-            <p>Once content becomes Cue JSON, every downstream tool can speak the same language instead of maintaining a growing pile of one-off parsers and conversion steps.</p>
+            <p>As native codecs are delivered, content represented as Cue JSON can let downstream tools speak the same language instead of maintaining a growing pile of one-off parsers and conversion steps.</p>
           </article>
         </div>
       </div>
@@ -453,7 +453,7 @@
           <div>
             <span class="eyebrow">Target format map</span>
             <h2>The subtitle universe Cueson is designed to open up</h2>
-            <p>SRT and WebVTT are the first stable targets. The other families show why the common Cue JSON model matters long term, especially when the original content is binary or image-based rather than plain text.</p>
+            <p>SRT and WebVTT are the first planned stable targets for v1.0.0. The other families show why the common Cue JSON model matters long term, especially when the original content is binary or image-based rather than plain text.</p>
           </div>
           <div class="legend" aria-label="Format legend">
             <span class="badge status-v1">v1</span>
