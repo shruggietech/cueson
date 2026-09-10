@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added stable least-privilege CI and independent CodeQL workflows with pinned actions and analysis tools, native Windows/macOS/Linux tests, race and conformance gates, vulnerability scanning, and six-target pure-Go build proof.
 - Added a standalone pull-request policy engine and trusted-default-branch workflow for GitHub-resolved issue links, current-head Codex review state, operator-only exceptions, scheduled recovery, and one idempotent second-round request.
 - Added a versioned repository-control contract covering secure Actions defaults, dependency and secret protections, private vulnerability reporting, squash-only delivery, automatic merged-branch cleanup, and evidence-backed default-branch rules.
+- Added a snapshot-only six-target release proof with canonical schema and legal-file packaging, archive checksums, target-bound SPDX SBOMs, strict repository-owned artifact verification, and read-only hosted evidence retention.
 
 ### Changed
 
@@ -49,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-09: Raise the compatibility floor to Go 1.25 rather than suppress reachable Go standard-library and Unicode-normalization vulnerabilities discovered while establishing the mandatory vulnerability gate.
 - 2026-09-09: Reconcile native Codex round one from trusted default-branch code, use current-head GitHub evidence as the idempotency authority, and permit exactly one marked second-round request after resolved findings and green remediation-head CI.
 - 2026-09-09: Layer a Cueson-owned default-branch ruleset over the unchanged organization baseline, require only successful current-head checks with verified providers, and retain one organization-administrator recovery path without granting normal agent merge authority.
+- 2026-09-09: Pin GoReleaser and Syft as build-only tools, keep the checked-in release configuration unable to publish, and verify stable SBOM meaning and source binding without claiming byte-identical upstream SBOM output.
 
 ## [0.0.0]
 

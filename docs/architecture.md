@@ -112,6 +112,16 @@ Repository Actions default to read permission, pull-request approval remains dis
 
 One organization-administrator bypass on the repository-owned ruleset preserves recovery from a misconfigured or renamed gate. It is not ordinary delivery authority: pull requests still follow the bounded review protocol, and final merge remains a human decision.
 
+## Non-publishing release proof
+
+The repository-root GoReleaser v2 configuration is intentionally snapshot-only. It builds `cueson` with `CGO_ENABLED=0` for Windows, macOS, and Linux on amd64 and arm64, injects the `internal/version` release override with a verifier-readable marker consumed by the public version surface, uses commit-derived timestamps and trimmed build paths, packages the byte-identical canonical schema plus legal files, emits one SHA-256 archive manifest, and asks a pinned Syft command to generate one target-bound SPDX JSON SBOM from each packaged binary. Each SBOM is named for its corresponding archive. Generating from the binary avoids leaking Syft's temporary archive-extraction paths. `release.disable: true` prevents the same configuration from becoming a publishing path when snapshot mode is omitted.
+
+The standalone `scripts/release-verify` module is the release-candidate acceptance authority. It remains outside the shipped product dependency graph and uses only the Go standard library. It opens every ZIP and tar.gz archive, enforces the exact six-target and four-member contracts, verifies checksum bijection, schema bytes, and the release-version marker in every binary, inspects Go build information for target, pure-Go, source revision, clean state, trimmed paths, and local identifiers, validates SBOM source identity, and executes only the current host's compatible packaged binary. It scans semantic metadata rather than arbitrary compressed or executable bytes so binary data cannot create false path matches. It writes deterministic semantic evidence only after every check passes.
+
+The `Release proof` workflow runs repository code through an ordinary unprivileged pull-request event with read-only repository permission, exact build-tool versions, no secrets, and no publication token. Its short-lived GitHub Actions artifact is review evidence rather than a GitHub Release asset. This is distinct from S006's temporary cross-build binaries and does not change the current required-check ruleset automatically.
+
+S009 proves candidate packaging but does not complete official release lockstep because no release tag exists. A real release, tag, signature, attestation, release asset, immutable release-schema copy, release note, or production-domain publication requires a later specification and explicit operator authority. Syft SBOMs are checked for stable meaning and source binding; they are not claimed byte-for-byte reproducible while upstream output includes variable timestamps and document identifiers.
+
 ## Work ownership after ratification
 
 | Issue | Implementation ownership |
