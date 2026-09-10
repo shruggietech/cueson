@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -38,6 +39,7 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 
 	for _, required := range []string{
 		"pull_request:", "workflow_dispatch:", "contents: read", "persist-credentials: false",
+		"ref: ${{ github.event.pull_request.head.sha || github.sha }}",
 		"github.com/goreleaser/goreleaser/v2@v2.18.1", "github.com/anchore/syft/cmd/syft@v1.51.1",
 		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "retention-days: 3",
 	} {
@@ -81,6 +83,64 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 		}
 		if !regexp.MustCompile(`^[0-9a-f]{40}$`).MatchString(match[2]) {
 			t.Errorf("workflow action %s is not pinned to a full commit", match[1])
+		}
+	}
+}
+
+func TestReleaseEvidenceContractBindsExactTargetTuples(t *testing.T) {
+	t.Parallel()
+	repository := filepath.Clean(filepath.Join("..", ".."))
+	data := []byte(readPolicyFile(t, filepath.Join(repository, "specs", "S012-prepare-v0-release", "contracts", "release-evidence.schema.json")))
+	var schema struct {
+		Properties struct {
+			Targets struct {
+				PrefixItems []struct {
+					Ref string `json:"$ref"`
+				} `json:"prefixItems"`
+				Items bool `json:"items"`
+			} `json:"targets"`
+		} `json:"properties"`
+		Definitions map[string]struct {
+			AllOf []struct {
+				Properties map[string]struct {
+					Const string `json:"const"`
+				} `json:"properties"`
+			} `json:"allOf"`
+		} `json:"$defs"`
+	}
+	if err := json.Unmarshal(data, &schema); err != nil {
+		t.Fatal(err)
+	}
+	want := []struct {
+		name, goos, goarch, archive, binary, sbom string
+	}{
+		{"linux_amd64", "linux", "amd64", "cueson_0.0.0_linux_amd64.tar.gz", "cueson", "cueson_0.0.0_linux_amd64.tar.gz.sbom.json"},
+		{"linux_arm64", "linux", "arm64", "cueson_0.0.0_linux_arm64.tar.gz", "cueson", "cueson_0.0.0_linux_arm64.tar.gz.sbom.json"},
+		{"darwin_amd64", "darwin", "amd64", "cueson_0.0.0_darwin_amd64.tar.gz", "cueson", "cueson_0.0.0_darwin_amd64.tar.gz.sbom.json"},
+		{"darwin_arm64", "darwin", "arm64", "cueson_0.0.0_darwin_arm64.tar.gz", "cueson", "cueson_0.0.0_darwin_arm64.tar.gz.sbom.json"},
+		{"windows_amd64", "windows", "amd64", "cueson_0.0.0_windows_amd64.zip", "cueson.exe", "cueson_0.0.0_windows_amd64.zip.sbom.json"},
+		{"windows_arm64", "windows", "arm64", "cueson_0.0.0_windows_arm64.zip", "cueson.exe", "cueson_0.0.0_windows_arm64.zip.sbom.json"},
+	}
+	if schema.Properties.Targets.Items {
+		t.Fatal("release evidence contract permits target items after prefixItems")
+	}
+	if len(schema.Properties.Targets.PrefixItems) != len(want) {
+		t.Fatalf("prefixItems = %d, want %d", len(schema.Properties.Targets.PrefixItems), len(want))
+	}
+	for index, expected := range want {
+		if got := schema.Properties.Targets.PrefixItems[index].Ref; got != "#/$defs/"+expected.name {
+			t.Errorf("prefixItems[%d] = %q, want #/$defs/%s", index, got, expected.name)
+		}
+		definition, ok := schema.Definitions[expected.name]
+		if !ok || len(definition.AllOf) != 2 {
+			t.Fatalf("definition %s missing exact target constraints", expected.name)
+		}
+		properties := definition.AllOf[1].Properties
+		checks := map[string]string{"goos": expected.goos, "goarch": expected.goarch, "archive": expected.archive, "binary": expected.binary, "sbom": expected.sbom}
+		for name, value := range checks {
+			if got := properties[name].Const; got != value {
+				t.Errorf("definition %s %s = %q, want %q", expected.name, name, got, value)
+			}
 		}
 	}
 }

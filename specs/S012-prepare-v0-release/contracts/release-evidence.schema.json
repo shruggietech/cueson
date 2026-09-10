@@ -13,7 +13,20 @@
     "sbom_count": {"const": 6},
     "checksum_count": {"const": 6},
     "host_executed": {"type": ["string", "null"], "pattern": "^(linux|darwin|windows)/(amd64|arm64)$"},
-    "targets": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/target"}},
+    "targets": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {"$ref": "#/$defs/linux_amd64"},
+        {"$ref": "#/$defs/linux_arm64"},
+        {"$ref": "#/$defs/darwin_amd64"},
+        {"$ref": "#/$defs/darwin_arm64"},
+        {"$ref": "#/$defs/windows_amd64"},
+        {"$ref": "#/$defs/windows_arm64"}
+      ],
+      "items": false
+    },
     "published": {"const": false}
   },
   "$defs": {
@@ -30,6 +43,42 @@
         "archive_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "sbom_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
       }
+    },
+    "linux_amd64": {
+      "allOf": [
+        {"$ref": "#/$defs/target"},
+        {"properties": {"goos": {"const": "linux"}, "goarch": {"const": "amd64"}, "archive": {"const": "cueson_0.0.0_linux_amd64.tar.gz"}, "binary": {"const": "cueson"}, "sbom": {"const": "cueson_0.0.0_linux_amd64.tar.gz.sbom.json"}}}
+      ]
+    },
+    "linux_arm64": {
+      "allOf": [
+        {"$ref": "#/$defs/target"},
+        {"properties": {"goos": {"const": "linux"}, "goarch": {"const": "arm64"}, "archive": {"const": "cueson_0.0.0_linux_arm64.tar.gz"}, "binary": {"const": "cueson"}, "sbom": {"const": "cueson_0.0.0_linux_arm64.tar.gz.sbom.json"}}}
+      ]
+    },
+    "darwin_amd64": {
+      "allOf": [
+        {"$ref": "#/$defs/target"},
+        {"properties": {"goos": {"const": "darwin"}, "goarch": {"const": "amd64"}, "archive": {"const": "cueson_0.0.0_darwin_amd64.tar.gz"}, "binary": {"const": "cueson"}, "sbom": {"const": "cueson_0.0.0_darwin_amd64.tar.gz.sbom.json"}}}
+      ]
+    },
+    "darwin_arm64": {
+      "allOf": [
+        {"$ref": "#/$defs/target"},
+        {"properties": {"goos": {"const": "darwin"}, "goarch": {"const": "arm64"}, "archive": {"const": "cueson_0.0.0_darwin_arm64.tar.gz"}, "binary": {"const": "cueson"}, "sbom": {"const": "cueson_0.0.0_darwin_arm64.tar.gz.sbom.json"}}}
+      ]
+    },
+    "windows_amd64": {
+      "allOf": [
+        {"$ref": "#/$defs/target"},
+        {"properties": {"goos": {"const": "windows"}, "goarch": {"const": "amd64"}, "archive": {"const": "cueson_0.0.0_windows_amd64.zip"}, "binary": {"const": "cueson.exe"}, "sbom": {"const": "cueson_0.0.0_windows_amd64.zip.sbom.json"}}}
+      ]
+    },
+    "windows_arm64": {
+      "allOf": [
+        {"$ref": "#/$defs/target"},
+        {"properties": {"goos": {"const": "windows"}, "goarch": {"const": "arm64"}, "archive": {"const": "cueson_0.0.0_windows_arm64.zip"}, "binary": {"const": "cueson.exe"}, "sbom": {"const": "cueson_0.0.0_windows_arm64.zip.sbom.json"}}}
+      ]
     }
   }
 }
