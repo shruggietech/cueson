@@ -12,7 +12,7 @@ Pin the operator-designated ShruggieTech archive as the S011 acquisition, retain
 
 **Language/Version**: Go 1.25 for standalone verification; HTML, CSS, Markdown, JSON, and repository configuration for integration
 
-**Primary Dependencies**: Go standard library only; Git and GitHub Actions for repository enforcement
+**Primary Dependencies**: Go standard library plus `golang.org/x/text v0.39.0` for repository-equivalent Unicode normalization and case folding; Git and GitHub Actions for repository enforcement
 
 **Storage**: Versioned ZIP, exact extracted files, and one strict JSON import manifest in the Git repository
 
@@ -26,7 +26,7 @@ Pin the operator-designated ShruggieTech archive as the S011 acquisition, retain
 
 **Constraints**: Preserve all retained and referenced brand bytes exactly; reject unsafe or ambiguous ZIP entries; never fetch during routine checks; do not add kit content to product releases; preserve CRLF policy for PowerShell; do not merge or perform release or production actions
 
-**Scale/Scope**: One 1.0.0 archive, 265 payload files totaling 5,469,058 extracted bytes, five direct documentation asset integrations, one verifier module, and one GitHub issue
+**Scale/Scope**: One 1.0.0 archive, 265 payload files totaling 5,469,058 extracted bytes, six independently bound documentation asset references, one verifier module, and one GitHub issue
 
 ## Constitution Check
 
@@ -41,7 +41,7 @@ Pin the operator-designated ShruggieTech archive as the S011 acquisition, retain
 - **Release and production boundary**: PASS. The current exact four-member release contract remains unchanged, and no tag, release, schema publication, domain activation, or production mutation is included.
 - **Deviation from prior issue prose**: PASS. The operator explicitly superseded the dual-build reproduction, corrected-handoff, and separate legal-review gates. S011 pins the current live hosted ZIP as the sole acquisition authority, retains all safe content instead of only an old handoff subset, and preserves bundled terms without a redundant ownership checkpoint.
 
-Post-design recheck: PASS. Direct references avoid unnecessary duplicate assets, the verifier remains a standalone non-product module, and protected paths are excluded from repair tooling without weakening checks for repository-authored text.
+Post-design recheck: PASS. Direct references avoid unnecessary duplicate assets, the verifier remains a standalone non-product module, and protected paths are excluded from repair tooling without weakening checks for repository-authored text. Review remediation intentionally replaced the original standard-library-only preference with the root module's existing `golang.org/x/text v0.39.0` dependency because complete NFD normalization and Unicode case folding are required to enforce the repository's portable path-identity contract.
 
 ## Project Structure
 
@@ -70,6 +70,7 @@ brand/cueson/1.0.0/
 
 scripts/brand-verify/
 ├── go.mod
+├── go.sum
 ├── main.go
 ├── verify.go
 └── verify_test.go
@@ -90,7 +91,7 @@ scripts/docs-verify/
 scripts/github-format/
 ```
 
-**Structure Decision**: Keep the official acquisition isolated beneath a versioned `brand/` root, distinguish the immutable archive from its exact `kit/` extraction, store Cueson-owned acquisition evidence beside them, and keep verification in a dependency-free nested module outside the shipped product. Documentation references retained kit assets directly so the repository has one authoritative copy of each asset.
+**Structure Decision**: Keep the official acquisition isolated beneath a versioned `brand/` root, distinguish the immutable archive from its exact `kit/` extraction, store Cueson-owned acquisition evidence beside them, and keep verification in a narrowly dependent nested module outside the shipped product. The verifier uses the same pinned Unicode package version as the root module to enforce the same portable path identity without coupling the maintenance tool into shipped product code. Documentation references retained kit assets directly so the repository has one authoritative copy of each asset.
 
 ## Complexity Tracking
 

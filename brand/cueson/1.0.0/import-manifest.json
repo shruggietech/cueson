@@ -1344,31 +1344,37 @@
     {
       "document": "README.md",
       "asset": "logos/svg/cueson-horizontal-color.svg",
-      "reference": "brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-color.svg",
+      "reference": "srcset=\"brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-color.svg\"",
       "purpose": "Dark-theme horizontal identity"
     },
     {
       "document": "README.md",
       "asset": "logos/svg/cueson-horizontal-light.svg",
-      "reference": "brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-light.svg",
+      "reference": "src=\"brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-light.svg\"",
+      "purpose": "Fallback horizontal identity"
+    },
+    {
+      "document": "README.md",
+      "asset": "logos/svg/cueson-horizontal-light.svg",
+      "reference": "srcset=\"brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-light.svg\"",
       "purpose": "Light-theme horizontal identity"
     },
     {
       "document": "docs/cueson-media-format-guide.html",
       "asset": "fonts/fonts.css",
-      "reference": "../brand/cueson/1.0.0/kit/fonts/fonts.css",
+      "reference": "href=\"../brand/cueson/1.0.0/kit/fonts/fonts.css\"",
       "purpose": "Offline official typography"
     },
     {
       "document": "docs/cueson-media-format-guide.html",
       "asset": "icons/web/favicon.svg",
-      "reference": "../brand/cueson/1.0.0/kit/icons/web/favicon.svg",
+      "reference": "href=\"../brand/cueson/1.0.0/kit/icons/web/favicon.svg\"",
       "purpose": "Official document favicon"
     },
     {
       "document": "docs/cueson-media-format-guide.html",
       "asset": "logos/svg/cueson-horizontal-color.svg",
-      "reference": "../brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-color.svg",
+      "reference": "src=\"../brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-color.svg\"",
       "purpose": "Dark-surface horizontal identity"
     }
   ]

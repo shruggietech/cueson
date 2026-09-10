@@ -96,7 +96,7 @@ func TestVerifyRepositoryRejectsDuplicateAndCaseCollidingZIPEntries(t *testing.T
 		want    string
 	}{
 		{name: "duplicate", entries: []zipFixtureEntry{{name: "a.svg", content: "one"}, {name: "a.svg", content: "two"}}, want: "duplicate path"},
-		{name: "case collision", entries: []zipFixtureEntry{{name: "A.svg", content: "one"}, {name: "a.svg", content: "two"}}, want: "case-insensitive collision"},
+		{name: "case collision", entries: []zipFixtureEntry{{name: "A.svg", content: "one"}, {name: "a.svg", content: "two"}}, want: "repository-equivalent collision"},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -108,6 +108,116 @@ func TestVerifyRepositoryRejectsDuplicateAndCaseCollidingZIPEntries(t *testing.T
 			assertViolationContains(t, result, test.want)
 		})
 	}
+}
+
+func TestRepositoryEquivalentCollisionsCoverNormalizationAndFolding(t *testing.T) {
+	tests := []struct {
+		name   string
+		first  string
+		second string
+	}{
+		{name: "canonical normalization", first: "logos/Cafe\u0301.svg", second: "logos/Café.svg"},
+		{name: "Unicode case folding", first: "logos/Straße.svg", second: "logos/STRASSE.svg"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if repositoryEquivalentPathKey(test.first) != repositoryEquivalentPathKey(test.second) {
+				t.Fatalf("keys differ for %q and %q", test.first, test.second)
+			}
+			violations := caseCollisionViolations("test paths", []string{test.first, test.second})
+			if len(violations) != 1 || !strings.Contains(violations[0], "repository-equivalent collision") {
+				t.Fatalf("violations = %v", violations)
+			}
+		})
+	}
+}
+
+func TestVerifyRepositoryRejectsCanonicallyEquivalentManifestEntries(t *testing.T) {
+	fixture := newFixture(t, []zipFixtureEntry{{name: "logos/Cafe\u0301.svg", content: "one"}, {name: "logos/Café.svg", content: "two"}})
+	result, err := verifyRepository(fixture.root, defaultManifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolationContains(t, result, "manifest entries: repository-equivalent collision")
+}
+
+func TestInspectArchiveAndPayloadUseRepositoryEquivalentCollisionKeys(t *testing.T) {
+	fixture := newFixture(t, []zipFixtureEntry{{name: "logos/Cafe\u0301.svg", content: "one"}, {name: "logos/Café.svg", content: "two"}})
+	archiveInfo, err := os.Stat(fixture.archivePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	archiveDigest, err := digestFile(fixture.archivePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, archiveViolations := inspectArchive(fixture.archivePath, archiveIdentity{Bytes: archiveInfo.Size(), SHA256: archiveDigest, EntryCount: 2, UncompressedBytes: 6})
+	assertStringsContain(t, archiveViolations, "archive entries: repository-equivalent collision")
+
+	payloadRoot := "brand/cueson/1.0.0/kit"
+	_, payloadViolations := inspectPayload(fixture.root, payloadRoot)
+	assertStringsContain(t, payloadViolations, "payload entries: repository-equivalent collision")
+}
+
+func TestValidatePortablePathRejectsAllWindowsDeviceAliases(t *testing.T) {
+	reserved := []string{
+		"CONIN$", "conout$.txt",
+		"COM1", "com9.log", "COM¹.txt", "com²", "Com³.json",
+		"LPT1", "lpt9.log", "LPT¹.txt", "lpt²", "Lpt³.json",
+	}
+	for _, name := range reserved {
+		t.Run(name, func(t *testing.T) {
+			if err := validatePortablePath("assets/" + name); err == nil || !strings.Contains(err.Error(), "Windows-reserved name") {
+				t.Fatalf("validatePortablePath(%q) = %v", name, err)
+			}
+		})
+	}
+}
+
+func TestVerifyRepositoryBindsRepeatedAssetReferencesToDistinctUses(t *testing.T) {
+	fixture := newFixture(t, []zipFixtureEntry{{name: "logos/cueson.svg", content: "<svg/>"}})
+	manifestPath := filepath.Join(fixture.root, filepath.FromSlash(defaultManifestPath))
+	var manifest importManifest
+	if err := json.Unmarshal(mustRead(t, manifestPath), &manifest); err != nil {
+		t.Fatal(err)
+	}
+	assetPath := "brand/cueson/1.0.0/kit/logos/cueson.svg"
+	manifest.References = []repositoryReference{
+		{Document: "README.md", Asset: "logos/cueson.svg", Reference: `src="` + assetPath + `"`, Purpose: "fallback identity"},
+		{Document: "README.md", Asset: "logos/cueson.svg", Reference: `srcset="` + assetPath + `"`, Purpose: "theme identity"},
+	}
+	data, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	mustWrite(t, manifestPath, append(data, '\n'))
+	mustWrite(t, fixture.documentPath, []byte(`<source srcset="`+assetPath+`"><img src="`+assetPath+`">`))
+
+	result, err := verifyRepository(fixture.root, defaultManifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.violations) != 0 {
+		t.Fatalf("initial violations = %v", result.violations)
+	}
+
+	mustWrite(t, fixture.documentPath, []byte(`<source srcset="other.svg"><img src="`+assetPath+`">`))
+	result, err = verifyRepository(fixture.root, defaultManifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolationContains(t, result, "expected exactly 1 distinct use")
+}
+
+func TestVerifyRepositoryRejectsOneLocatorUsedMoreThanOnce(t *testing.T) {
+	fixture := newFixture(t, []zipFixtureEntry{{name: "logos/cueson.svg", content: "<svg/>"}})
+	reference := `src="brand/cueson/1.0.0/kit/logos/cueson.svg"`
+	mustWrite(t, fixture.documentPath, []byte(reference+"\n"+reference+"\n"))
+	result, err := verifyRepository(fixture.root, defaultManifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolationContains(t, result, "occurs 2 times; expected exactly 1 distinct use")
 }
 
 func TestVerifyRepositoryDetectsArchivePayloadAndReferenceDrift(t *testing.T) {
@@ -151,7 +261,7 @@ func TestVerifyRepositoryDetectsArchivePayloadAndReferenceDrift(t *testing.T) {
 			mutate: func(t *testing.T, fixture testFixture) {
 				mustWrite(t, fixture.documentPath, []byte("reference removed"))
 			},
-			want: "exact reference text is absent",
+			want: "expected exactly 1 distinct use",
 		},
 	}
 	for _, test := range tests {
@@ -299,8 +409,9 @@ func newFixture(t *testing.T, archiveEntries []zipFixtureEntry) testFixture {
 
 	documentRelative := "README.md"
 	documentPath := filepath.Join(root, documentRelative)
-	referenceText := "brand/cueson/1.0.0/kit/" + archiveEntries[0].name
-	mustWrite(t, documentPath, []byte("![Cueson]("+referenceText+")\n"))
+	assetPath := "brand/cueson/1.0.0/kit/" + archiveEntries[0].name
+	referenceText := `src="` + assetPath + `"`
+	mustWrite(t, documentPath, []byte("<img "+referenceText+">\n"))
 	manifest := importManifest{
 		SchemaVersion: 1,
 		Brand:         "cueson",
@@ -361,4 +472,14 @@ func assertViolationContains(t *testing.T, result verificationResult, want strin
 		}
 	}
 	t.Fatalf("violations %q do not contain %q", result.violations, want)
+}
+
+func assertStringsContain(t *testing.T, values []string, want string) {
+	t.Helper()
+	for _, value := range values {
+		if strings.Contains(value, want) {
+			return
+		}
+	}
+	t.Fatalf("values %q do not contain %q", values, want)
 }

@@ -18,6 +18,9 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/unicode/norm"
 )
 
 const (
@@ -393,16 +396,26 @@ func validateManifest(manifest importManifest, manifestRelative string) []string
 	}
 	var priorReference string
 	seenReferences := make(map[string]struct{})
+	referenceAssets := make(map[string]string)
 	for index, reference := range manifest.References {
 		prefix := fmt.Sprintf("manifest: references[%d]", index)
-		if err := validateRepositoryPath(reference.Document); err != nil {
-			violations = append(violations, prefix+": document: "+err.Error())
+		documentError := validateRepositoryPath(reference.Document)
+		if documentError != nil {
+			violations = append(violations, prefix+": document: "+documentError.Error())
 		}
-		if err := validatePortablePath(reference.Asset); err != nil {
-			violations = append(violations, prefix+": asset: "+err.Error())
+		assetError := validatePortablePath(reference.Asset)
+		if assetError != nil {
+			violations = append(violations, prefix+": asset: "+assetError.Error())
 		}
 		if reference.Reference == "" {
 			violations = append(violations, prefix+": reference must not be empty")
+		} else if documentError == nil && assetError == nil {
+			expectedPath, err := documentRelativeAssetPath(reference.Document, manifest.PayloadRoot, reference.Asset)
+			if err != nil {
+				violations = append(violations, prefix+": derive asset reference: "+err.Error())
+			} else if !strings.Contains(reference.Reference, expectedPath) {
+				violations = append(violations, fmt.Sprintf("%s: reference must contain document-relative asset path %q", prefix, expectedPath))
+			}
 		}
 		if reference.Purpose == "" {
 			violations = append(violations, prefix+": purpose must not be empty")
@@ -416,8 +429,24 @@ func validateManifest(manifest importManifest, manifestRelative string) []string
 			violations = append(violations, prefix+": duplicate reference record")
 		}
 		seenReferences[key] = struct{}{}
+		groupKey := reference.Document + "\x00" + reference.Reference
+		if priorAsset, exists := referenceAssets[groupKey]; exists && priorAsset != reference.Asset {
+			violations = append(violations, prefix+": identical document reference text cannot identify different assets")
+		} else {
+			referenceAssets[groupKey] = reference.Asset
+		}
 	}
 	return violations
+}
+
+func documentRelativeAssetPath(document, payloadRoot, asset string) (string, error) {
+	documentDirectory := filepath.FromSlash(path.Dir(document))
+	assetPath := filepath.FromSlash(path.Join(payloadRoot, asset))
+	relative, err := filepath.Rel(documentDirectory, assetPath)
+	if err != nil {
+		return "", err
+	}
+	return filepath.ToSlash(relative), nil
 }
 
 func validHTTPSURL(value string) bool {
@@ -481,7 +510,7 @@ func validatePortablePath(value string) error {
 
 func windowsReservedName(value string) bool {
 	switch value {
-	case "CON", "PRN", "AUX", "NUL", "CLOCK$":
+	case "CON", "PRN", "AUX", "NUL", "CLOCK$", "CONIN$", "CONOUT$", "COM¹", "COM²", "COM³", "LPT¹", "LPT²", "LPT³":
 		return true
 	}
 	if len(value) == 4 && (strings.HasPrefix(value, "COM") || strings.HasPrefix(value, "LPT")) {
@@ -736,6 +765,13 @@ func verifyReferences(root string, manifest importManifest) []string {
 	for _, entry := range manifest.Entries {
 		entrySet[entry.Path] = struct{}{}
 	}
+	type referenceSpan struct {
+		start int
+		end   int
+		label string
+	}
+	documents := make(map[string][]byte)
+	assigned := make(map[string][]referenceSpan)
 	for _, reference := range manifest.References {
 		label := fmt.Sprintf("reference %q -> %q", reference.Document, reference.Asset)
 		if _, exists := entrySet[reference.Asset]; !exists {
@@ -747,33 +783,71 @@ func verifyReferences(root string, manifest importManifest) []string {
 			violations = append(violations, label+": asset: "+err.Error())
 			continue
 		}
-		documentPath, err := resolveRegularRepositoryFile(root, reference.Document)
-		if err != nil {
-			violations = append(violations, label+": document: "+err.Error())
+		content, exists := documents[reference.Document]
+		if !exists {
+			documentPath, err := resolveRegularRepositoryFile(root, reference.Document)
+			if err != nil {
+				violations = append(violations, label+": document: "+err.Error())
+				continue
+			}
+			content, err = os.ReadFile(documentPath)
+			if err != nil {
+				violations = append(violations, label+": read document: "+err.Error())
+				continue
+			}
+			documents[reference.Document] = content
+		}
+		positions := referencePositions(content, []byte(reference.Reference))
+		if len(positions) != 1 {
+			violations = append(violations, fmt.Sprintf("%s: exact reference text occurs %d times; expected exactly 1 distinct use", label, len(positions)))
 			continue
 		}
-		content, err := os.ReadFile(documentPath)
-		if err != nil {
-			violations = append(violations, label+": read document: "+err.Error())
-			continue
+		position := positions[0]
+		span := referenceSpan{start: position, end: position + len(reference.Reference), label: label}
+		for _, prior := range assigned[reference.Document] {
+			if span.start < prior.end && prior.start < span.end {
+				violations = append(violations, fmt.Sprintf("%s: exact reference overlaps the distinct use assigned to %s", label, prior.label))
+			}
 		}
-		if !bytes.Contains(content, []byte(reference.Reference)) {
-			violations = append(violations, label+": exact reference text is absent")
-		}
+		assigned[reference.Document] = append(assigned[reference.Document], span)
 	}
 	return violations
 }
 
+func referencePositions(content, reference []byte) []int {
+	if len(reference) == 0 {
+		return nil
+	}
+	var positions []int
+	for offset := 0; offset <= len(content)-len(reference); {
+		index := bytes.Index(content[offset:], reference)
+		if index < 0 {
+			break
+		}
+		position := offset + index
+		positions = append(positions, position)
+		offset = position + len(reference)
+	}
+	return positions
+}
+
 func caseCollisionViolations(label string, names []string) []string {
 	var violations []string
-	for first := 0; first < len(names); first++ {
-		for second := first + 1; second < len(names); second++ {
-			if names[first] != names[second] && strings.EqualFold(names[first], names[second]) {
-				violations = append(violations, fmt.Sprintf("%s: case-insensitive collision between %q and %q", label, names[first], names[second]))
-			}
+	seen := make(map[string]string, len(names))
+	for _, name := range names {
+		key := repositoryEquivalentPathKey(name)
+		if prior, exists := seen[key]; exists && prior != name {
+			violations = append(violations, fmt.Sprintf("%s: repository-equivalent collision between %q and %q", label, prior, name))
+			continue
 		}
+		seen[key] = name
 	}
 	return violations
+}
+
+func repositoryEquivalentPathKey(value string) string {
+	decomposed := norm.NFD.String(value)
+	return norm.NFD.String(cases.Fold().String(decomposed))
 }
 
 func entryPaths(entries []manifestEntry) []string {

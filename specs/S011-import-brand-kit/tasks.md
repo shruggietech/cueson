@@ -28,7 +28,7 @@
 - [x] T005 Run the blocking Spec Kit analysis gate and remediate every critical, high, or constitution conflict before implementation begins
 - [x] T006 [P] Add protected-tree regression tests for check and fix behavior in `scripts/github-format/main_test.go`
 - [x] T007 Implement byte-protected directory exclusion for `brand/`, `docs/assets/brand/`, `docs/assets/favicons/`, and `docs/assets/fonts/` in `scripts/github-format/main.go`
-- [x] T008 Create the dependency-free Go 1.25 module skeleton in `scripts/brand-verify/go.mod` and `scripts/brand-verify/main.go`
+- [x] T008 Create the isolated Go 1.25 module skeleton in `scripts/brand-verify/go.mod` and `scripts/brand-verify/main.go`
 - [x] T009 [P] Add strict manifest, safe-path, malicious-ZIP, extraction-drift, and reference-verification tests in `scripts/brand-verify/verify_test.go`
 - [x] T010 Implement strict import-manifest decoding, portable path validation, bounded ZIP inspection, extraction bijection, hashing, and repository-reference checks in `scripts/brand-verify/verify.go`
 - [x] T011 Run focused formatter and brand-verifier tests and confirm malicious and drift fixtures fail deterministically
@@ -84,9 +84,11 @@
 - [x] T028 [US3] Run Spec Kit convergence and append and execute any required remediation tasks until convergence is clean
 - [x] T029 [US3] Commit and push the verified S011 branch, publish the formatted official pull request with `Closes #23`, and verify its rendered body
 - [x] T030 [US3] Move issue #23 to Stage `PR review`, retain Slice `S011`, and verify default Status remains empty
-- [ ] T031 [US3] Monitor every current-head CI, CodeQL, policy, Codex, and security result; address every round-one finding and resolve threads only after remediation
-- [ ] T032 [US3] Request exactly one `@codex review` second round only if round one reports findings, then address that round without requesting a third
-- [ ] T033 [US3] Confirm every required check is green, all reviews are satisfied, the pull request is mergeable, issue #23 remains open pending merge, and no merge, tag, release, schema publication, milestone closure, or production mutation occurred
+- [x] T031 [US3] Monitor every current-head CI, CodeQL, policy, Codex, and security result; address every round-one finding and resolve threads only after remediation
+- [x] T032 [US3] Request exactly one commit-bound `@codex review` second round when round one reports findings or its terminal result is stale for the stable current head, then address that round without requesting a third
+- [x] T033 [US3] Remediate every round-two finding with focused regression tests for repository-equivalent Unicode collisions, the complete Windows device-name set, and independently bound consumer references
+- [ ] T034 [US3] Re-run Spec Kit convergence and the complete local verification suite, push the descendant remediation head, reply to and resolve all three review threads, and wait for every hosted gate to return green without requesting a third review
+- [ ] T035 [US3] Confirm every required check is green, all reviews are satisfied, the pull request is mergeable, issue #23 remains open pending merge, and no merge, tag, release, schema publication, milestone closure, or production mutation occurred
 
 **Checkpoint**: S011 is ready for the operator's final review and merge ritual.
 

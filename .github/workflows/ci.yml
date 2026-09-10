@@ -64,6 +64,7 @@ jobs:
           cache-dependency-path: |
             go.sum
             scripts/brand-verify/go.mod
+            scripts/brand-verify/go.sum
             scripts/github-format/go.mod
             scripts/docs-verify/go.mod
             scripts/pr-policy/go.mod
