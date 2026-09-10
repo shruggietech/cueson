@@ -17,7 +17,7 @@ The snapshot builds with `CGO_ENABLED=0` for:
 | `windows/amd64` | `cueson_0.0.0_windows_amd64.zip` | `cueson.exe` |
 | `windows/arm64` | `cueson_0.0.0_windows_arm64.zip` | `cueson.exe` |
 
-Every archive contains exactly the target executable, `cueson.schema.json`, `LICENSE`, and `NOTICE` at its root. `cueson_0.0.0_checksums.txt` covers exactly those six archives. Each target binary produces one target-bound SPDX JSON SBOM named for the corresponding archive, which avoids introducing temporary archive-extraction paths into the document.
+Every archive contains exactly the target executable, `cueson.schema.json`, `LICENSE`, and `NOTICE` at its root. The packaged schema is sourced from the [versioned v0.0.0 release candidate](../schema/releases/v0.0.0/cueson.schema.json), whose bytes must match the canonical embedded source before artifact inspection begins. `cueson_0.0.0_checksums.txt` covers exactly those six archives. Each target binary produces one target-bound SPDX JSON SBOM named for the corresponding archive, which avoids introducing temporary archive-extraction paths into the document.
 
 ## Exact tools
 
@@ -59,7 +59,7 @@ goreleaser check
 goreleaser release --snapshot --clean --skip=publish
 ```
 
-The `.goreleaser.yaml` file fixes the snapshot identity to `0.0.0`, disables release publishing in configuration, closes the build matrix to six targets, normalizes artifact timestamps to the source commit, strips build paths, and injects the `internal/version` release override with a verifier-readable marker consumed by the public version surface. GoReleaser writes only beneath ignored `dist/`.
+The `.goreleaser.yaml` file fixes the snapshot identity to `0.0.0`, packages the versioned release schema, disables release publishing in configuration, closes the build matrix to six targets, normalizes artifact timestamps to the source commit, strips build paths, and injects the `internal/version` release override with a verifier-readable marker consumed by the public version surface. GoReleaser writes only beneath ignored `dist/`.
 
 GoReleaser snapshot mode does not upload artifacts. `release.disable: true` is a second boundary so the checked-in configuration cannot publish even if a caller omits snapshot mode. A future public release requires a separate specification and operator authorization.
 
@@ -73,15 +73,18 @@ go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 0.0.0 -
 
 The verifier:
 
+- requires regular canonical and versioned repository schema files, proves byte identity, and validates their `0.0.0` schema identifier and `schema_version` constant before artifact inspection;
 - requires the exact six archive names and target tuples;
 - accepts only flat regular archive members and rejects absolute paths, traversal, links, devices, duplicates, and unexpected content;
-- compares every packaged schema byte-for-byte with `internal/schema/cueson.schema.json`;
+- compares every packaged and emitted schema byte-for-byte with the same versioned and canonical repository bytes;
 - requires a one-to-one lowercase SHA-256 checksum mapping for the six archives;
 - validates target, `CGO_ENABLED=0`, trimmed paths, source revision, and clean VCS state from Go build information, then requires the release-version marker consumed by the public version surface in every target binary;
 - validates one binary-derived SPDX JSON SBOM per archive with target and source-revision identity;
 - scans Go build information, GoReleaser metadata, and SBOM JSON for structural or supplied local identifiers without treating arbitrary compressed or executable bytes as text;
 - executes only the host-compatible packaged binary and requires exact `version`, `schema --version`, and emitted-schema output;
-- writes `dist/release-evidence.json` only after every assertion passes.
+- writes `dist/release-evidence.json` only after every assertion passes, including the lowercase SHA-256 of the versioned schema as `release_schema_sha256`.
+
+Accepted evidence records version `0.0.0`, the exact full source revision, `release_schema_sha256`, archive, SBOM, and checksum counts of six, the ordered six-target archive and SBOM digests, the compatible-host execution result or `null`, and `published: false`. Existing evidence is not overwritten, so each accepted proof begins from a clean snapshot directory.
 
 Pass additional local values with repeated `-forbid` flags when a machine-specific identifier is not already derived from the repository root, user profile, temporary directory, hostname, or environment.
 
@@ -95,9 +98,11 @@ Syft currently includes variable timestamps and document identifiers in SPDX out
 
 ## Hosted proof
 
-The `Release proof` workflow runs on ordinary pull requests to `main` and explicit manual dispatch. Its `Non-publishing snapshot` job uses `contents: read`, persists no checkout credentials, references no secrets, passes no `GITHUB_TOKEN` to release tools, installs the exact Go tool versions, runs the same snapshot and verifier, and uploads `dist/` only after acceptance for short-lived review.
+The `Release proof` workflow runs on ordinary pull requests to `main`, pushes to `main`, and explicit manual dispatch. Its `Non-publishing snapshot` job uses `contents: read`, persists no checkout credentials, references no secrets, passes no `GITHUB_TOKEN` to release tools, installs the exact Go tool versions, runs the same snapshot and verifier, and uploads `dist/` only after acceptance for short-lived review.
 
 The retained workflow artifact is CI evidence, not a GitHub Release asset. A failed verifier produces a failed check and uploads no candidate bundle. The workflow has no tag or release trigger, write permission, identity-token permission, signing step, or production deployment step.
+
+A pull-request run proves the reviewed head but cannot identify the final release target because the repository uses squash merges. After an authorized S012 merge, the `main` push run builds the resulting squash-merge commit itself. Only that exact successful default-branch proof can supply the proposed publication revision and artifact evidence described by the [release process](release-process.md).
 
 The repository ruleset does not require this check. S009 nevertheless required it as operational evidence on its official pull request; changing the protected required-check set remains separately governed repository-control work.
 
@@ -105,7 +110,7 @@ The repository ruleset does not require this check. S009 nevertheless required i
 
 The `Non-publishing snapshot` job passed on the final head of pull request [#21](https://github.com/shruggietech/cueson/pull/21), together with all CI, CodeQL, and pull-request-policy gates. The operator then merged the pull request into `main` as `3da0a4b4eeae57024d837c5f46e9d62537ffab95` on 2026-09-10, closing issue [#11](https://github.com/shruggietech/cueson/issues/11). Post-merge [CI run 34421328445](https://github.com/shruggietech/cueson/actions/runs/34421328445) and [CodeQL run 34421328401](https://github.com/shruggietech/cueson/actions/runs/34421328401) also completed successfully.
 
-That evidence proves the reviewed snapshot pipeline and verifier reached the default branch. It does not convert the retained workflow artifact into a release asset, and no `v0.0.0` tag or GitHub Release exists. Public release preparation and publication remain governed by the separate release process.
+That evidence proves the reviewed snapshot pipeline and verifier reached the default branch. S012 extends the workflow so the eventual release-preparation squash-merge commit receives a distinct proof rather than inheriting the pull-request head's evidence. It does not convert either retained workflow artifact into a release asset, and no `v0.0.0` tag or GitHub Release exists. Publication remains governed by the separate release process.
 
 ## Complete local gate
 
@@ -117,8 +122,12 @@ go test -count=1 ./...
 go test -race -count=1 ./...
 go vet ./...
 go -C scripts/github-format test -count=1 ./...
+go -C scripts/docs-verify test -count=1 ./...
+go -C scripts/docs-verify run . -repo ../..
 go -C scripts/pr-policy test -count=1 ./...
 go -C scripts/release-verify test -count=1 ./...
+go -C scripts/brand-verify test -count=1 ./...
+go -C scripts/brand-verify run . -repo ../..
 goreleaser check
 goreleaser release --snapshot --clean --skip=publish
 go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 0.0.0 -commit <full-commit> -execute-host

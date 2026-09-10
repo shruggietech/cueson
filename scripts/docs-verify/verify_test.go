@@ -15,7 +15,7 @@ func TestRunCLI(t *testing.T) {
 	if code := runCLI([]string{"-repo", repo}, &stdout, &stderr); code != 0 {
 		t.Fatalf("runCLI() = %d, stderr = %q", code, stderr.String())
 	}
-	if got := stdout.String(); !strings.Contains(got, "checked 14 documents") || !strings.Contains(got, "0 local links") {
+	if got := stdout.String(); !strings.Contains(got, "checked 15 documents") || !strings.Contains(got, "0 local links") {
 		t.Fatalf("unexpected success output: %q", got)
 	}
 
@@ -51,6 +51,33 @@ func TestRequiredDocuments(t *testing.T) {
 		t.Fatal(err)
 	}
 	assertViolation(t, result.violations, "docs/formats/srt.md: required document is missing")
+}
+
+func TestReleaseNotesAreRequired(t *testing.T) {
+	repo := newRepository(t)
+	if err := os.Remove(filepath.Join(repo, filepath.FromSlash("docs/releases/v0.0.0.md"))); err != nil {
+		t.Fatal(err)
+	}
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "docs/releases/v0.0.0.md: required document is missing")
+}
+
+func TestReleaseNotesLocalReference(t *testing.T) {
+	repo := newRepository(t)
+	writeFile(t, repo, "docs/releases/v0.0.0.md", "# Cueson v0.0.0\n\nSee the [schema contract](../schema.md).\n")
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.violations) != 0 {
+		t.Fatalf("unexpected violations: %v", result.violations)
+	}
+	if result.localLinks != 1 {
+		t.Fatalf("localLinks = %d, want 1", result.localLinks)
+	}
 }
 
 func TestRequiredDocumentMustBeRegular(t *testing.T) {

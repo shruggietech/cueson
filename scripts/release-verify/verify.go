@@ -19,15 +19,18 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"unicode/utf8"
 )
 
 const (
 	evidenceFilename          = "release-evidence.json"
 	binaryVersionMarkerPrefix = "cueson-release-version:"
+	releaseSchemaFilename     = "cueson.schema.json"
 )
 
 var (
 	commitPattern           = regexp.MustCompile(`^[0-9a-f]{40}$`)
+	releaseVersionPattern   = regexp.MustCompile(`^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?$`)
 	windowsDrivePathPattern = regexp.MustCompile(`^[A-Za-z]:/`)
 )
 
@@ -51,14 +54,15 @@ type Target struct {
 }
 
 type ReleaseEvidence struct {
-	Version        string   `json:"version"`
-	SourceRevision string   `json:"source_revision"`
-	ArchiveCount   int      `json:"archive_count"`
-	SBOMCount      int      `json:"sbom_count"`
-	ChecksumCount  int      `json:"checksum_count"`
-	HostExecuted   *string  `json:"host_executed"`
-	Targets        []Target `json:"targets"`
-	Published      bool     `json:"published"`
+	Version             string   `json:"version"`
+	SourceRevision      string   `json:"source_revision"`
+	ReleaseSchemaSHA256 string   `json:"release_schema_sha256"`
+	ArchiveCount        int      `json:"archive_count"`
+	SBOMCount           int      `json:"sbom_count"`
+	ChecksumCount       int      `json:"checksum_count"`
+	HostExecuted        *string  `json:"host_executed"`
+	Targets             []Target `json:"targets"`
+	Published           bool     `json:"published"`
 }
 
 type archiveMember struct {
@@ -129,12 +133,9 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	if err != nil {
 		return evidence, fmt.Errorf("resolve repository: %w", err)
 	}
-	canonicalSchema, err := os.ReadFile(filepath.Join(repoDir, "internal", "schema", "cueson.schema.json"))
+	canonicalSchema, releaseSchemaDigest, err := loadRepositorySchemas(repoDir, config.Version)
 	if err != nil {
-		return evidence, fmt.Errorf("read canonical schema: %w", err)
-	}
-	if err := verifySchemaIdentity(canonicalSchema, config.Version); err != nil {
-		return evidence, fmt.Errorf("canonical schema: %w", err)
+		return evidence, err
 	}
 
 	forbidden := deriveForbidden(repoDir, config.Forbidden)
@@ -229,10 +230,49 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	}
 
 	return ReleaseEvidence{
-		Version: config.Version, SourceRevision: config.Commit,
+		Version: config.Version, SourceRevision: config.Commit, ReleaseSchemaSHA256: releaseSchemaDigest,
 		ArchiveCount: len(targets), SBOMCount: len(targets), ChecksumCount: len(checksums),
 		HostExecuted: hostExecuted, Targets: targets, Published: false,
 	}, nil
+}
+
+func loadRepositorySchemas(repoDir, version string) ([]byte, string, error) {
+	if !releaseVersionPattern.MatchString(version) {
+		return nil, "", fmt.Errorf("release version %q is not a safe semantic version", version)
+	}
+	canonicalPath := filepath.Join(repoDir, "internal", "schema", releaseSchemaFilename)
+	canonicalSchema, err := readRegularFile(canonicalPath)
+	if err != nil {
+		return nil, "", fmt.Errorf("read canonical schema: %w", err)
+	}
+	if err := verifySchemaIdentity(canonicalSchema, version); err != nil {
+		return nil, "", fmt.Errorf("canonical schema: %w", err)
+	}
+
+	releasePath := filepath.Join(repoDir, "schema", "releases", "v"+version, releaseSchemaFilename)
+	releaseSchema, err := readRegularFile(releasePath)
+	if err != nil {
+		return nil, "", fmt.Errorf("read versioned release schema: %w", err)
+	}
+	if err := verifySchemaIdentity(releaseSchema, version); err != nil {
+		return nil, "", fmt.Errorf("versioned release schema: %w", err)
+	}
+	if !bytes.Equal(canonicalSchema, releaseSchema) {
+		return nil, "", fmt.Errorf("versioned release schema differs byte-for-byte from canonical schema")
+	}
+	digest := sha256.Sum256(releaseSchema)
+	return canonicalSchema, hex.EncodeToString(digest[:]), nil
+}
+
+func readRegularFile(name string) ([]byte, error) {
+	info, err := os.Lstat(name)
+	if err != nil {
+		return nil, err
+	}
+	if !info.Mode().IsRegular() {
+		return nil, fmt.Errorf("%s is not a regular file", name)
+	}
+	return os.ReadFile(name)
 }
 
 func readArchive(name string, data []byte) (map[string]archiveMember, error) {
@@ -557,6 +597,12 @@ func prohibitedClaim(value any) (string, bool) {
 }
 
 func verifySchemaIdentity(data []byte, version string) error {
+	if !utf8.Valid(data) {
+		return fmt.Errorf("schema is not valid UTF-8")
+	}
+	if bytes.HasPrefix(data, []byte{0xef, 0xbb, 0xbf}) {
+		return fmt.Errorf("schema contains a UTF-8 BOM")
+	}
 	var schema struct {
 		ID         string `json:"$id"`
 		Properties map[string]struct {
@@ -566,7 +612,7 @@ func verifySchemaIdentity(data []byte, version string) error {
 	if err := json.Unmarshal(data, &schema); err != nil {
 		return err
 	}
-	if !strings.Contains(schema.ID, "/v"+version+"/cueson.schema.json") {
+	if !strings.HasSuffix(schema.ID, "/v"+version+"/cueson.schema.json") {
 		return fmt.Errorf("schema id %q does not identify v%s", schema.ID, version)
 	}
 	if got := schema.Properties["schema_version"].Const; got != version {

@@ -21,7 +21,7 @@
 
 Cueson is designed to convert subtitle and caption formats into and out of a canonical, versioned JSON representation called Cue JSON. Its common cue model is intended for direct use by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration. Native format conversion remains planned rather than implemented.
 
-The repository contains a buildable `cueson` executable and the [canonical Draft 2020-12 Cue JSON `0.0.0` schema](internal/schema/cueson.schema.json). The executable provides truthful help, `cueson version`, embedded schema retrieval, and codec-independent exact restoration from valid source envelopes. It does not yet provide a public release or native subtitle-format ingest and render support.
+The repository contains a buildable `cueson` executable, the [canonical Draft 2020-12 Cue JSON `0.0.0` schema](internal/schema/cueson.schema.json), and its byte-identical [versioned release candidate](schema/releases/v0.0.0/cueson.schema.json). The executable provides truthful help, `cueson version`, embedded schema retrieval, and codec-independent exact restoration from valid source envelopes. It does not yet provide a public release or native subtitle-format ingest and render support.
 
 ## Planned stable direction
 
@@ -35,7 +35,7 @@ The ratified implementation baselines cover [architecture](docs/architecture.md)
 
 The official Cueson identity is retained in the repository as the complete [brand kit](brand/cueson/1.0.0/kit/README.md). See the [Cueson brand guide](docs/brand.md) for provenance, integrity verification, asset selection, licensing boundaries, and the [official ShruggieTech download](https://brand.shruggie.tech/cueson/downloads/cueson-brand-1.0.0.zip).
 
-Release-candidate construction and inspection are documented in [release verification](docs/release-verification.md). The separately governed [release process](docs/release-process.md) describes future tag, GitHub Release, immutable schema-copy, milestone, and production-publication actions without authorizing them.
+The dated v0.0.0 history and concise [release notes](docs/releases/v0.0.0.md) are prepared for review, but v0.0.0 remains unpublished: no tag, GitHub Release, release asset, or public schema endpoint exists. [Release verification](docs/release-verification.md) documents the non-publishing six-target proof and the separate post-squash `main` evidence required to bind an exact candidate commit. The governed [release process](docs/release-process.md) defines the later operator decision package and keeps merge, tag, release, milestone, and production actions separately authorized.
 
 ## Development
 
