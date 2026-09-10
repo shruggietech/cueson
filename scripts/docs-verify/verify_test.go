@@ -199,11 +199,21 @@ func TestSymlinkTargetRejected(t *testing.T) {
 }
 
 func TestDuplicateAndSetextSlugs(t *testing.T) {
-	anchors := markdownAnchors("# Héllo, World!\n\n# Héllo, World!\n\nA Title\n=======\n\n## `version`\n")
-	for _, want := range []string{"héllo-world", "héllo-world-1", "a-title", "version"} {
+	anchors := markdownAnchors("# Héllo, World!\n\n# Héllo, World!\n\nA Title\n=======\n\n## `version`\n\n## [Linked heading](https://example.com)\n")
+	for _, want := range []string{"héllo-world", "héllo-world-1", "a-title", "version", "linked-heading"} {
 		if _, ok := anchors[want]; !ok {
 			t.Errorf("missing anchor %q in %v", want, anchors)
 		}
+	}
+}
+
+func TestFencedHTMLAnchorIgnored(t *testing.T) {
+	anchors := documentAnchors("docs/example.md", "```html\n<a id=\"example-only\"></a>\n```\n\n<a id=\"real-anchor\"></a>\n")
+	if _, ok := anchors["example-only"]; ok {
+		t.Errorf("fenced example became an anchor: %v", anchors)
+	}
+	if _, ok := anchors["real-anchor"]; !ok {
+		t.Errorf("missing real explicit anchor: %v", anchors)
 	}
 }
 

@@ -334,6 +334,20 @@ func stripInlineCode(line string) string {
 
 func inlineMarkdownDestinations(line string) []string {
 	var destinations []string
+	for _, link := range inlineMarkdownLinks(line) {
+		destinations = append(destinations, linkDestination(line[link.destinationStart:link.destinationEnd]))
+	}
+	return destinations
+}
+
+type inlineMarkdownLink struct {
+	closingLabel     int
+	destinationStart int
+	destinationEnd   int
+}
+
+func inlineMarkdownLinks(line string) []inlineMarkdownLink {
+	var links []inlineMarkdownLink
 	for search := 0; search < len(line); {
 		offset := strings.Index(line[search:], "](")
 		if offset < 0 {
@@ -356,7 +370,7 @@ func inlineMarkdownDestinations(line string) []string {
 			case ')':
 				depth--
 				if depth == 0 {
-					destinations = append(destinations, linkDestination(line[start:end]))
+					links = append(links, inlineMarkdownLink{closingLabel: closingLabel, destinationStart: start, destinationEnd: end})
 					end++
 					break
 				}
@@ -366,12 +380,12 @@ func inlineMarkdownDestinations(line string) []string {
 			}
 		}
 		if depth != 0 {
-			destinations = append(destinations, strings.TrimSpace(line[start:]))
+			links = append(links, inlineMarkdownLink{closingLabel: closingLabel, destinationStart: start, destinationEnd: len(line)})
 			break
 		}
 		search = end
 	}
-	return destinations
+	return links
 }
 
 func openingLabel(line string, closing int) int {
@@ -516,12 +530,13 @@ func isAnchorDocument(name string) bool {
 
 func documentAnchors(name, content string) map[string]struct{} {
 	anchors := make(map[string]struct{})
-	if strings.HasSuffix(strings.ToLower(name), ".md") || strings.HasSuffix(strings.ToLower(name), ".markdown") {
+	markdown := strings.HasSuffix(strings.ToLower(name), ".md") || strings.HasSuffix(strings.ToLower(name), ".markdown")
+	if markdown {
 		for anchor := range markdownAnchors(content) {
 			anchors[anchor] = struct{}{}
 		}
 	}
-	for _, line := range sanitizedLines(content, false, false) {
+	for _, line := range sanitizedLines(content, markdown, false) {
 		for _, match := range htmlAnchorPattern.FindAllStringSubmatch(line, -1) {
 			anchors[html.UnescapeString(firstNonempty(match[1:]...))] = struct{}{}
 		}
@@ -560,6 +575,7 @@ func markdownAnchors(content string) map[string]struct{} {
 }
 
 func githubSlug(value string) string {
+	value = stripMarkdownLinkDestinations(value)
 	value = html.UnescapeString(htmlTagPattern.ReplaceAllString(value, ""))
 	value = markdownMarkupPattern.ReplaceAllString(value, "")
 	var slug strings.Builder
@@ -572,6 +588,24 @@ func githubSlug(value string) string {
 		}
 	}
 	return slug.String()
+}
+
+func stripMarkdownLinkDestinations(value string) string {
+	links := inlineMarkdownLinks(value)
+	if len(links) == 0 {
+		return value
+	}
+	var output strings.Builder
+	start := 0
+	for _, link := range links {
+		output.WriteString(value[start : link.closingLabel+1])
+		start = link.destinationEnd
+		if start < len(value) {
+			start++
+		}
+	}
+	output.WriteString(value[start:])
+	return output.String()
 }
 
 func firstNonempty(values ...string) string {
