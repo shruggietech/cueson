@@ -31,7 +31,7 @@
 - [x] T008 Format-check `docs/releases/v1.0.0.md` through `scripts/github-format`, prove the formatter changes no bytes, verify its exact final changelog link, and preserve the file unchanged
 - [x] T009 Reconfirm accepted default-branch CI, CodeQL, release proof, and three native packaged smoke results for `2cad4c816340404289b4d1d87179a4071713bb46` and confirm artifact `10273380044` remains available
 - [x] T010 Reconfirm no local or remote `v1.0.0` tag and no GitHub Release exists immediately before the authority checkpoint; stop on any conflicting or partial state
-- [ ] T011 Present the exact frozen transaction to the operator and obtain explicit authorization to create and push annotated tag `v1.0.0` and publish `Cueson v1.0.0` from artifact `10273380044`
+- [x] T011 Present the exact frozen transaction to the operator and obtain explicit authorization to create and push annotated tag `v1.0.0` and publish `Cueson v1.0.0` from artifact `10273380044`
 
 **Checkpoint**: Analysis and preflight are clean. Halt here unless exact tag and release publication authority has been granted.
 
@@ -43,10 +43,10 @@
 
 **Independent Test**: Read the tag and release directly from GitHub and compare tag target, release state, body, and thirteen asset names with the frozen contract.
 
-- [ ] T012 [US1] After exact authority, move issue #38 to Stage `In progress`, clear default Status, create unsigned annotated tag `v1.0.0` at `2cad4c816340404289b4d1d87179a4071713bb46`, and prove its local object type and peeled target before push
-- [ ] T013 [US1] Push only `refs/tags/v1.0.0`, then read back the remote annotated tag and prove its peeled target equals the authorized revision
-- [ ] T014 [US1] Publish `Cueson v1.0.0` as a public non-draft non-prerelease GitHub Release using unchanged `docs/releases/v1.0.0.md` and the thirteen explicit accepted asset paths
-- [ ] T015 [US1] Immediately read the GitHub Release back and verify its tag, target, name, state, body structure, final changelog link, and exact thirteen-name asset inventory with zero internal evidence or metadata files
+- [x] T012 [US1] After exact authority, move issue #38 to Stage `In progress`, clear default Status, create unsigned annotated tag `v1.0.0` at `2cad4c816340404289b4d1d87179a4071713bb46`, and prove its local object type and peeled target before push
+- [x] T013 [US1] Push only `refs/tags/v1.0.0`, then read back the remote annotated tag and prove its peeled target equals the authorized revision
+- [x] T014 [US1] Publish `Cueson v1.0.0` as a public non-draft non-prerelease GitHub Release using unchanged `docs/releases/v1.0.0.md` and the thirteen explicit accepted asset paths
+- [x] T015 [US1] Immediately read the GitHub Release back and verify its tag, target, name, state, body structure, final changelog link, and exact thirteen-name asset inventory with zero internal evidence or metadata files
 
 **Checkpoint**: User Story 1 is publicly visible and exactly matches the authorized release identity and inventory.
 
@@ -58,12 +58,12 @@
 
 **Independent Test**: Download the public release to a new directory, compare thirteen digests, apply archive checksums, inspect archive and SBOM semantics, execute the compatible binary, and audit protected boundaries.
 
-- [ ] T016 [US2] Move issue #38 to Stage `Release verification`, clear default Status, download all public v1.0.0 assets into a newly created clean temporary directory, and prove the downloaded filename set and sizes equal the thirteen-file contract
-- [ ] T017 [US2] Compare all thirteen downloaded SHA-256 values with `release-publication-contract.json` and apply the six-entry checksum manifest as an exact archive bijection
-- [ ] T018 [US2] Inspect all six public archives for safe four-member structure, executable identity, schema bytes, legal bytes and modes, release marker, and expected target build identity
-- [ ] T019 [US2] Inspect all six public SBOMs for matching platform, version `1.0.0`, source revision, catalog shape, and target association
-- [ ] T020 [US2] Extract the public Windows amd64 archive safely, run `version`, `schema --version`, and schema emission non-interactively, and prove exact `1.0.0` output plus byte identity with the tagged immutable schema
-- [ ] T021 [US2] Verify milestone v1.0.0 and epic #29 remain open and no production `cueson.io`, public schema-hosting, signature, attestation, or other excluded action occurred
+- [x] T016 [US2] Move issue #38 to Stage `Release verification`, clear default Status, download all public v1.0.0 assets into a newly created clean temporary directory, and prove the downloaded filename set and sizes equal the thirteen-file contract
+- [x] T017 [US2] Compare all thirteen downloaded SHA-256 values with `release-publication-contract.json` and apply the six-entry checksum manifest as an exact archive bijection
+- [x] T018 [US2] Inspect all six public archives for safe four-member structure, executable identity, schema bytes, legal bytes and modes, release marker, and expected target build identity
+- [x] T019 [US2] Inspect all six public SBOMs for matching platform, version `1.0.0`, source revision, catalog shape, and target association
+- [x] T020 [US2] Extract the public Windows amd64 archive safely, run `version`, `schema --version`, and schema emission non-interactively, and prove exact `1.0.0` output plus byte identity with the tagged immutable schema
+- [x] T021 [US2] Verify milestone v1.0.0 and epic #29 remain open and no production `cueson.io`, public schema-hosting, signature, attestation, or other excluded action occurred
 
 **Checkpoint**: User Story 2 is independently complete and the public release is verified without crossing another protected boundary.
 
@@ -75,11 +75,11 @@
 
 **Independent Test**: Inspect all release-facing prose, run offline documentation and repository checks, and verify the issue, Project, pull request, hosted checks, and reviews.
 
-- [ ] T022 [P] [US3] Update current release identity, download, status, capability, and verification links in `README.md` while retaining explicit deferred boundaries
-- [ ] T023 [P] [US3] Update released-state, immutable-tag, verified-asset, protected-boundary, and milestone-lifecycle prose in `docs/release-process.md`, `docs/release-verification.md`, and `docs/schema.md`
-- [ ] T024 [P] [US3] Update release topology, exact publication ownership, and current delivery status in `docs/architecture.md`, `docs/cli.md`, and `docs/project-management.md`
-- [ ] T025 [US3] Record the post-tag documentation and release-verification update under `[Unreleased]` in `CHANGELOG.md` without modifying the tagged v1.0.0 notes or versioned schema
-- [ ] T026 [US3] Search maintained documentation for current candidate or unpublished-v1 claims and capability overclaims, then remediate false current-state statements while preserving explicit historical context
+- [x] T022 [P] [US3] Update current release identity, download, status, capability, and verification links in `README.md` while retaining explicit deferred boundaries
+- [x] T023 [P] [US3] Update released-state, immutable-tag, verified-asset, protected-boundary, and milestone-lifecycle prose in `docs/release-process.md`, `docs/release-verification.md`, and `docs/schema.md`
+- [x] T024 [P] [US3] Update release topology, exact publication ownership, and current delivery status in `docs/architecture.md`, `docs/cli.md`, and `docs/project-management.md`
+- [x] T025 [US3] Record the post-tag documentation and release-verification update under `[Unreleased]` in `CHANGELOG.md` without modifying the tagged v1.0.0 notes or versioned schema
+- [x] T026 [US3] Search maintained documentation for current candidate or unpublished-v1 claims and capability overclaims, then remediate false current-state statements while preserving explicit historical context
 - [ ] T027 [US3] Run all quickstart verification including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, mojibake, and tagged-file-immutability checks
 - [ ] T028 [US3] Run Spec Kit convergence against `specs/S020-publish-v1-release/` and append and execute required remediation tasks until convergence is clean
 - [ ] T029 [US3] Obtain explicit branch push and official pull-request publication authority if it has not already been granted

@@ -1,8 +1,8 @@
 # Conversion contract
 
-**Current source status:** v1.0.0 stable release candidate
+**Current status:** Published in v1.0.0
 
-**Published release status:** v0.0.0 does not include conversion
+**Historical release status:** v0.0.0 does not include conversion
 
 `cueson convert` projects validated common-model subtitle semantics into the requested native format. Conversion is model-driven and never claims byte identity. Exact source restoration remains the responsibility of `cueson restore`.
 

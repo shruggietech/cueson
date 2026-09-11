@@ -1,8 +1,8 @@
 # Release process
 
-**Current state:** v0.0.0 publicly released and independently verified; v1.0.0 stable release candidate prepared without publication
+**Current state:** v1.0.0 publicly released and independently verified; repository reconciliation in progress
 
-This document defines the protected release lifecycle around Cueson's repository-owned candidate proof and authorized public releases. It does not provide an executable publishing path or grant release authority by itself. The runnable, non-publishing v1 candidate checks and historical v0.0.0 publication evidence are recorded in [release verification](release-verification.md).
+This document defines the protected release lifecycle around Cueson's repository-owned candidate proof and authorized public releases. It does not provide an executable publishing path or grant release authority by itself. The runnable candidate checks and independent v0.0.0 and v1.0.0 publication evidence are recorded in [release verification](release-verification.md).
 
 ## Authority split
 
@@ -17,6 +17,12 @@ The repository has a buildable `0.0.0` executable, an embedded `0.0.0` Cue JSON 
 The immutable annotated tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0) peels to `b294a6952c8bd041d852c502f5d7206c0b58edd6`. The [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) is public, final, and contains exactly six archives, six target-bound SPDX JSON SBOMs, and one checksum manifest copied byte for byte from accepted default-branch proof run [34543376814](https://github.com/shruggietech/cueson/actions/runs/34543376814).
 
 The release did not publish the canonical schema endpoint, add a signature or attestation, activate production `cueson.io`, implement native subtitle codecs, or itself close milestone v0.0.0. The milestone was closed only through later authorized reconciliation. GitHub Actions artifacts from later candidate runs remain review evidence rather than release assets unless another release is explicitly authorized.
+
+## Published v1.0.0 release
+
+The immutable annotated tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) peels to `2cad4c816340404289b4d1d87179a4071713bb46`. The [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) is public, final, and contains exactly six archives, six target-bound SPDX JSON SBOMs, and one checksum manifest copied byte for byte from accepted default-branch proof run [34621429626](https://github.com/shruggietech/cueson/actions/runs/34621429626).
+
+S020 independently downloaded all thirteen files, matched their names, sizes, and SHA-256 values with the accepted contract, applied the six-archive checksum bijection, reran structural and semantic verification against the public bytes, and executed the Windows amd64 package. Publication did not host the schema at `cueson.io`, activate production configuration, add signatures or attestations, merge the S020 pull request, or close the v1 epic or milestone.
 
 ## Candidate readiness
 
@@ -44,7 +50,7 @@ For v0.0.0, S012 prepared the publication state without weakening the existing n
 5. The default-branch `release-evidence.json` recorded the full source revision, version, `release_schema_sha256`, target inventory, archive and SBOM digests, counts, compatible-host execution result, and `published: false`.
 6. S013 froze the complete decision package, received exact tag and release authority, published only the authorized state, and verified the public result independently.
 
-The checked-in GoReleaser configuration remains snapshot-only and has publication disabled. A release slice must not repurpose that reviewed configuration into a hidden publication mechanism. S018 froze the v1 behavior without changing development identity. S019 promotes software, schema, and format maturity to the 1.0.0 stable candidate, admits the immutable v1 schema, finalizes the dated changelog and concise release notes, and proves the exact non-publishing candidate. Issue #38 retains tag and GitHub Release publication.
+The checked-in GoReleaser configuration remains snapshot-only and has publication disabled. A release slice must not repurpose that reviewed configuration into a hidden publication mechanism. S018 froze the v1 behavior without changing development identity. S019 promoted software, schema, and format maturity to the 1.0.0 stable candidate, admitted the immutable v1 schema, finalized the dated changelog and concise release notes, and proved the exact non-publishing candidate. S020 published and independently verified that exact candidate under explicit authority.
 
 ## v1.0.0 candidate preparation lifecycle
 
@@ -98,7 +104,7 @@ The release must use the verified artifacts associated with the approved source 
 
 The versioned repository schema, the schema embedded in every official binary, and the schema distributed in every release archive must be byte-identical. Their schema identity and version must match the release version.
 
-After release, `schema/releases/v0.0.0/cueson.schema.json` is immutable. The reviewed `schema/releases/v1.0.0/cueson.schema.json` candidate is also treated as immutable once admitted and must match the canonical, embedded, emitted, and packaged candidate schema byte-for-byte. A correction that changes candidate contract bytes before publication requires explicit re-admission and complete candidate proof; a correction after publication requires a new software and schema version. Neither path may overwrite an already released copy or move an existing tag to conceal the change.
+After release, `schema/releases/v0.0.0/cueson.schema.json` and `schema/releases/v1.0.0/cueson.schema.json` are immutable. The v1.0.0 copy matches the canonical, embedded, emitted, and packaged schema byte-for-byte. Any correction now requires a new software and schema version; no path may overwrite an already released copy or move an existing tag to conceal the change.
 
 The canonical `https://cueson.io/schema/v0.0.0/cueson.schema.json` value is an identifier before public-domain activation. Consumers may use the embedded, repository, or release-artifact copy. Publishing that URL is intentionally deferred until the separately specified post-v1 production phase.
 
@@ -122,7 +128,7 @@ If any comparison fails, stop dependent actions, retain the evidence, and ask th
 
 S013 publication verification deliberately left the v0.0.0 milestone open because publication authority did not include milestone closure. A later separately authorized reconciliation closed it after the public release and repository record were verified.
 
-The v1.0.0 milestone remains open throughout S019 candidate preparation and issue #38 publication. It may close only after the v1 release and independent post-publication verification succeed and the operator separately authorizes lifecycle reconciliation.
+The v1.0.0 milestone remains open after successful publication and independent post-publication verification. It may close only after the S020 delivery record merges and the operator separately authorizes epic and milestone lifecycle reconciliation.
 
 For a future abandoned release, its milestone may be retired or its remaining commitments moved only through an explicit recorded decision. Repository status must continue to reflect the actual publication outcome.
 
@@ -130,4 +136,4 @@ For a future abandoned release, its milestone may be retired or its remaining co
 
 After publication, maintainers retain the fresh `[Unreleased]` section for later work, preserve the released changelog and schema, complete post-merge housekeeping, and record any release follow-up as new issues rather than editing historical evidence. Milestone reconciliation follows only when separately authorized.
 
-Signatures, attestations, public schema hosting, DNS, redirects, TLS, documentation hosting, and other production `cueson.io` work remain separate future outcomes. None is implied by the existing snapshot verifier or by a successful v0.0.0 release.
+Signatures, attestations, public schema hosting, DNS, redirects, TLS, documentation hosting, and other production `cueson.io` work remain separate future outcomes. None is implied by the existing snapshot verifier or by the successful v0.0.0 and v1.0.0 GitHub releases.

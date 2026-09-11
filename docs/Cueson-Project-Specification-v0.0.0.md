@@ -2945,7 +2945,7 @@ The checklist below is the foundation closeout ledger. Checked items are backed 
 - [x] the GitHub Project is configured with the required `Stage` and `Slice` fields;
 - [x] PR issue-link enforcement exists;
 - [x] eligible non-Dependabot pull requests receive automatic first-round Codex review;
-- [ ] automation can request at most one second Codex review after first-round findings are resolved;
+- [x] automation can request at most one second Codex review after first-round findings are resolved;
 - [x] GitHub body publication readback is part of the agent contract;
 - [x] GitHub code-quality and security settings are enabled as applicable;
 - [x] protected-default-branch ruleset is configured;
@@ -2967,45 +2967,45 @@ The v1 release MUST NOT ship until all of the following are true:
 
 This gate requires schema identity across reviewed repository and candidate artifacts, not advance activation of the public `cueson.io` endpoint. Public schema hosting and its remote byte check remain a separately authorized post-v1 production gate. The release-candidate verification item refers to issue #37; issue #38 owns later publication and independent public-download verification.
 
-- [ ] every documented SRT grammar feature has parser fixtures;
-- [ ] every documented SRT grammar feature has renderer fixtures where applicable;
-- [ ] every documented WebVTT structure has parser fixtures;
-- [ ] every documented WebVTT structure has renderer fixtures where applicable;
-- [ ] all accepted SRT fixtures restore byte-for-byte;
-- [ ] all accepted WebVTT fixtures restore byte-for-byte;
-- [ ] source hashes are verified during restore;
-- [ ] source `created`, `modified`, and `accessed` timestamps are captured before source reads;
-- [ ] restorable timestamps are reapplied after byte verification;
-- [ ] timestamp restoration is read back and verified;
-- [ ] unsupported creation/birth-time restoration is reported explicitly rather than silently ignored;
-- [ ] `--strict-metadata` enforces full timestamp reproduction when requested;
-- [ ] SRT derived speaker detection never mutates raw cue text;
-- [ ] WebVTT rolling cues are preserved one-to-one;
-- [ ] non-cue WebVTT blocks retain total source order;
-- [ ] no accepted source construct is silently discarded;
-- [ ] generated documents validate against the embedded v1.0.0 schema;
-- [ ] the common cue model exposes subtitle text through `payload.raw_text`, `payload.plain_text`, and `payload.lines` for SRT and WebVTT;
-- [ ] text consumers do not need to decode `data_base64` to access cue text;
-- [ ] `format_support` truthfully reports support maturity and capability state;
-- [ ] canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte;
-- [ ] SRT-to-WebVTT conversion passes the compatibility matrix;
-- [ ] WebVTT-to-SRT conversion reports every known unrepresentable semantic;
-- [ ] `--strict` blocks lossy conversion;
-- [ ] Windows binaries pass smoke tests;
-- [ ] macOS binaries pass smoke tests;
-- [ ] Linux binaries pass smoke tests;
-- [ ] amd64 and arm64 release artifacts are produced for the supported matrix;
-- [ ] CLI help documents every command, option, and exit code;
+- [x] every documented SRT grammar feature has parser fixtures;
+- [x] every documented SRT grammar feature has renderer fixtures where applicable;
+- [x] every documented WebVTT structure has parser fixtures;
+- [x] every documented WebVTT structure has renderer fixtures where applicable;
+- [x] all accepted SRT fixtures restore byte-for-byte;
+- [x] all accepted WebVTT fixtures restore byte-for-byte;
+- [x] source hashes are verified during restore;
+- [x] source `created`, `modified`, and `accessed` timestamps are captured before source reads;
+- [x] restorable timestamps are reapplied after byte verification;
+- [x] timestamp restoration is read back and verified;
+- [x] unsupported creation/birth-time restoration is reported explicitly rather than silently ignored;
+- [x] `--strict-metadata` enforces full timestamp reproduction when requested;
+- [x] SRT derived speaker detection never mutates raw cue text;
+- [x] WebVTT rolling cues are preserved one-to-one;
+- [x] non-cue WebVTT blocks retain total source order;
+- [x] no accepted source construct is silently discarded;
+- [x] generated documents validate against the embedded v1.0.0 schema;
+- [x] the common cue model exposes subtitle text through `payload.raw_text`, `payload.plain_text`, and `payload.lines` for SRT and WebVTT;
+- [x] text consumers do not need to decode `data_base64` to access cue text;
+- [x] `format_support` truthfully reports support maturity and capability state;
+- [x] canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte;
+- [x] SRT-to-WebVTT conversion passes the compatibility matrix;
+- [x] WebVTT-to-SRT conversion reports every known unrepresentable semantic;
+- [x] `--strict` blocks lossy conversion;
+- [x] Windows binaries pass smoke tests;
+- [x] macOS binaries pass smoke tests;
+- [x] Linux binaries pass smoke tests;
+- [x] amd64 and arm64 release artifacts are produced for the supported matrix;
+- [x] CLI help documents every command, option, and exit code;
 - [x] the approved externally produced Cueson brand kit is present in the repository with its original archive, complete safe extraction, independent integrity manifest, local consumer references, and offline verifier;
-- [ ] GitHub code-quality and security settings are verified;
-- [ ] eligible release pull requests satisfied the two-round Codex review protocol or have an explicit operator override;
-- [ ] no pull request was merged by an AI agent without a pull-request-specific single-use operator authorization;
-- [ ] post-merge housekeeping evidence exists for v1-bound implementation pull requests;
-- [ ] security and dependency scans are green;
-- [ ] fuzz regression corpus is green;
-- [ ] release notes contain highlights only and end with the tagged changelog link;
-- [ ] v1 release-candidate verification issue is complete;
-- [ ] no pre-v1 or v1 release step has mutated production `cueson.io` Cloudflare configuration.
+- [x] GitHub code-quality and security settings are verified;
+- [x] eligible release pull requests satisfied the two-round Codex review protocol or have an explicit operator override;
+- [x] no pull request was merged by an AI agent without a pull-request-specific single-use operator authorization;
+- [x] post-merge housekeeping evidence exists for v1-bound implementation pull requests;
+- [x] security and dependency scans are green;
+- [x] fuzz regression corpus is green;
+- [x] release notes contain highlights only and end with the tagged changelog link;
+- [x] v1 release-candidate verification issue is complete;
+- [x] no pre-v1 or v1 release step has mutated production `cueson.io` Cloudflare configuration.
 
 ## References
 
