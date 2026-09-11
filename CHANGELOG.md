@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Published unsigned annotated tag `v1.0.0` and the exact thirteen-asset GitHub Release from accepted default-branch proof for `2cad4c816340404289b4d1d87179a4071713bb46`.
+
+### Changed
+
+- Reconciled current repository documentation after independently downloading and verifying every public v1.0.0 archive, SPDX JSON SBOM, and checksum file against the accepted release evidence.
+
 ## [1.0.0] - 2026-09-11
 
 ### Changed

@@ -2,9 +2,9 @@
 
 ## Supported versions
 
-The published v0.0.0 release is an immutable envelope-only foundation. Current security hardening occurs on the v1.0.0 stable candidate line while tag and GitHub Release publication remain pending. Candidate status does not make v1 a published release, and publication never extends a release beyond its documented capability boundary.
+The published v1.0.0 release is the current stable line and includes the documented SubRip, WebVTT, conversion, validation, inspection, completion, schema, and restoration boundaries. The published v0.0.0 release remains an immutable envelope-only historical foundation. Publication never extends either release beyond its documented capability boundary.
 
-Security corrections are applied to the current candidate line and assessed for any affected published release. Supported-version declarations accompany published stable releases and do not authorize rewriting an immutable release artifact or schema.
+Security corrections are applied to current development and assessed for every affected published release. Supported-version declarations accompany published stable releases and do not authorize rewriting an immutable release artifact or schema.
 
 ## Reporting a vulnerability
 

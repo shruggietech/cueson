@@ -1,6 +1,6 @@
 # Cueson Compatibility Contract
 
-**Status:** v1.0.0 stable release candidate; v1 is not yet published
+**Status:** v1.0.0 stable release published and independently verified
 
 This document defines which Cueson surfaces receive a public compatibility promise, how format capability states are interpreted, and which release and platform claims are currently valid.
 
@@ -17,11 +17,11 @@ Go packages remain under `internal/` and carry no public source-compatibility or
 
 The published v0.0.0 release is an immutable envelope-only foundation. Its executable, schema, archive set, and versioned schema copy remain unchanged and do not contain native SubRip or WebVTT ingest, rendering, conversion, validation, inspection, or completion.
 
-Current candidate source uses executable and schema version 1.0.0. It implements the complete stable v1 command set and native SubRip and WebVTT workflows, and both format capability declarations are `stable`. This maturity claim applies to the reviewed candidate contract; the only published binary release remains v0.0.0 until the separately authorized v1 publication transaction completes.
+The published v1.0.0 executable and schema implement the complete stable v1 command set and native SubRip and WebVTT workflows, and both format capability declarations are `stable`. Immutable tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) and the verified [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) identify the exact stable contract.
 
 Starting with v1.0.0, incompatible changes to either public interface require a new major version. Compatible additions may use a minor version, and compatible corrections may use a patch version. Official Cueson executable and schema versions remain equal; a third-party producer's own version is independent from the Cue JSON schema version it targets.
 
-No mutable `latest` schema identity is part of the contract. Every released schema copy is immutable. The v1.0.0 canonical and immutable candidate schemas are available from the repository and embedded executable; their `cueson.io` URI remains an identifier until production hosting is separately authorized.
+No mutable `latest` schema identity is part of the contract. Every released schema copy is immutable. The v1.0.0 canonical and immutable schemas are available from the repository, release archives, and embedded executable; their `cueson.io` URI remains an identifier until production hosting is separately authorized.
 
 ## Format capability states
 
@@ -45,6 +45,6 @@ Core CLI, schema, parsing, rendering, conversion, validation, inspection, and co
 
 ## Installation and release boundary
 
-Users who need a published binary can download v0.0.0 from GitHub and verify it with the published checksum manifest. Users evaluating the stable v1 candidate must currently build or run version 1.0.0 from source with Go 1.25.0 or newer.
+Users can download v1.0.0 from GitHub and verify the selected archive with the published `cueson_1.0.0_checksums.txt` manifest. Building or running from source requires Go 1.25.0 or newer.
 
-The v1.0.0 candidate executable, immutable schema, and release notes exist as reviewed repository records. A v1 tag, GitHub Release, public schema endpoint, and production documentation site do not exist yet. Merge, publication, milestone closure, schema hosting, and any production `cueson.io` change remain distinct steps under the [release process](release-process.md).
+The v1.0.0 executable, immutable schema, release notes, annotated tag, and thirteen-asset GitHub Release are published and independently verified. Public schema hosting, the production documentation site, milestone closure, and any production `cueson.io` change remain distinct steps under the [release process](release-process.md).

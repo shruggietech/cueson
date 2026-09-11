@@ -1,6 +1,6 @@
 # Contributing to Cueson
 
-Cueson has a published, immutable v0.0.0 envelope-only foundation and a v1.0.0 stable release candidate implementing the complete SubRip, WebVTT, conversion, validation, inspection, and completion workflows. The v1 candidate is prepared in source but not yet tagged or published. Development and verification require Go 1.25.0 or newer.
+Cueson v1.0.0 is published with stable SubRip, WebVTT, conversion, validation, inspection, completion, schema, and restoration workflows. The immutable v0.0.0 envelope-only foundation remains available as historical evidence. Development and verification require Go 1.25.0 or newer.
 
 Start with an issue so the intended outcome, dependencies, and verification can be agreed before implementation begins. Read the [architecture](docs/architecture.md), [CLI contract](docs/cli.md), [schema contract](docs/schema.md), and [compatibility contract](docs/compatibility.md) before changing public surfaces. Format or conversion work must also begin with the dedicated [SubRip](docs/formats/srt.md), [WebVTT](docs/formats/webvtt.md), and [conversion](docs/conversion.md) contracts. Read the [brand guide](docs/brand.md) before referencing, updating, or distributing Cueson identity assets.
 

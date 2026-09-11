@@ -1,12 +1,10 @@
 # SubRip format contract
 
-**Current source status:** v1.0.0 stable release candidate
+**Current status:** Stable and published in v1.0.0
 
-**Published release status:** v0.0.0 `envelope_only`
+**Historical release status:** v0.0.0 `envelope_only`
 
-**Published release status:** v0.0.0 `envelope_only`
-
-Current candidate source implements stable native SubRip detection, decoding, semantic ingest, exact source restoration, deterministic model-driven rendering, conversion, validation, and inspection. This contract defines accepted grammar and tolerated variants; it does not claim that the published v0.0.0 executable contains the codec or that a v1 release has been published.
+Cueson v1.0.0 implements stable native SubRip detection, decoding, semantic ingest, exact source restoration, deterministic model-driven rendering, conversion, validation, and inspection. This contract defines accepted grammar and tolerated variants; the historical v0.0.0 executable remains envelope-only and does not contain the codec.
 
 ## Capability matrix
 
@@ -19,7 +17,7 @@ Current candidate source implements stable native SubRip detection, decoding, se
 | Model-driven rendering | Stable | `cueson render --to srt` emits canonical SubRip from structured fields. |
 | Cross-format conversion | Stable | `cueson convert INPUT --to vtt` projects common cue semantics and reports every known incompatible SubRip feature. |
 | Validation and inspection | Stable | `cueson validate` checks native grammar without producing Cue JSON; `cueson inspect` reports privacy-bounded structural facts. |
-| Stable SubRip support | Candidate | The v1.0.0 contract is stable in candidate source but is not yet published. |
+| Stable SubRip support | Stable | The v1.0.0 contract is published and independently verified. |
 
 ## Source and decoding
 
@@ -71,7 +69,7 @@ SubRip-to-WebVTT conversion preserves cue order, integer-millisecond timing, ove
 
 ## Fixture and stability boundary
 
-The manifest-governed `testdata/fixtures/subrip/`, `testdata/malformed/subrip/`, `testdata/fuzz/`, and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. That evidence supports the stable candidate declaration; tag and release publication remain separate.
+The manifest-governed `testdata/fixtures/subrip/`, `testdata/malformed/subrip/`, `testdata/fuzz/`, and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. That evidence supports the stable v1.0.0 release, which is published and independently verified.
 
 ## Conformance evidence index
 

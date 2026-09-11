@@ -78,6 +78,20 @@ func TestReferenceMarkersAndStaleClaims(t *testing.T) {
 	assertViolation(t, result.violations, "CONTRIBUTING.md: stale capability or release claim remains: Cueson is an unreleased v0.0.0 foundation candidate")
 }
 
+func TestPublishedV1DocsRejectCandidateClaims(t *testing.T) {
+	repo := newRepository(t)
+	writeFile(t, repo, "docs/formats/srt.md", readFileForVerifierTest(t, repo, "docs/formats/srt.md")+"\nThat evidence supports the stable candidate declaration; tag and release publication remain separate.\n")
+	writeFile(t, repo, "docs/cueson-media-format-guide.html", "<p>Current v1.0.0 candidate boundary: The candidate is not yet published. SRT is a v1.0.0 release candidate.</p>\n")
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "docs/formats/srt.md: stale capability or release claim remains: stable candidate declaration; tag and release publication remain separate")
+	assertViolation(t, result.violations, "docs/cueson-media-format-guide.html: stale capability or release claim remains: Current v1.0.0 candidate boundary:")
+	assertViolation(t, result.violations, "docs/cueson-media-format-guide.html: stale capability or release claim remains: The candidate is not yet published")
+	assertViolation(t, result.violations, "docs/cueson-media-format-guide.html: stale capability or release claim remains: v1.0.0 release candidate")
+}
+
 func TestFormatMatrixRowsMustAppearInMatchingGuide(t *testing.T) {
 	repo := newRepository(t)
 	writeFile(t, repo, "docs/formats/srt.md", "# SRT\n")
@@ -125,15 +139,15 @@ func TestV1ReleaseNotesRejectPrematurePublicationClaim(t *testing.T) {
 	assertViolation(t, result.violations, "docs/releases/v1.0.0.md: stale capability or release claim remains: is now published")
 }
 
-func TestV1ChangelogRequiresFreshEmptyUnreleasedSection(t *testing.T) {
+func TestV1ChangelogRequiresUnreleasedBeforeReleaseSection(t *testing.T) {
 	repo := newRepository(t)
-	changelog := strings.Replace(readFileForVerifierTest(t, repo, "CHANGELOG.md"), "## [Unreleased]\n\n## [1.0.0]", "## [Unreleased]\n\n### Added\n\n- Later work.\n\n## [1.0.0]", 1)
+	changelog := strings.Replace(readFileForVerifierTest(t, repo, "CHANGELOG.md"), "## [Unreleased]\n\n### Added\n\n- Post-release work.\n\n", "", 1)
 	writeFile(t, repo, "CHANGELOG.md", changelog)
 	result, err := verifyRepository(repo)
 	if err != nil {
 		t.Fatal(err)
 	}
-	assertViolation(t, result.violations, "CHANGELOG.md: Unreleased must be fresh and empty immediately before the dated 1.0.0 section")
+	assertViolation(t, result.violations, "CHANGELOG.md: Unreleased must precede the dated 1.0.0 section")
 }
 
 func TestCurrentV1CandidateAndWorkingSpecificationMarkers(t *testing.T) {
@@ -348,10 +362,10 @@ func newRepository(t *testing.T) string {
 	}
 	writeFile(t, repo, "README.md", readme.String())
 	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative\n")
-	writeFile(t, repo, "CHANGELOG.md", "# Changelog\n\n## [Unreleased]\n\n## [1.0.0] - 2026-09-11\n\n[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD\n[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0\n")
-	writeFile(t, repo, "README.md", readme.String()+"\nv1.0.0 stable release candidate; v0.0.0 is published; v1 is not yet published.\n")
-	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative stable release candidate\n")
-	writeFile(t, repo, "docs/compatibility.md", "# Compatibility\n\nCLI Cue JSON Schema internal/ v0.0.0 v1.0.0 Windows macOS Linux production stable release candidate\n")
+	writeFile(t, repo, "CHANGELOG.md", "# Changelog\n\n## [Unreleased]\n\n### Added\n\n- Post-release work.\n\n## [1.0.0] - 2026-09-11\n\n[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD\n[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0\n")
+	writeFile(t, repo, "README.md", readme.String()+"\nv1.0.0 released and independently verified; v0.0.0 remains historical; v1.0.0 GitHub Release.\n")
+	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative stable schema released and independently verified\n")
+	writeFile(t, repo, "docs/compatibility.md", "# Compatibility\n\nCLI Cue JSON Schema internal/ v0.0.0 v1.0.0 Windows macOS Linux production stable release published and independently verified\n")
 	writeFile(t, repo, "docs/Cueson-Project-Specification-v0.0.0.md", "# Working specification\n\ncanonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte\n\nv1 release-candidate verification issue is complete\n")
 	writeFile(t, repo, "docs/releases/v1.0.0.md", "# Cueson v1.0.0\n\nstable Cue JSON; unsigned and unattested\n\nFull changelog: https://github.com/shruggietech/cueson/blob/v1.0.0/CHANGELOG.md\n")
 	writeFile(t, repo, "docs/formats/srt.md", "# SRT\n\n`srt-example`\n")

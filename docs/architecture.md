@@ -1,10 +1,10 @@
 # Cueson Architecture
 
-**Status:** v1.0.0 stable release-candidate architecture with ratified and published v0.0.0 baseline
+**Status:** v1.0.0 stable released architecture
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document is the architecture of record for the current stable release candidate. The [project constitution](../.specify/memory/constitution.md) remains the highest repository authority. The [working project specification](Cueson-Project-Specification-v0.0.0.md) supplies broader context and roadmap detail when it does not conflict with ratified slices.
+This document is the architecture of record for the stable v1.0.0 release. The [project constitution](../.specify/memory/constitution.md) remains the highest repository authority. The [working project specification](Cueson-Project-Specification-v0.0.0.md) supplies broader context and roadmap detail when it does not conflict with ratified slices.
 
 ## Public and internal boundaries
 
@@ -136,7 +136,7 @@ The standalone `scripts/release-verify` module is the release-candidate acceptan
 
 The `Release proof` workflow runs repository code through an ordinary unprivileged pull-request event with read-only repository permission, exact build-tool versions, no secrets, and no publication token. It builds and structurally verifies one accepted six-target bundle, then executes that same bundle on hosted Linux, Windows, and macOS runners. Its short-lived GitHub Actions artifact is review evidence rather than a GitHub Release asset. This is distinct from S006's temporary cross-build binaries and does not change the current required-check ruleset automatically.
 
-S009 established candidate packaging, and S012 admitted the immutable schema and bound the accepted post-squash candidate to `b294a6952c8bd041d852c502f5d7206c0b58edd6`. S013 used explicit operator authority to create annotated tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0), publish the [thirteen-asset GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0), and verify every public file against the accepted evidence. S019 promotes the frozen contracts to candidate identity 1.0.0, admits the immutable v1 schema, and requires exact schema and legal-file evidence plus native packaged-binary smoke proof without publishing. Syft SBOMs are checked for stable meaning and source binding; they are not claimed byte-for-byte reproducible across rebuilds while upstream output includes variable timestamps and document identifiers.
+S009 established candidate packaging, and S012 admitted the immutable schema and bound the accepted post-squash candidate to `b294a6952c8bd041d852c502f5d7206c0b58edd6`. S013 used explicit operator authority to create annotated tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0), publish the [thirteen-asset GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0), and verify every public file against accepted evidence. S019 promoted the frozen contracts to identity 1.0.0, admitted the immutable v1 schema, and proved exact schema and legal-file bytes plus native packaged-binary execution at `2cad4c816340404289b4d1d87179a4071713bb46`. S020 created annotated tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0), published the exact [thirteen-asset GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), and independently verified every public download against accepted run [34621429626](https://github.com/shruggietech/cueson/actions/runs/34621429626). Syft SBOMs are checked for stable meaning and source binding; they are not claimed byte-for-byte reproducible across rebuilds while upstream output includes variable timestamps and document identifiers.
 
 The runnable artifact and public-byte evidence remain in [release verification](release-verification.md). The broader [release process](release-process.md) separates candidate preparation and authorized GitHub publication from milestone closure, signatures, attestations, public schema hosting, and production actions.
 
@@ -170,6 +170,7 @@ The `Repository text` CI job runs both standalone modules. Historical Spec Kit a
 | [#35](https://github.com/shruggietech/cueson/issues/35) | Whole-system conformance, hostile-input bounds, corpus and fuzz evidence, platform proof, and release-readiness hardening |
 | [#36](https://github.com/shruggietech/cueson/issues/36) | Executable installation, CLI, format, conversion, compatibility, security, and release-transition documentation |
 | [#37](https://github.com/shruggietech/cueson/issues/37) | Stable v1.0.0 identity, immutable v1 schema, release records, candidate artifacts, and native packaged-binary proof |
+| [#38](https://github.com/shruggietech/cueson/issues/38) | Authorized v1.0.0 tag and GitHub Release publication, independent public-download verification, and released-state reconciliation |
 | [#41](https://github.com/shruggietech/cueson/issues/41) | Consumer-facing canonical-schema descriptions, titles, examples, and automated annotation coverage |
 
-The SubRip, WebVTT, and cross-format contracts frozen by S018 now carry stable candidate identity 1.0.0 through S019. Stable contract status describes the reviewed candidate behavior; v1 is not yet tagged or published. This document does not authorize release publication, public schema hosting, milestone closure, signatures, attestations, or production changes.
+The SubRip, WebVTT, and cross-format contracts frozen by S018 carry stable published identity 1.0.0 through S019 and S020. This document records the verified release but does not authorize public schema hosting, milestone closure, signatures, attestations, or production changes.

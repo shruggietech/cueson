@@ -1,14 +1,14 @@
 # WebVTT format contract
 
-**Current status:** v1.0.0 stable release candidate
+**Current status:** Stable and published in v1.0.0
 
-**Published release status:** v0.0.0 `envelope_only`
+**Historical release status:** v0.0.0 `envelope_only`
 
-This page defines the stable native WebVTT (`.vtt`) capability implemented in current candidate source. The [Cue JSON schema](../schema.md), [CLI contract](../cli.md), and [architecture of record](../architecture.md) remain authoritative for shared behavior.
+This page defines the stable native WebVTT (`.vtt`) capability published in Cueson v1.0.0. The [Cue JSON schema](../schema.md), [CLI contract](../cli.md), and [architecture of record](../architecture.md) remain authoritative for shared behavior.
 
 ## Current capability
 
-| Capability | Candidate state | Boundary |
+| Capability | v1.0.0 state | Boundary |
 |---|---|---|
 | Cue JSON schema representation | Available | Valid documents use `format: "webvtt"` and WebVTT-native `format_data`. |
 | Raw detection and UTF-8 decoding | Stable | A boundary-valid `WEBVTT` signature is detected after an optional UTF-8 BOM; other encodings are rejected. |
@@ -17,7 +17,7 @@ This page defines the stable native WebVTT (`.vtt`) capability implemented in cu
 | Exact source restoration | Available | `cueson restore` verifies and recreates source-envelope bytes without invoking the WebVTT codec. |
 | Cross-format conversion | Stable | `cueson convert INPUT --to srt` projects common cue semantics and reports every known incompatible WebVTT feature. |
 | Validation and inspection | Stable | `cueson validate` checks native grammar without producing Cue JSON; `cueson inspect` reports privacy-bounded structural facts. |
-| Stable WebVTT support | Candidate | The v1.0.0 contract is stable in candidate source but is not yet published. |
+| Stable WebVTT support | Stable | The v1.0.0 contract is published and independently verified. |
 
 ## Detection, Unicode, and source authority
 
@@ -63,7 +63,7 @@ WebVTT-to-SubRip conversion preserves cue order, integer-millisecond timing, ove
 
 ## Explicit exclusions
 
-Current candidate source provides stable v1 WebVTT support without claiming schema publication to `cueson.io` or that rendered or converted output is byte-identical to the captured source. Validation, privacy-bounded inspection, and static shell completion are available; v1 tag and GitHub Release publication remain separate.
+Cueson v1.0.0 provides stable WebVTT support without claiming schema publication to `cueson.io` or that rendered or converted output is byte-identical to the captured source. Validation, privacy-bounded inspection, and static shell completion are included in the published release.
 
 ## Conformance evidence index
 

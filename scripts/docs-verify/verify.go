@@ -69,28 +69,28 @@ var requiredExampleIDs = []string{
 
 var requiredReferenceMarkers = map[string][]string{
 	"CHANGELOG.md":          {"[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD", "[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0"},
-	"README.md":             {"v1.0.0 stable release candidate", "v0.0.0", "not yet published"},
-	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "non-normative", "stable release candidate"},
-	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v1.0.0", "Windows", "macOS", "Linux", "production", "stable release candidate"},
+	"README.md":             {"v1.0.0 released and independently verified", "v0.0.0", "v1.0.0 GitHub Release"},
+	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "non-normative", "stable schema released and independently verified"},
+	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v1.0.0", "Windows", "macOS", "Linux", "production", "stable release published and independently verified"},
 	"docs/Cueson-Project-Specification-v0.0.0.md": {"canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte", "v1 release-candidate verification issue is complete"},
 	"docs/releases/v1.0.0.md":                     {"# Cueson v1.0.0", "stable Cue JSON", "unsigned and unattested"},
 }
 
 var staleClaims = map[string][]string{
 	"README.md":                                   {"v0.1.0 development", "native capabilities remain `experimental`", "A v1.0.0 binary, immutable v1 schema"},
-	"CONTRIBUTING.md":                             {"Cueson is an unreleased v0.0.0 foundation candidate", "native SubRip/WebVTT ingest, model-driven rendering, and conversion are not implemented", "v0.1.0 development"},
-	"SECURITY.md":                                 {"before the first public release", "v0.1.0 development"},
+	"CONTRIBUTING.md":                             {"Cueson is an unreleased v0.0.0 foundation candidate", "native SubRip/WebVTT ingest, model-driven rendering, and conversion are not implemented", "v0.1.0 development", "v1 candidate is prepared in source but not yet tagged or published"},
+	"SECURITY.md":                                 {"before the first public release", "v0.1.0 development", "tag and GitHub Release publication remain pending"},
 	"testdata/README.md":                          {"This corpus foundation does not implement or claim native SRT or WebVTT parsing, rendering, conversion"},
-	"docs/architecture.md":                        {"v0.1.0 development architecture", "continue to declare `experimental` capability at version 0.1.0"},
-	"docs/cli.md":                                 {"implemented by v0.1.0 development source", "Current development source writes exactly `0.1.0`", "Current source and schema identity remains `0.1.0`"},
-	"docs/compatibility.md":                       {"frozen in v0.1.0 development source", "Current development source uses executable and schema version v0.1.0", "Users evaluating the v1-bound workflows must currently build or run v0.1.0"},
-	"docs/conversion.md":                          {"v0.1.0 development `experimental`"},
-	"docs/formats/srt.md":                         {"native decoder is unavailable", "v0.1.0 development `experimental`", "Stable SubRip support | Unavailable"},
-	"docs/formats/webvtt.md":                      {"v0.1.0 `experimental`", "Stable WebVTT support | Unavailable"},
-	"docs/schema.md":                              {"development identity 0.1.0", "development schema artifact's `$id`", "does not create an immutable v1.0.0 schema"},
+	"docs/architecture.md":                        {"v0.1.0 development architecture", "continue to declare `experimental` capability at version 0.1.0", "v1 is not yet tagged or published"},
+	"docs/cli.md":                                 {"implemented by v0.1.0 development source", "Current development source writes exactly `0.1.0`", "Current source and schema identity remains `0.1.0`", "no v1 tag, binary release, or GitHub Release has been published"},
+	"docs/compatibility.md":                       {"frozen in v0.1.0 development source", "Current development source uses executable and schema version v0.1.0", "Users evaluating the v1-bound workflows must currently build or run v0.1.0", "v1 is not yet published"},
+	"docs/conversion.md":                          {"v0.1.0 development `experimental`", "v1.0.0 stable release candidate"},
+	"docs/formats/srt.md":                         {"native decoder is unavailable", "v0.1.0 development `experimental`", "Stable SubRip support | Unavailable", "v1.0.0 stable release candidate", "stable candidate declaration; tag and release publication remain separate"},
+	"docs/formats/webvtt.md":                      {"v0.1.0 `experimental`", "Stable WebVTT support | Unavailable", "v1.0.0 stable release candidate"},
+	"docs/schema.md":                              {"development identity 0.1.0", "development schema artifact's `$id`", "does not create an immutable v1.0.0 schema", "v1.0.0 stable release candidate"},
 	"docs/release-process.md":                     {"The detailed candidate history is complete under the dated `[0.0.0]` section", "Documentation describes shipped commands and `envelope_only` format support", "candidate versioning, immutable-schema admission, dated changelog and concise release-note preparation"},
 	"docs/release-verification.md":                {"v0.1.0 development snapshots verified without publication", "cueson_0.1.0_", "-version 0.1.0", "-development -execute-host"},
-	"docs/cueson-media-format-guide.html":         {"Current v0.0.0 boundary:", "first planned stable targets for v1.0.0"},
+	"docs/cueson-media-format-guide.html":         {"Current v0.0.0 boundary:", "first planned stable targets for v1.0.0", "Current v1.0.0 candidate boundary:", "The candidate is not yet published", "v1.0.0 release candidate"},
 	"docs/Cueson-Project-Specification-v0.0.0.md": {"public v1.0.0 schema matches the repository artifact exactly", "release verification issue is complete"},
 	"docs/releases/v1.0.0.md":                     {"is now published", "public GitHub Release", "Download Cueson v1.0.0", "published at"},
 }
@@ -192,7 +192,7 @@ func verifyRepository(repo string) (verificationResult, error) {
 	result.violations = append(result.violations, verifyReferenceMarkers(root)...)
 	result.violations = append(result.violations, verifyStaleClaims(root)...)
 	result.violations = append(result.violations, verifyRequiredSuffixes(root)...)
-	result.violations = append(result.violations, verifyCandidateChangelog(root)...)
+	result.violations = append(result.violations, verifyReleaseChangelog(root)...)
 	rows, matrixViolations := verifyFormatMatrix(root)
 	result.formatRows = rows
 	result.violations = append(result.violations, matrixViolations...)
@@ -209,14 +209,15 @@ func verifyRepository(repo string) (verificationResult, error) {
 	return result, nil
 }
 
-func verifyCandidateChangelog(root string) []violation {
+func verifyReleaseChangelog(root string) []violation {
 	content, err := readDocument(root, "CHANGELOG.md")
 	if err != nil {
 		return nil
 	}
-	const transition = "## [Unreleased]\n\n## [1.0.0] - 2026-09-11"
-	if !strings.Contains(content, transition) {
-		return []violation{{path: "CHANGELOG.md", message: "Unreleased must be fresh and empty immediately before the dated 1.0.0 section"}}
+	unreleased := strings.Index(content, "## [Unreleased]\n")
+	release := strings.Index(content, "## [1.0.0] - 2026-09-11\n")
+	if unreleased < 0 || release < 0 || unreleased >= release {
+		return []violation{{path: "CHANGELOG.md", message: "Unreleased must precede the dated 1.0.0 section"}}
 	}
 	return nil
 }
