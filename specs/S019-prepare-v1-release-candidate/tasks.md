@@ -85,8 +85,8 @@
 
 - [x] T030 [US3] Run the complete local quickstart including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, mojibake, fixture, and clean-checkout candidate proof from `specs/S019-prepare-v1-release-candidate/quickstart.md`
 - [x] T031 [US3] Run Spec Kit convergence against `specs/S019-prepare-v1-release-candidate/` and append and execute any required remediation tasks until convergence is clean
-- [ ] T032 [US3] Push `codex/S019-prepare-v1-release-candidate`, publish the formatted official pull request with `Closes #37`, and verify the rendered GitHub body
-- [ ] T033 [US3] Move issue #37 to Stage `PR review`, retain Slice `S019`, and verify default Status remains empty in `cueson Delivery`
+- [x] T032 [US3] Push `codex/S019-prepare-v1-release-candidate`, publish the formatted official pull request with `Closes #37`, and verify the rendered GitHub body
+- [x] T033 [US3] Move issue #37 to Stage `PR review`, retain Slice `S019`, and verify default Status remains empty in `cueson Delivery`
 - [ ] T034 [US3] Monitor every current-head CI, CodeQL, release-proof, native packaged-smoke, pull-request-policy, Codex, security, and review result; address every round-one finding and resolve threads only after remediation
 - [ ] T035 [US3] Request exactly one `@codex review` second round only if round one reports findings or a repository-documented condition requires it, then address that round without requesting a third
 - [ ] T036 [US3] Re-run convergence and the complete local verification suite after all remediation, push the final descendant head, and wait for every hosted gate to return green
