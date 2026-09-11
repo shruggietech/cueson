@@ -1,71 +1,61 @@
 # WebVTT format contract
 
-**Current status:** v0.0.0 `envelope_only`
+**Current status:** v0.1.0 `experimental`
 
-**Stable target:** Planned for v1.0.0
+**Stable target:** v1.0.0
 
-This page defines the current Cueson boundary for WebVTT (`.vtt`) and the structure and fidelity obligations planned for v1.0.0. It does not claim that a native WebVTT codec exists in v0.0.0. The [Cue JSON schema](../schema.md), [CLI contract](../cli.md), and [architecture of record](../architecture.md) remain authoritative for implemented behavior.
+This page defines the native WebVTT (`.vtt`) capability implemented in current development source. The [Cue JSON schema](../schema.md), [CLI contract](../cli.md), and [architecture of record](../architecture.md) remain authoritative for shared behavior.
 
-## Current v0.0.0 capability
+## Current capability
 
-The v0.0.0 schema recognizes the canonical format key `webvtt` and defines WebVTT-specific document, block, and cue fields. Schema recognition defines how a valid Cue JSON document represents the format. It does not mean the executable can parse or render a raw WebVTT file.
-
-| Capability | v0.0.0 state | Boundary |
+| Capability | Development state | Boundary |
 |---|---|---|
-| Cue JSON schema representation | Available | Valid documents use `format: "webvtt"` and WebVTT `format_data`. |
-| Cue JSON structural and semantic validation | Available where consumed by shipped behavior | Validation checks the common model, ordered WebVTT block shape, capability declaration, and source-envelope contract. There is no public `validate` command. |
-| Exact source restoration | Available | `cueson restore` recreates verified source-envelope bytes without calling a WebVTT codec. |
-| Raw `.vtt` detection and UTF-8 decoding | Unavailable | The executable does not accept a raw WebVTT file for native ingest. |
-| Semantic ingest | Unavailable | No parser currently derives cues, blocks, settings, markup, speakers, tokens, or placement from raw WebVTT. |
-| Model-driven rendering | Unavailable | The executable cannot render Cue JSON semantics as a new WebVTT file. |
-| Cross-format conversion | Unavailable | WebVTT-to-SRT and SRT-to-WebVTT commands are not shipped. |
+| Cue JSON schema representation | Available | Valid documents use `format: "webvtt"` and WebVTT-native `format_data`. |
+| Raw detection and UTF-8 decoding | Experimental | A boundary-valid `WEBVTT` signature is detected after an optional UTF-8 BOM; other encodings are rejected. |
+| Semantic ingest | Experimental | The native parser derives common cues while retaining signature, header, block, cue, setting, markup, and timing structure. |
+| Model-driven rendering | Experimental | `cueson render --to vtt` writes deterministic LF WebVTT from validated structured data. |
+| Exact source restoration | Available | `cueson restore` verifies and recreates source-envelope bytes without invoking the WebVTT codec. |
+| Cross-format conversion | Unavailable | WebVTT-to-SubRip and SubRip-to-WebVTT conversion remain owned by issue #33. |
 | Stable WebVTT support | Unavailable | Stable support remains a v1.0.0 acceptance gate. |
 
-An externally authored Cue JSON document can contain a valid WebVTT source envelope and common model. The current executable can restore that envelope exactly after validating the document and source integrity. It cannot prove how the semantic fields were derived because native ingest is not implemented.
+## Detection, Unicode, and source authority
 
-## Source and model boundary
+Content detection accepts only an optional leading UTF-8 BOM followed by `WEBVTT` at a valid signature boundary. Content evidence wins over a disagreeing file extension and the disagreement is reported. Input is acquired through the shared 64 MiB bounded capture path before parsing.
 
-Original WebVTT bytes in `source.assets[].data_base64`, together with their byte length and SHA-256 digest, are authoritative for exact restoration. Stored names are portable safe basenames, not original filesystem paths. The generic restore operation verifies the complete source bundle before publication and does not normalize the signature, header, block ordering, timing lines, cue settings, payload markup, whitespace, BOM, or line endings.
+WebVTT decoding accepts valid UTF-8 only. The optional BOM is observed but does not enter decoded text. Malformed UTF-8 and non-UTF-8 selections fail. An embedded NUL remains unchanged in the source envelope, becomes U+FFFD only in the semantic text view, and produces a deterministic diagnostic.
 
-The common cue payload and WebVTT-specific fields are structured representations. When native ingest is implemented, decoded cue text, plain text, lines, normalized timing, speaker and token observations, placement, and `format_data.webvtt` will remain derived from the source and will not replace it. Model-driven rendering may produce canonical WebVTT syntax, but only source restoration may claim byte identity.
+Original bytes, byte length, and SHA-256 in `source.assets` remain the authority for exact restoration. Stored names are portable safe basenames and Cue JSON never records the caller's path or another local machine identifier. Rendering never claims byte identity.
 
-## Planned v1 structure and fidelity matrix
+## Document and source order
 
-The following matrix records acceptance targets, not current functionality.
+The parser requires the `WEBVTT` signature and retains its complete raw line, optional description, and ordered header metadata. Header content remains distinct from body blocks.
 
-| Source construct | Planned v1 treatment |
-|---|---|
-| UTF-8 BOM | Detect it, preserve its source-byte presence, and decode according to WebVTT's UTF-8 requirement. |
-| `WEBVTT` signature | Require it after permissible BOM handling and preserve the native signature line. |
-| Header description and metadata lines | Preserve their text and order independently from normalized document metadata. |
-| `NOTE` block | Preserve raw content and total source order even when no common-model equivalent exists. |
-| `STYLE` block | Preserve raw content and total source order without claiming that every style can be converted. |
-| `REGION` block | Preserve raw content, parsed region semantics when implemented, and total source order. |
-| Cue identifier | Preserve the native identifier independently from Cueson's document-local cue ID. |
-| Hours-optional timestamp | Parse deterministically, expose normalized milliseconds, and preserve the native timing line. |
-| Cue timing and positioning settings | Preserve both raw settings and parsed values without forcing them into unsafe SubRip coordinate equivalence. |
-| Voice, class, language, and ruby markup | Preserve native markup while deriving plain text and speaker observations separately. |
-| HTML entity | Decode only for derived consumer views while retaining the original cue payload. |
-| Inline timestamp | Preserve native syntax and derive word or phrase token timing when valid. |
-| Whitespace-only cue payload line | Preserve it as source content instead of trimming or discarding it. |
-| Overlapping rolling caption cue | Keep each cue one-to-one in source order without deduplication. |
-| Adjacent non-cue blocks | Give every block an explicit source order so relative placement never depends on inference. |
-| Unrecognized or malformed but preservable block | Retain raw content and emit a deterministic diagnostic instead of silently dropping it. |
+Every cue and non-cue body block receives one `source_order` value. The union is unique and contiguous across the complete document. This keeps adjacent NOTE, STYLE, REGION, unrecognized blocks, and overlapping or rolling cues in their original relative order without deduplication.
 
-The future parser must preserve raw payload text and raw structural lines independently of normalized consumer fields. Cue and non-cue block order must remain total across the whole document, including multiple adjacent blocks and overlapping rolling captions.
+NOTE, STYLE, and unrecognized blocks retain complete raw LF-joined content and physical lines. REGION blocks retain those raw views plus the complete ordered setting occurrences and valid effective values for `id`, `width`, `lines`, `regionanchor`, `viewportanchor`, and `scroll`. Misplaced, unknown, invalid, or duplicate but safely bounded content is retained with ordered diagnostics; fatal signature, timing, Unicode, or structural errors are rejected.
 
-## Planned diagnostics and conversion
+## Cue fidelity
 
-Future native operations must distinguish an unknown format from a schema-recognized format whose codec is unavailable. They must preserve unknown settings, markup, and blocks when practical and report interpretation limits deterministically.
+Each WebVTT cue retains its optional native identifier independently from Cueson's document-local cue ID. Duplicate native identifiers are preserved and diagnosed. Timing accepts valid hours-optional WebVTT timestamps, stores normalized integer milliseconds, and retains the native timing line. Equal, reversed, malformed, or overflowing intervals fail; decreasing cue starts remain in source order with a diagnostic.
 
-Future WebVTT-to-SubRip conversion must account for information without a safe SubRip representation, including `STYLE`, `REGION`, and `NOTE` blocks, cue settings, inline word timing, and WebVTT-specific markup. Normal conversion may write representable content only while reporting each accepted loss. Strict conversion must reject any known loss without creating output.
+Cue settings preserve the complete raw setting string and every occurrence in lexical order. Valid effective values are exposed for `vertical`, `line`, `position`, `size`, `align`, and `region`; unknown, invalid, and duplicate occurrences remain available with diagnostics.
 
-## Fixture boundary
+Raw payload text is the LF join of retained decoded payload lines. Leading, trailing, and whitespace-only content is not trimmed. The iterative markup scanner separately derives readable plain text, native voice speakers, and valid inline-timestamp token spans while leaving markup, entities, language, class, ruby, and source bytes unchanged. Malformed or unsupported markup and entities are preserved and diagnosed rather than silently discarded.
 
-The v0.0.0 repository has no native WebVTT grammar fixture corpus. The schema's WebVTT shapes and generic source-envelope restoration contract are not parser, renderer, round-trip, rolling-caption, markup, or conversion evidence.
+## Canonical rendering
 
-Native WebVTT work must add focused accepted, malformed, parser, renderer, ordering, rolling-caption, and conversion fixtures before claiming any corresponding v1 structure row. Every accepted source fixture must also prove byte-exact restoration independently from semantic parsing or rendering.
+`cueson render INPUT.cueson.json --to vtt` validates the complete model and writes a `WEBVTT` signature, retained header metadata, body items in contiguous source order, normalized dot-millisecond timestamps, consistent cue settings, raw native blocks and payload markup, one blank separator between body items, and a final LF. Output is UTF-8 without a BOM.
 
-## Explicit v0.0.0 exclusions
+Native lexical content is reused only when it remains consistent with structured fields. Structured timing is always formatted canonically. In permissive mode, safely retained diagnosed content may be emitted with a warning. `--strict` rejects known preserved conformance errors or unsafe ambiguity before a destination is published.
 
-The v0.0.0 release does not provide raw WebVTT ingest, signature detection, UTF-8 decoding, cue or block parsing, markup interpretation, speaker or token extraction, model-driven WebVTT rendering, native round trips, cross-format conversion, or a stable WebVTT compatibility promise. The presence of `webvtt` in the schema and the ability to restore source-envelope bytes must not be presented as any of those capabilities.
+Rendering and restoration are intentionally different operations. Editing structured cue timing changes rendered WebVTT, while restoring the same Cue JSON still reproduces the original captured bytes.
+
+## Diagnostics and verification
+
+Diagnostics are deterministic and preserve parser encounter order. They distinguish recoverable header separators, decreasing starts, duplicate identifiers, invalid or duplicate settings, misplaced blocks, unknown blocks, malformed markup or entities, and semantic NUL replacement. Diagnostics go to stderr in CLI workflows; structured stdout remains only Cue JSON or WebVTT bytes.
+
+The governed corpus under `testdata/fixtures/webvtt`, `testdata/malformed/webvtt`, and `testdata/fuzz/webvtt` covers accepted signatures, line endings, headers, native block kinds, identifiers, timestamps, settings, markup, entities, inline timestamps, whitespace, adjacency, rolling captions, recovery, fatal input, and bounded fuzz seeds. Accepted fixtures separately prove exact source restoration and model-driven parser-renderer cycles.
+
+## Explicit exclusions
+
+Current development source does not provide cross-format conversion, a public `validate` or `inspect` command, shell completion, stable v1 support declarations, schema publication to `cueson.io`, or any claim that rendered output is byte-identical to the captured source.

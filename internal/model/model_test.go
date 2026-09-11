@@ -27,19 +27,18 @@ func TestDocumentValidateCapabilityProfiles(t *testing.T) {
 		{name: "subrip experimental", format: "subrip", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, valid: true},
 		{name: "subrip envelope only", format: "subrip", support: FormatSupport{Status: "envelope_only", RestoreSupported: true}},
 		{name: "subrip stable prematurely", format: "subrip", support: FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}},
-		{name: "webvtt envelope only", format: "webvtt", support: FormatSupport{Status: "envelope_only", RestoreSupported: true}, valid: true},
-		{name: "webvtt experimental prematurely", format: "webvtt", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}},
+		{name: "webvtt experimental", format: "webvtt", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, valid: true},
+		{name: "webvtt envelope only", format: "webvtt", support: FormatSupport{Status: "envelope_only", RestoreSupported: true}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			doc := representativeDocument()
+			if tt.format == "webvtt" {
+				doc = representativeWebVTTDocument()
+			}
 			doc.Format = tt.format
 			doc.FormatSupport = tt.support
-			if tt.format == "webvtt" {
-				doc.FormatData = DocumentFormatData{WebVTT: &WebVTTDocumentData{Signature: "WEBVTT", MetadataLines: []string{}, Blocks: []WebVTTBlock{}}}
-				doc.Cues[0].FormatData = CueFormatData{WebVTT: &WebVTTCueData{TimingLineRaw: "00:00:01.250 --> 00:00:04.200", Settings: map[string]string{}, RawPayload: "Hello."}}
-			}
 			err := doc.Validate()
 			if tt.valid && err != nil {
 				t.Fatalf("Validate() error = %v", err)
@@ -48,6 +47,73 @@ func TestDocumentValidateCapabilityProfiles(t *testing.T) {
 				t.Fatal("Validate() error = nil, want capability rejection")
 			}
 		})
+	}
+}
+
+func TestDocumentValidateWebVTTNativeModel(t *testing.T) {
+	t.Parallel()
+
+	if err := representativeWebVTTDocument().Validate(); err != nil {
+		t.Fatalf("Validate() error = %v", err)
+	}
+}
+
+func TestDocumentValidateRejectsWebVTTNativeInconsistency(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		mutate func(*Document)
+		want   string
+	}{
+		{name: "source order duplicate", mutate: func(doc *Document) { doc.Cues[0].SourceOrder = 0 }, want: "source_order"},
+		{name: "source order gap", mutate: func(doc *Document) { doc.Cues[0].SourceOrder = 2 }, want: "contiguous"},
+		{name: "block raw lines", mutate: func(doc *Document) { doc.FormatData.WebVTT.Blocks[0].RawLines[1] = "id:other" }, want: "raw_lines"},
+		{name: "block embedded line ending", mutate: func(doc *Document) {
+			doc.FormatData.WebVTT.Blocks[0].RawLines = []string{"REGION", "id:fred\nwidth:40%"}
+			doc.FormatData.WebVTT.Blocks[0].Raw = strings.Join(doc.FormatData.WebVTT.Blocks[0].RawLines, "\n")
+		}, want: "raw_lines"},
+		{name: "region missing", mutate: func(doc *Document) { doc.FormatData.WebVTT.Blocks[0].Region = nil }, want: "region"},
+		{name: "region on note", mutate: func(doc *Document) { doc.FormatData.WebVTT.Blocks[0].Type = "note" }, want: "region"},
+		{name: "payload raw", mutate: func(doc *Document) { doc.Cues[0].FormatData.WebVTT.RawPayload = "different" }, want: "raw_payload"},
+		{name: "payload lines", mutate: func(doc *Document) { doc.Cues[0].FormatData.WebVTT.RawPayloadLines = []string{"different"} }, want: "raw_payload_lines"},
+		{name: "payload embedded line ending", mutate: func(doc *Document) {
+			lines := []string{"bad\nline"}
+			doc.Cues[0].FormatData.WebVTT.RawPayloadLines = lines
+			doc.Cues[0].FormatData.WebVTT.RawPayload = strings.Join(lines, "\n")
+			doc.Cues[0].Payload.Lines = lines
+			doc.Cues[0].Payload.RawText = strings.Join(lines, "\n")
+		}, want: "raw_payload_lines"},
+		{name: "identifier", mutate: func(doc *Document) { doc.Cues[0].SourceIdentifier = stringPointer("other") }, want: "identifier_raw"},
+		{name: "speaker origin", mutate: func(doc *Document) { doc.Cues[0].Speakers[0].Origin = "heuristic" }, want: "speakers"},
+		{name: "token order", mutate: func(doc *Document) { doc.Cues[0].Tokens[1].StartMilliseconds = 1900 }, want: "tokens"},
+		{name: "zero duration token", mutate: func(doc *Document) { doc.Cues[0].Tokens[0].EndMilliseconds = doc.Cues[0].Tokens[0].StartMilliseconds }, want: "tokens"},
+		{name: "unrecognized valid occurrence", mutate: func(doc *Document) { doc.Cues[0].FormatData.WebVTT.SettingOccurrences[0].Recognized = false }, want: "recognized"},
+		{name: "empty occurrence raw", mutate: func(doc *Document) { doc.Cues[0].FormatData.WebVTT.SettingOccurrences[0].Raw = "" }, want: "raw"},
+		{name: "valid occurrence empty value", mutate: func(doc *Document) { doc.Cues[0].FormatData.WebVTT.SettingOccurrences[0].Value = "" }, want: "valid"},
+		{name: "unknown effective setting", mutate: func(doc *Document) { doc.Cues[0].FormatData.WebVTT.Settings["unknown"] = "value" }, want: "settings"},
+		{name: "unknown region setting", mutate: func(doc *Document) { doc.FormatData.WebVTT.Blocks[0].Region.Settings["unknown"] = "value" }, want: "settings"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			doc := representativeWebVTTDocument()
+			tt.mutate(&doc)
+			err := doc.Validate()
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("Validate() error = %v, want rejection containing %q", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestDocumentValidatePreservesSubRipContract(t *testing.T) {
+	t.Parallel()
+
+	doc := representativeDocument()
+	doc.Cues[0].Speakers = []Speaker{{Name: "Narrator", Origin: "heuristic"}}
+	if err := doc.Validate(); err != nil {
+		t.Fatalf("Validate() rejected existing SubRip model: %v", err)
 	}
 }
 
@@ -156,6 +222,45 @@ func representativeDocument() Document {
 		Diagnostics: []Diagnostic{},
 		Stats:       Stats{CueCount: 1, MediaSpanMilliseconds: &span},
 	}
+}
+
+func representativeWebVTTDocument() Document {
+	doc := representativeDocument()
+	doc.Format = "webvtt"
+	doc.FormatSupport = FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+	doc.Source.Assets[0].FileName = "captions.vtt"
+	doc.Cues[0].SourceOrder = 1
+	doc.Cues[0].SourceIdentifier = stringPointer("intro")
+	doc.Cues[0].Payload = Payload{RawText: "<v Narrator>Hello <00:00:02.000>world.</v>", PlainText: "Hello world.", Lines: []string{"<v Narrator>Hello <00:00:02.000>world.</v>"}}
+	doc.Cues[0].Speakers = []Speaker{{Name: "Narrator", Origin: "native"}}
+	doc.Cues[0].Tokens = []Token{
+		{Text: "Hello ", StartMilliseconds: 1250, EndMilliseconds: 2000},
+		{Text: "world.", StartMilliseconds: 2000, EndMilliseconds: 4200, NativeTiming: stringPointer("00:00:02.000")},
+	}
+	doc.Cues[0].FormatData = CueFormatData{WebVTT: &WebVTTCueData{
+		IdentifierRaw: stringPointer("intro"), TimingLineRaw: "00:01.250 --> 00:04.200 align:start mystery:opaque", SettingsRaw: "align:start mystery:opaque",
+		Settings: map[string]string{"align": "start"},
+		SettingOccurrences: []WebVTTSettingOccurrence{
+			{Raw: "align:start", Name: "align", Value: "start", Recognized: true, Valid: true},
+			{Raw: "mystery:opaque", Name: "mystery", Value: "opaque", Recognized: false, Valid: false},
+			{Raw: ":x", Name: "", Value: "x", Recognized: false, Valid: false},
+			{Raw: "bare", Name: "bare", Value: "", Recognized: false, Valid: false},
+		},
+		RawPayload: "<v Narrator>Hello <00:00:02.000>world.</v>", RawPayloadLines: []string{"<v Narrator>Hello <00:00:02.000>world.</v>"},
+	}}
+	doc.FormatData = DocumentFormatData{WebVTT: &WebVTTDocumentData{
+		Signature: "WEBVTT", SignatureLineRaw: "WEBVTT Example", Description: stringPointer("Example"), MetadataLines: []string{"Kind: captions"},
+		Blocks: []WebVTTBlock{{
+			Type: "region", SourceOrder: 0, Raw: "REGION\nid:fred\nwidth:40%", RawLines: []string{"REGION", "id:fred", "width:40%"},
+			Region: &WebVTTRegionData{SettingsRaw: "id:fred width:40%", Settings: map[string]string{"id": "fred", "width": "40%"}, SettingOccurrences: []WebVTTSettingOccurrence{
+				{Raw: "id:fred", Name: "id", Value: "fred", Recognized: true, Valid: true},
+				{Raw: "width:40%", Name: "width", Value: "40%", Recognized: true, Valid: true},
+			}},
+		}},
+	}}
+	doc.Document.HasWordLevelTiming = true
+	doc.Stats.HasWordLevelTiming = true
+	return doc
 }
 
 func companionAsset(id string) SourceAsset {

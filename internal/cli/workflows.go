@@ -12,6 +12,7 @@ import (
 
 	"github.com/shruggietech/cueson/internal/codec"
 	"github.com/shruggietech/cueson/internal/codec/subrip"
+	"github.com/shruggietech/cueson/internal/codec/webvtt"
 	"github.com/shruggietech/cueson/internal/model"
 	"github.com/shruggietech/cueson/internal/schema"
 	"github.com/shruggietech/cueson/internal/source"
@@ -19,7 +20,7 @@ import (
 )
 
 func runEncode(ctx context.Context, options encodeOptions, stdout io.Writer, stderr io.Writer, diagnostics diagnosticWriter) int {
-	captured, err := source.CaptureContext(ctx, options.input, source.CaptureOptions{MediaType: stringPointer("application/x-subrip")})
+	captured, err := source.CaptureContext(ctx, options.input, source.CaptureOptions{})
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			diagnostics.write(diagnosticError, fmt.Sprintf("input %q does not exist", options.input))
@@ -40,6 +41,7 @@ func runEncode(ctx context.Context, options encodeOptions, stdout io.Writer, std
 		diagnostics.write(diagnosticError, fmt.Sprintf("encode: %v", err))
 		return ExitRuntimeFailure
 	}
+	captured.Asset.MediaType = mediaTypeForFormat(selection.Format)
 	decoder, err := registry.RequireDecoder(selection.Format)
 	if err != nil {
 		diagnostics.write(diagnosticError, fmt.Sprintf("encode: %v", err))
@@ -163,6 +165,33 @@ func workflowRegistry(encoding string) (*codec.Registry, error) {
 		bytes, err := subrip.Render(document.Cues)
 		return codec.RenderResult{Bytes: bytes, Diagnostics: losses}, err
 	}
+	decodeWebVTT := func(ctx context.Context, captured source.Captured, options codec.DecodeOptions) (model.Document, error) {
+		if err := ctx.Err(); err != nil {
+			return model.Document{}, err
+		}
+		decoded, err := webvtt.DecodeUTF8(captured.Bytes, options.Encoding)
+		if err != nil {
+			return model.Document{}, err
+		}
+		captured.Asset.Encoding = &decoded.Observation
+		parsed, err := webvtt.Parse(decoded.Text)
+		if err != nil {
+			return model.Document{}, err
+		}
+		if options.DisableSpeakerDetection {
+			for index := range parsed.Cues {
+				parsed.Cues[index].Speakers = []model.Speaker{}
+			}
+		}
+		return newWebVTTDocument(captured.Asset, parsed), nil
+	}
+	renderWebVTT := func(ctx context.Context, document model.Document, options codec.RenderOptions) (codec.RenderResult, error) {
+		if err := ctx.Err(); err != nil {
+			return codec.RenderResult{}, err
+		}
+		result, err := webvtt.Render(document, webvtt.RenderOptions{Strict: options.Strict})
+		return codec.RenderResult{Bytes: result.Bytes, Diagnostics: result.Diagnostics}, err
+	}
 	detectSubRip := func(data []byte) codec.Evidence {
 		decoded, err := codec.DecodeText(data, encoding)
 		if err != nil {
@@ -174,34 +203,28 @@ func workflowRegistry(encoding string) (*codec.Registry, error) {
 		return codec.Evidence{Matched: true, Confidence: 90, Reason: "SubRip timing grammar"}
 	}
 	detectWebVTT := func(data []byte) codec.Evidence {
-		decoded, err := codec.DecodeText(data, encoding)
-		if err != nil {
-			return codec.Evidence{}
-		}
-		if hasWebVTTSignature(decoded.Text) {
+		if webvtt.Detect(data) {
 			return codec.Evidence{Matched: true, Confidence: 100, Reason: "WebVTT signature"}
 		}
 		return codec.Evidence{}
 	}
 	return codec.NewRegistry(
 		codec.Registration{Format: codec.FormatSubRip, Aliases: []string{"srt"}, Extensions: []string{"srt"}, Detect: detectSubRip, Decode: decodeSubRip, Render: renderSubRip},
-		codec.Registration{Format: codec.FormatWebVTT, Aliases: []string{"vtt"}, Extensions: []string{"vtt"}, Detect: detectWebVTT},
+		codec.Registration{Format: codec.FormatWebVTT, Aliases: []string{"vtt"}, Extensions: []string{"vtt"}, Detect: detectWebVTT, Decode: decodeWebVTT, Render: renderWebVTT},
 	)
 }
 
-func hasWebVTTSignature(text string) bool {
-	if !strings.HasPrefix(text, "WEBVTT") {
-		return false
-	}
-	if len(text) == len("WEBVTT") {
-		return true
-	}
-	switch text[len("WEBVTT")] {
-	case ' ', '\t', '\r', '\n':
-		return true
+func mediaTypeForFormat(format codec.Format) *string {
+	mediaType := ""
+	switch format {
+	case codec.FormatSubRip:
+		mediaType = "application/x-subrip"
+	case codec.FormatWebVTT:
+		mediaType = "text/vtt"
 	default:
-		return false
+		return nil
 	}
+	return &mediaType
 }
 
 func subRipRenderLosses(document model.Document) []model.Diagnostic {
@@ -264,6 +287,36 @@ func newSubRipDocument(asset model.SourceAsset, parsed subrip.Result) model.Docu
 	return document
 }
 
+func newWebVTTDocument(asset model.SourceAsset, parsed webvtt.Result) model.Document {
+	minimum := parsed.Cues[0].Timing.StartMilliseconds
+	maximum := parsed.Cues[0].Timing.EndMilliseconds
+	hasTokens := false
+	for index := range parsed.Cues {
+		if parsed.Cues[index].Timing.StartMilliseconds < minimum {
+			minimum = parsed.Cues[index].Timing.StartMilliseconds
+		}
+		if parsed.Cues[index].Timing.EndMilliseconds > maximum {
+			maximum = parsed.Cues[index].Timing.EndMilliseconds
+		}
+		hasTokens = hasTokens || len(parsed.Cues[index].Tokens) > 0
+	}
+	span := maximum - minimum
+	document := model.Document{
+		Schema: schema.ID(), SchemaVersion: schema.Version(), Format: string(codec.FormatWebVTT),
+		FormatSupport: model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+		Producer:      model.Producer{Name: "cueson", Version: version.String()},
+		Source:        model.SourceEnvelope{PrimaryAssetID: asset.ID, Assets: []model.SourceAsset{asset}},
+		Metadata:      model.Metadata{},
+		Document:      model.DocumentSummary{CueCount: len(parsed.Cues), MediaStartMilliseconds: int64Pointer(minimum), MediaEndMilliseconds: int64Pointer(maximum), MediaSpanMilliseconds: int64Pointer(span), HasWordLevelTiming: hasTokens},
+		Cues:          parsed.Cues,
+		FormatData:    model.DocumentFormatData{WebVTT: &parsed.DocumentData},
+		Diagnostics:   parsed.Diagnostics,
+		Stats:         model.Stats{CueCount: len(parsed.Cues), HasWordLevelTiming: hasTokens, MediaSpanMilliseconds: int64Pointer(span)},
+	}
+	updateDiagnosticStats(&document)
+	return document
+}
+
 func updateDiagnosticStats(document *model.Document) {
 	document.Stats.DiagnosticCount = len(document.Diagnostics)
 	document.Stats.WarningCount = 0
@@ -306,5 +359,4 @@ func handleWorkflowFileResult(operation string, usage helpTarget, err error, std
 	return ExitRuntimeFailure
 }
 
-func stringPointer(value string) *string { return &value }
-func int64Pointer(value int64) *int64    { return &value }
+func int64Pointer(value int64) *int64 { return &value }

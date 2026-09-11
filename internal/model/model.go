@@ -3,6 +3,7 @@ package model
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 )
@@ -185,11 +186,21 @@ type Coordinates struct {
 }
 
 type WebVTTCueData struct {
-	IdentifierRaw *string           `json:"identifier_raw"`
-	TimingLineRaw string            `json:"timing_line_raw"`
-	SettingsRaw   string            `json:"settings_raw"`
-	Settings      map[string]string `json:"settings"`
-	RawPayload    string            `json:"raw_payload"`
+	IdentifierRaw      *string                   `json:"identifier_raw"`
+	TimingLineRaw      string                    `json:"timing_line_raw"`
+	SettingsRaw        string                    `json:"settings_raw"`
+	Settings           map[string]string         `json:"settings"`
+	SettingOccurrences []WebVTTSettingOccurrence `json:"setting_occurrences"`
+	RawPayload         string                    `json:"raw_payload"`
+	RawPayloadLines    []string                  `json:"raw_payload_lines"`
+}
+
+type WebVTTSettingOccurrence struct {
+	Raw        string `json:"raw"`
+	Name       string `json:"name"`
+	Value      string `json:"value"`
+	Recognized bool   `json:"recognized"`
+	Valid      bool   `json:"valid"`
 }
 
 type DocumentFormatData struct {
@@ -203,16 +214,25 @@ type SubRipDocumentData struct {
 }
 
 type WebVTTDocumentData struct {
-	Signature     string        `json:"signature"`
-	Description   *string       `json:"description"`
-	MetadataLines []string      `json:"metadata_lines"`
-	Blocks        []WebVTTBlock `json:"blocks"`
+	Signature        string        `json:"signature"`
+	SignatureLineRaw string        `json:"signature_line_raw"`
+	Description      *string       `json:"description"`
+	MetadataLines    []string      `json:"metadata_lines"`
+	Blocks           []WebVTTBlock `json:"blocks"`
 }
 
 type WebVTTBlock struct {
-	Type        string `json:"type"`
-	SourceOrder int    `json:"source_order"`
-	Raw         string `json:"raw"`
+	Type        string            `json:"type"`
+	SourceOrder int               `json:"source_order"`
+	Raw         string            `json:"raw"`
+	RawLines    []string          `json:"raw_lines"`
+	Region      *WebVTTRegionData `json:"region,omitempty"`
+}
+
+type WebVTTRegionData struct {
+	SettingsRaw        string                    `json:"settings_raw"`
+	Settings           map[string]string         `json:"settings"`
+	SettingOccurrences []WebVTTSettingOccurrence `json:"setting_occurrences"`
 }
 
 type Diagnostic struct {
@@ -259,7 +279,7 @@ func validateCapability(format string, support FormatSupport) error {
 	case "subrip":
 		want = FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
 	case "webvtt":
-		want = FormatSupport{Status: "envelope_only", RestoreSupported: true}
+		want = FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
 	default:
 		return fmt.Errorf("format %q is not recognized", format)
 	}
@@ -412,10 +432,31 @@ func validateCues(cues []Cue, assetIDs map[string]struct{}, rootData DocumentFor
 		if cue.Timing.DurationMilliseconds != cue.Timing.EndMilliseconds-cue.Timing.StartMilliseconds {
 			return fmt.Errorf("cues[%d].timing.duration_milliseconds is inconsistent", index)
 		}
+		if rootData.WebVTT != nil && cue.Timing.EndMilliseconds == cue.Timing.StartMilliseconds {
+			return fmt.Errorf("cues[%d].timing must have positive duration for webvtt", index)
+		}
+		previousTokenEnd := cue.Timing.StartMilliseconds
 		for tokenIndex := range cue.Tokens {
 			token := &cue.Tokens[tokenIndex]
 			if token.EndMilliseconds < token.StartMilliseconds || token.StartMilliseconds < cue.Timing.StartMilliseconds || token.EndMilliseconds > cue.Timing.EndMilliseconds {
 				return fmt.Errorf("cues[%d].tokens[%d] timing falls outside its cue", index, tokenIndex)
+			}
+			if rootData.WebVTT != nil && token.EndMilliseconds == token.StartMilliseconds {
+				return fmt.Errorf("cues[%d].tokens[%d] timing must have positive duration for webvtt", index, tokenIndex)
+			}
+			if rootData.WebVTT != nil && token.StartMilliseconds < previousTokenEnd {
+				return fmt.Errorf("cues[%d].tokens[%d] timing overlaps or precedes the prior token", index, tokenIndex)
+			}
+			previousTokenEnd = token.EndMilliseconds
+		}
+		if rootData.WebVTT != nil {
+			for speakerIndex := range cue.Speakers {
+				if cue.Speakers[speakerIndex].Origin != "native" {
+					return fmt.Errorf("cues[%d].speakers[%d].origin must be native for webvtt", index, speakerIndex)
+				}
+			}
+			if err := validateWebVTTCue(index, cue); err != nil {
+				return err
 			}
 		}
 		observationIDs := make(map[string]struct{}, len(cue.OCRObservations))
@@ -434,8 +475,17 @@ func validateCues(cues []Cue, assetIDs map[string]struct{}, rootData DocumentFor
 		}
 	}
 	if rootData.WebVTT != nil {
+		if rootData.WebVTT.Signature != "WEBVTT" {
+			return fmt.Errorf("format_data.webvtt.signature must be WEBVTT")
+		}
+		if !validWebVTTSignatureLine(rootData.WebVTT.SignatureLineRaw) {
+			return fmt.Errorf("format_data.webvtt.signature_line_raw is not a valid WEBVTT signature line")
+		}
 		previousBlockOrder := -1
 		for index, block := range rootData.WebVTT.Blocks {
+			if !validWebVTTBlockType(block.Type) {
+				return fmt.Errorf("format_data.webvtt.blocks[%d].type %q is not recognized", index, block.Type)
+			}
 			if block.SourceOrder <= previousBlockOrder {
 				return fmt.Errorf("format_data.webvtt.blocks[%d].source_order must be strictly increasing", index)
 			}
@@ -444,9 +494,109 @@ func validateCues(cues []Cue, assetIDs map[string]struct{}, rootData DocumentFor
 				return fmt.Errorf("format_data.webvtt.blocks[%d].source_order duplicates %s", index, owner)
 			}
 			sourceOrders[block.SourceOrder] = fmt.Sprintf("webvtt block %d", index)
+			if len(block.RawLines) == 0 || !webVTTLinesArePhysical(block.RawLines) || block.Raw != strings.Join(block.RawLines, "\n") {
+				return fmt.Errorf("format_data.webvtt.blocks[%d].raw_lines must LF-join to raw", index)
+			}
+			if block.Type == "region" && block.Region == nil {
+				return fmt.Errorf("format_data.webvtt.blocks[%d].region is required for a region block", index)
+			}
+			if block.Type != "region" && block.Region != nil {
+				return fmt.Errorf("format_data.webvtt.blocks[%d].region is prohibited for block type %s", index, block.Type)
+			}
+			if block.Region != nil {
+				if err := validateWebVTTSettings(fmt.Sprintf("format_data.webvtt.blocks[%d].region", index), block.Region.Settings, block.Region.SettingOccurrences, webVTTRegionSettingNames); err != nil {
+					return err
+				}
+			}
+		}
+		for order := 0; order < len(sourceOrders); order++ {
+			if _, exists := sourceOrders[order]; !exists {
+				return fmt.Errorf("webvtt source_order values must be contiguous from zero; missing %d", order)
+			}
 		}
 	}
 	return nil
+}
+
+var webVTTCueSettingNames = map[string]struct{}{
+	"region": {}, "vertical": {}, "line": {}, "position": {}, "size": {}, "align": {},
+}
+
+var webVTTRegionSettingNames = map[string]struct{}{
+	"id": {}, "width": {}, "lines": {}, "regionanchor": {}, "viewportanchor": {}, "scroll": {},
+}
+
+func validateWebVTTCue(index int, cue *Cue) error {
+	native := cue.FormatData.WebVTT
+	if native == nil {
+		return nil
+	}
+	if !equalOptionalString(cue.SourceIdentifier, native.IdentifierRaw) {
+		return fmt.Errorf("cues[%d].source_identifier must equal format_data.webvtt.identifier_raw", index)
+	}
+	if native.RawPayloadLines == nil || !webVTTLinesArePhysical(native.RawPayloadLines) || native.RawPayload != strings.Join(native.RawPayloadLines, "\n") {
+		return fmt.Errorf("cues[%d].format_data.webvtt.raw_payload_lines must LF-join to raw_payload", index)
+	}
+	if cue.Payload.RawText != native.RawPayload {
+		return fmt.Errorf("cues[%d].payload.raw_text must equal format_data.webvtt.raw_payload", index)
+	}
+	if !slices.Equal(cue.Payload.Lines, native.RawPayloadLines) {
+		return fmt.Errorf("cues[%d].payload.lines must equal format_data.webvtt.raw_payload_lines", index)
+	}
+	return validateWebVTTSettings(fmt.Sprintf("cues[%d].format_data.webvtt", index), native.Settings, native.SettingOccurrences, webVTTCueSettingNames)
+}
+
+func validateWebVTTSettings(path string, settings map[string]string, occurrences []WebVTTSettingOccurrence, recognizedNames map[string]struct{}) error {
+	if settings == nil || occurrences == nil {
+		return fmt.Errorf("%s settings and setting_occurrences must be arrays or objects, not null", path)
+	}
+	for name, value := range settings {
+		if _, recognized := recognizedNames[name]; !recognized || value == "" {
+			return fmt.Errorf("%s.settings contains unknown or empty setting %q", path, name)
+		}
+	}
+	for index, occurrence := range occurrences {
+		if occurrence.Raw == "" {
+			return fmt.Errorf("%s.setting_occurrences[%d].raw must be non-empty", path, index)
+		}
+		_, recognized := recognizedNames[occurrence.Name]
+		if occurrence.Recognized != recognized {
+			return fmt.Errorf("%s.setting_occurrences[%d].recognized is inconsistent with name %q", path, index, occurrence.Name)
+		}
+		if occurrence.Valid && !occurrence.Recognized {
+			return fmt.Errorf("%s.setting_occurrences[%d].valid requires recognized", path, index)
+		}
+		if occurrence.Valid && (occurrence.Name == "" || occurrence.Value == "") {
+			return fmt.Errorf("%s.setting_occurrences[%d].valid requires a non-empty recognized name and value", path, index)
+		}
+	}
+	return nil
+}
+
+func validWebVTTSignatureLine(value string) bool {
+	return !strings.Contains(value, "-->") && (value == "WEBVTT" || strings.HasPrefix(value, "WEBVTT ") || strings.HasPrefix(value, "WEBVTT\t"))
+}
+
+func validWebVTTBlockType(value string) bool {
+	switch value {
+	case "note", "style", "region", "unrecognized":
+		return true
+	default:
+		return false
+	}
+}
+
+func webVTTLinesArePhysical(lines []string) bool {
+	for _, line := range lines {
+		if strings.ContainsAny(line, "\r\n") {
+			return false
+		}
+	}
+	return true
+}
+
+func equalOptionalString(left, right *string) bool {
+	return left == nil && right == nil || left != nil && right != nil && *left == *right
 }
 
 func validateSummaries(document Document) error {

@@ -4,7 +4,7 @@
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document defines the current development schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6) plus the native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable.
+This document defines the current development schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), and native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable.
 
 ## Dialect, identity, and version
 
@@ -72,7 +72,7 @@ Current development SubRip uses:
 }
 ```
 
-WebVTT remains `envelope_only`, with ingest/render false and restore true. `envelope_only` means the executable can recreate an already-populated source envelope but has no native codec. `experimental` SubRip means current source can ingest and render the documented contract, while stable support remains gated on v1 completion.
+Current development WebVTT uses the same `experimental` capability values. Experimental means current source can ingest and render the documented native contract while stable support remains gated on v1 completion.
 
 Schema recognition, structural validity, native ingest, model-driven render, exact restoration, and OCR dependency are separate facts. Implementations and documentation must not infer one from another.
 
@@ -97,6 +97,10 @@ format_data
 Normalized timing uses integer milliseconds in `start_milliseconds`, `end_milliseconds`, and `duration_milliseconds`. Native timing syntax remains in format-specific data.
 
 The payload exposes `raw_text`, `plain_text`, and ordered logical `lines`. `raw_text` preserves decoded native textual content without destructive semantic normalization; it is not a substitute for original bytes. Speaker and token observations never destructively alter native payload content.
+
+WebVTT document data preserves the raw signature line, optional description, ordered metadata lines, and non-cue `NOTE`, `STYLE`, `REGION`, or unrecognized blocks. Cue and non-cue `source_order` values form one unique contiguous sequence, so adjacent blocks and overlapping cues never depend on inferred ordering. Each block retains both its raw LF-joined body and physical lines; REGION blocks additionally retain ordered setting occurrences and the effective recognized setting map.
+
+WebVTT cue data preserves the optional native identifier, raw timing line, raw settings text, ordered setting occurrences, effective recognized settings, and raw payload lines. Common payload lines must equal the native raw payload lines. Voice markup yields native speaker observations, valid inline timestamps yield timed text tokens, and neither derived view replaces the retained native payload.
 
 Each cue contains an `ocr_observations` array with cardinality zero or more. Text-native cues use an empty array when no observation exists. Every non-empty observation is independently identified and provenanced, includes OCR engine identity and a resolvable source reference, and may include engine version, model, language, lines, confidence, alternatives, regions, and processing options. If the schema retains `derived`, its only valid value is true.
 

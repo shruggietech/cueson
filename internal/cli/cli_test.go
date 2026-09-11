@@ -5,12 +5,15 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/shruggietech/cueson/internal/schema"
+	"github.com/shruggietech/cueson/internal/testutil"
 )
 
 func TestRunVersion(t *testing.T) {
@@ -401,6 +404,110 @@ func TestReplaceSchemaFileCommitFailurePreservesDestination(t *testing.T) {
 	}
 }
 
+func TestWriteSchemaFileWriteFailureLeavesNewDestinationAbsent(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		write func(*os.File, []byte) error
+	}{
+		{
+			name: "short write",
+			write: func(file *os.File, payload []byte) error {
+				if _, err := file.Write(payload[:len(payload)/2]); err != nil {
+					return err
+				}
+				return io.ErrShortWrite
+			},
+		},
+		{name: "failed write", write: func(*os.File, []byte) error { return errors.New("write failed") }},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			directory := t.TempDir()
+			output := filepath.Join(directory, "new.json")
+			err := writeSchemaFileUsing(output, schema.Bytes(), false, publicationHooks{write: tt.write})
+			if err == nil {
+				t.Fatal("writeSchemaFileUsing() error = nil")
+			}
+			if _, statErr := os.Lstat(output); !errors.Is(statErr, fs.ErrNotExist) {
+				t.Fatalf("failed publication left destination: %v", statErr)
+			}
+			entries, readErr := os.ReadDir(directory)
+			if readErr != nil {
+				t.Fatal(readErr)
+			}
+			if len(entries) != 0 {
+				t.Fatalf("failed publication left staging entries: %v", entries)
+			}
+		})
+	}
+}
+
+func TestWriteSchemaFileForcedFailurePreservesDestination(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	output := filepath.Join(directory, "existing.json")
+	before := []byte("preserve me")
+	if err := os.WriteFile(output, before, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fault := errors.New("replace failed")
+	err := writeSchemaFileUsing(output, schema.Bytes(), true, publicationHooks{
+		replace: func(string, string) error { return fault },
+	})
+	if !errors.Is(err, fault) {
+		t.Fatalf("writeSchemaFileUsing() error = %v, want %v", err, fault)
+	}
+	if got, readErr := os.ReadFile(output); readErr != nil || !bytes.Equal(got, before) {
+		t.Fatalf("failed forced replacement changed destination: bytes = %q, error = %v", got, readErr)
+	}
+	assertOnlyNamedEntry(t, directory, filepath.Base(output))
+}
+
+func TestWriteSchemaFileVerificationFailureRollsBackForcedReplacement(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	output := filepath.Join(directory, "existing.json")
+	before := []byte("preserve me")
+	if err := os.WriteFile(output, before, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fault := errors.New("final verification failed")
+	verification := 0
+	err := writeSchemaFileUsing(output, schema.Bytes(), true, publicationHooks{
+		verify: func(path string, size int64, digest string) error {
+			verification++
+			if verification == 2 {
+				return fault
+			}
+			return verifyPublishedFile(path, size, digest)
+		},
+	})
+	if !errors.Is(err, fault) {
+		t.Fatalf("writeSchemaFileUsing() error = %v, want %v", err, fault)
+	}
+	if got, readErr := os.ReadFile(output); readErr != nil || !bytes.Equal(got, before) {
+		t.Fatalf("verification rollback did not preserve destination: bytes = %q, error = %v", got, readErr)
+	}
+	assertOnlyNamedEntry(t, directory, filepath.Base(output))
+}
+
+func assertOnlyNamedEntry(t *testing.T, directory, name string) {
+	t.Helper()
+	entries, err := os.ReadDir(directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(entries) != 1 || entries[0].Name() != name {
+		t.Fatalf("directory entries = %v, want only %q", entries, name)
+	}
+}
+
 func assertFileEqualsSchema(t *testing.T, path string) {
 	t.Helper()
 	got, err := os.ReadFile(path)
@@ -582,7 +689,7 @@ func TestEncodeRenderAndRestoreWorkflow(t *testing.T) {
 	}
 }
 
-func TestEncodeDefaultOutputAndMissingWebVTTCodec(t *testing.T) {
+func TestEncodeDefaultOutputAndWebVTTCodec(t *testing.T) {
 	t.Parallel()
 
 	directory := t.TempDir()
@@ -602,10 +709,231 @@ func TestEncodeDefaultOutputAndMissingWebVTTCodec(t *testing.T) {
 	if err := os.WriteFile(vttPath, []byte("WEBVTT\n\n00:00.000 --> 00:01.000\nHello\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	status, stdout, stderr = runForTest(context.Background(), []string{"encode", "--stdout", vttPath})
-	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "recognized but its native decode capability is unavailable") {
+	status, stdout, stderr = runForTest(context.Background(), []string{"encode", vttPath})
+	if status != ExitSuccess || stdout != "" || stderr != "" {
+		t.Fatalf("default WebVTT encode = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if _, err := os.Stat(vttPath + ".cueson.json"); err != nil {
+		t.Fatal(err)
+	}
+
+	status, stdout, stderr = runForTest(context.Background(), []string{"encode", "--output=-", vttPath})
+	if status != ExitSuccess || stdout == "" || stderr != "" {
 		t.Fatalf("WebVTT encode = (%d, %q, %q)", status, stdout, stderr)
 	}
+	document, err := schema.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if document.Format != "webvtt" || document.FormatData.WebVTT == nil || document.Source.Assets[0].MediaType == nil || *document.Source.Assets[0].MediaType != "text/vtt" {
+		t.Fatalf("WebVTT document = %#v", document)
+	}
+}
+
+func TestWebVTTEncodeRenderRestoreWorkflow(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "private-location.vtt")
+	sourceBytes := append([]byte{0xef, 0xbb, 0xbf}, []byte("WEBVTT sample\r\n\r\nNOTE retained\r\n\r\nid-one\r\n00:01.000 --> 00:02.500 align:start\r\n<v Ada>Hello &amp; welcome</v>\r\n")...)
+	if err := os.WriteFile(sourcePath, sourceBytes, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", "--pretty", sourcePath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("encode = (%d, stderr %q)", status, stderr)
+	}
+	if strings.Contains(encoded, directory) || strings.Contains(encoded, sourcePath) {
+		t.Fatalf("Cue JSON leaked input path: %q", encoded)
+	}
+	document, err := schema.Decode([]byte(encoded))
+	if err != nil {
+		t.Fatalf("schema.Decode(encoded) error = %v", err)
+	}
+	if document.Format != "webvtt" || document.FormatSupport.Status != "experimental" || !document.FormatSupport.IngestSupported || !document.FormatSupport.RenderSupported || !document.FormatSupport.RestoreSupported {
+		t.Fatalf("format support = (%q, %#v)", document.Format, document.FormatSupport)
+	}
+	if document.FormatData.WebVTT == nil || len(document.FormatData.WebVTT.Blocks) != 1 || len(document.Cues) != 1 || document.Cues[0].Payload.PlainText != "Hello & welcome" {
+		t.Fatalf("WebVTT model = %#v", document)
+	}
+	if len(document.Cues[0].Speakers) != 1 || document.Cues[0].Speakers[0].Name != "Ada" {
+		t.Fatalf("WebVTT speaker observations = %#v", document.Cues[0].Speakers)
+	}
+	status, withoutSpeakers, stderr := runForTest(context.Background(), []string{"encode", "--stdout", "--no-speaker-detection", sourcePath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("encode without speaker detection = (%d, stderr %q)", status, stderr)
+	}
+	withoutSpeakerDocument, err := schema.Decode([]byte(withoutSpeakers))
+	if err != nil || len(withoutSpeakerDocument.Cues[0].Speakers) != 0 {
+		t.Fatalf("disabled speaker observations = %#v, decode error = %v", withoutSpeakerDocument.Cues[0].Speakers, err)
+	}
+
+	documentPath := filepath.Join(directory, "document.cueson.json")
+	if err := os.WriteFile(documentPath, []byte(encoded), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, rendered, stderr := runForTest(context.Background(), []string{"render", documentPath, "--to", "webvtt"})
+	if status != ExitSuccess || stderr != "" || !strings.HasPrefix(rendered, "WEBVTT sample\n") || strings.Contains(rendered, "\r") {
+		t.Fatalf("render = (%d, %q, %q)", status, rendered, stderr)
+	}
+	status, dashRendered, stderr := runForTest(context.Background(), []string{"render", documentPath, "--to", "vtt", "--output=-"})
+	if status != ExitSuccess || dashRendered != rendered || stderr != "" {
+		t.Fatalf("render --output=- = (%d, %q, %q), want the default stdout rendering", status, dashRendered, stderr)
+	}
+
+	reencodedPath := filepath.Join(directory, "reencoded.json")
+	renderedPath := filepath.Join(directory, "rendered.vtt")
+	if err := os.WriteFile(renderedPath, []byte(rendered), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"encode", "--format", "vtt", "--output", reencodedPath, renderedPath})
+	if status != ExitSuccess || stdout != "" || stderr != "" {
+		t.Fatalf("re-encode = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if _, err := schema.Decode(readFileForCLI(t, reencodedPath)); err != nil {
+		t.Fatalf("schema.Decode(re-encoded) error = %v", err)
+	}
+
+	restoredPath := filepath.Join(directory, "restored.vtt")
+	status, stdout, stderr = runForTest(context.Background(), []string{"restore", "--no-metadata", "--output", restoredPath, documentPath})
+	if status != ExitSuccess || stdout != "" || stderr != "" {
+		t.Fatalf("restore = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if restored := readFileForCLI(t, restoredPath); !bytes.Equal(restored, sourceBytes) {
+		t.Fatalf("restored bytes = %q, want %q", restored, sourceBytes)
+	}
+}
+
+func TestWebVTTEncodeSelectionAndEncodingFailures(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	disguised := filepath.Join(directory, "captions.srt")
+	if err := os.WriteFile(disguised, []byte("WEBVTT\n\n00:00.000 --> 00:01.000\nHello\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", disguised})
+	if status != ExitSuccess || encoded == "" || !strings.Contains(stderr, "format_extension_disagreement") {
+		t.Fatalf("extension disagreement = (%d, %q, %q)", status, encoded, stderr)
+	}
+	document, err := schema.Decode([]byte(encoded))
+	if err != nil || document.Format != "webvtt" {
+		t.Fatalf("selected format = %q, decode error = %v", document.Format, err)
+	}
+
+	output := filepath.Join(directory, "must-not-exist.json")
+	status, stdout, stderr := runForTest(context.Background(), []string{"encode", "--format", "vtt", "--encoding", "windows-1252", "--output", output, disguised})
+	if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, "WebVTT requires UTF-8") {
+		t.Fatalf("explicit incompatible encoding = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if _, statErr := os.Lstat(output); !errors.Is(statErr, fs.ErrNotExist) {
+		t.Fatalf("explicit incompatible encoding left output: %v", statErr)
+	}
+
+	status, stdout, stderr = runForTest(context.Background(), []string{"encode", "--encoding", "windows-1252", "--output", output, disguised})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "WebVTT requires UTF-8") {
+		t.Fatalf("automatic incompatible encoding = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if _, statErr := os.Lstat(output); !errors.Is(statErr, fs.ErrNotExist) {
+		t.Fatalf("automatic incompatible encoding left output: %v", statErr)
+	}
+}
+
+func TestWebVTTOutputForceAndStrictRender(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.vtt")
+	if err := os.WriteFile(sourcePath, []byte("WEBVTT\n\n00:00.000 --> 00:01.000 mystery:x\nHello\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	encodedPath := filepath.Join(directory, "document.json")
+	status, stdout, stderr := runForTest(context.Background(), []string{"encode", "--output", encodedPath, sourcePath})
+	if status != ExitSuccess || stdout != "" || !strings.Contains(stderr, "webvtt_setting_unknown") {
+		t.Fatalf("encode output = (%d, %q, %q)", status, stdout, stderr)
+	}
+
+	before := []byte("preserve render destination")
+	renderedPath := filepath.Join(directory, "captions.rendered.vtt")
+	if err := os.WriteFile(renderedPath, before, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"render", "--strict", "--to", "vtt", "--output", renderedPath, "--force", encodedPath})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "webvtt_setting_unknown") {
+		t.Fatalf("strict render = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if got := readFileForCLI(t, renderedPath); !bytes.Equal(got, before) {
+		t.Fatalf("strict render changed output: %q", got)
+	}
+
+	status, stdout, stderr = runForTest(context.Background(), []string{"render", "--to", "vtt", "--output", renderedPath, "--force", encodedPath})
+	if status != ExitSuccess || stdout != "" || !strings.Contains(stderr, "webvtt_render_preserved_nonconforming") {
+		t.Fatalf("permissive forced render = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if got := readFileForCLI(t, renderedPath); !bytes.HasPrefix(got, []byte("WEBVTT\n")) {
+		t.Fatalf("rendered file = %q", got)
+	}
+}
+
+func TestEveryAcceptedWebVTTFixtureEncodesAndRestoresExactly(t *testing.T) {
+	t.Parallel()
+
+	root := filepath.Join("..", "..", "testdata")
+	manifest, err := testutil.VerifyFixtures(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, fixture := range manifest.Fixtures {
+		if fixture.Expectation.Result != "accepted" || !strings.HasPrefix(fixture.ID, "webvtt/") {
+			continue
+		}
+		fixture := fixture
+		t.Run(strings.TrimPrefix(fixture.ID, "webvtt/"), func(t *testing.T) {
+			t.Parallel()
+			var artifact *testutil.Artifact
+			for index := range fixture.Artifacts {
+				if fixture.Artifacts[index].Role == "source" {
+					artifact = &fixture.Artifacts[index]
+					break
+				}
+			}
+			if artifact == nil {
+				t.Fatal("accepted WebVTT fixture has no source artifact")
+			}
+			sourcePath := testutil.ArtifactFile(root, *artifact)
+			sourceBytes := readFileForCLI(t, sourcePath)
+			status, encoded, _ := runForTest(context.Background(), []string{"encode", "--stdout", sourcePath})
+			if status != ExitSuccess {
+				t.Fatalf("encode status = %d", status)
+			}
+			if _, err := schema.Decode([]byte(encoded)); err != nil {
+				t.Fatalf("schema.Decode(encoded) error = %v", err)
+			}
+			directory := t.TempDir()
+			documentPath := filepath.Join(directory, "document.cueson.json")
+			if err := os.WriteFile(documentPath, []byte(encoded), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			restoredPath := filepath.Join(directory, "restored.vtt")
+			status, stdout, stderr := runForTest(context.Background(), []string{"restore", "--no-metadata", "--output", restoredPath, documentPath})
+			if status != ExitSuccess || stdout != "" || stderr != "" {
+				t.Fatalf("restore = (%d, %q, %q)", status, stdout, stderr)
+			}
+			if restored := readFileForCLI(t, restoredPath); !bytes.Equal(restored, sourceBytes) {
+				t.Fatal("restored bytes differ from governed source")
+			}
+		})
+	}
+}
+
+func readFileForCLI(t *testing.T, path string) []byte {
+	t.Helper()
+	payload, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return payload
 }
 
 func TestEncodeDoesNotTreatWebVTTPrefixAsSignature(t *testing.T) {
