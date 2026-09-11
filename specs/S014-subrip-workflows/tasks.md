@@ -32,5 +32,5 @@
 - [x] T016 Adapt `.goreleaser.yaml`, `.github/workflows/release-proof.yml`, `scripts/release-verify/`, and tests so development proof stays green while immutable v0.0.0 assertions remain intact.
 - [x] T017 Update conformance expectations, then run formatting, mojibake, docs, focused, full, and quickstart verification.
 - [x] T018 Run Spec Kit convergence and analysis, complete discovered tasks, and prove the immutable v0.0.0 schema digest is unchanged.
-- [ ] T019 Reconcile GitHub metadata, publish a formatted PR closing #30 and #31, verify read-back, and move both issues to `PR review`.
+- [x] T019 Reconcile GitHub metadata, publish a formatted PR closing #30 and #31, verify read-back, and move both issues to `PR review`.
 - [ ] T020 Watch every current-head check and review, resolve all findings, request at most one second Codex round, and stop only after a green fully reviewed head.
