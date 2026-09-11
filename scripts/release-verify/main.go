@@ -33,6 +33,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	flags.StringVar(&config.Version, "version", "", "expected release version")
 	flags.StringVar(&config.Commit, "commit", "", "expected full source revision")
 	flags.BoolVar(&config.ExecuteHost, "execute-host", false, "execute the compatible packaged binary")
+	flags.BoolVar(&config.Development, "development", false, "verify the evolving canonical schema without requiring an immutable release copy")
 	flags.Var(&forbidden, "forbid", "additional local identifier to reject (repeatable)")
 	if err := flags.Parse(args); err != nil {
 		fmt.Fprintf(stderr, "release verification: invalid arguments: %v\n", err)
@@ -57,7 +58,11 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "release verification: write evidence: %v\n", err)
 		return 1
 	}
-	fmt.Fprintf(stdout, "verified non-publishing release candidate %s at %s\n", evidence.Version, evidence.SourceRevision)
+	proofKind := "non-publishing release candidate"
+	if evidence.Development {
+		proofKind = "non-publishing development snapshot"
+	}
+	fmt.Fprintf(stdout, "verified %s %s at %s\n", proofKind, evidence.Version, evidence.SourceRevision)
 	fmt.Fprintf(stdout, "evidence: %s\n", path)
 	return 0
 }

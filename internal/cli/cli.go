@@ -47,6 +47,27 @@ type restoreOptions struct {
 	noMetadata     bool
 }
 
+type encodeOptions struct {
+	input              string
+	output             string
+	outputSet          bool
+	force              bool
+	format             string
+	encoding           string
+	pretty             bool
+	stdout             bool
+	noSpeakerDetection bool
+}
+
+type renderOptions struct {
+	input     string
+	target    string
+	output    string
+	outputSet bool
+	force     bool
+	strict    bool
+}
+
 type helpTarget uint8
 
 const (
@@ -55,6 +76,8 @@ const (
 	versionHelp
 	schemaHelp
 	restoreHelp
+	encodeHelp
+	renderHelp
 )
 
 type invocation struct {
@@ -63,6 +86,8 @@ type invocation struct {
 	options globalOptions
 	schema  schemaOptions
 	restore restoreOptions
+	encode  encodeOptions
+	render  renderOptions
 }
 
 type invocationError struct {
@@ -104,6 +129,8 @@ Usage:
   cueson [global options] <command>
 
 Commands:
+	encode   Encode a subtitle source as Cue JSON.
+	render   Render Cue JSON from its structured model.
   version  Print the Cueson executable version.
   schema   Print or save the embedded Cue JSON schema.
   restore  Restore exact source-envelope bytes.
@@ -120,6 +147,8 @@ Examples:
   cueson version
   cueson schema --version
   cueson schema --output cueson.schema.json
+	cueson encode captions.srt
+	cueson render captions.srt.cueson.json --to srt
   cueson restore --output restored.srt document.cueson.json
 `
 
@@ -170,6 +199,44 @@ Example:
   cueson restore --output restored.srt document.cueson.json
 `
 
+const encodeHelpText = `Encode a subtitle source as Cue JSON while preserving its exact bytes.
+
+Usage:
+  cueson [global options] encode [options] INPUT
+
+Options:
+  -o, --output PATH       Write Cue JSON to PATH (default INPUT.cueson.json).
+  -f, --force             Replace an existing regular output file.
+  --format FORMAT         Select auto, srt, or vtt (default auto).
+  --encoding NAME         Select utf-8, utf-16le, utf-16be, windows-1252, or iso-8859-1.
+  --pretty                Indent Cue JSON output.
+  --stdout                Write Cue JSON to stdout.
+  --no-speaker-detection  Disable derived Name: speaker observations.
+  -h, --help              Show encode help.
+
+Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le;
+utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.
+
+Example:
+  cueson encode --pretty captions.srt
+`
+
+const renderHelpText = `Render Cue JSON from its structured model.
+
+Usage:
+  cueson [global options] render [options] INPUT.cueson.json --to srt
+
+Options:
+  --to FORMAT        Select the target format.
+  -o, --output PATH  Write output to PATH instead of stdout.
+  -f, --force        Replace an existing regular output file.
+  --strict           Reject known non-representable model content.
+  -h, --help         Show render help.
+
+Example:
+  cueson render captions.srt.cueson.json --to srt --output captions.rendered.srt
+`
+
 const rootUsageText = `Usage:
   cueson [global options] <command>
 `
@@ -184,6 +251,14 @@ const schemaUsageText = `Usage:
 
 const restoreUsageText = `Usage:
   cueson [global options] restore [--output PATH | --output-dir DIR] [--force] [--strict-metadata | --no-metadata] INPUT
+`
+
+const encodeUsageText = `Usage:
+  cueson [global options] encode [--output PATH | --stdout] [--force] [--format FORMAT] [--encoding NAME] [--pretty] [--no-speaker-detection] INPUT
+`
+
+const renderUsageText = `Usage:
+  cueson [global options] render [--output PATH] [--force] [--strict] INPUT --to FORMAT
 `
 
 // Run executes one Cueson command against the supplied process streams.
@@ -207,6 +282,10 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return writeStdout(stdout, diagnostics, []byte(schemaHelpText))
 	case restoreHelp:
 		return writeStdout(stdout, diagnostics, []byte(restoreHelpText))
+	case encodeHelp:
+		return writeStdout(stdout, diagnostics, []byte(encodeHelpText))
+	case renderHelp:
+		return writeStdout(stdout, diagnostics, []byte(renderHelpText))
 	}
 
 	select {
@@ -223,6 +302,10 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return runSchema(parsed.schema, stdout, stderr, diagnostics)
 	case "restore":
 		return runRestore(ctx, parsed.restore, stderr, diagnostics)
+	case "encode":
+		return runEncode(ctx, parsed.encode, stdout, stderr, diagnostics)
+	case "render":
+		return runRender(ctx, parsed.render, stdout, stderr, diagnostics)
 	default:
 		diagnostics.write(diagnosticError, "internal command dispatch failure")
 		return ExitRuntimeFailure
@@ -437,6 +520,127 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 					continue
 				}
 			}
+			if parsed.command == "encode" {
+				switch arg {
+				case "-f", "--force":
+					parsed.encode.force = true
+					continue
+				case "--pretty":
+					parsed.encode.pretty = true
+					continue
+				case "--stdout":
+					parsed.encode.stdout = true
+					continue
+				case "--no-speaker-detection":
+					parsed.encode.noSpeakerDetection = true
+					continue
+				case "-o", "--output", "--format", "--encoding":
+					if index+1 >= len(args) {
+						return parsed, encodeInvocationError(arg + " requires a value")
+					}
+					index++
+					if args[index] == "" {
+						return parsed, encodeInvocationError(arg + " requires a value")
+					}
+					switch arg {
+					case "-o", "--output":
+						if parsed.encode.outputSet {
+							return parsed, encodeInvocationError("--output may be specified only once")
+						}
+						parsed.encode.output, parsed.encode.outputSet = args[index], true
+					case "--format":
+						if parsed.encode.format != "" {
+							return parsed, encodeInvocationError("--format may be specified only once")
+						}
+						parsed.encode.format = args[index]
+					case "--encoding":
+						if parsed.encode.encoding != "" {
+							return parsed, encodeInvocationError("--encoding may be specified only once")
+						}
+						parsed.encode.encoding = args[index]
+					}
+					continue
+				}
+				matched := false
+				for _, option := range []string{"--output=", "--format=", "--encoding="} {
+					if strings.HasPrefix(arg, option) {
+						value := strings.TrimPrefix(arg, option)
+						if value == "" {
+							return parsed, encodeInvocationError(strings.TrimSuffix(option, "=") + " requires a value")
+						}
+						switch option {
+						case "--output=":
+							if parsed.encode.outputSet {
+								return parsed, encodeInvocationError("--output may be specified only once")
+							}
+							parsed.encode.output, parsed.encode.outputSet = value, true
+						case "--format=":
+							if parsed.encode.format != "" {
+								return parsed, encodeInvocationError("--format may be specified only once")
+							}
+							parsed.encode.format = value
+						case "--encoding=":
+							if parsed.encode.encoding != "" {
+								return parsed, encodeInvocationError("--encoding may be specified only once")
+							}
+							parsed.encode.encoding = value
+						}
+						matched = true
+						break
+					}
+				}
+				if matched {
+					continue
+				}
+			}
+			if parsed.command == "render" {
+				switch arg {
+				case "-f", "--force":
+					parsed.render.force = true
+					continue
+				case "--strict":
+					parsed.render.strict = true
+					continue
+				case "-o", "--output", "--to":
+					if index+1 >= len(args) {
+						return parsed, renderInvocationError(arg + " requires a value")
+					}
+					index++
+					if args[index] == "" {
+						return parsed, renderInvocationError(arg + " requires a value")
+					}
+					if arg == "--to" {
+						if parsed.render.target != "" {
+							return parsed, renderInvocationError("--to may be specified only once")
+						}
+						parsed.render.target = args[index]
+					} else {
+						if parsed.render.outputSet {
+							return parsed, renderInvocationError("--output may be specified only once")
+						}
+						parsed.render.output, parsed.render.outputSet = args[index], true
+					}
+					continue
+				}
+				if strings.HasPrefix(arg, "--output=") || strings.HasPrefix(arg, "--to=") {
+					parts := strings.SplitN(arg, "=", 2)
+					if parts[1] == "" {
+						return parsed, renderInvocationError(parts[0] + " requires a value")
+					}
+					if parts[0] == "--to" {
+						if parsed.render.target != "" {
+							return parsed, renderInvocationError("--to may be specified only once")
+						}
+						parsed.render.target = parts[1]
+					} else {
+						if parsed.render.outputSet {
+							return parsed, renderInvocationError("--output may be specified only once")
+						}
+						parsed.render.output, parsed.render.outputSet = parts[1], true
+					}
+					continue
+				}
+			}
 
 			if strings.HasPrefix(arg, "-") {
 				return parsed, &invocationError{message: fmt.Sprintf("unknown option %q", arg), usage: usageForCommand(parsed.command)}
@@ -445,7 +649,7 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 
 		if parsed.command == "" {
 			parsed.command = arg
-			if parsed.command != "version" && parsed.command != "schema" && parsed.command != "restore" {
+			if parsed.command != "version" && parsed.command != "schema" && parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" {
 				return parsed, &invocationError{message: fmt.Sprintf("unknown command %q", parsed.command), usage: rootHelp}
 			}
 			continue
@@ -455,7 +659,15 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 			parsed.restore.input = arg
 			continue
 		}
-		if parsed.command != "restore" {
+		if parsed.command == "encode" && parsed.encode.input == "" {
+			parsed.encode.input = arg
+			continue
+		}
+		if parsed.command == "render" && parsed.render.input == "" {
+			parsed.render.input = arg
+			continue
+		}
+		if parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" {
 			return parsed, &invocationError{message: fmt.Sprintf("%s accepts no arguments", parsed.command), usage: usageForCommand(parsed.command)}
 		}
 		return parsed, &invocationError{message: fmt.Sprintf("%s accepts no additional arguments", parsed.command), usage: usageForCommand(parsed.command)}
@@ -484,6 +696,38 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 			return parsed, restoreInvocationError("--strict-metadata and --no-metadata are mutually exclusive")
 		}
 	}
+	if parsed.command == "encode" {
+		if parsed.encode.input == "" {
+			return parsed, encodeInvocationError("encode requires one INPUT path")
+		}
+		if parsed.encode.format == "" {
+			parsed.encode.format = "auto"
+		}
+		if parsed.encode.format != "auto" && parsed.encode.format != "srt" && parsed.encode.format != "vtt" && parsed.encode.format != "subrip" && parsed.encode.format != "webvtt" {
+			return parsed, encodeInvocationError("--format must be auto, srt, or vtt")
+		}
+		stdoutSelected := parsed.encode.stdout || (parsed.encode.outputSet && parsed.encode.output == "-")
+		if parsed.encode.stdout && parsed.encode.outputSet && parsed.encode.output != "-" {
+			return parsed, encodeInvocationError("--stdout and --output are mutually exclusive")
+		}
+		if parsed.encode.force && stdoutSelected {
+			return parsed, encodeInvocationError("--force requires a filesystem output")
+		}
+	}
+	if parsed.command == "render" {
+		if parsed.render.input == "" {
+			return parsed, renderInvocationError("render requires one INPUT path")
+		}
+		if parsed.render.target == "" {
+			return parsed, renderInvocationError("render requires --to FORMAT")
+		}
+		if parsed.render.target != "srt" && parsed.render.target != "subrip" && parsed.render.target != "vtt" && parsed.render.target != "webvtt" {
+			return parsed, renderInvocationError("--to must be srt or vtt")
+		}
+		if parsed.render.force && (!parsed.render.outputSet || parsed.render.output == "-") {
+			return parsed, renderInvocationError("--force requires a filesystem output")
+		}
+	}
 	return parsed, nil
 }
 
@@ -495,6 +739,14 @@ func restoreInvocationError(message string) *invocationError {
 	return &invocationError{message: message, usage: restoreHelp}
 }
 
+func encodeInvocationError(message string) *invocationError {
+	return &invocationError{message: message, usage: encodeHelp}
+}
+
+func renderInvocationError(message string) *invocationError {
+	return &invocationError{message: message, usage: renderHelp}
+}
+
 func usageForCommand(command string) helpTarget {
 	switch command {
 	case "version":
@@ -503,6 +755,10 @@ func usageForCommand(command string) helpTarget {
 		return schemaHelp
 	case "restore":
 		return restoreHelp
+	case "encode":
+		return encodeHelp
+	case "render":
+		return renderHelp
 	default:
 		return rootHelp
 	}
@@ -516,6 +772,10 @@ func writeUsage(writer io.Writer, target helpTarget) {
 		fmt.Fprint(writer, schemaUsageText)
 	case restoreHelp:
 		fmt.Fprint(writer, restoreUsageText)
+	case encodeHelp:
+		fmt.Fprint(writer, encodeUsageText)
+	case renderHelp:
+		fmt.Fprint(writer, renderUsageText)
 	default:
 		fmt.Fprint(writer, rootUsageText)
 	}

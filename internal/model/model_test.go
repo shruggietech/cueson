@@ -15,6 +15,42 @@ func TestDocumentValidateRepresentativeSemantics(t *testing.T) {
 	}
 }
 
+func TestDocumentValidateCapabilityProfiles(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		format  string
+		support FormatSupport
+		valid   bool
+	}{
+		{name: "subrip experimental", format: "subrip", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, valid: true},
+		{name: "subrip envelope only", format: "subrip", support: FormatSupport{Status: "envelope_only", RestoreSupported: true}},
+		{name: "subrip stable prematurely", format: "subrip", support: FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}},
+		{name: "webvtt envelope only", format: "webvtt", support: FormatSupport{Status: "envelope_only", RestoreSupported: true}, valid: true},
+		{name: "webvtt experimental prematurely", format: "webvtt", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			doc := representativeDocument()
+			doc.Format = tt.format
+			doc.FormatSupport = tt.support
+			if tt.format == "webvtt" {
+				doc.FormatData = DocumentFormatData{WebVTT: &WebVTTDocumentData{Signature: "WEBVTT", MetadataLines: []string{}, Blocks: []WebVTTBlock{}}}
+				doc.Cues[0].FormatData = CueFormatData{WebVTT: &WebVTTCueData{TimingLineRaw: "00:00:01.250 --> 00:00:04.200", Settings: map[string]string{}, RawPayload: "Hello."}}
+			}
+			err := doc.Validate()
+			if tt.valid && err != nil {
+				t.Fatalf("Validate() error = %v", err)
+			}
+			if !tt.valid && err == nil {
+				t.Fatal("Validate() error = nil, want capability rejection")
+			}
+		})
+	}
+}
+
 func TestDocumentValidateRejectsSemanticViolations(t *testing.T) {
 	t.Parallel()
 
@@ -97,10 +133,10 @@ func representativeDocument() Document {
 		return &Timestamp{ISO: "2026-09-09T00:00:00Z", UnixNS: 1788912000000000000}
 	}
 	return Document{
-		Schema:        "https://cueson.io/schema/v0.0.0/cueson.schema.json",
-		SchemaVersion: "0.0.0",
+		Schema:        "https://cueson.io/schema/v0.1.0/cueson.schema.json",
+		SchemaVersion: "0.1.0",
 		Format:        "subrip",
-		FormatSupport: FormatSupport{Status: "envelope_only", RestoreSupported: true},
+		FormatSupport: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
 		Producer:      Producer{Name: "test", Version: "1.2.3"},
 		Source: SourceEnvelope{PrimaryAssetID: "asset-0", Assets: []SourceAsset{{
 			ID: "asset-0", Role: "primary", FileName: "captions.srt", MediaType: stringPointer("application/x-subrip"),

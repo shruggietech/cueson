@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/model"
 	"github.com/shruggietech/cueson/internal/schema"
 	"github.com/shruggietech/cueson/internal/source"
@@ -26,8 +27,8 @@ func TestGovernedCorpus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("VerifyFixtures() error = %v", err)
 	}
-	if len(manifest.Fixtures) != 5 {
-		t.Fatalf("fixture count = %d, want 5", len(manifest.Fixtures))
+	if len(manifest.Fixtures) != 8 {
+		t.Fatalf("fixture count = %d, want 8", len(manifest.Fixtures))
 	}
 }
 
@@ -152,6 +153,13 @@ func TestMalformedRegressionsAreDeterministic(t *testing.T) {
 
 func rejectAtDeclaredBoundary(t *testing.T, fixture testutil.Fixture, input []byte, run int) (string, string) {
 	t.Helper()
+	if fixture.ID == "subrip/reversed-time" {
+		_, err := subrip.Parse(string(input), subrip.Options{DetectSpeakers: true})
+		if err == nil {
+			t.Fatal("subrip.Parse() accepted malformed fixture")
+		}
+		return "parse", err.Error()
+	}
 	document, err := schema.Decode(input)
 	if *fixture.Expectation.Stage != "integrity" {
 		if err == nil {

@@ -1,10 +1,10 @@
 # Cueson Architecture
 
-**Status:** Ratified v0.0.0 implementation baseline
+**Status:** v0.1.0 development architecture with ratified v0.0.0 baseline
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document is the architecture of record for the v0.0.0 foundation. The [project constitution](../.specify/memory/constitution.md) remains the highest repository authority. The [working project specification](Cueson-Project-Specification-v0.0.0.md) supplies broader context and roadmap detail when it does not conflict with this baseline.
+This document is the architecture of record for current development. The [project constitution](../.specify/memory/constitution.md) remains the highest repository authority. The [working project specification](Cueson-Project-Specification-v0.0.0.md) supplies broader context and roadmap detail when it does not conflict with ratified slices.
 
 ## Public and internal boundaries
 
@@ -30,7 +30,7 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 
 Dependencies point inward toward stable, dependency-light contracts. `internal/model` does not depend on CLI, source, codecs, conversion, or OCR. Codec availability is the authority for native ingest and render capability; schema recognition alone is not.
 
-The v0.0.0 source tree implements `cmd/cueson`, CLI, version, model, schema, source, test utility, and conformance boundaries. The `internal/codec`, `internal/convert`, and `internal/ocr` rows reserve future ownership; they do not assert that those packages or their runtime capabilities exist in v0.0.0.
+Current source implements `internal/codec` as a capability registry plus shared detection/decoding and native SubRip parser/renderer. `internal/convert` and `internal/ocr` remain reserved future ownership.
 
 ## Source authority and restoration
 
@@ -46,11 +46,11 @@ Before opening any output, restoration builds the complete destination plan and 
 
 ## Common model and native fidelity
 
-The common model exposes timing and semantic content without requiring consumers to decode source bytes or parse a subtitle grammar. Format-native data remains adjacent to the common model wherever normalization would otherwise lose information. At v0.0.0 these are schema and externally authored model contracts, not output from a native parser.
+The common model exposes timing and semantic content without requiring consumers to decode source bytes or parse a subtitle grammar. Format-native data remains adjacent wherever normalization would otherwise lose information. Current SubRip encode constructs both views from one bounded exact source acquisition.
 
 Unknown, malformed, unsupported, or non-representable source information is preserved when practical and reported through deterministic diagnostics. Strict conversion refuses known loss. A successful operation never silently discards information covered by the active contract.
 
-The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages distinguish the implemented source-envelope and schema boundary from each format's planned v1 grammar, diagnostics, fixtures, native ingest, rendering, and conversion obligations.
+The dedicated [SubRip](formats/srt.md) page defines the experimental native grammar, diagnostics, fixtures, ingest, and rendering contract. [WebVTT](formats/webvtt.md) remains envelope-only; conversion remains deferred.
 
 ## Version and schema relationship
 
@@ -158,5 +158,7 @@ The `Repository text` CI job runs both standalone modules. Historical Spec Kit a
 | [#23](https://github.com/shruggietech/cueson/issues/23) | Complete official brand-kit retention, offline integrity verification, and repository brand integration |
 | [#25](https://github.com/shruggietech/cueson/issues/25) | Immutable v0.0.0 schema admission, dated release records, and exact post-squash default-branch candidate proof |
 | [#27](https://github.com/shruggietech/cueson/issues/27) | Authorized v0.0.0 tag and GitHub Release publication, independent public-download verification, and released-state reconciliation |
+| [#30](https://github.com/shruggietech/cueson/issues/30) | Capability-based codec registry, bounded source acquisition, detection, decoding, diagnostics, and development schema/model transition |
+| [#31](https://github.com/shruggietech/cueson/issues/31) | Native SubRip parsing, exact-envelope encode, canonical rendering, CLI workflows, fixtures, and round-trip verification |
 
-SRT and WebVTT codecs, model-driven render, and cross-format conversion are deliberately deferred to later implementation slices. This document does not authorize placeholder commands or premature capability claims.
+WebVTT native ingest/render and cross-format conversion are deferred. Current SubRip capability is experimental until the v1 acceptance gate is complete; this document does not authorize placeholder commands or premature stable claims.

@@ -1,0 +1,30 @@
+[
+  {
+    "severity": "warning",
+    "code": "subrip_sequence_irregular",
+    "message": "sequence value 7 was preserved; expected 1",
+    "source_order": 0,
+    "cue_id": "cue-000000"
+  },
+  {
+    "severity": "warning",
+    "code": "subrip_timing_period_separator",
+    "message": "period millisecond separators were accepted as a tolerated variant",
+    "source_order": 0,
+    "cue_id": "cue-000000"
+  },
+  {
+    "severity": "warning",
+    "code": "subrip_timing_short_fraction",
+    "message": "short millisecond fields were right-padded to three digits",
+    "source_order": 0,
+    "cue_id": "cue-000000"
+  },
+  {
+    "severity": "warning",
+    "code": "subrip_sequence_missing",
+    "message": "cue has no sequence line; the missing distinction was preserved",
+    "source_order": 1,
+    "cue_id": "cue-000001"
+  }
+]

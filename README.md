@@ -17,13 +17,13 @@
   <a href="docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-repository-58A6FF"></a>
 </p>
 
-**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial stable-release targets:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v0.0.0 foundation release (`envelope_only`)
+**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial stable-release targets:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v0.1.0 development (`experimental` native SubRip; `envelope_only` WebVTT)
 
-Cueson is designed to convert subtitle and caption formats into and out of a canonical, versioned JSON representation called Cue JSON. Its common cue model is intended for direct use by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration. Native format conversion remains planned rather than implemented.
+Cueson converts SubRip subtitle files into a canonical, versioned JSON representation called Cue JSON and renders the structured model back to deterministic SubRip. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration. WebVTT ingest and cross-format conversion remain planned.
 
-The repository contains a buildable `cueson` executable, the [canonical Draft 2020-12 Cue JSON `0.0.0` schema](internal/schema/cueson.schema.json), and its byte-identical immutable [versioned release schema](schema/releases/v0.0.0/cueson.schema.json). The [official v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) provides verified archives for six platform targets, matching SPDX JSON SBOMs, and checksums. The executable provides truthful help, `cueson version`, embedded schema retrieval, and codec-independent exact restoration from valid source envelopes. It does not provide native subtitle-format ingest or render support.
+The repository contains the development `cueson` executable and canonical Draft 2020-12 Cue JSON `0.1.0` schema. The separate [official v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its byte-identical [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain the published foundation. Current source adds bounded native SubRip detection, decoding, semantic ingest, deterministic rendering, and codec-independent exact restoration.
 
-## Planned stable direction
+## Capability direction
 
 - Preserve original source bytes, names, hashes, and observable filesystem metadata.
 - Expose cue timing, raw text, plain text, line structure, speakers, and token timing through a stable common model.
@@ -48,10 +48,12 @@ go run ./cmd/cueson --help
 go run ./cmd/cueson version
 go run ./cmd/cueson schema --version
 go run ./cmd/cueson schema
+go run ./cmd/cueson encode --pretty captions.srt
+go run ./cmd/cueson render captions.srt.cueson.json --to srt --output rendered.srt
 go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
 
-The restore command accepts Cue JSON with an already-populated source envelope. It validates canonical base64, byte length, SHA-256, portable names, the complete destination plan, and overwrite safety before accepting output. It does not ingest an SRT or WebVTT file, derive semantic cues, render from the model, or convert between formats. Timestamp restoration is platform-aware; use `--strict-metadata` to require reproducible captured timestamps or `--no-metadata` to skip metadata application.
+`encode` writes Cue JSON to `INPUT.cueson.json` by default, retains the exact source bytes, and supports explicit encoding selection for ambiguous legacy files. `render --to srt` serializes the structured model as canonical LF SubRip; it is intentionally distinct from exact `restore`. WebVTT native ingest/render and cross-format conversion are not yet implemented.
 
 The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Seventeen GitHub Actions-owned CI and CodeQL checks are required. The two pull-request policy statuses remain visible but are not required checks while the GitHub Actions-authored second-round comment path lacks complete activation proof. Native codec-specific gates do not exist because native codecs are not implemented.
 
@@ -74,7 +76,7 @@ The non-publishing release proof remains the acceptance path for candidate build
 
 ```text
 goreleaser release --snapshot --clean --skip=publish
-go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 0.0.0 -commit <full-commit> -execute-host
+go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 0.1.0 -commit <full-commit> -development -execute-host
 ```
 
 See [release verification](docs/release-verification.md) for exact tool versions, artifact contents, checksums, SBOM expectations, the published v0.0.0 evidence, and the boundary between candidate proof and authorized publication. Candidate verification does not publish Cueson by itself.

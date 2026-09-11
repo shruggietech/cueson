@@ -1,0 +1,113 @@
+package source
+
+import (
+	"bytes"
+	"context"
+	"encoding/base64"
+	"errors"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/shruggietech/cueson/internal/model"
+)
+
+func TestCaptureContextReturnsTheExactBytesUsedByTheEnvelope(t *testing.T) {
+	t.Parallel()
+
+	payload := []byte("1\r\n00:00:00,000 --> 00:00:01,000\r\nHello\r\n")
+	path := filepath.Join(t.TempDir(), "captions.srt")
+	if err := os.WriteFile(path, payload, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	captured, err := CaptureContext(context.Background(), path, CaptureOptions{})
+	if err != nil {
+		t.Fatalf("CaptureContext() error = %v", err)
+	}
+	if !bytes.Equal(captured.Bytes, payload) {
+		t.Fatalf("CaptureContext() bytes = %q, want %q", captured.Bytes, payload)
+	}
+	decoded, err := base64.StdEncoding.DecodeString(captured.Asset.DataBase64)
+	if err != nil {
+		t.Fatalf("decode asset: %v", err)
+	}
+	if !bytes.Equal(decoded, captured.Bytes) {
+		t.Fatal("source envelope bytes differ from the returned codec bytes")
+	}
+	if captured.Asset.FileName != "captions.srt" || captured.Asset.Size.Bytes != int64(len(payload)) {
+		t.Fatalf("CaptureContext() asset = %#v", captured.Asset)
+	}
+}
+
+func TestCaptureContextEnforcesTheByteLimitAfterCapturingMetadata(t *testing.T) {
+	t.Parallel()
+
+	path := filepath.Join(t.TempDir(), "bounded.srt")
+	if err := os.WriteFile(path, []byte("12345"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	file, err := openRegularNoFollow(path, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+
+	metadataCaptured := false
+	_, err = captureContextFromOpenFile(context.Background(), file, "bounded.srt", CaptureOptions{}, 4, func(open *os.File) (model.Timestamps, error) {
+		metadataCaptured = true
+		offset, seekErr := open.Seek(0, 1)
+		if seekErr != nil || offset != 0 {
+			t.Fatalf("metadata callback offset = %d, error = %v", offset, seekErr)
+		}
+		return model.Timestamps{CreatedSource: "unavailable"}, nil
+	})
+	if !metadataCaptured {
+		t.Fatal("metadata was not captured before the size rejection")
+	}
+	if err == nil || !strings.Contains(err.Error(), "exceeds") {
+		t.Fatalf("captureContextFromOpenFile() error = %v, want byte-limit rejection", err)
+	}
+}
+
+func TestCaptureContextAcceptsTheExactByteLimit(t *testing.T) {
+	t.Parallel()
+
+	path := filepath.Join(t.TempDir(), "boundary.srt")
+	payload := []byte("1234")
+	if err := os.WriteFile(path, payload, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	file, err := openRegularNoFollow(path, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+
+	captured, err := captureContextFromOpenFile(context.Background(), file, "boundary.srt", CaptureOptions{}, int64(len(payload)), func(*os.File) (model.Timestamps, error) {
+		return model.Timestamps{CreatedSource: "unavailable"}, nil
+	})
+	if err != nil {
+		t.Fatalf("captureContextFromOpenFile() error = %v", err)
+	}
+	if !bytes.Equal(captured.Bytes, payload) {
+		t.Fatalf("captured bytes = %q, want %q", captured.Bytes, payload)
+	}
+}
+
+func TestCaptureContextHonorsCancellation(t *testing.T) {
+	t.Parallel()
+
+	path := filepath.Join(t.TempDir(), "cancel.srt")
+	if err := os.WriteFile(path, []byte("source"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	_, err := CaptureContext(ctx, path, CaptureOptions{})
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("CaptureContext() error = %v, want context cancellation", err)
+	}
+}

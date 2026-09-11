@@ -40,6 +40,7 @@ type Config struct {
 	Version     string
 	Commit      string
 	ExecuteHost bool
+	Development bool
 	Forbidden   []string
 }
 
@@ -55,6 +56,7 @@ type Target struct {
 
 type ReleaseEvidence struct {
 	Version             string   `json:"version"`
+	Development         bool     `json:"development,omitempty"`
 	SourceRevision      string   `json:"source_revision"`
 	ReleaseSchemaSHA256 string   `json:"release_schema_sha256"`
 	ArchiveCount        int      `json:"archive_count"`
@@ -133,7 +135,13 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	if err != nil {
 		return evidence, fmt.Errorf("resolve repository: %w", err)
 	}
-	canonicalSchema, releaseSchemaDigest, err := loadRepositorySchemas(repoDir, config.Version)
+	var canonicalSchema []byte
+	var releaseSchemaDigest string
+	if config.Development {
+		canonicalSchema, releaseSchemaDigest, err = loadDevelopmentSchema(repoDir, config.Version)
+	} else {
+		canonicalSchema, releaseSchemaDigest, err = loadRepositorySchemas(repoDir, config.Version)
+	}
 	if err != nil {
 		return evidence, err
 	}
@@ -230,10 +238,26 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	}
 
 	return ReleaseEvidence{
-		Version: config.Version, SourceRevision: config.Commit, ReleaseSchemaSHA256: releaseSchemaDigest,
+		Version: config.Version, Development: config.Development, SourceRevision: config.Commit, ReleaseSchemaSHA256: releaseSchemaDigest,
 		ArchiveCount: len(targets), SBOMCount: len(targets), ChecksumCount: len(checksums),
 		HostExecuted: hostExecuted, Targets: targets, Published: false,
 	}, nil
+}
+
+func loadDevelopmentSchema(repoDir, version string) ([]byte, string, error) {
+	if !releaseVersionPattern.MatchString(version) {
+		return nil, "", fmt.Errorf("development version %q is not a safe semantic version", version)
+	}
+	canonicalPath := filepath.Join(repoDir, "internal", "schema", releaseSchemaFilename)
+	canonicalSchema, err := readRegularFile(canonicalPath)
+	if err != nil {
+		return nil, "", fmt.Errorf("read canonical schema: %w", err)
+	}
+	if err := verifySchemaIdentity(canonicalSchema, version); err != nil {
+		return nil, "", fmt.Errorf("canonical schema: %w", err)
+	}
+	digest := sha256.Sum256(canonicalSchema)
+	return canonicalSchema, hex.EncodeToString(digest[:]), nil
 }
 
 func loadRepositorySchemas(repoDir, version string) ([]byte, string, error) {

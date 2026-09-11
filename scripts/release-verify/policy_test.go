@@ -16,7 +16,7 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 	workflow := readPolicyFile(t, filepath.Join(repository, ".github", "workflows", "release-proof.yml"))
 
 	for _, required := range []string{
-		`version_template: "0.0.0"`, "release:", "disable: true", "CGO_ENABLED=0",
+		`version_template: "0.1.0"`, "release:", "disable: true", "CGO_ENABLED=0",
 		"github.com/shruggietech/cueson/internal/version.releaseOverride=cueson-release-version:{{ .Version }}",
 		"cueson_{{ .Version }}_checksums.txt", "artifacts: binary", "spdx-json=$document",
 	} {
@@ -29,20 +29,20 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 			t.Errorf(".goreleaser.yaml contains publishing surface %q", forbidden)
 		}
 	}
-	const releaseSchemaSource = "- src: schema/releases/v0.0.0/cueson.schema.json"
-	if count := strings.Count(config, releaseSchemaSource); count != 1 {
-		t.Errorf(".goreleaser.yaml contains %d exact release-schema sources, want 1", count)
+	const developmentSchemaSource = "- src: internal/schema/cueson.schema.json"
+	if count := strings.Count(config, developmentSchemaSource); count != 1 {
+		t.Errorf(".goreleaser.yaml contains %d canonical development-schema sources, want 1", count)
 	}
-	if strings.Contains(config, "- src: internal/schema/cueson.schema.json") {
-		t.Error(".goreleaser.yaml still packages the mutable canonical schema")
+	if strings.Contains(config, "- src: schema/releases/v0.0.0/cueson.schema.json") {
+		t.Error("development snapshot still packages the immutable v0.0.0 release schema")
 	}
 
 	for _, required := range []string{
 		"pull_request:", "workflow_dispatch:", "contents: read", "persist-credentials: false",
 		"SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}",
-		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-0.0.0-release-proof-${{ env.SOURCE_COMMIT }}",
+		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-0.1.0-development-proof-${{ env.SOURCE_COMMIT }}",
 		"github.com/goreleaser/goreleaser/v2@v2.18.1", "github.com/anchore/syft/cmd/syft@v1.51.1",
-		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "retention-days: 3",
+		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "-version 0.1.0", "-development", "retention-days: 3",
 	} {
 		if !strings.Contains(workflow, required) {
 			t.Errorf("release-proof.yml missing %q", required)
