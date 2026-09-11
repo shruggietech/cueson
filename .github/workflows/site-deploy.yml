@@ -1,0 +1,81 @@
+name: Deploy site
+
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: "Full lowercase commit SHA from main to deploy"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cueson-site-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    env:
+      REVISION: ${{ inputs.revision }}
+      CLOUDFLARE_ACCOUNT_ID: 39e3052d61e3edccea7d68269ec07182
+      CLOUDFLARE_ZONE_ID: ae7b2e3215426388c3012b5123784204
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Validate requested main revision
+        shell: bash
+        run: |
+          if ! [[ "$REVISION" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "revision must be a full lowercase Git SHA" >&2
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.revision }}
+          fetch-depth: 0
+      - name: Bind checkout to main
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$REVISION"
+          git fetch origin main
+          git merge-base --is-ancestor "$REVISION" origin/main
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+      - run: corepack enable
+      - run: corepack pnpm install --frozen-lockfile
+        working-directory: site
+      - run: corepack pnpm exec playwright install --with-deps chromium
+        working-directory: site
+      - run: corepack pnpm test
+        working-directory: site
+        env:
+          CUESON_SOURCE_COMMIT: ${{ inputs.revision }}
+      - name: Preflight Cloudflare production state
+        run: corepack pnpm verify:cloudflare -- --phase before --snapshot "$RUNNER_TEMP/cueson-cloudflare-before.json"
+        working-directory: site
+      - name: Deploy exact verified artifact
+        run: corepack pnpm exec wrangler deploy
+        working-directory: site
+      - name: Read back Cloudflare production state
+        run: corepack pnpm verify:cloudflare -- --phase after --snapshot "$RUNNER_TEMP/cueson-cloudflare-before.json"
+        working-directory: site
+      - name: Verify public deployment
+        shell: bash
+        working-directory: site
+        run: |
+          for attempt in $(seq 1 12); do
+            if corepack pnpm verify:production -- --expected-commit "$REVISION"; then
+              exit 0
+            fi
+            if [[ "$attempt" -eq 12 ]]; then
+              echo "public deployment verification failed after $attempt attempts" >&2
+              exit 1
+            fi
+            echo "public deployment is not ready yet; retrying in 15 seconds ($attempt/12)" >&2
+            sleep 15
+          done

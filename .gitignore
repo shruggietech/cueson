@@ -32,3 +32,19 @@ Thumbs.db
 # excluded unless admitted here.
 .agents/*
 !.agents/skills/
+
+# Generated documentation-site dependencies, content, and build output
+site/node_modules/
+site/.next/
+site/.source/
+site/out/
+site/content/generated/
+site/public/assets/
+site/public/schema/
+site/public/guides/
+site/public/deployment.json
+site/public/content-manifest.json
+site/.wrangler/
+site/.wrangler-dry-run/
+site/playwright-report/
+site/test-results/

@@ -8,11 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added the branded `cueson.io` product and documentation site, deterministic repository-source generation, immutable versioned schema routes, Cloudflare Workers Static Assets deployment unit, independent artifact and production verification, and read-only pull-request site CI.
 - Published unsigned annotated tag `v1.0.0` and the exact thirteen-asset GitHub Release from accepted default-branch proof for `2cad4c816340404289b4d1d87179a4071713bb46`.
 
 ### Changed
 
+- Bound production site deployment to a manually selected full `main` commit, serving the apex while permanently redirecting `www` with path and query preservation.
 - Reconciled current repository documentation after independently downloading and verifying every public v1.0.0 archive, SPDX JSON SBOM, and checksum file against the accepted release evidence.
+
+### Decisions
+
+- 2026-09-11: Treat root documentation, released schemas, and approved brand-kit files as authoritative inputs while keeping generated site content disposable and drift-checked.
+- 2026-09-11: Publish one Cloudflare Worker with Static Assets on the apex and `www`, permit production deployment only from an exact reviewed `main` revision, and retain independent DNS, TLS, redirect, route, revision, and byte-identity verification.
 
 ## [1.0.0] - 2026-09-11
 

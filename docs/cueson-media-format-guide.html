@@ -75,6 +75,8 @@
       display: flex;
       align-items: center;
       gap: 1rem;
+      color: inherit;
+      text-decoration: none;
     }
     .brand-logo {
       display: block;
@@ -87,9 +89,23 @@
       font-size: 0.68rem;
       letter-spacing: 0.08em;
     }
-    .header-note {
-      color: var(--text-muted);
+    .header-nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .header-nav a {
+      color: var(--text-primary);
       font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .header-nav a:hover { color: var(--identity-accent); }
+    a:focus-visible {
+      outline: 2px solid var(--identity-accent);
+      outline-offset: 3px;
     }
     .hero {
       padding: clamp(4.2rem, 9vw, 8rem) 0 3.4rem;
@@ -381,7 +397,9 @@
       .why-grid, .unlock { grid-template-columns: 1fr; }
       .section-heading { align-items: start; flex-direction: column; }
       .legend { justify-content: flex-start; }
-      .brand-endorsement, .header-note { display: none; }
+      .site-header .container { align-items: flex-start; flex-direction: column; padding-block: 0.75rem; }
+      .brand-endorsement { display: none; }
+      .header-nav { width: 100%; justify-content: space-between; }
     }
     @media print {
       .site-header { position: static; }
@@ -394,11 +412,15 @@
 <body>
   <header class="site-header">
     <div class="container">
-      <div class="brand">
+      <a class="brand" href="https://cueson.io/" aria-label="Cueson home">
         <img class="brand-logo" src="../brand/cueson/1.0.0/kit/logos/svg/cueson-horizontal-color.svg" alt="Cueson">
         <span class="brand-endorsement">A ShruggieTech project</span>
-      </div>
-      <div class="header-note">Cue JSON for media content</div>
+      </a>
+      <nav class="header-nav" aria-label="Primary">
+        <a href="https://cueson.io/">Home</a>
+        <a href="https://cueson.io/docs/">Documentation</a>
+        <a href="https://github.com/shruggietech/cueson">GitHub</a>
+      </nav>
     </div>
   </header>
 
@@ -408,7 +430,7 @@
         <span class="eyebrow">The real reason Cueson exists</span>
         <h1>Make media content <span class="accent">directly readable to AI.</span></h1>
         <p class="lede">A huge amount of what people say, read, watch, and archive is trapped behind subtitle formats that machines cannot treat as ordinary text. Some are simple text files. Some are dense XML. Some are old binary broadcast records. Some are literally pictures of words. Cueson is designed to turn that fractured universe into one predictable Cue JSON surface where the words, timing, speakers, provenance, layout, and other useful context are directly visible.</p>
-        <p class="hero-note"><strong>Current v1.0.0 release boundary:</strong> Cueson provides stable Cue JSON, SubRip, and WebVTT encode, restore, render, conversion, validation, inspection, and completion workflows in the published, independently verified v1.0.0 release. OCR, other format families, public schema hosting, and production activation remain future work.</p>
+        <p class="hero-note"><strong>Current v1.0.0 release boundary:</strong> Cueson provides stable Cue JSON, SubRip, and WebVTT encode, restore, render, conversion, validation, inspection, and completion workflows in the published, independently verified v1.0.0 release. Its documentation and immutable released schemas are published at cueson.io. OCR and additional format families remain future work.</p>
 
         <div class="pipeline" aria-label="How Cueson unlocks media for AI">
           <div class="pipeline-box">

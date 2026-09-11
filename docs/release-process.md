@@ -106,7 +106,7 @@ The versioned repository schema, the schema embedded in every official binary, a
 
 After release, `schema/releases/v0.0.0/cueson.schema.json` and `schema/releases/v1.0.0/cueson.schema.json` are immutable. The v1.0.0 copy matches the canonical, embedded, emitted, and packaged schema byte-for-byte. Any correction now requires a new software and schema version; no path may overwrite an already released copy or move an existing tag to conceal the change.
 
-The canonical `https://cueson.io/schema/v0.0.0/cueson.schema.json` value is an identifier before public-domain activation. Consumers may use the embedded, repository, or release-artifact copy. Publishing that URL is intentionally deferred until the separately specified post-v1 production phase.
+The canonical `https://cueson.io/schema/v0.0.0/cueson.schema.json` and `https://cueson.io/schema/v1.0.0/cueson.schema.json` paths are published by the separately specified and authorized S021 production continuation. Their bytes must equal the immutable repository and release copies. Consumers may continue using embedded, repository, or release-artifact copies offline. No mutable schema alias is published.
 
 ## Post-publication verification
 
@@ -136,4 +136,10 @@ For a future abandoned release, its milestone may be retired or its remaining co
 
 After publication, maintainers retain the fresh `[Unreleased]` section for later work, preserve the released changelog and schema, complete post-merge housekeeping, and record any release follow-up as new issues rather than editing historical evidence. Milestone reconciliation follows only when separately authorized.
 
-Signatures, attestations, public schema hosting, DNS, redirects, TLS, documentation hosting, and other production `cueson.io` work remain separate future outcomes. None is implied by the existing snapshot verifier or by the successful v0.0.0 and v1.0.0 GitHub releases.
+Signatures and attestations remain future outcomes. S021 separately specifies and authorizes public schema hosting, DNS, redirects, TLS, and documentation hosting; none was implied by the earlier snapshot verifier or the successful v0.0.0 and v1.0.0 GitHub releases.
+
+## Production site continuation
+
+The reviewed S021 site change does not deploy from a pull request. After the human merge ritual, the operator or manual production workflow selects the exact merged `main` SHA, verifies that identity and all repository and site gates, then deploys the Worker and static artifact described in `site/wrangler.jsonc`. The deployment may configure only the `cueson-site` Worker and its `cueson.io` and `www.cueson.io` Custom Domains; unrelated Cloudflare resources remain untouched.
+
+Production completion requires read-back of the Worker and Custom Domain state followed by independent public verification of DNS, trusted TLS, apex routes and metadata, permanent path-and-query-preserving `www` redirection, official release links, the deployed revision record, both immutable schema hashes and lengths, and absence of a `latest` schema. Failed propagation or certificate readiness is reported and diagnosed rather than treated as successful publication.

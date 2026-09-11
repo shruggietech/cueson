@@ -14,15 +14,15 @@ The schema artifact uses JSON Schema Draft 2020-12. Three similar-looking fields
 - The stable schema artifact's `$id` is `https://cueson.io/schema/v1.0.0/cueson.schema.json`.
 - A current-source Cue JSON instance uses the same canonical Cueson URI in `$schema` and uses `schema_version` value `1.0.0`.
 
-The canonical Cueson URI remains an identifier until `cueson.io` separately serves public schema files. Consumers resolve 1.0.0 through the canonical repository schema, the [immutable v1 schema](../schema/releases/v1.0.0/cueson.schema.json), the schema packaged in the [v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), or executable embedding. Cueson never emits a mutable `latest` alias.
+The canonical Cueson URI is the versioned public schema location. Consumers may also resolve 1.0.0 through the canonical repository schema, the [immutable v1 schema](../schema/releases/v1.0.0/cueson.schema.json), the schema packaged in the [v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), or executable embedding. Cueson never emits or serves a mutable `latest` alias.
 
 Users can discover the embedded contract version with `cueson schema --version` and emit the exact embedded schema with `cueson schema` or `cueson schema --output PATH`. A Cue JSON instance identifies its target contract through `$schema` and `schema_version`; consumers must evaluate both against an exact supported version rather than infer compatibility from the producer software version.
 
-The v1.0.0 schema is released and immutable at [`schema/releases/v1.0.0/cueson.schema.json`](https://github.com/shruggietech/cueson/blob/v1.0.0/schema/releases/v1.0.0/cueson.schema.json), with SHA-256 `1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541`. The historical v0.0.0 schema remains immutable with SHA-256 `d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975`. Public `cueson.io` schema hosting remains separately governed by the [release process](release-process.md).
+The v1.0.0 schema is released and immutable at [`schema/releases/v1.0.0/cueson.schema.json`](https://github.com/shruggietech/cueson/blob/v1.0.0/schema/releases/v1.0.0/cueson.schema.json) and `https://cueson.io/schema/v1.0.0/cueson.schema.json`, with SHA-256 `1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541`. The historical v0.0.0 schema remains immutable in the repository and at `https://cueson.io/schema/v0.0.0/cueson.schema.json`, with SHA-256 `d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975`.
 
 Starting with v1.0.0, breaking changes require a major-version increase. Additive compatible changes may occur in a minor release, and compatible corrections may occur in a patch release. Official software and schema versions remain equal; a third-party producer version is independent from the schema version it targets.
 
-S018 froze the implemented CLI and Cue JSON behavior, S019 promoted that reviewed contract to identity 1.0.0 with a byte-identical immutable repository copy, and S020 published and independently verified the exact tagged schema and release archives. Publication did not host the schema at `cueson.io` or add a production alias.
+S018 froze the implemented CLI and Cue JSON behavior, S019 promoted that reviewed contract to identity 1.0.0 with a byte-identical immutable repository copy, S020 published and independently verified the exact tagged schema and release archives, and S021 publishes the immutable v0.0.0 and v1.0.0 schema bytes at their canonical versioned domain paths. No production alias exists.
 
 ## Machine-readable annotations
 

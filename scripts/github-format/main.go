@@ -198,7 +198,8 @@ func skipDirectory(relative, name string) bool {
 	}
 	switch relative {
 	case ".specify/integrations", ".specify/scripts", ".specify/templates", ".specify/workflows",
-		"brand", "docs/assets/brand", "docs/assets/favicons", "docs/assets/fonts":
+		"brand", "docs/assets/brand", "docs/assets/favicons", "docs/assets/fonts",
+		"site/.next", "site/.source", "site/.wrangler-dry-run", "site/content/generated", "site/out", "site/playwright-report", "site/public", "site/test-results":
 		return true
 	default:
 		return false
