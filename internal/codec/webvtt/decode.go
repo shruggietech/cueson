@@ -22,9 +22,14 @@ func Detect(payload []byte) bool {
 
 // DecodeUTF8 applies WebVTT's strict UTF-8-only decoding boundary.
 func DecodeUTF8(payload []byte, override string) (DecodedText, error) {
+	normalized := strings.ToLower(strings.TrimSpace(override))
+	requiresBOM := false
 	if override != "" {
-		normalized := strings.ToLower(strings.TrimSpace(override))
-		if normalized != "utf-8" && normalized != "utf8" && normalized != "utf-8-bom" && normalized != "utf8-bom" && normalized != "utf-8-sig" {
+		switch normalized {
+		case "utf-8", "utf8":
+		case "utf-8-bom", "utf8-bom", "utf-8-sig":
+			requiresBOM = true
+		default:
 			return DecodedText{}, fmt.Errorf("WebVTT requires UTF-8; encoding %q is incompatible", override)
 		}
 	}
@@ -36,7 +41,7 @@ func DecodeUTF8(payload []byte, override string) (DecodedText, error) {
 	if !utf8.Valid(payload) {
 		return DecodedText{}, fmt.Errorf("decode WebVTT: malformed UTF-8")
 	}
-	if strings.Contains(strings.ToLower(override), "bom") && !bom {
+	if requiresBOM && !bom {
 		return DecodedText{}, fmt.Errorf("encoding %q requires a UTF-8 BOM", override)
 	}
 	encoding := "utf-8"

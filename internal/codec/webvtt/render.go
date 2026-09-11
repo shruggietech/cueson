@@ -68,6 +68,9 @@ func Render(document model.Document, options RenderOptions) (RenderResult, error
 		if strings.Contains(block.Raw, "\n\n") {
 			return RenderResult{}, fmt.Errorf("render WebVTT block %d: embedded blank line is unsafe", index)
 		}
+		if err := validateBlockHeader(*block); err != nil {
+			return RenderResult{}, fmt.Errorf("render WebVTT block %d: %w", index, err)
+		}
 		blockNonconforming := block.Type == "unrecognized" || ((block.Type == "style" || block.Type == "region") && block.SourceOrder > firstCueOrder)
 		if (block.Type == "note" || block.Type == "style") && strings.Contains(block.Raw, "-->") {
 			blockNonconforming = true
@@ -183,7 +186,7 @@ func renderRegionBlock(block model.WebVTTBlock) (string, bool, error) {
 	if region == nil {
 		return "", false, fmt.Errorf("REGION data is missing")
 	}
-	if err := validateRawSettingOccurrences(region.SettingOccurrences, regionSettingOrder, validRegionSetting); err != nil {
+	if err := validateRawSettingOccurrences(region.SettingOccurrences, regionSettingOrder, validRegionSetting, true); err != nil {
 		return "", false, err
 	}
 	occurrences, effective, _ := parseRegionSettings(region.SettingsRaw, block.SourceOrder)
@@ -215,7 +218,7 @@ func renderCueSettingsSuffix(native model.WebVTTCueData, sourceOrder int, cueID 
 	if strings.ContainsAny(native.SettingsRaw, "\r\n") {
 		return "", false, fmt.Errorf("settings_raw contains a line terminator")
 	}
-	if err := validateRawSettingOccurrences(native.SettingOccurrences, cueSettingOrder, validCueSetting); err != nil {
+	if err := validateRawSettingOccurrences(native.SettingOccurrences, cueSettingOrder, validCueSetting, false); err != nil {
 		return "", false, err
 	}
 	occurrences, effective, _ := parseCueSettings(native.SettingsRaw, sourceOrder, cueID)
@@ -262,13 +265,13 @@ func canonicalSettings(order []string, effective map[string]string, occurrences 
 	return strings.Join(parts, " "), nil
 }
 
-func validateRawSettingOccurrences(occurrences []model.WebVTTSettingOccurrence, recognizedNames []string, validate func(string, string) bool) error {
+func validateRawSettingOccurrences(occurrences []model.WebVTTSettingOccurrence, recognizedNames []string, validate func(string, string) bool, allowTimingArrow bool) error {
 	recognized := make(map[string]bool, len(recognizedNames))
 	for _, name := range recognizedNames {
 		recognized[name] = true
 	}
 	for index, occurrence := range occurrences {
-		if occurrence.Raw == "" || strings.Contains(occurrence.Raw, "-->") {
+		if occurrence.Raw == "" || !allowTimingArrow && strings.Contains(occurrence.Raw, "-->") {
 			return fmt.Errorf("setting occurrence %d has unsafe raw syntax", index)
 		}
 		for _, character := range occurrence.Raw {
@@ -292,6 +295,38 @@ func validateRawSettingOccurrences(occurrences []model.WebVTTSettingOccurrence, 
 		if !utf8.ValidString(occurrence.Raw) {
 			return fmt.Errorf("setting occurrence %d is not valid UTF-8", index)
 		}
+	}
+	return nil
+}
+
+func validateBlockHeader(block model.WebVTTBlock) error {
+	if len(block.RawLines) == 0 {
+		return fmt.Errorf("raw_lines must contain a block header")
+	}
+	header := semanticText(block.RawLines[0])
+	if header == "" {
+		return fmt.Errorf("raw block header must not be empty")
+	}
+	valid := false
+	switch block.Type {
+	case "note":
+		valid = noteLine(header)
+	case "style":
+		valid = keywordLine(header, "STYLE")
+	case "region":
+		valid = keywordLine(header, "REGION")
+	case "unrecognized":
+		lines := splitPhysicalLines(semanticText(block.Raw))
+		_, _, _, cueFound, timingErr := locateCue(lines, 0)
+		if noteLine(header) || keywordLine(header, "STYLE") || keywordLine(header, "REGION") || cueFound || timingErr != nil {
+			return fmt.Errorf("raw block header contradicts declared unrecognized type")
+		}
+		return nil
+	default:
+		return fmt.Errorf("block type %q is unsupported", block.Type)
+	}
+	if !valid {
+		return fmt.Errorf("raw block header does not match declared type %q", block.Type)
 	}
 	return nil
 }

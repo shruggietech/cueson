@@ -76,10 +76,12 @@ func scanPayload(raw string, cueStart, cueEnd int64, sourceOrder int, cueID stri
 				plain.WriteString(semanticText(lexeme.raw))
 				span.WriteString(semanticText(lexeme.raw))
 				pending = append(pending, diagnosticAt{offset: lexeme.start, diag: cueDiagnostic("webvtt_markup_unbalanced", "unbalanced WebVTT markup was preserved literally", sourceOrder, cueID)})
-			} else if !lexeme.closing && lexeme.name == "v" {
+			} else if !lexeme.closing && (lexeme.name == "v" || lexeme.name == "lang") {
 				name, diagnostics := decodeEntities(lexeme.annotation, sourceOrder, cueID, lexeme.start)
 				pending = append(pending, diagnostics...)
-				speakers = append(speakers, model.Speaker{Name: name, Origin: "native"})
+				if lexeme.name == "v" {
+					speakers = append(speakers, model.Speaker{Name: normalizeASCIIWhitespace(name), Origin: "native"})
+				}
 			}
 		default:
 			plain.WriteString(semanticText(lexeme.raw))
@@ -167,7 +169,7 @@ func parseTag(inner string) (name, annotation string, closing, known bool) {
 	if annotationStart >= 0 {
 		annotation = normalizeASCIIWhitespace(inner[annotationStart:])
 	}
-	if name == "v" && annotation == "" {
+	if (name == "v" || name == "lang") && normalizeASCIIWhitespace(html.UnescapeString(annotation)) == "" {
 		return name, "", false, false
 	}
 	return name, annotation, false, true

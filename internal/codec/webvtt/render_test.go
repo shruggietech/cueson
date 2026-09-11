@@ -147,6 +147,85 @@ func TestRenderRejectsForgedSettingOccurrenceFlags(t *testing.T) {
 	}
 }
 
+func TestRenderRejectsRecognizedBlocksWhoseRawHeadersDisagree(t *testing.T) {
+	inputs := map[string]string{
+		"note":   "WEBVTT\n\nNOTE source\nkept\n\n00:00.000 --> 00:01.000\nx\n",
+		"style":  "WEBVTT\n\nSTYLE\n::cue { color: red }\n\n00:00.000 --> 00:01.000\nx\n",
+		"region": "WEBVTT\n\nREGION\nid:r\n\n00:00.000 --> 00:01.000\nx\n",
+	}
+	for name, input := range inputs {
+		t.Run(name, func(t *testing.T) {
+			parsed, err := Parse(input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			block := &parsed.DocumentData.Blocks[0]
+			block.RawLines[0] = "STYLE"
+			if name == "style" {
+				block.RawLines[0] = ""
+			}
+			block.Raw = strings.Join(block.RawLines, "\n")
+			document := model.Document{Format: "webvtt", Cues: parsed.Cues, FormatData: model.DocumentFormatData{WebVTT: &parsed.DocumentData}}
+			if _, err := Render(document, RenderOptions{}); err == nil {
+				t.Fatal("Render() reused a block with a mismatched raw header")
+			}
+		})
+	}
+}
+
+func TestRenderRejectsUnrecognizedBlocksThatReparseAsAnotherBodyType(t *testing.T) {
+	parsed, err := Parse("WEBVTT\n\nunknown\nbody\n\n00:00.000 --> 00:01.000\nx\n")
+	if err != nil {
+		t.Fatal(err)
+	}
+	block := &parsed.DocumentData.Blocks[0]
+	for _, rawLines := range [][]string{
+		{""},
+		{"NOTE source", "body"},
+		{"id", "00:02.000 --> 00:03.000"},
+		{"bad --> timing"},
+		{"id", "bad --> timing"},
+	} {
+		block.RawLines = rawLines
+		block.Raw = strings.Join(rawLines, "\n")
+		document := model.Document{Format: "webvtt", Cues: parsed.Cues, FormatData: model.DocumentFormatData{WebVTT: &parsed.DocumentData}}
+		if _, err := Render(document, RenderOptions{}); err == nil {
+			t.Fatalf("Render() accepted reclassifying unrecognized block %#v", rawLines)
+		}
+	}
+}
+
+func TestRenderAllowsLineSafeArrowInRegionButNotCueSettingOccurrence(t *testing.T) {
+	parsed, err := Parse("WEBVTT\n\nREGION\nid:r mystery:-->\n\n00:00.000 --> 00:01.000\nx\n")
+	if err != nil {
+		t.Fatal(err)
+	}
+	document := model.Document{Format: "webvtt", Cues: parsed.Cues, FormatData: model.DocumentFormatData{WebVTT: &parsed.DocumentData}}
+	rendered, err := Render(document, RenderOptions{})
+	if err != nil {
+		t.Fatalf("Render() rejected a line-safe REGION arrow: %v", err)
+	}
+	if !strings.Contains(string(rendered.Bytes), "mystery:-->") {
+		t.Fatalf("Render() lost REGION occurrence: %q", rendered.Bytes)
+	}
+	if _, err := Parse(string(rendered.Bytes)); err != nil {
+		t.Fatalf("Parse(Render()) rejected line-safe REGION arrow: %v", err)
+	}
+
+	cueParsed, err := Parse("WEBVTT\n\n00:00.000 --> 00:01.000 mystery:x\nx\n")
+	if err != nil {
+		t.Fatal(err)
+	}
+	native := cueParsed.Cues[0].FormatData.WebVTT
+	native.SettingsRaw = " mystery:-->"
+	native.SettingOccurrences[0].Raw = "mystery:-->"
+	native.SettingOccurrences[0].Value = "-->"
+	document = model.Document{Format: "webvtt", Cues: cueParsed.Cues, FormatData: model.DocumentFormatData{WebVTT: &cueParsed.DocumentData}}
+	if _, err := Render(document, RenderOptions{}); err == nil {
+		t.Fatal("Render() accepted a structurally unsafe cue-setting arrow")
+	}
+}
+
 func TestRenderCanonicalEditIgnoresStaleNonconformingSettingsRaw(t *testing.T) {
 	parsed, err := Parse("WEBVTT\n\n00:00.000 --> 00:01.000 mystery:x\nx\n")
 	if err != nil {

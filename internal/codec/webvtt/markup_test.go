@@ -63,6 +63,30 @@ func TestPayloadScannerPreservesVoiceTagsWithoutAnnotations(t *testing.T) {
 	}
 }
 
+func TestPayloadScannerPreservesLanguageTagsWithoutAnnotations(t *testing.T) {
+	for _, raw := range []string{"<lang>text</lang>", "<lang   >text</lang>", "<lang &Tab;>text</lang>"} {
+		plain, speakers, _, diagnostics := scanPayload(raw, 0, 1000, 0, "cue-000000")
+		if plain != raw || len(speakers) != 0 || len(diagnostics) == 0 {
+			t.Fatalf("scanPayload(%q) = plain %q, speakers %#v, diagnostics %#v", raw, plain, speakers, diagnostics)
+		}
+	}
+	plain, _, _, diagnostics := scanPayload("<lang  en-US >text</lang>", 0, 1000, 0, "cue-000000")
+	if plain != "text" || len(diagnostics) != 0 {
+		t.Fatalf("valid language span = plain %q, diagnostics %#v", plain, diagnostics)
+	}
+	plain, _, _, diagnostics = scanPayload("<lang &bogus;>text</lang>", 0, 1000, 0, "cue-000000")
+	if plain != "text" || len(diagnostics) != 1 || diagnostics[0].Code != "webvtt_entity_invalid" {
+		t.Fatalf("malformed language annotation entity = plain %q, diagnostics %#v", plain, diagnostics)
+	}
+}
+
+func TestPayloadScannerNormalizesEntityWhitespaceInVoiceAnnotation(t *testing.T) {
+	plain, speakers, _, diagnostics := scanPayload("<v A&Tab;  B>text", 0, 1000, 0, "cue-000000")
+	if plain != "text" || len(speakers) != 1 || speakers[0].Name != "A B" || len(diagnostics) != 0 {
+		t.Fatalf("plain=%q speakers=%#v diagnostics=%#v", plain, speakers, diagnostics)
+	}
+}
+
 func TestPayloadScannerReplacesNULOnlyInDerivedViews(t *testing.T) {
 	plain, speakers, _, diagnostics := scanPayload("<v A\x00B>x\x00y</v>", 0, 1000, 0, "cue-000000")
 	if plain != "x\ufffdy" || len(speakers) != 1 || speakers[0].Name != "A\ufffdB" || len(diagnostics) != 0 {

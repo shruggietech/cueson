@@ -24,6 +24,24 @@ func TestDetectAndDecodeUTF8Boundary(t *testing.T) {
 	}
 }
 
+func TestDecodeUTF8EnforcesEveryBOMSpecificAlias(t *testing.T) {
+	bomless := []byte("WEBVTT\n")
+	withBOM := append([]byte{0xef, 0xbb, 0xbf}, bomless...)
+	for _, alias := range []string{"utf-8-bom", "utf8-bom", "utf-8-sig"} {
+		if _, err := DecodeUTF8(bomless, alias); err == nil {
+			t.Errorf("DecodeUTF8() accepted BOM-less input for %q", alias)
+		}
+		if _, err := DecodeUTF8(withBOM, alias); err != nil {
+			t.Errorf("DecodeUTF8() rejected BOM input for %q: %v", alias, err)
+		}
+	}
+	for _, alias := range []string{"utf-8", "utf8"} {
+		if _, err := DecodeUTF8(bomless, alias); err != nil {
+			t.Errorf("DecodeUTF8() rejected BOM-less input for %q: %v", alias, err)
+		}
+	}
+}
+
 func TestParsePreservesHeaderBlocksCueOrderAndRawFields(t *testing.T) {
 	input := "WEBVTT sample\rX-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:0\r\rSTYLE\r::cue { color: lime }\r\rREGION\rid:captions width:80%\r\rNOTE source\rkept\r\rid-one\r00:01.000 --> 00:03.000 line:10% align:start\r<v Alice>Hello &amp; welcome</v>\r"
 	result, err := Parse(input)
