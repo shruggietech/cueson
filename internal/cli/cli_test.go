@@ -211,9 +211,13 @@ func TestConvertNativeAndCueJSONInputsHaveParity(t *testing.T) {
 	if status != ExitSuccess || stderr != "" || fromJSON != direct {
 		t.Fatalf("Cue JSON conversion = (%d, %q, %q), want direct bytes %q", status, fromJSON, stderr, direct)
 	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"convert", misleadingJSONPath, "--to", "webvtt", "--encoding", "utf-8"})
+	if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, "--encoding cannot be used with automatically detected Cue JSON input") || !strings.Contains(stderr, "cueson [global options] convert") {
+		t.Fatalf("auto-detected Cue JSON encoding conflict = (%d, %q, %q)", status, stdout, stderr)
+	}
 
 	renderedPath := filepath.Join(directory, "converted.vtt")
-	status, stdout, stderr := runForTest(context.Background(), []string{"convert", "--from", "cueson", "--to", "vtt", "--output", renderedPath, misleadingJSONPath})
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", "--from", "cueson", "--to", "vtt", "--output", renderedPath, misleadingJSONPath})
 	if status != ExitSuccess || stdout != "" || stderr != "" {
 		t.Fatalf("file conversion = (%d, %q, %q)", status, stdout, stderr)
 	}

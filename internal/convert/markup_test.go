@@ -92,6 +92,16 @@ func TestTranslateWebVTTPayloadUsesSafePlaceholderAndRejectsReinterpretation(t *
 	}
 }
 
+func TestTranslateWebVTTPayloadDecodesSafeAngleCharacterReferences(t *testing.T) {
+	got, err := translateWebVTTPayload("left &lt; middle &gt; right", 0, 1000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Text != "left < middle > right" || len(got.Issues) != 0 {
+		t.Fatalf("safe angle translation = %#v", got)
+	}
+}
+
 func issueCodes(issues []payloadIssue) []string {
 	codes := make([]string, len(issues))
 	for index := range issues {

@@ -106,7 +106,7 @@ func loadConversionDocument(ctx context.Context, captured source.Captured, optio
 	document, cueJSONErr := schema.Decode(captured.Bytes)
 	if cueJSONErr == nil {
 		if options.encoding != "" {
-			return model.Document{}, fmt.Errorf("--encoding cannot be used with automatically detected Cue JSON input")
+			return model.Document{}, convertInvocationError("--encoding cannot be used with automatically detected Cue JSON input")
 		}
 		if err := schema.CheckLockstep(version.String()); err != nil {
 			return model.Document{}, fmt.Errorf("schema version lockstep: %w", err)
@@ -131,7 +131,7 @@ func loadConversionDocument(ctx context.Context, captured source.Captured, optio
 
 func decodeConversionCueJSON(ctx context.Context, payload []byte, encoding string) (model.Document, error) {
 	if encoding != "" {
-		return model.Document{}, fmt.Errorf("--encoding cannot be used with Cue JSON input")
+		return model.Document{}, convertInvocationError("--encoding cannot be used with Cue JSON input")
 	}
 	if err := schema.CheckLockstep(version.String()); err != nil {
 		return model.Document{}, fmt.Errorf("schema version lockstep: %w", err)
@@ -177,6 +177,12 @@ func runConvert(ctx context.Context, options convertOptions, stdout io.Writer, s
 	}
 	document, err := loadConversionDocument(ctx, captured, options)
 	if err != nil {
+		var invocation *invocationError
+		if errors.As(err, &invocation) {
+			diagnostics.write(diagnosticError, invocation.Error())
+			writeUsage(stderr, invocation.usage)
+			return ExitInvocation
+		}
 		diagnostics.write(diagnosticError, fmt.Sprintf("convert: %v", err))
 		return ExitRuntimeFailure
 	}

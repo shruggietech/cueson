@@ -302,18 +302,26 @@ func writeWebVTTText(output *strings.Builder, value string, issues *[]payloadIss
 }
 
 func translateWebVTTText(value string, issues *[]payloadIssue, occurrences map[string]int) string {
-	var output strings.Builder
+	type entitySpan struct {
+		start   int
+		end     int
+		raw     string
+		decoded string
+	}
+
+	var decodedText strings.Builder
+	angleEntities := make([]entitySpan, 0)
 	for position := 0; position < len(value); {
 		startRelative := strings.IndexByte(value[position:], '&')
 		if startRelative < 0 {
-			output.WriteString(value[position:])
+			decodedText.WriteString(value[position:])
 			break
 		}
 		start := position + startRelative
-		output.WriteString(value[position:start])
+		decodedText.WriteString(value[position:start])
 		endRelative := strings.IndexByte(value[start+1:], ';')
 		if endRelative < 0 {
-			output.WriteByte('&')
+			decodedText.WriteByte('&')
 			position = start + 1
 			continue
 		}
@@ -321,15 +329,44 @@ func translateWebVTTText(value string, issues *[]payloadIssue, occurrences map[s
 		entity := value[start:end]
 		decoded := html.UnescapeString(entity)
 		if decoded == entity {
-			output.WriteString(entity)
-		} else if strings.ContainsAny(decoded, "<>") {
-			output.WriteString(entity)
-			appendPayloadIssue(issues, occurrences, LossCodeWebVTTEntityAmbiguous, KindAmbiguous, "character_reference")
+			decodedText.WriteString(entity)
 		} else {
-			output.WriteString(decoded)
+			decodedStart := decodedText.Len()
+			decodedText.WriteString(decoded)
+			if strings.ContainsAny(decoded, "<>") {
+				angleEntities = append(angleEntities, entitySpan{start: decodedStart, end: decodedText.Len(), raw: entity, decoded: decoded})
+			}
 		}
 		position = end
 	}
+
+	decoded := decodedText.String()
+	if len(angleEntities) == 0 {
+		return decoded
+	}
+	markup := scanSubRipMarkup(decoded)
+	pairSubRipMarkup(markup)
+	var output strings.Builder
+	cursor := 0
+	for _, entity := range angleEntities {
+		output.WriteString(decoded[cursor:entity.start])
+		ambiguous := false
+		for index := range markup {
+			token := markup[index]
+			if token.matched && entity.start < token.end && entity.end > token.start {
+				ambiguous = true
+				break
+			}
+		}
+		if ambiguous {
+			output.WriteString(entity.raw)
+			appendPayloadIssue(issues, occurrences, LossCodeWebVTTEntityAmbiguous, KindAmbiguous, "character_reference")
+		} else {
+			output.WriteString(entity.decoded)
+		}
+		cursor = entity.end
+	}
+	output.WriteString(decoded[cursor:])
 	return output.String()
 }
 
