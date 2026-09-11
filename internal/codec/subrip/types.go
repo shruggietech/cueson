@@ -30,6 +30,7 @@ type TimecodeLine struct {
 	EndMilliseconds     int64
 	Coordinates         *Coordinates
 	Separator           byte
+	EndSeparator        byte
 	StartFractionDigits int
 	EndFractionDigits   int
 }

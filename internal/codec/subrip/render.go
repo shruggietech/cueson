@@ -46,3 +46,21 @@ func Render(cues []model.Cue) ([]byte, error) {
 	}
 	return []byte(strings.Join(blocks, "\n\n") + "\n"), nil
 }
+
+// PayloadHasAmbiguousBoundary reports whether canonical emission would let the
+// SubRip parser reinterpret part of raw_text as another cue or a separator.
+func PayloadHasAmbiguousBoundary(rawText string) bool {
+	lines := splitPhysicalLines(rawText)
+	if strings.HasSuffix(rawText, "\n") {
+		lines = append(lines, physicalLine{text: "", number: len(lines) + 1})
+	}
+	for position := range lines {
+		if isBlank(lines[position].text) && separatorBoundary(lines, position) {
+			return true
+		}
+		if position > 0 && validCueStart(lines, position) {
+			return true
+		}
+	}
+	return false
+}

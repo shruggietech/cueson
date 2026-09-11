@@ -649,6 +649,43 @@ func TestRenderStrictRejectsUnrepresentableStructuredFields(t *testing.T) {
 	}
 }
 
+func TestRenderReportsPayloadThatReparsesAsCueBoundary(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	if err := os.WriteFile(sourcePath, []byte("1\n00:00:00,000 --> 00:00:01,000\ncaption\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", "--no-speaker-detection", sourcePath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("encode = (%d, %q)", status, stderr)
+	}
+	document, err := schema.Decode([]byte(encoded))
+	if err != nil {
+		t.Fatal(err)
+	}
+	document.Cues[0].Payload.RawText = "caption\n2\n00:00:02,000 --> 00:00:03,000\ntail"
+	document.Cues[0].Payload.PlainText = document.Cues[0].Payload.RawText
+	document.Cues[0].Payload.Lines = strings.Split(document.Cues[0].Payload.RawText, "\n")
+	payload, err := marshalDocument(document, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	documentPath := filepath.Join(directory, "document.json")
+	if err := os.WriteFile(documentPath, payload, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"render", "--strict", "--to", "srt", documentPath})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "payload raw_text") {
+		t.Fatalf("strict render = (%d, %q, %q)", status, stdout, stderr)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"render", "--to", "srt", documentPath})
+	if status != ExitSuccess || stdout == "" || !strings.Contains(stderr, "subrip_render_payload_ambiguous") {
+		t.Fatalf("normal render = (%d, %q, %q)", status, stdout, stderr)
+	}
+}
+
 func TestParseEncodeAndRenderInvocationRejectsConflicts(t *testing.T) {
 	t.Parallel()
 

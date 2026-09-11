@@ -60,6 +60,8 @@ Diagnostics are ordered deterministically by source position and code. Stdout mo
 
 Model-driven rendering is distinct from exact restoration. Canonical output uses cue order, sequence values `1` through `N`, timestamps formatted as `HH:MM:SS,mmm`, complete coordinates when present, structured `payload.raw_text`, LF line endings, one blank line between cues, and one final LF. Rendered output is accepted by the same parser and re-encoding preserves all representable normalized semantics.
 
+A payload is not representable without ambiguity when its line structure would be reparsed as a cue boundary, including an internal sequence-and-timing suffix or a trailing empty payload line. Normal rendering emits `subrip_render_payload_ambiguous`; strict rendering refuses the output.
+
 Existing destinations are never replaced without `--force`. Output is staged and committed only after successful validation/rendering, so failures do not leave partial files.
 
 ## Fixture and stability boundary

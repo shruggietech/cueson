@@ -109,7 +109,7 @@ func Parse(input string, options Options) (Result, error) {
 		if missingSeparator {
 			result.Diagnostics = append(result.Diagnostics, cueDiagnostic("subrip_separator_missing", "cue boundary was recovered without a blank separator", order, cueID))
 		}
-		if timing.Separator == '.' {
+		if timing.Separator == '.' || timing.EndSeparator == '.' {
 			result.Diagnostics = append(result.Diagnostics, cueDiagnostic("subrip_timing_period_separator", "period millisecond separators were accepted as a tolerated variant", order, cueID))
 		}
 		if timing.StartFractionDigits < 3 || timing.EndFractionDigits < 3 {

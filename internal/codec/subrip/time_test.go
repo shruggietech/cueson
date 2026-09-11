@@ -9,11 +9,13 @@ func TestParseTimecodeLineVariants(t *testing.T) {
 		line        string
 		start       int64
 		end         int64
+		separators  string
 		coordinates *Coordinates
 	}{
-		{name: "canonical", line: "00:00:01,250 --> 00:00:04,200", start: 1250, end: 4200},
-		{name: "period and short fraction", line: "1:02:03.4 --> 1:02:04.05", start: 3723400, end: 3724050},
-		{name: "coordinates", line: "00:00:01,000 --> 00:00:02,000 Y2:40 X1:10 Y1:20 X2:30", start: 1000, end: 2000, coordinates: &Coordinates{X1: 10, X2: 30, Y1: 20, Y2: 40}},
+		{name: "canonical", line: "00:00:01,250 --> 00:00:04,200", start: 1250, end: 4200, separators: ",,"},
+		{name: "period and short fraction", line: "1:02:03.4 --> 1:02:04.05", start: 3723400, end: 3724050, separators: ".."},
+		{name: "period only at end", line: "00:00:00,000 --> 00:00:01.500", start: 0, end: 1500, separators: ",."},
+		{name: "coordinates", line: "00:00:01,000 --> 00:00:02,000 Y2:40 X1:10 Y1:20 X2:30", start: 1000, end: 2000, separators: ",,", coordinates: &Coordinates{X1: 10, X2: 30, Y1: 20, Y2: 40}},
 	}
 	for _, test := range tests {
 		test := test
@@ -25,6 +27,9 @@ func TestParseTimecodeLineVariants(t *testing.T) {
 			}
 			if got.StartMilliseconds != test.start || got.EndMilliseconds != test.end {
 				t.Fatalf("timing = %d..%d, want %d..%d", got.StartMilliseconds, got.EndMilliseconds, test.start, test.end)
+			}
+			if string([]byte{got.Separator, got.EndSeparator}) != test.separators {
+				t.Fatalf("separators = %q, want %q", []byte{got.Separator, got.EndSeparator}, test.separators)
 			}
 			if !equalCoordinates(got.Coordinates, test.coordinates) {
 				t.Fatalf("coordinates = %#v, want %#v", got.Coordinates, test.coordinates)

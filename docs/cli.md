@@ -34,7 +34,7 @@ Automatic decoding accepts UTF-8 and BOM-marked UTF-16. BOM-less UTF-16 requires
 cueson [global options] render [options] INPUT.cueson.json --to srt
 ```
 
-`render` validates Cue JSON and serializes its structured cue model rather than restoring captured bytes. Without `--output` it writes stdout; `--output -` is equivalent. `--force` applies only to real filesystem destinations. Canonical SubRip uses ordered integer sequence lines, `HH:MM:SS,mmm`, complete coordinates when present, raw payload text, LF line endings, one blank line between cues, and a final LF. `--strict` rejects known non-representable content.
+`render` validates Cue JSON and serializes its structured cue model rather than restoring captured bytes. Without `--output` it writes stdout; `--output -` is equivalent. `--force` applies only to real filesystem destinations. Canonical SubRip uses ordered integer sequence lines, `HH:MM:SS,mmm`, complete coordinates when present, raw payload text, LF line endings, one blank line between cues, and a final LF. Normal rendering warns when raw payload lines would be reparsed as a cue boundary; `--strict` rejects that ambiguity and other known non-representable content.
 
 ## General invocation rules
 

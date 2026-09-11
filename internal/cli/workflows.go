@@ -211,6 +211,10 @@ func subRipRenderLosses(document model.Document) []model.Diagnostic {
 	}
 	for index := range document.Cues {
 		cue := &document.Cues[index]
+		order, id := cue.SourceOrder, cue.ID
+		if subrip.PayloadHasAmbiguousBoundary(cue.Payload.RawText) {
+			diagnostics = append(diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_payload_ambiguous", Message: "payload raw_text contains content that canonical SubRip reparses as a cue boundary", SourceOrder: &order, CueID: &id})
+		}
 		fields := make([]string, 0, 4)
 		if len(cue.Speakers) > 0 {
 			fields = append(fields, "speaker observations")
@@ -227,7 +231,6 @@ func subRipRenderLosses(document model.Document) []model.Diagnostic {
 		if len(fields) == 0 {
 			continue
 		}
-		order, id := cue.SourceOrder, cue.ID
 		diagnostics = append(diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_fields_unrepresented", Message: strings.Join(fields, ", ") + " are not represented by canonical SubRip output", SourceOrder: &order, CueID: &id})
 	}
 	return diagnostics

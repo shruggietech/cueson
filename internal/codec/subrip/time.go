@@ -44,6 +44,7 @@ func ParseTimecodeLine(line string) (TimecodeLine, error) {
 		EndMilliseconds:     end,
 		Coordinates:         coordinates,
 		Separator:           match[4][0],
+		EndSeparator:        match[9][0],
 		StartFractionDigits: len(match[5]),
 		EndFractionDigits:   len(match[10]),
 	}, nil

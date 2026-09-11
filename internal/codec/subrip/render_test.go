@@ -38,3 +38,27 @@ func TestRenderRejectsInvalidStructuredCue(t *testing.T) {
 		}
 	}
 }
+
+func TestPayloadHasAmbiguousBoundary(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name    string
+		payload string
+		want    bool
+	}{
+		{name: "ordinary multiline", payload: "first\nsecond", want: false},
+		{name: "internal blank", payload: "first\n\nthird", want: false},
+		{name: "sequence and timing suffix", payload: "caption\n2\n00:00:02,000 --> 00:00:03,000\ntail", want: true},
+		{name: "timing suffix", payload: "caption\n00:00:02,000 --> 00:00:03,000\ntail", want: true},
+		{name: "trailing empty line", payload: "caption\n", want: true},
+	}
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			if got := PayloadHasAmbiguousBoundary(test.payload); got != test.want {
+				t.Fatalf("PayloadHasAmbiguousBoundary(%q) = %t, want %t", test.payload, got, test.want)
+			}
+		})
+	}
+}

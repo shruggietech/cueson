@@ -143,6 +143,18 @@ func TestParseRejectsMalformedTimingBlock(t *testing.T) {
 	}
 }
 
+func TestParseDiagnosesPeriodSeparatorAtEitherEndpoint(t *testing.T) {
+	t.Parallel()
+	input := "1\n00:00:00,000 --> 00:00:01.500\ntext\n"
+	result, err := Parse(input, Options{})
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if !hasDiagnostic(result.Diagnostics, "subrip_timing_period_separator") {
+		t.Fatalf("diagnostics = %#v", result.Diagnostics)
+	}
+}
+
 func TestParseRejectsInputWithoutValidCue(t *testing.T) {
 	t.Parallel()
 	for _, input := range []string{"", " \r\n\t", "not subtitles\n"} {
