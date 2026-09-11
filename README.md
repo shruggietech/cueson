@@ -41,13 +41,19 @@ The dated v0.0.0 history and concise [release notes](docs/releases/v0.0.0.md) ar
 
 Development is specification-driven with [GitHub Spec Kit](https://github.com/github/spec-kit). The current source requires Go 1.25.0 or newer and remains pure Go with native dependencies disabled. The minimum increased when the Go 1.24 line and its compatible text dependency could no longer satisfy the repository's vulnerability gate.
 
-Download the archive and matching SBOM for a supported target from the [v0.0.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0), then verify the archive with `cueson_0.0.0_checksums.txt`. The same implemented command surface can be run directly from source:
+Download the archive and matching SBOM for a supported target from the [v0.0.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0), then verify the archive with `cueson_0.0.0_checksums.txt`. That published foundation provides the version, schema, and exact-restore commands:
+
+```text
+cueson version
+cueson schema --version
+cueson schema
+cueson restore --no-metadata --output restored.srt document.cueson.json
+```
+
+Current development source adds the experimental SubRip encode and render workflows:
 
 ```text
 go run ./cmd/cueson --help
-go run ./cmd/cueson version
-go run ./cmd/cueson schema --version
-go run ./cmd/cueson schema
 go run ./cmd/cueson encode --pretty captions.srt
 go run ./cmd/cueson render captions.srt.cueson.json --to srt --output rendered.srt
 go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.json
@@ -55,7 +61,7 @@ go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.
 
 `encode` writes Cue JSON to `INPUT.cueson.json` by default, retains the exact source bytes, and supports explicit encoding selection for ambiguous legacy files. `render --to srt` serializes the structured model as canonical LF SubRip; it is intentionally distinct from exact `restore`. WebVTT native ingest/render and cross-format conversion are not yet implemented.
 
-The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Seventeen GitHub Actions-owned CI and CodeQL checks are required. The two pull-request policy statuses remain visible but are not required checks while the GitHub Actions-authored second-round comment path lacks complete activation proof. Native codec-specific gates do not exist because native codecs are not implemented.
+The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Seventeen GitHub Actions-owned CI and CodeQL checks are required. The two pull-request policy statuses remain visible but are not required checks while the GitHub Actions-authored second-round comment path lacks complete activation proof. Native codec behavior is exercised by the schema-and-conformance, native-test, race-detection, static-analysis, and vulnerability gates.
 
 Run the product tests and build:
 

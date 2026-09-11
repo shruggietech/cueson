@@ -18,7 +18,6 @@ type physicalLine struct {
 
 // Parse converts decoded SubRip text into ordered common-model cues.
 func Parse(input string, options Options) (Result, error) {
-	input = strings.TrimPrefix(input, "\ufeff")
 	lines := splitPhysicalLines(input)
 	result := Result{Cues: make([]model.Cue, 0), Diagnostics: make([]Diagnostic, 0)}
 	position := 0
@@ -195,25 +194,10 @@ func validCueStart(lines []physicalLine, position int) bool {
 }
 
 func separatorBoundary(lines []physicalLine, position int) bool {
-	position++
-	if position >= len(lines) {
-		return true
+	for position < len(lines) && isBlank(lines[position].text) {
+		position++
 	}
-	if isBlank(lines[position].text) {
-		return true
-	}
-	if validCueStart(lines, position) {
-		return true
-	}
-	for position++; position < len(lines); position++ {
-		if isBlank(lines[position].text) {
-			return true
-		}
-		if validCueStart(lines, position) {
-			return false
-		}
-	}
-	return true
+	return position >= len(lines) || validCueStart(lines, position)
 }
 
 func isBlank(line string) bool {

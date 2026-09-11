@@ -64,6 +64,47 @@ func TestParsePreservesEmptyPayloadLineAndRecoversMissingSeparator(t *testing.T)
 	}
 }
 
+func TestParsePreservesInternalBlankPayloadLineBeforeSeparator(t *testing.T) {
+	t.Parallel()
+	input := "1\n00:00:00,000 --> 00:00:01,000\nfirst\n\nthird\n\n2\n00:00:01,000 --> 00:00:02,000\nsecond\n"
+	result, err := Parse(input, Options{})
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if len(result.Cues) != 2 {
+		t.Fatalf("cue count = %d, want 2", len(result.Cues))
+	}
+	if got, want := result.Cues[0].Payload.Lines, []string{"first", "", "third"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("first lines = %#v, want %#v", got, want)
+	}
+	rendered, err := Render(result.Cues)
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+	reparsed, err := Parse(string(rendered), Options{})
+	if err != nil {
+		t.Fatalf("Parse(rendered) error = %v", err)
+	}
+	if got, want := reparsed.Cues[0].Payload.Lines, result.Cues[0].Payload.Lines; !reflect.DeepEqual(got, want) {
+		t.Fatalf("reparsed first lines = %#v, want %#v", got, want)
+	}
+}
+
+func TestParsePreservesLeadingUFEFFAsContent(t *testing.T) {
+	t.Parallel()
+	input := "\ufeff1\n00:00:00,000 --> 00:00:01,000\ntext\n"
+	result, err := Parse(input, Options{})
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if result.Cues[0].SourceIdentifier == nil || *result.Cues[0].SourceIdentifier != "\ufeff1" {
+		t.Fatalf("source identifier = %#v, want literal U+FEFF followed by 1", result.Cues[0].SourceIdentifier)
+	}
+	if result.Cues[0].FormatData.SubRip.SequenceLineRaw != "\ufeff1" {
+		t.Fatalf("sequence line = %q, want literal U+FEFF followed by 1", result.Cues[0].FormatData.SubRip.SequenceLineRaw)
+	}
+}
+
 func TestParseAccountsForUnrecognizedBlocks(t *testing.T) {
 	t.Parallel()
 	input := "unmodeled header\n\n1\n00:00:01,000 --> 00:00:02,000\nhello\n\ninterstitial block\n\n2\n00:00:02,000 --> 00:00:03,000\nworld\n"
@@ -71,7 +112,7 @@ func TestParseAccountsForUnrecognizedBlocks(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Parse() error = %v", err)
 	}
-	if len(result.Cues) != 2 || result.Cues[0].Payload.RawText != "hello" || !hasDiagnostic(result.Diagnostics, "subrip_block_unrecognized") {
+	if len(result.Cues) != 2 || result.Cues[0].Payload.RawText != "hello\n\ninterstitial block" || !hasDiagnostic(result.Diagnostics, "subrip_block_unrecognized") {
 		t.Fatalf("result = %#v", result)
 	}
 }

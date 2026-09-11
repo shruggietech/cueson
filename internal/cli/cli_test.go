@@ -608,6 +608,21 @@ func TestEncodeDefaultOutputAndMissingWebVTTCodec(t *testing.T) {
 	}
 }
 
+func TestEncodeDoesNotTreatWebVTTPrefixAsSignature(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	input := []byte("WEBVTTfoo\n\n1\n00:00:00,000 --> 00:00:01,000\nHello\n")
+	if err := os.WriteFile(sourcePath, input, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"encode", "--stdout", sourcePath})
+	if status != ExitSuccess || stdout == "" || strings.Contains(stderr, "WebVTT") {
+		t.Fatalf("SubRip encode with WEBVTT prefix = (%d, %q, %q)", status, stdout, stderr)
+	}
+}
+
 func TestRenderStrictRejectsUnrepresentableStructuredFields(t *testing.T) {
 	t.Parallel()
 

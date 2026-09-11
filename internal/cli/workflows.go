@@ -178,7 +178,7 @@ func workflowRegistry(encoding string) (*codec.Registry, error) {
 		if err != nil {
 			return codec.Evidence{}
 		}
-		if strings.HasPrefix(strings.TrimPrefix(decoded.Text, "\ufeff"), "WEBVTT") {
+		if hasWebVTTSignature(decoded.Text) {
 			return codec.Evidence{Matched: true, Confidence: 100, Reason: "WebVTT signature"}
 		}
 		return codec.Evidence{}
@@ -187,6 +187,21 @@ func workflowRegistry(encoding string) (*codec.Registry, error) {
 		codec.Registration{Format: codec.FormatSubRip, Aliases: []string{"srt"}, Extensions: []string{"srt"}, Detect: detectSubRip, Decode: decodeSubRip, Render: renderSubRip},
 		codec.Registration{Format: codec.FormatWebVTT, Aliases: []string{"vtt"}, Extensions: []string{"vtt"}, Detect: detectWebVTT},
 	)
+}
+
+func hasWebVTTSignature(text string) bool {
+	if !strings.HasPrefix(text, "WEBVTT") {
+		return false
+	}
+	if len(text) == len("WEBVTT") {
+		return true
+	}
+	switch text[len("WEBVTT")] {
+	case ' ', '\t', '\r', '\n':
+		return true
+	default:
+		return false
+	}
 }
 
 func subRipRenderLosses(document model.Document) []model.Diagnostic {
