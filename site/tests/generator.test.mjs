@@ -26,9 +26,9 @@ test("safeTarget confines generated paths to their declared root", () => {
 
 test("repository documentation links become stable public routes", async () => {
   const contentMap = await loadContentMap(siteRoot);
-  const source = "See [schema](schema.md#root-object), [WebVTT](formats/webvtt.md), and [source](../internal/schema/schema.go).";
+  const source = "See [schema](schema.md#root-object), [WebVTT](formats/webvtt.md), [source](../internal/schema/schema.go), and [verifier](../scripts/brand-verify/).";
   const actual = rewriteMarkdownLinks(source, "docs/architecture.md", contentMap);
-  assert.equal(actual, "See [schema](/docs/schema/#root-object), [WebVTT](/docs/formats/webvtt/), and [source](https://github.com/shruggietech/cueson/blob/main/internal/schema/schema.go)." );
+  assert.equal(actual, "See [schema](/docs/schema/#root-object), [WebVTT](/docs/formats/webvtt/), [source](https://github.com/shruggietech/cueson/blob/main/internal/schema/schema.go), and [verifier](https://github.com/shruggietech/cueson/tree/main/scripts/brand-verify/)." );
 });
 
 test("generation is deterministic and check mode detects drift", async () => {
@@ -62,6 +62,10 @@ test("deployment workflow is manual-only and binds a full main revision", async 
   assert.ok(workflow.includes("^[0-9a-f]{40}$"));
   assert.match(workflow, /git merge-base --is-ancestor/);
   assert.match(workflow, /wrangler deploy/);
+  assert.match(workflow, /verify:cloudflare -- --phase before/);
+  assert.match(workflow, /verify:cloudflare -- --phase after/);
   assert.match(workflow, /verify:production -- --expected-commit "\$REVISION"/);
+  assert.ok(workflow.indexOf("--phase before") < workflow.indexOf("wrangler deploy"));
+  assert.ok(workflow.indexOf("wrangler deploy") < workflow.indexOf("--phase after"));
   assert.ok(workflow.indexOf("wrangler deploy") < workflow.indexOf("verify:production"));
 });

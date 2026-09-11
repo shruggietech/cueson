@@ -21,6 +21,14 @@ test("landing page makes installation, documentation, and release downloads obvi
   await expectMetadata(page, "https://cueson.io/");
 });
 
+test("standalone media guide retains primary site navigation", async ({ page }) => {
+  await page.goto("/guides/media-formats/");
+  const primaryNavigation = page.getByRole("navigation", { name: "Primary" });
+  await expect(primaryNavigation.getByRole("link", { name: "Home", exact: true })).toBeVisible();
+  await expect(primaryNavigation.getByRole("link", { name: "Documentation", exact: true })).toBeVisible();
+  await expect(primaryNavigation.getByRole("link", { name: "GitHub", exact: true })).toBeVisible();
+});
+
 for (const route of routes) {
   test(`${route} is accessible, responsive, and metadata-complete`, async ({ page }) => {
     const response = await page.goto(route);

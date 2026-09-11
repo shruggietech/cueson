@@ -121,6 +121,18 @@ description: "Implementation tasks for the Cueson public site and domain launch"
 
 ---
 
+## Phase 7: Review Remediation
+
+**Purpose**: Resolve every finding from the two permitted Codex review rounds without weakening the launch contract.
+
+- [X] T031 [Review] Make the production workflow run commit-bound public verification after deployment, restrict immutable caching to successful versioned or content-addressed assets, and retain complete primary navigation on mobile with regression coverage
+- [X] T032 [Review] Add authenticated Cloudflare zone, DNS, Worker, Custom Domain, and redirect preflight plus post-mutation preservation read-back in `site/scripts/verify-cloudflare-state.mjs`, `.github/workflows/site-deploy.yml`, and `site/tests/cloudflare-state.test.mjs`
+- [X] T033 [Review] Update the authoritative media guide launch boundary, add responsive primary navigation, and exercise it across every browser project in `docs/cueson-media-format-guide.html` and `site/tests/site.spec.ts`
+- [X] T034 [Review] Distinguish repository directory links from file links in `site/scripts/generate.mjs` and lock `/tree/main/` generation in `site/tests/generator.test.mjs`
+- [X] T035 Run the complete foreground verification suite on the descendant review-remediation commit, push it, reply to and resolve every second-round thread, and reconcile the final hosted gate without requesting a third Codex review
+
+---
+
 ## Protected Post-Merge Continuation
 
 After the human operator merges the green and fully reviewed pull request, the same S021 lifecycle selects the exact merged `main` commit, repeats T030 from a clean checkout, performs the authorized Cloudflare deployment described by [deployment.md](contracts/deployment.md), waits for DNS and certificate readiness, runs the independent public verifier, and reconciles issue #47 and its Project item. This protected continuation is deliberately outside the pull-request implementation checklist because it cannot occur before the human merge ritual.
@@ -137,6 +149,7 @@ After the human operator merges the green and fully reviewed pull request, the s
 - **User Story 2 (Phase 4)**: Depends on Phase 2 and shares the generated artifact with User Story 1.
 - **User Story 3 (Phase 5)**: Depends on the generated site and schema artifact from User Stories 1 and 2.
 - **Polish (Phase 6)**: Depends on all three user stories.
+- **Review remediation (Phase 7)**: Depends on Phase 6 and the findings returned by the two permitted Codex rounds.
 - **Protected continuation**: Depends on a human merge of the fully reviewed, green pull request.
 
 ### User Story Dependencies

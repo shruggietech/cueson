@@ -23,6 +23,7 @@ jobs:
     env:
       REVISION: ${{ inputs.revision }}
       CLOUDFLARE_ACCOUNT_ID: 39e3052d61e3edccea7d68269ec07182
+      CLOUDFLARE_ZONE_ID: ae7b2e3215426388c3012b5123784204
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - name: Validate requested main revision
@@ -54,8 +55,14 @@ jobs:
         working-directory: site
         env:
           CUESON_SOURCE_COMMIT: ${{ inputs.revision }}
+      - name: Preflight Cloudflare production state
+        run: corepack pnpm verify:cloudflare -- --phase before --snapshot "$RUNNER_TEMP/cueson-cloudflare-before.json"
+        working-directory: site
       - name: Deploy exact verified artifact
         run: corepack pnpm exec wrangler deploy
+        working-directory: site
+      - name: Read back Cloudflare production state
+        run: corepack pnpm verify:cloudflare -- --phase after --snapshot "$RUNNER_TEMP/cueson-cloudflare-before.json"
         working-directory: site
       - name: Verify public deployment
         shell: bash

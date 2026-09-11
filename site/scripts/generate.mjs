@@ -9,6 +9,7 @@ const moduleDirectory = path.dirname(fileURLToPath(import.meta.url));
 const defaultSiteRoot = path.resolve(moduleDirectory, "..");
 const defaultRepoRoot = path.resolve(defaultSiteRoot, "..");
 const gitHubBlobRoot = "https://github.com/shruggietech/cueson/blob/main/";
+const gitHubTreeRoot = "https://github.com/shruggietech/cueson/tree/main/";
 const generatedRoots = ["content/generated", "public/assets", "public/schema", "public/guides"];
 const generatedFiles = ["public/content-manifest.json", "public/deployment.json"];
 
@@ -78,7 +79,7 @@ export function rewriteMarkdownLinks(markdown, sourcePath, contentMap) {
     let replacement = documents.get(resolved);
     if (!replacement) replacement = schemas.get(resolved);
     if (!replacement) replacement = directFiles.get(resolved);
-    if (!replacement) replacement = `${gitHubBlobRoot}${resolved}`;
+    if (!replacement) replacement = `${pathname.endsWith("/") ? gitHubTreeRoot : gitHubBlobRoot}${resolved}`;
     const title = optionalTitle ? ` ${optionalTitle}` : "";
     return `](${replacement}${fragment}${title})`;
   });

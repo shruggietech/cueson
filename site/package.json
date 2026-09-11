@@ -18,8 +18,9 @@
     "preview": "node scripts/serve.mjs out 4173",
     "test": "pnpm lint && pnpm generate && pnpm generate:check && pnpm test:unit && pnpm build && pnpm test:browser && pnpm verify:artifact && pnpm deploy:dry-run",
     "test:browser": "playwright test",
-    "test:unit": "node --test tests/generator.test.mjs worker/index.test.ts",
+    "test:unit": "node --test tests/cloudflare-state.test.mjs tests/generator.test.mjs worker/index.test.ts",
     "verify:artifact": "node scripts/verify-artifact.mjs",
+    "verify:cloudflare": "node scripts/verify-cloudflare-state.mjs",
     "verify:production": "node scripts/verify-production.mjs"
   },
   "dependencies": {

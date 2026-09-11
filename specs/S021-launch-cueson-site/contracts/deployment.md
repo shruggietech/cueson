@@ -21,7 +21,7 @@ Production deployment is available only through a manually dispatched workflow o
 ## Pre-mutation checks
 
 1. Confirm the selected SHA is the checked-out `main` revision and has green repository and site checks.
-2. Read the zone status, relevant DNS records, existing `cueson-site` Worker metadata, Custom Domains, and redirect rules.
+2. Run `corepack pnpm verify:cloudflare -- --phase before --snapshot PATH` to read the zone status, all DNS records, Worker inventory, Custom Domains, and redirect rules into a private ephemeral snapshot.
 3. Stop if either hostname is owned by an unrelated resource or if a conflicting record cannot be reconciled without deleting unrelated state.
 4. Verify the generated deployment record, route manifest, schema hashes, and Wrangler dry-run output.
 
@@ -31,7 +31,7 @@ Deploy Worker code and static assets atomically. Allow Wrangler or the Workers A
 
 ## Read-back and public verification
 
-1. Read the Worker version, routes or domains, both DNS records, and certificate or Custom Domain state back from Cloudflare.
+1. Run `corepack pnpm verify:cloudflare -- --phase after --snapshot PATH` to read the Worker inventory, Custom Domains, both DNS records, and redirect state back from Cloudflare, require the two declared bindings, and prove unrelated state matches the pre-mutation snapshot.
 2. Resolve apex and `www` through the system resolver and at least one public DNS-over-HTTPS resolver.
 3. Verify a trusted TLS handshake and certificate hostname coverage.
 4. Verify apex success, representative documentation routes, the media guide, deployment metadata, and every official download link.

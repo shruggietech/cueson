@@ -6,7 +6,7 @@
 - Corepack with pnpm 10.28.2
 - Go 1.25.x for repository checks
 - Chromium installed through Playwright for browser verification
-- Cloudflare credentials only for the separately owner-controlled production step
+- Cloudflare credentials only for the separately owner-controlled production step, with Zone Read, DNS Read, Workers Scripts Read/Write, and Zone Rulesets Read for the declared account and zone
 
 ## Local verification
 
@@ -37,7 +37,7 @@ Compare `site/out/schema/v0.0.0/cueson.schema.json` and `site/out/schema/v1.0.0/
 
 ### US3: Owner-controlled deployment
 
-Before mutation, confirm the selected full SHA is the merged `main` revision and read the live Cloudflare zone, DNS, Worker, Custom Domain, and redirect state. Deploy the verified static artifact and Worker, read Cloudflare state back, then execute the DNS, TLS, HTTP, redirect, route, download, metadata, and schema-byte probes in [deployment.md](contracts/deployment.md).
+Before mutation, confirm the selected full SHA is the merged `main` revision and run `corepack pnpm verify:cloudflare -- --phase before --snapshot PATH` to read and validate the live Cloudflare zone, DNS, Worker, Custom Domain, and redirect state. Deploy the verified static artifact and Worker, run the same command with `--phase after` to prove both target bindings and preservation of unrelated state, then execute the DNS, TLS, HTTP, redirect, route, download, metadata, and schema-byte probes in [deployment.md](contracts/deployment.md).
 
 ## Expected result
 
