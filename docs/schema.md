@@ -4,19 +4,19 @@
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document defines the schema decisions realized by implementation issue [#5](https://github.com/shruggietech/cueson/issues/5) and the source-integrity capability completed by issue [#6](https://github.com/shruggietech/cueson/issues/6). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable, and its structural, semantic, and typed decode boundary feeds exact source restoration.
+This document defines the current development schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6) plus the native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable.
 
 ## Dialect, identity, and version
 
 The schema artifact uses JSON Schema Draft 2020-12. Three similar-looking fields have distinct meanings:
 
 - The schema artifact's `$schema` keyword identifies the Draft 2020-12 metaschema.
-- The schema artifact's `$id` is `https://cueson.io/schema/v0.0.0/cueson.schema.json`.
-- A Cue JSON instance uses the same canonical Cueson URI in its project-defined `$schema` member and uses `schema_version` value `0.0.0`.
+- The development schema artifact's `$id` is `https://cueson.io/schema/v0.1.0/cueson.schema.json`.
+- A current-source Cue JSON instance uses the same canonical Cueson URI in `$schema` and uses `schema_version` value `0.1.0`.
 
-The canonical Cueson URI remains an identifier until `cueson.io` separately serves public schema files. Consumers resolve the exact schema through the repository, executable embedding, or the [v0.0.0 release archives](https://github.com/shruggietech/cueson/releases/tag/v0.0.0). Cueson never emits a mutable `latest` alias into a document.
+The canonical Cueson URI remains an identifier until `cueson.io` separately serves public schema files. Current development consumers resolve 0.1.0 through the repository or executable embedding. Published v0.0.0 consumers use the immutable [v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0). Cueson never emits a mutable `latest` alias.
 
-The v0.0.0 schema is released and immutable at [`schema/releases/v0.0.0/cueson.schema.json`](https://github.com/shruggietech/cueson/blob/v0.0.0/schema/releases/v0.0.0/cueson.schema.json). Tag `v0.0.0`, the embedded copy, the repository release copy, and every release archive bind byte-identical schema content with SHA-256 `d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975`. The canonical `cueson.io` URI is still an identifier rather than a hosted endpoint; production publication remains separately governed by the [release process](release-process.md).
+The v0.0.0 schema is released and immutable at [`schema/releases/v0.0.0/cueson.schema.json`](https://github.com/shruggietech/cueson/blob/v0.0.0/schema/releases/v0.0.0/cueson.schema.json), with SHA-256 `d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975`. The evolving canonical source has advanced to 0.1.0 and does not alter that released file, tag, or archive. Production publication remains separately governed by the [release process](release-process.md).
 
 Before v1.0.0, a documented breaking contract change requires a minor-version increase and patch releases remain non-breaking. Additive compatible changes may occur in a minor release. At and after v1.0.0, breaking changes require a major-version increase. Official software and schema versions remain equal; a third-party producer version is independent from the schema version it targets.
 
@@ -52,27 +52,27 @@ subrip
 webvtt
 ```
 
-File extensions and future CLI tokens `srt` and `vtt` may be accepted as explicit aliases, but they normalize to the canonical keys and never appear as schema format values.
+File extensions and CLI tokens `srt` and `vtt` are aliases that normalize to canonical keys and never appear as schema format values.
 
-These keys and their format-native data shapes identify format families; they do not claim stable codec support or prove that Cueson can construct those fields from a subtitle file. Stable SRT and WebVTT support remains a v1.0.0 gate. The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages separate the current schema and source-envelope contract from planned native grammar, fidelity, diagnostic, fixture, rendering, and conversion work.
+These keys and their format-native shapes identify format families. Capability fields separately declare whether the matching executable can ingest, render, or restore them. Stable SRT and WebVTT support remains a v1.0.0 gate.
 
 ## Official format capability
 
 `format_support` declares the official capabilities of the Cueson release associated with the document contract. It does not describe the capabilities of arbitrary third-party producer software.
 
-At the current v0.0.0 source-foundation milestone, both `subrip` and `webvtt` use:
+Current development SubRip uses:
 
 ```json
 {
-  "status": "envelope_only",
-  "ingest_supported": false,
-  "render_supported": false,
+  "status": "experimental",
+  "ingest_supported": true,
+  "render_supported": true,
   "restore_supported": true,
   "ocr_required_for_semantic_output": false
 }
 ```
 
-`envelope_only` means the current executable can accept a valid Cue JSON document with an already-populated source envelope and recreate its exact assets through the generic public `restore` command. It does not read an SRT or WebVTT file into Cue JSON, derive the document's semantic model, render from that model, convert formats, or claim production subtitle-codec coverage.
+WebVTT remains `envelope_only`, with ingest/render false and restore true. `envelope_only` means the executable can recreate an already-populated source envelope but has no native codec. `experimental` SubRip means current source can ingest and render the documented contract, while stable support remains gated on v1 completion.
 
 Schema recognition, structural validity, native ingest, model-driven render, exact restoration, and OCR dependency are separate facts. Implementations and documentation must not infer one from another.
 

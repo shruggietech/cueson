@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cueson.io/schema/v0.0.0/cueson.schema.json",
+  "$id": "https://cueson.io/schema/v0.1.0/cueson.schema.json",
   "title": "Cue JSON",
-  "description": "Canonical Cue JSON contract for Cueson v0.0.0.",
+  "description": "Canonical Cue JSON contract for Cueson development v0.1.0.",
   "type": "object",
   "required": [
     "$schema",
@@ -20,10 +20,10 @@
   ],
   "properties": {
     "$schema": {
-      "const": "https://cueson.io/schema/v0.0.0/cueson.schema.json"
+      "const": "https://cueson.io/schema/v0.1.0/cueson.schema.json"
     },
     "schema_version": {
-      "const": "0.0.0"
+      "const": "0.1.0"
     },
     "format": {
       "enum": [
@@ -80,6 +80,9 @@
       },
       "then": {
         "properties": {
+          "format_support": {
+            "$ref": "#/$defs/subrip_format_support"
+          },
           "format_data": {
             "$ref": "#/$defs/subrip_document_format_data"
           },
@@ -108,6 +111,9 @@
       },
       "then": {
         "properties": {
+          "format_support": {
+            "$ref": "#/$defs/webvtt_format_support"
+          },
           "format_data": {
             "$ref": "#/$defs/webvtt_document_format_data"
           },
@@ -152,22 +158,78 @@
       ],
       "properties": {
         "status": {
-          "const": "envelope_only"
+          "enum": [
+            "envelope_only",
+            "experimental",
+            "stable"
+          ]
         },
         "ingest_supported": {
-          "const": false
+          "type": "boolean"
         },
         "render_supported": {
-          "const": false
+          "type": "boolean"
         },
         "restore_supported": {
-          "const": true
+          "type": "boolean"
         },
         "ocr_required_for_semantic_output": {
-          "const": false
+          "type": "boolean"
         }
       },
       "additionalProperties": false
+    },
+    "subrip_format_support": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/format_support"
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "experimental"
+            },
+            "ingest_supported": {
+              "const": true
+            },
+            "render_supported": {
+              "const": true
+            },
+            "restore_supported": {
+              "const": true
+            },
+            "ocr_required_for_semantic_output": {
+              "const": false
+            }
+          }
+        }
+      ]
+    },
+    "webvtt_format_support": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/format_support"
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "envelope_only"
+            },
+            "ingest_supported": {
+              "const": false
+            },
+            "render_supported": {
+              "const": false
+            },
+            "restore_supported": {
+              "const": true
+            },
+            "ocr_required_for_semantic_output": {
+              "const": false
+            }
+          }
+        }
+      ]
     },
     "producer": {
       "type": "object",

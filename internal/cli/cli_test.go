@@ -36,8 +36,8 @@ func TestRunVersion(t *testing.T) {
 			if status != ExitSuccess {
 				t.Fatalf("Run() status = %d, want %d; stderr = %q", status, ExitSuccess, stderr)
 			}
-			if stdout != "0.0.0\n" {
-				t.Errorf("Run() stdout = %q, want %q", stdout, "0.0.0\\n")
+			if stdout != "0.1.0\n" {
+				t.Errorf("Run() stdout = %q, want %q", stdout, "0.1.0\\n")
 			}
 			if stderr != "" {
 				t.Errorf("Run() stderr = %q, want empty", stderr)
@@ -265,8 +265,8 @@ func TestRunSchemaVersion(t *testing.T) {
 
 	for _, args := range [][]string{{"schema", "--version"}, {"--quiet", "schema", "--version"}} {
 		status, stdout, stderr := runForTest(context.Background(), args)
-		if status != ExitSuccess || stdout != "0.0.0\n" || stderr != "" {
-			t.Errorf("Run(%q) = (%d, %q, %q), want (0, %q, empty)", args, status, stdout, stderr, "0.0.0\\n")
+		if status != ExitSuccess || stdout != "0.1.0\n" || stderr != "" {
+			t.Errorf("Run(%q) = (%d, %q, %q), want (0, %q, empty)", args, status, stdout, stderr, "0.1.0\\n")
 		}
 	}
 }
@@ -507,6 +507,200 @@ func TestRunStdoutWriteFailure(t *testing.T) {
 				t.Errorf("Run() stderr = %q, want stdout write diagnostic", stderr.String())
 			}
 		})
+	}
+}
+
+func TestParseEncodeAndRenderInvocation(t *testing.T) {
+	t.Parallel()
+
+	encode, err := parseInvocation([]string{"encode", "--format", "srt", "--encoding=utf-8", "--pretty", "--no-speaker-detection", "captions.srt"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if encode.encode.input != "captions.srt" || encode.encode.format != "srt" || encode.encode.encoding != "utf-8" || !encode.encode.pretty || !encode.encode.noSpeakerDetection {
+		t.Fatalf("encode invocation = %+v", encode.encode)
+	}
+
+	render, err := parseInvocation([]string{"render", "document.cueson.json", "--to=srt", "--output", "rendered.srt", "--force", "--strict"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if render.render.input != "document.cueson.json" || render.render.target != "srt" || render.render.output != "rendered.srt" || !render.render.force || !render.render.strict {
+		t.Fatalf("render invocation = %+v", render.render)
+	}
+}
+
+func TestEncodeRenderAndRestoreWorkflow(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	sourceBytes := []byte("1\r\n00:00:01,250 --> 00:00:04,200\r\n<i>Ada: Hello.</i>\r\n")
+	if err := os.WriteFile(sourcePath, sourceBytes, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", "--pretty", sourcePath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("encode = (%d, stderr %q)", status, stderr)
+	}
+	document, err := schema.Decode([]byte(encoded))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if document.Format != "subrip" || document.FormatSupport.Status != "experimental" || len(document.Cues) != 1 {
+		t.Fatalf("encoded document = %#v", document)
+	}
+	if document.Cues[0].Payload.RawText != "<i>Ada: Hello.</i>" || document.Cues[0].Payload.PlainText != "Ada: Hello." {
+		t.Fatalf("encoded payload = %#v", document.Cues[0].Payload)
+	}
+
+	documentPath := filepath.Join(directory, "captions.cueson.json")
+	if err := os.WriteFile(documentPath, []byte(encoded), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, rendered, stderr := runForTest(context.Background(), []string{"render", documentPath, "--to", "srt"})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("render = (%d, stderr %q)", status, stderr)
+	}
+	wantRendered := "1\n00:00:01,250 --> 00:00:04,200\n<i>Ada: Hello.</i>\n"
+	if rendered != wantRendered {
+		t.Fatalf("rendered = %q, want %q", rendered, wantRendered)
+	}
+
+	restoredPath := filepath.Join(directory, "restored.srt")
+	status, stdout, stderr := runForTest(context.Background(), []string{"restore", "--no-metadata", "--output", restoredPath, documentPath})
+	if status != ExitSuccess || stdout != "" || stderr != "" {
+		t.Fatalf("restore = (%d, %q, %q)", status, stdout, stderr)
+	}
+	restored, err := os.ReadFile(restoredPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(restored, sourceBytes) {
+		t.Fatalf("restored bytes = %q, want %q", restored, sourceBytes)
+	}
+}
+
+func TestEncodeDefaultOutputAndMissingWebVTTCodec(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	if err := os.WriteFile(sourcePath, []byte("1\n00:00:00,000 --> 00:00:01,000\nHello\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"encode", sourcePath})
+	if status != ExitSuccess || stdout != "" || stderr != "" {
+		t.Fatalf("default encode = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if _, err := os.Stat(sourcePath + ".cueson.json"); err != nil {
+		t.Fatal(err)
+	}
+
+	vttPath := filepath.Join(directory, "captions.vtt")
+	if err := os.WriteFile(vttPath, []byte("WEBVTT\n\n00:00.000 --> 00:01.000\nHello\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"encode", "--stdout", vttPath})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "recognized but its native decode capability is unavailable") {
+		t.Fatalf("WebVTT encode = (%d, %q, %q)", status, stdout, stderr)
+	}
+}
+
+func TestEncodeDoesNotTreatWebVTTPrefixAsSignature(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	input := []byte("WEBVTTfoo\n\n1\n00:00:00,000 --> 00:00:01,000\nHello\n")
+	if err := os.WriteFile(sourcePath, input, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"encode", "--stdout", sourcePath})
+	if status != ExitSuccess || stdout == "" || strings.Contains(stderr, "WebVTT") {
+		t.Fatalf("SubRip encode with WEBVTT prefix = (%d, %q, %q)", status, stdout, stderr)
+	}
+}
+
+func TestRenderStrictRejectsUnrepresentableStructuredFields(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	if err := os.WriteFile(sourcePath, []byte("1\n00:00:00,000 --> 00:00:01,000\nAlice: Hello\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", sourcePath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("encode = (%d, %q)", status, stderr)
+	}
+	documentPath := filepath.Join(directory, "document.json")
+	if err := os.WriteFile(documentPath, []byte(encoded), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"render", "--strict", "--to", "srt", documentPath})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "strict SubRip render blocked") {
+		t.Fatalf("strict render = (%d, %q, %q)", status, stdout, stderr)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"render", "--to", "srt", documentPath})
+	if status != ExitSuccess || stdout == "" || !strings.Contains(stderr, "subrip_render_fields_unrepresented") {
+		t.Fatalf("normal render = (%d, %q, %q)", status, stdout, stderr)
+	}
+}
+
+func TestRenderReportsPayloadThatReparsesAsCueBoundary(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	if err := os.WriteFile(sourcePath, []byte("1\n00:00:00,000 --> 00:00:01,000\ncaption\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", "--no-speaker-detection", sourcePath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("encode = (%d, %q)", status, stderr)
+	}
+	document, err := schema.Decode([]byte(encoded))
+	if err != nil {
+		t.Fatal(err)
+	}
+	document.Cues[0].Payload.RawText = "caption\n2\n00:00:02,000 --> 00:00:03,000\ntail"
+	document.Cues[0].Payload.PlainText = document.Cues[0].Payload.RawText
+	document.Cues[0].Payload.Lines = strings.Split(document.Cues[0].Payload.RawText, "\n")
+	payload, err := marshalDocument(document, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	documentPath := filepath.Join(directory, "document.json")
+	if err := os.WriteFile(documentPath, payload, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"render", "--strict", "--to", "srt", documentPath})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "payload raw_text") {
+		t.Fatalf("strict render = (%d, %q, %q)", status, stdout, stderr)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"render", "--to", "srt", documentPath})
+	if status != ExitSuccess || stdout == "" || !strings.Contains(stderr, "subrip_render_payload_ambiguous") {
+		t.Fatalf("normal render = (%d, %q, %q)", status, stdout, stderr)
+	}
+}
+
+func TestParseEncodeAndRenderInvocationRejectsConflicts(t *testing.T) {
+	t.Parallel()
+
+	tests := [][]string{
+		{"encode", "captions.srt", "--stdout", "--output", "other.json"},
+		{"encode", "captions.srt", "--stdout", "--force"},
+		{"encode", "captions.srt", "--format", "unknown"},
+		{"render", "document.json"},
+		{"render", "document.json", "--to", "unknown"},
+		{"render", "document.json", "--to", "srt", "--force"},
+	}
+	for _, args := range tests {
+		if _, err := parseInvocation(args); err == nil {
+			t.Errorf("parseInvocation(%q) error = nil", args)
+		}
 	}
 }
 

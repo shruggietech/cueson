@@ -234,7 +234,7 @@ type Stats struct {
 
 // Validate checks invariants that are intentionally clearer outside JSON Schema.
 func (document Document) Validate() error {
-	if err := validateCapability(document.FormatSupport); err != nil {
+	if err := validateCapability(document.Format, document.FormatSupport); err != nil {
 		return err
 	}
 	assetIDs, err := validateAssets(document.Source)
@@ -253,21 +253,30 @@ func (document Document) Validate() error {
 	return validateDiagnostics(document.Diagnostics, document.Cues, document.Stats)
 }
 
-func validateCapability(support FormatSupport) error {
-	if support.Status != "envelope_only" {
-		return fmt.Errorf("format_support.status must be envelope_only")
+func validateCapability(format string, support FormatSupport) error {
+	var want FormatSupport
+	switch format {
+	case "subrip":
+		want = FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+	case "webvtt":
+		want = FormatSupport{Status: "envelope_only", RestoreSupported: true}
+	default:
+		return fmt.Errorf("format %q is not recognized", format)
 	}
-	if support.IngestSupported {
-		return fmt.Errorf("format_support.ingest_supported must remain false")
+	if support.Status != want.Status {
+		return fmt.Errorf("format_support.status for %s must be %s", format, want.Status)
 	}
-	if support.RenderSupported {
-		return fmt.Errorf("format_support.render_supported must remain false")
+	if support.IngestSupported != want.IngestSupported {
+		return fmt.Errorf("format_support.ingest_supported for %s must be %t", format, want.IngestSupported)
 	}
-	if !support.RestoreSupported {
-		return fmt.Errorf("format_support.restore_supported must be true")
+	if support.RenderSupported != want.RenderSupported {
+		return fmt.Errorf("format_support.render_supported for %s must be %t", format, want.RenderSupported)
 	}
-	if support.OCRRequiredForSemanticOutput {
-		return fmt.Errorf("format_support.ocr_required_for_semantic_output must be false")
+	if support.RestoreSupported != want.RestoreSupported {
+		return fmt.Errorf("format_support.restore_supported for %s must be %t", format, want.RestoreSupported)
+	}
+	if support.OCRRequiredForSemanticOutput != want.OCRRequiredForSemanticOutput {
+		return fmt.Errorf("format_support.ocr_required_for_semantic_output for %s must be %t", format, want.OCRRequiredForSemanticOutput)
 	}
 	return nil
 }

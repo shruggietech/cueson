@@ -36,8 +36,8 @@
           "role": "expected_model",
           "path": "fixtures/source-envelope/basic-lf/expected/model.json",
           "media_type": "application/json",
-          "size_bytes": 2814,
-          "sha256": "cc8bd7d01097ea3cec06b811f8b2a16bab8a57f7f075ad028724de0561569310",
+          "size_bytes": 2818,
+          "sha256": "8e7d6ad70c7f18cdd9c89c1b6b749ae007a57351ec8e586e17a666dd8f84d2d7",
           "byte_contract": {
             "encoding": "utf-8",
             "bom": "absent",
@@ -144,7 +144,7 @@
       "class": "malformed",
       "origin": {
         "kind": "derived",
-        "source": "Cueson v0.0.0 representative contract example",
+        "source": "Cueson v0.1.0 representative contract example",
         "recipe": "Minify the representative and change document.cue_count from 1 to 2 while leaving one cue and stats.cue_count at 1."
       },
       "redistribution": {
@@ -159,8 +159,8 @@
           "role": "malformed_input",
           "path": "malformed/source-envelope/semantic-count/input/document.cueson.json",
           "media_type": "application/json",
-          "size_bytes": 1934,
-          "sha256": "e836b94d98a22ef0d5818a11b890315545998ec21a6272741df8267f2878c45d",
+          "size_bytes": 1938,
+          "sha256": "94659a88bcf9bc6bdde8cef61ea0edcce8307267bc3a2281f35073c0cfe8d0ef",
           "byte_contract": {
             "encoding": "utf-8",
             "bom": "absent",
@@ -181,7 +181,7 @@
       "class": "malformed",
       "origin": {
         "kind": "derived",
-        "source": "Cueson v0.0.0 representative contract example",
+        "source": "Cueson v0.1.0 representative contract example",
         "recipe": "Minify the representative and replace the source asset SHA-256 with 64 zeroes while retaining the original base64 bytes."
       },
       "redistribution": {
@@ -196,8 +196,8 @@
           "role": "malformed_input",
           "path": "malformed/source-envelope/hash-mismatch/input/document.cueson.json",
           "media_type": "application/json",
-          "size_bytes": 1934,
-          "sha256": "a435b786f6b2e3b4e9a04ed965a779dd62e594bf2b3a8e96a565fe803ec11ebf",
+          "size_bytes": 1938,
+          "sha256": "01792ae0d682435d9b66f8b539794129461b1276b1586b12cb34f6df9e759f13",
           "byte_contract": {
             "encoding": "utf-8",
             "bom": "absent",
@@ -210,6 +210,225 @@
         "result": "rejected",
         "stage": "integrity",
         "diagnostic_contains": "SHA-256"
+      }
+    },
+    {
+      "id": "subrip/grammar-variants",
+      "purpose": "Exercise native SubRip sequence, timing, coordinate, tag, multiline, speaker, diagnostic, and canonical-render behavior in one deterministic accepted fixture.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S014 native SubRip work",
+        "recipe": "Write two LF SubRip cues combining an irregular sequence, missing sequence, period and short millisecond fields, complete coordinates, formatting tags, multiline text, and a speaker prefix."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/subrip/grammar-variants/source/variants.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 129,
+          "sha256": "2dd2014809edadda2b702f1ae88379dc1dc5371c02f9a78f947a68f38a6819b7",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/subrip/grammar-variants/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 822,
+          "sha256": "6d315cb97a3972dadd70cd986b73bb034ca5a570f9f4428fbcbe6ec17f01ca13",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/subrip/grammar-variants/expected/bytes/rendered.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 134,
+          "sha256": "adbe3df99800749041bb43d3c0bfe95143f2a369a671abd7af9e579ac876f2f8",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "subrip/encoding-line-endings",
+      "purpose": "Prove exact native SubRip capture and deterministic decoding for UTF-8 BOM with CRLF, UTF-16 LE and BE BOMs, explicit Windows-1252 and ISO-8859-1, lone-CR, and mixed line endings.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S014 native SubRip work",
+        "recipe": "Encode one cue numbered 1 at 00:00:00,000 through 00:00:01,000. Use Café déjà vu. for Unicode and ISO-8859-1, “Café” for Windows-1252, lone CR for the lone-CR payload, and mixed for the mixed-EOL payload. Apply the encoding, BOM, and line endings named by each artifact; focused tests assert exact bytes, digests, decoder choices, decoded text, and line-ending observations."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "utf8_bom_crlf",
+          "role": "source",
+          "path": "fixtures/subrip/encoding-line-endings/source/utf8-bom-crlf.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 55,
+          "sha256": "adf1584a43d9cca5825d5c2bb29ca46ceb84c35d76511722f3c4c85f2b87f139",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "present",
+            "line_endings": "crlf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "utf16le_bom",
+          "role": "source",
+          "path": "fixtures/subrip/encoding-line-endings/source/utf16le-bom.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 94,
+          "sha256": "c5533e023a54997a5b99625a06d23d9cef07e46e1f1bc34dc14b85c62891eef8",
+          "byte_contract": {
+            "encoding": "binary",
+            "bom": "not_applicable",
+            "line_endings": "not_applicable",
+            "final_newline": "not_applicable"
+          }
+        },
+        {
+          "id": "utf16be_bom",
+          "role": "source",
+          "path": "fixtures/subrip/encoding-line-endings/source/utf16be-bom.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 94,
+          "sha256": "a3deca239aa5472581e360bb7e2112c98681e7c592d7df812c890ea88a125c23",
+          "byte_contract": {
+            "encoding": "binary",
+            "bom": "not_applicable",
+            "line_endings": "not_applicable",
+            "final_newline": "not_applicable"
+          }
+        },
+        {
+          "id": "windows_1252",
+          "role": "source",
+          "path": "fixtures/subrip/encoding-line-endings/source/windows-1252.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 39,
+          "sha256": "d2019e479e11b8ce8a256529055b53b477fbc83b4941ab4522006699543c78c2",
+          "byte_contract": {
+            "encoding": "binary",
+            "bom": "not_applicable",
+            "line_endings": "not_applicable",
+            "final_newline": "not_applicable"
+          }
+        },
+        {
+          "id": "iso_8859_1",
+          "role": "source",
+          "path": "fixtures/subrip/encoding-line-endings/source/iso-8859-1.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 46,
+          "sha256": "5b5460fb50d3627950596181f664248ad9fe3b349d5042728d693b36f9f5aee7",
+          "byte_contract": {
+            "encoding": "binary",
+            "bom": "not_applicable",
+            "line_endings": "not_applicable",
+            "final_newline": "not_applicable"
+          }
+        },
+        {
+          "id": "lone_cr",
+          "role": "source",
+          "path": "fixtures/subrip/encoding-line-endings/source/lone-cr.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 40,
+          "sha256": "f4acd076b86fb96d1e93823bea7ab1debe91afe7a03531bd0b52ddd40a76ce33",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "cr",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "mixed",
+          "role": "source",
+          "path": "fixtures/subrip/encoding-line-endings/source/mixed.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 39,
+          "sha256": "06f46aecd9b95fd8c7fbefce2324388c8b9abaeae4806c2417a6be28856e3e4b",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "mixed",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "subrip/reversed-time",
+      "purpose": "Retain a permanent native SubRip parser rejection for an end time that precedes its start time.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S014 native SubRip work",
+        "recipe": "Write one LF SubRip cue whose end time is one second earlier than its start time."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/subrip/reversed-time/input/reversed.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 52,
+          "sha256": "b4431f44772452e7906ca89457a6563c38dfda4f709a386b374520c01b761375",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "end timecode precedes start timecode"
       }
     }
   ]

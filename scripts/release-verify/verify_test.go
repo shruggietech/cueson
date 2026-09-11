@@ -424,6 +424,27 @@ func TestLoadRepositorySchemasRequiresExactVersionedCopy(t *testing.T) {
 	})
 }
 
+func TestLoadDevelopmentSchemaUsesCanonicalWithoutReleaseCopy(t *testing.T) {
+	t.Parallel()
+	valid := []byte(`{"$id":"https://cueson.io/schema/v0.1.0/cueson.schema.json","properties":{"schema_version":{"const":"0.1.0"}}}` + "\n")
+	wantDigest := sha256.Sum256(valid)
+	repository := makeSchemaRepository(t, valid, nil)
+
+	canonical, digest, err := loadDevelopmentSchema(repository, "0.1.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(canonical, valid) {
+		t.Fatal("returned development schema differs")
+	}
+	if digest != fmt.Sprintf("%x", wantDigest) {
+		t.Fatalf("development schema digest = %q, want %x", digest, wantDigest)
+	}
+	if _, _, err := loadDevelopmentSchema(repository, "0.0.0"); err == nil || !strings.Contains(err.Error(), "canonical schema") {
+		t.Fatalf("version mismatch error = %v", err)
+	}
+}
+
 func TestVerifyProbeOutput(t *testing.T) {
 	t.Parallel()
 	want := []byte("0.0.0\n")
@@ -480,6 +501,22 @@ func TestWriteEvidenceIsExclusiveAndDeterministic(t *testing.T) {
 	}
 	if !bytes.Contains(first, []byte(`"published": false`)) {
 		t.Fatal("evidence omits non-publication state")
+	}
+}
+
+func TestDevelopmentEvidenceIsExplicit(t *testing.T) {
+	t.Parallel()
+	path := filepath.Join(t.TempDir(), "development.json")
+	evidence := ReleaseEvidence{Version: "0.1.0", Development: true, SourceRevision: testCommit, ReleaseSchemaSHA256: strings.Repeat("a", 64)}
+	if err := writeEvidence(path, evidence); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Contains(data, []byte(`"development": true`)) {
+		t.Fatal("development evidence does not identify its non-release proof mode")
 	}
 }
 

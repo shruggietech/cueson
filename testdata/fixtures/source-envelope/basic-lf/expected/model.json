@@ -1,17 +1,17 @@
 {
-  "$schema": "https://cueson.io/schema/v0.0.0/cueson.schema.json",
-  "schema_version": "0.0.0",
+  "$schema": "https://cueson.io/schema/v0.1.0/cueson.schema.json",
+  "schema_version": "0.1.0",
   "format": "subrip",
   "format_support": {
-    "status": "envelope_only",
-    "ingest_supported": false,
-    "render_supported": false,
+    "status": "experimental",
+    "ingest_supported": true,
+    "render_supported": true,
     "restore_supported": true,
     "ocr_required_for_semantic_output": false
   },
   "producer": {
     "name": "cueson-contract-example",
-    "version": "0.0.0"
+    "version": "0.1.0"
   },
   "source": {
     "primary_asset_id": "asset-0",
@@ -81,7 +81,7 @@
         "raw_text": "<i>Hello, world.</i>",
         "plain_text": "Hello, world.",
         "lines": [
-          "Hello, world."
+          "<i>Hello, world.</i>"
         ]
       },
       "speakers": [],

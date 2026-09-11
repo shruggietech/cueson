@@ -9,6 +9,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Reconciled repository release status and verification records after publishing the immutable v0.0.0 tag and the exact thirteen-asset GitHub Release from accepted default-branch evidence.
+- Advanced the evolving executable and canonical Cue JSON contract to development version 0.1.0 while preserving every published v0.0.0 schema and release artifact unchanged.
+
+### Added
+
+- Added bounded native SubRip detection and text decoding, complete documented cue parsing, exact source-envelope preservation, deterministic model-driven SubRip rendering, and public `encode` and `render` commands.
+- Added a capability-based internal codec registry that distinguishes native SubRip support from schema-recognized envelope-only WebVTT support.
+
+### Decisions
+
+- 2026-09-11: Advance development schema and software identity together to 0.1.0 because native capability constraints change canonical schema bytes; keep the released v0.0.0 identity immutable.
+- 2026-09-11: Reject reversed SubRip timing instead of silently swapping endpoints, and retain speaker prefixes in raw and plain payload views while exposing speaker identity only as a derived observation.
 
 ## [0.0.0] - 2026-09-10
 

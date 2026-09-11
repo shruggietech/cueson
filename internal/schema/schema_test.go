@@ -18,10 +18,10 @@ func TestCanonicalSchemaAndRepresentative(t *testing.T) {
 	if err := Validate(Representative()); err != nil {
 		t.Fatalf("Validate(Representative()) error = %v", err)
 	}
-	if got, want := ID(), "https://cueson.io/schema/v0.0.0/cueson.schema.json"; got != want {
+	if got, want := ID(), "https://cueson.io/schema/v0.1.0/cueson.schema.json"; got != want {
 		t.Errorf("ID() = %q, want %q", got, want)
 	}
-	if got, want := Version(), "0.0.0"; got != want {
+	if got, want := Version(), "0.1.0"; got != want {
 		t.Errorf("Version() = %q, want %q", got, want)
 	}
 	if bytes.HasPrefix(Bytes(), []byte{0xef, 0xbb, 0xbf}) {
@@ -50,7 +50,10 @@ func TestValidateRejectsStructuralViolations(t *testing.T) {
 		mutate func(map[string]any)
 		want   string
 	}{
-		{name: "schema version", mutate: func(doc map[string]any) { doc["schema_version"] = "0.0.1" }, want: "schema_version"},
+		{name: "schema version", mutate: func(doc map[string]any) { doc["schema_version"] = "0.0.0" }, want: "schema_version"},
+		{name: "subrip envelope capability", mutate: func(doc map[string]any) {
+			doc["format_support"] = envelopeOnlySupport()
+		}, want: "format_support"},
 		{name: "unsafe path", mutate: func(doc map[string]any) { firstAsset(doc)["file_name"] = "../captions.srt" }, want: "file_name"},
 		{name: "reserved device", mutate: func(doc map[string]any) { firstAsset(doc)["file_name"] = "CoN.txt" }, want: "file_name"},
 		{name: "superscript reserved device", mutate: func(doc map[string]any) { firstAsset(doc)["file_name"] = "COM¹.txt" }, want: "file_name"},
@@ -174,8 +177,8 @@ func TestLockstep(t *testing.T) {
 	if err := CheckLockstep(version.String()); err != nil {
 		t.Fatalf("CheckLockstep(version.String()) error = %v", err)
 	}
-	if err := CheckLockstep("0.0.1"); err == nil || !strings.Contains(err.Error(), "0.0.1") {
-		t.Fatalf("CheckLockstep(0.0.1) error = %v, want version mismatch", err)
+	if err := CheckLockstep("0.0.0"); err == nil || !strings.Contains(err.Error(), "0.0.0") {
+		t.Fatalf("CheckLockstep(0.0.0) error = %v, want version mismatch", err)
 	}
 }
 
@@ -187,12 +190,12 @@ func TestCanonicalIdentityRejectsDrift(t *testing.T) {
 		mutate func(map[string]any)
 		want   string
 	}{
-		{name: "artifact id", mutate: func(artifact map[string]any) { artifact["$id"] = "https://cueson.io/schema/v0.0.1/cueson.schema.json" }, want: "$id"},
+		{name: "artifact id", mutate: func(artifact map[string]any) { artifact["$id"] = "https://cueson.io/schema/v0.0.0/cueson.schema.json" }, want: "$id"},
 		{name: "instance schema", mutate: func(artifact map[string]any) {
-			artifact["properties"].(map[string]any)["$schema"].(map[string]any)["const"] = "https://cueson.io/schema/v0.0.1/cueson.schema.json"
+			artifact["properties"].(map[string]any)["$schema"].(map[string]any)["const"] = "https://cueson.io/schema/v0.0.0/cueson.schema.json"
 		}, want: "$schema"},
 		{name: "schema version", mutate: func(artifact map[string]any) {
-			artifact["properties"].(map[string]any)["schema_version"].(map[string]any)["const"] = "0.0.1"
+			artifact["properties"].(map[string]any)["schema_version"].(map[string]any)["const"] = "0.0.0"
 		}, want: "schema_version"},
 	}
 
@@ -231,6 +234,7 @@ func TestValidateRecognizedFormatsAndMultipleAssets(t *testing.T) {
 	t.Run("webvtt", func(t *testing.T) {
 		doc := representativeMap(t)
 		doc["format"] = "webvtt"
+		doc["format_support"] = envelopeOnlySupport()
 		firstAsset(doc)["file_name"] = "captions.vtt"
 		firstAsset(doc)["media_type"] = "text/vtt"
 		doc["format_data"] = map[string]any{"webvtt": map[string]any{"signature": "WEBVTT", "description": nil, "metadata_lines": []any{}, "blocks": []any{}}}
@@ -243,6 +247,13 @@ func TestValidateRecognizedFormatsAndMultipleAssets(t *testing.T) {
 		firstCue(doc)["ocr_observations"] = []any{map[string]any{"id": "ocr-0", "derived": true, "engine": "test-engine", "text": "Hello, world.", "lines": []any{"Hello, world."}, "source_asset_id": "asset-0"}}
 		assertMapValid(t, doc)
 	})
+}
+
+func envelopeOnlySupport() map[string]any {
+	return map[string]any{
+		"status": "envelope_only", "ingest_supported": false, "render_supported": false,
+		"restore_supported": true, "ocr_required_for_semantic_output": false,
+	}
 }
 
 func TestCanonicalProjectNamesAreLowerSnakeCase(t *testing.T) {

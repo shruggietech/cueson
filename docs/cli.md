@@ -1,10 +1,10 @@
 # Cueson CLI Contract
 
-**Status:** Ratified v0.0.0 implementation baseline
+**Status:** v0.1.0 development contract with published v0.0.0 baseline
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document is the release-specific CLI authority for the v0.0.0 foundation. Commands enter help and command listings only when the executable implements their documented behavior. The broader command surface in the [working project specification](Cueson-Project-Specification-v0.0.0.md) is a roadmap, not permission to register placeholders.
+This document is the CLI authority for current development. Commands enter help and command listings only when the executable implements their documented behavior. The broader command surface in the [working project specification](Cueson-Project-Specification-v0.0.0.md) is a roadmap, not permission to register placeholders.
 
 v0.0.0 is publicly available from the [official GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) as six verified platform archives with checksums and matching SPDX JSON SBOMs. The implemented commands may also be exercised with `go run ./cmd/cueson ...` from a Go 1.25 source checkout. Snapshot archives produced by later non-publishing verification runs remain review evidence unless separately published through an authorized release.
 
@@ -16,7 +16,25 @@ v0.0.0 is publicly available from the [official GitHub Release](https://github.c
 | [#5](https://github.com/shruggietech/cueson/issues/5) | `schema`, `schema --version`, schema output | Embedded canonical schema |
 | [#6](https://github.com/shruggietech/cueson/issues/6) | `restore` | Generic exact source-envelope restoration without a codec |
 
-`encode`, `render`, `convert`, `validate`, `inspect`, and `completion` remain absent from v0.0.0 help unless their owning implementation scope is explicitly amended and fully verified. SRT and WebVTT codec commands are not placeholders. The [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages describe their planned v1 command-facing behavior separately from current envelope-only support.
+Current v0.1.0 source additionally ships `encode` and `render` for experimental SubRip support. `convert`, `validate`, `inspect`, and `completion` remain absent. WebVTT native codec behavior is not registered as a placeholder.
+
+## `encode`
+
+```text
+cueson [global options] encode [options] INPUT
+```
+
+`encode` detects or explicitly selects SubRip, decodes the exact bounded source bytes, derives common and native cue data, validates the resulting document, and writes Cue JSON to `INPUT.cueson.json` by default. It accepts `--output`, `--force`, `--format auto|srt|vtt`, `--encoding`, `--pretty`, `--stdout`, and `--no-speaker-detection`. `--output -` is equivalent to `--stdout`.
+
+Automatic decoding accepts UTF-8 and BOM-marked UTF-16. BOM-less UTF-16 requires strong byte-pattern evidence. Ambiguous single-byte input requires an explicit `--encoding windows-1252` or `--encoding iso-8859-1`; aliases shown by command help normalize to the same canonical observations. Input is limited to 64 MiB. Standard output contains only Cue JSON.
+
+## `render`
+
+```text
+cueson [global options] render [options] INPUT.cueson.json --to srt
+```
+
+`render` validates Cue JSON and serializes its structured cue model rather than restoring captured bytes. Without `--output` it writes stdout; `--output -` is equivalent. `--force` applies only to real filesystem destinations. Canonical SubRip uses ordered integer sequence lines, `HH:MM:SS,mmm`, complete coordinates when present, raw payload text, LF line endings, one blank line between cues, and a final LF. Normal rendering warns when raw payload lines would be reparsed as a cue boundary; `--strict` rejects that ambiguity and other known non-representable content.
 
 ## General invocation rules
 
@@ -67,7 +85,7 @@ A missing codec for a valid shipped command is a runtime capability failure with
 cueson version
 ```
 
-For the v0.0.0 foundation, `version` prints exactly `0.0.0` followed by one LF to stdout and emits no success diagnostic. A future verbose form may add commit and target metadata without exposing local build paths.
+Current development `version` prints exactly `0.1.0` followed by one LF. The published v0.0.0 binary continues to print `0.0.0`.
 
 ## `schema`
 
@@ -77,7 +95,7 @@ cueson schema --version
 cueson schema --output PATH
 ```
 
-`schema` prints the embedded canonical schema to stdout unless an output path is selected. `schema --version` prints exactly `0.0.0` followed by one LF. Output replacement follows the explicit `--force` rule. The schema version must equal the executable version.
+`schema` prints the embedded canonical schema to stdout unless an output path is selected. Current development `schema --version` prints exactly `0.1.0` followed by one LF. Output replacement follows the explicit `--force` rule. The schema version equals the executable version.
 
 ## `restore`
 
@@ -109,8 +127,8 @@ Successful restoration writes no stdout payload. It emits stderr only for warnin
 
 All caller-selected output directories and parents must already exist. Existing symbolic links, directories, devices, and other non-regular entries are refused even with `--force`. The command stages and verifies the complete bundle before publication, preserves forced regular-file destinations for rollback, and does not claim cross-process transaction isolation or crash atomicity.
 
-## Future command contract
+## Remaining command contract
 
-The intended v1 surface includes encode, restore, render, convert, validate, inspect, schema, version, and completion. A future Spec Kit slice must ratify and implement each command before it appears in release help. Documentation may describe roadmap intent only when it labels the behavior as unavailable in the current release.
+The remaining intended v1 surface includes convert, validate, inspect, and completion. A future Spec Kit slice must ratify and implement each command before it appears in help.
 
 Release packaging does not expand this command contract. See [release verification](release-verification.md) for the v0.0.0 artifact and publication proof and the [release process](release-process.md) for the separately authorized release lifecycle. The standalone documentation verifier checks that these maintained CLI and documentation links resolve offline; it is repository tooling, not a `cueson` subcommand.
