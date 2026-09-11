@@ -80,9 +80,9 @@
 - [x] T024 [P] [US3] Update release topology, exact publication ownership, and current delivery status in `docs/architecture.md`, `docs/cli.md`, and `docs/project-management.md`
 - [x] T025 [US3] Record the post-tag documentation and release-verification update under `[Unreleased]` in `CHANGELOG.md` without modifying the tagged v1.0.0 notes or versioned schema
 - [x] T026 [US3] Search maintained documentation for current candidate or unpublished-v1 claims and capability overclaims, then remediate false current-state statements while preserving explicit historical context
-- [ ] T027 [US3] Run all quickstart verification including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, mojibake, and tagged-file-immutability checks
-- [ ] T028 [US3] Run Spec Kit convergence against `specs/S020-publish-v1-release/` and append and execute required remediation tasks until convergence is clean
-- [ ] T029 [US3] Obtain explicit branch push and official pull-request publication authority if it has not already been granted
+- [x] T027 [US3] Run all quickstart verification including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, mojibake, and tagged-file-immutability checks
+- [x] T028 [US3] Run Spec Kit convergence against `specs/S020-publish-v1-release/` and append and execute required remediation tasks until convergence is clean
+- [x] T029 [US3] Obtain explicit branch push and official pull-request publication authority if it has not already been granted
 - [ ] T030 [US3] Push `codex/S020-publish-v1-release`, publish the formatted official pull request with `Closes #38`, and verify the rendered GitHub body
 - [ ] T031 [US3] Move issue #38 to Stage `PR review`, retain Slice `S020`, and verify default Status remains empty in `cueson Delivery`
 - [ ] T032 [US3] Monitor every current-head CI, CodeQL, release-proof, pull-request policy, Codex, security, and review result; address every round-one finding and resolve threads only after remediation
