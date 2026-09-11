@@ -14,12 +14,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - Added bounded native SubRip detection and text decoding, complete documented cue parsing, exact source-envelope preservation, deterministic model-driven SubRip rendering, and public `encode` and `render` commands.
-- Added a capability-based internal codec registry that distinguishes native SubRip support from schema-recognized envelope-only WebVTT support.
+- Added bounded native WebVTT detection and UTF-8 decoding, source-ordered cue and block parsing, setting and markup fidelity, deterministic diagnostics, exact source-envelope preservation, model-driven rendering, governed fixtures, and CLI workflows.
+- Added a capability-based internal codec registry for experimental native SubRip and WebVTT support.
+
+### Fixed
+
+- Made shared schema, encode, and render file publication transactional across short writes, failed writes, new destinations, and forced replacements so a failed operation does not leave partial or lost output.
+- Preserved WebVTT raw NUL and setting whitespace independently from semantic text, hardened model-driven rendering against unsafe or inconsistent settings, mismatched block headers, and empty payloads, regenerated edited REGION settings, enforced BOM-specific UTF-8 aliases, and diagnosed malformed empty voice or language annotations without losing their source syntax.
 
 ### Decisions
 
 - 2026-09-11: Advance development schema and software identity together to 0.1.0 because native capability constraints change canonical schema bytes; keep the released v0.0.0 identity immutable.
 - 2026-09-11: Reject reversed SubRip timing instead of silently swapping endpoints, and retain speaker prefixes in raw and plain payload views while exposing speaker identity only as a derived observation.
+- 2026-09-11: Keep WebVTT source bytes authoritative while representing cues and non-cue blocks in one contiguous source order, retain ordered raw setting occurrences beside effective values, and derive plain text, speakers, and inline timing without replacing native payload syntax.
 
 ## [0.0.0] - 2026-09-10
 

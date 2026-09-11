@@ -16,7 +16,7 @@ v0.0.0 is publicly available from the [official GitHub Release](https://github.c
 | [#5](https://github.com/shruggietech/cueson/issues/5) | `schema`, `schema --version`, schema output | Embedded canonical schema |
 | [#6](https://github.com/shruggietech/cueson/issues/6) | `restore` | Generic exact source-envelope restoration without a codec |
 
-Current v0.1.0 source additionally ships `encode` and `render` for experimental SubRip support. `convert`, `validate`, `inspect`, and `completion` remain absent. WebVTT native codec behavior is not registered as a placeholder.
+Current v0.1.0 source additionally ships `encode` and `render` for experimental SubRip and WebVTT support. `convert`, `validate`, `inspect`, and `completion` remain absent.
 
 ## `encode`
 
@@ -24,17 +24,17 @@ Current v0.1.0 source additionally ships `encode` and `render` for experimental 
 cueson [global options] encode [options] INPUT
 ```
 
-`encode` detects or explicitly selects SubRip, decodes the exact bounded source bytes, derives common and native cue data, validates the resulting document, and writes Cue JSON to `INPUT.cueson.json` by default. It accepts `--output`, `--force`, `--format auto|srt|vtt`, `--encoding`, `--pretty`, `--stdout`, and `--no-speaker-detection`. `--output -` is equivalent to `--stdout`.
+`encode` detects or explicitly selects SubRip or WebVTT, decodes the exact bounded source bytes, derives common and native cue data, validates the resulting document, and writes Cue JSON to `INPUT.cueson.json` by default. It accepts `--output`, `--force`, `--format auto|srt|vtt`, `--encoding`, `--pretty`, `--stdout`, and `--no-speaker-detection`. `--output -` is equivalent to `--stdout`.
 
-Automatic decoding accepts UTF-8 and BOM-marked UTF-16. BOM-less UTF-16 requires strong byte-pattern evidence. Ambiguous single-byte input requires an explicit `--encoding windows-1252` or `--encoding iso-8859-1`; aliases shown by command help normalize to the same canonical observations. Input is limited to 64 MiB. Standard output contains only Cue JSON.
+SubRip automatic decoding accepts UTF-8 and BOM-marked UTF-16. BOM-less UTF-16 requires strong byte-pattern evidence. Ambiguous single-byte SubRip input requires an explicit `--encoding windows-1252` or `--encoding iso-8859-1`; aliases shown by command help normalize to the same canonical observations. WebVTT accepts UTF-8 only, with an optional UTF-8 BOM, and rejects an incompatible explicit `--encoding` before execution. Input is limited to 64 MiB. Standard output contains only Cue JSON.
 
 ## `render`
 
 ```text
-cueson [global options] render [options] INPUT.cueson.json --to srt
+cueson [global options] render [options] INPUT.cueson.json --to srt|vtt
 ```
 
-`render` validates Cue JSON and serializes its structured cue model rather than restoring captured bytes. Without `--output` it writes stdout; `--output -` is equivalent. `--force` applies only to real filesystem destinations. Canonical SubRip uses ordered integer sequence lines, `HH:MM:SS,mmm`, complete coordinates when present, raw payload text, LF line endings, one blank line between cues, and a final LF. Normal rendering warns when raw payload lines would be reparsed as a cue boundary; `--strict` rejects that ambiguity and other known non-representable content.
+`render` validates Cue JSON and serializes its structured cue model rather than restoring captured bytes. Without `--output` it writes stdout; `--output -` is equivalent. `--force` applies only to real filesystem destinations. The `--to` value must match the document's native format because cross-format conversion is not yet shipped. Canonical SubRip uses ordered integer sequence lines, `HH:MM:SS,mmm`, complete coordinates when present, raw payload text, LF line endings, one blank line between cues, and a final LF. Canonical WebVTT uses a `WEBVTT` signature, preserved header metadata, the contiguous merged cue and non-cue source order, normalized dot-millisecond timestamps, retained native cue settings and payload, LF separators, and a final LF. Normal rendering warns when preserved content is known to be nonconforming; `--strict` rejects known ambiguity or nonconformance before publishing output.
 
 ## General invocation rules
 

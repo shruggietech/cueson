@@ -17,11 +17,11 @@
   <a href="docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-repository-58A6FF"></a>
 </p>
 
-**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial stable-release targets:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v0.1.0 development (`experimental` native SubRip; `envelope_only` WebVTT)
+**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial stable-release targets:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v0.1.0 development (experimental native SubRip and WebVTT)
 
-Cueson converts SubRip subtitle files into a canonical, versioned JSON representation called Cue JSON and renders the structured model back to deterministic SubRip. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration. WebVTT ingest and cross-format conversion remain planned.
+Cueson encodes SubRip and WebVTT subtitle files into a canonical, versioned JSON representation called Cue JSON and renders the structured model back to deterministic native syntax. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration. Cross-format conversion remains planned.
 
-The repository contains the development `cueson` executable and canonical Draft 2020-12 Cue JSON `0.1.0` schema. The separate [official v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its byte-identical [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain the published foundation. Current source adds bounded native SubRip detection, decoding, semantic ingest, deterministic rendering, and codec-independent exact restoration.
+The repository contains the development `cueson` executable and canonical Draft 2020-12 Cue JSON `0.1.0` schema. The separate [official v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its byte-identical [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain the published foundation. Current source adds bounded native SubRip and WebVTT detection, decoding, semantic ingest, deterministic rendering, and codec-independent exact restoration.
 
 ## Capability direction
 
@@ -31,7 +31,7 @@ The repository contains the development `cueson` executable and canonical Draft 
 - Keep the Cueson JSON Schema and official executable versioned together.
 - Deliver portable native binaries for Windows, macOS, and Linux.
 
-The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages separate current envelope-only behavior from the planned [SubRip](docs/formats/srt.md) and [WebVTT](docs/formats/webvtt.md) v1 contracts. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
+The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages define the experimental native [SubRip](docs/formats/srt.md) and [WebVTT](docs/formats/webvtt.md) contracts on the path to v1. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
 
 The official Cueson identity is retained in the repository as the complete [brand kit](brand/cueson/1.0.0/kit/README.md). See the [Cueson brand guide](docs/brand.md) for provenance, integrity verification, asset selection, licensing boundaries, and the [official ShruggieTech download](https://brand.shruggie.tech/cueson/downloads/cueson-brand-1.0.0.zip).
 
@@ -50,16 +50,18 @@ cueson schema
 cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
 
-Current development source adds the experimental SubRip encode and render workflows:
+Current development source adds experimental SubRip and WebVTT encode and render workflows:
 
 ```text
 go run ./cmd/cueson --help
 go run ./cmd/cueson encode --pretty captions.srt
 go run ./cmd/cueson render captions.srt.cueson.json --to srt --output rendered.srt
+go run ./cmd/cueson encode --pretty captions.vtt
+go run ./cmd/cueson render captions.vtt.cueson.json --to vtt --output rendered.vtt
 go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
 
-`encode` writes Cue JSON to `INPUT.cueson.json` by default, retains the exact source bytes, and supports explicit encoding selection for ambiguous legacy files. `render --to srt` serializes the structured model as canonical LF SubRip; it is intentionally distinct from exact `restore`. WebVTT native ingest/render and cross-format conversion are not yet implemented.
+`encode` writes Cue JSON to `INPUT.cueson.json` by default and retains the exact source bytes. SubRip supports explicit encoding selection for ambiguous legacy files; WebVTT accepts UTF-8 only, with an optional UTF-8 BOM. `render --to srt` and `render --to vtt` serialize the structured model as canonical LF syntax and remain intentionally distinct from exact `restore`. Cross-format conversion is not yet implemented.
 
 The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Seventeen GitHub Actions-owned CI and CodeQL checks are required. The two pull-request policy statuses remain visible but are not required checks while the GitHub Actions-authored second-round comment path lacks complete activation proof. Native codec behavior is exercised by the schema-and-conformance, native-test, race-detection, static-analysis, and vulnerability gates.
 

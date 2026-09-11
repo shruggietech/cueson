@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/shruggietech/cueson/internal/codec/subrip"
+	"github.com/shruggietech/cueson/internal/codec/webvtt"
 	"github.com/shruggietech/cueson/internal/model"
 	"github.com/shruggietech/cueson/internal/schema"
 	"github.com/shruggietech/cueson/internal/source"
@@ -27,8 +28,8 @@ func TestGovernedCorpus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("VerifyFixtures() error = %v", err)
 	}
-	if len(manifest.Fixtures) != 8 {
-		t.Fatalf("fixture count = %d, want 8", len(manifest.Fixtures))
+	if len(manifest.Fixtures) < 16 {
+		t.Fatalf("fixture count = %d, want at least 16", len(manifest.Fixtures))
 	}
 }
 
@@ -159,6 +160,20 @@ func rejectAtDeclaredBoundary(t *testing.T, fixture testutil.Fixture, input []by
 			t.Fatal("subrip.Parse() accepted malformed fixture")
 		}
 		return "parse", err.Error()
+	}
+	if strings.HasPrefix(fixture.ID, "webvtt/") {
+		decoded, err := webvtt.DecodeUTF8(input, "")
+		if err == nil {
+			_, err = webvtt.Parse(decoded.Text)
+		}
+		if err == nil {
+			t.Fatal("WebVTT codec accepted malformed fixture")
+		}
+		diagnostic := err.Error()
+		if strings.Contains(diagnostic, "webvtt_signature_invalid") {
+			diagnostic = "WebVTT signature: " + diagnostic
+		}
+		return "parse", diagnostic
 	}
 	document, err := schema.Decode(input)
 	if *fixture.Expectation.Stage != "integrity" {

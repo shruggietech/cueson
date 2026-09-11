@@ -430,6 +430,362 @@
         "stage": "parse",
         "diagnostic_contains": "end timecode precedes start timecode"
       }
+    },
+    {
+      "id": "webvtt/minimal",
+      "purpose": "Prove the minimal conforming WebVTT signature, cue, native model, canonical render, and exact restoration path.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Write one LF WebVTT cue with an hours-optional timestamp and final newline."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/webvtt/minimal/source/minimal.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 39,
+          "sha256": "a52c9912c5689ded2f79d417dc8f4ba201c4d3448d9dd1d5de9cf4ec73e77bef",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "webvtt/complete",
+      "purpose": "Retain one complete native WebVTT source covering header metadata, REGION, STYLE, NOTE, unknown blocks, settings, markup, entities, inline timing, whitespace-only payload, and overlapping cues.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Compose the S015 structure matrix as one UTF-8 LF file with two overlapping cues and ordered non-cue blocks."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/webvtt/complete/source/complete.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 539,
+          "sha256": "02accbb8574a856c6ef92fbdb3916881bfc4b1dc2c4c9fcc31fc07c127b80645",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "webvtt/bom-crlf",
+      "purpose": "Prove optional UTF-8 BOM and CRLF source bytes remain exact while semantic parsing excludes the BOM.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Prefix one WebVTT file with UTF-8 BOM bytes and write every physical line using CRLF."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/webvtt/bom-crlf/source/bom-crlf.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 59,
+          "sha256": "4249a6d415d016eb34bf4281993863d85b291e550ad74576365fb51e3b06a99f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "present",
+            "line_endings": "crlf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "webvtt/tolerated",
+      "purpose": "Retain one safely recoverable WebVTT source covering a missing cue separator, decreasing starts, duplicate identifiers, invalid and duplicate settings, malformed markup and entities, embedded NUL, misplaced blocks, invalid REGION settings, and an unknown block.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Compose recoverable WebVTT defects as one LF UTF-8 source with an embedded NUL byte and retain every diagnosed construct."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/webvtt/tolerated/source/tolerated.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 251,
+          "sha256": "94746f0f61df887e5d3919551eb329ccdcb6e2736288a516a14c2e6b83f7a5da",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "webvtt/lone-cr",
+      "purpose": "Prove normative lone-CR WebVTT line terminators parse without changing exact source bytes.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Write one minimal ASCII WebVTT file using lone CR for every line terminator."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/webvtt/lone-cr/source/lone-cr.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 41,
+          "sha256": "abf5c2f70a7c9ddb1e096925b50bfe06756152ee19f894c44d34019fad52575f",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "cr",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "webvtt/bad-signature",
+      "purpose": "Retain a native WebVTT rejection for a signature prefix without a legal boundary.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Write a WEBVTT-prefixed first line whose next character is a hyphen rather than EOF, space, tab, or line terminator."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/webvtt/bad-signature/input/bad-signature.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 51,
+          "sha256": "ac548cbb97cd71d5dea7de1e2300a7559ce84fb237bc08f776784024febc27e4",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "WebVTT signature"
+      }
+    },
+    {
+      "id": "webvtt/mixed-line-endings",
+      "purpose": "Prove mixed CRLF, lone-CR, and LF WebVTT line terminators parse while exact restoration retains every original byte.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Write one minimal WebVTT source using CRLF after the signature and payload, lone CR for the header separator, and LF after the timing line."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/webvtt/mixed-line-endings/source/mixed.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 40,
+          "sha256": "494f2070fe8a5cc277f39bb2db52cad378572ecacfe1a61d61964e3fd8d810ff",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "mixed",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "webvtt/invalid-utf8",
+      "purpose": "Retain a native WebVTT decode rejection for malformed UTF-8 payload bytes.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Write a valid ASCII signature and timing followed by one invalid UTF-8 byte and LF."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/webvtt/invalid-utf8/input/invalid-utf8.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 34,
+          "sha256": "067b23f65fc797298a2867db0fb9d0c0f6402cc9ed9d32774dad09ad76c0102b",
+          "byte_contract": {
+            "encoding": "invalid_utf8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "UTF-8"
+      }
+    },
+    {
+      "id": "webvtt/invalid-timing",
+      "purpose": "Retain a native WebVTT parser rejection for equal or reversed cue time boundaries.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Write one LF WebVTT cue whose end time is one second earlier than its start time."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/webvtt/invalid-timing/input/invalid-timing.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 43,
+          "sha256": "3f13be7dd8724a51849873567eda52a7859204a597d661869d33bf7ead677f3c",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "end time"
+      }
+    },
+    {
+      "id": "webvtt/parser-seed",
+      "purpose": "Seed bounded WebVTT signature, NOTE, cue-setting, class-markup, entity, parser, and renderer-cycle fuzz targets.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S015 native WebVTT work",
+        "recipe": "Write a compact LF WebVTT document containing one NOTE and one styled cue."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fuzz/webvtt/parser-seed/input/seed.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 80,
+          "sha256": "957b5467d2ed89489af580966931b69c67488a9dfb203632bdcac99b12d54bf1",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
     }
   ]
 }

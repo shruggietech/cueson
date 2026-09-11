@@ -3,6 +3,7 @@ package cli
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io"
@@ -11,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/shruggietech/cueson/internal/codec"
 	"github.com/shruggietech/cueson/internal/schema"
 	"github.com/shruggietech/cueson/internal/source"
 	"github.com/shruggietech/cueson/internal/version"
@@ -149,6 +151,7 @@ Examples:
   cueson schema --output cueson.schema.json
 	cueson encode captions.srt
 	cueson render captions.srt.cueson.json --to srt
+	cueson render captions.vtt.cueson.json --to vtt
   cueson restore --output restored.srt document.cueson.json
 `
 
@@ -219,15 +222,16 @@ utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.
 
 Example:
   cueson encode --pretty captions.srt
+  cueson encode --pretty captions.vtt
 `
 
 const renderHelpText = `Render Cue JSON from its structured model.
 
 Usage:
-  cueson [global options] render [options] INPUT.cueson.json --to srt
+  cueson [global options] render [options] INPUT.cueson.json --to FORMAT
 
 Options:
-  --to FORMAT        Select the target format.
+  --to FORMAT        Select srt or vtt.
   -o, --output PATH  Write output to PATH instead of stdout.
   -f, --force        Replace an existing regular output file.
   --strict           Reject known non-representable model content.
@@ -235,6 +239,7 @@ Options:
 
 Example:
   cueson render captions.srt.cueson.json --to srt --output captions.rendered.srt
+  cueson render captions.vtt.cueson.json --to vtt --output captions.rendered.vtt
 `
 
 const rootUsageText = `Usage:
@@ -706,6 +711,12 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 		if parsed.encode.format != "auto" && parsed.encode.format != "srt" && parsed.encode.format != "vtt" && parsed.encode.format != "subrip" && parsed.encode.format != "webvtt" {
 			return parsed, encodeInvocationError("--format must be auto, srt, or vtt")
 		}
+		if (parsed.encode.format == "vtt" || parsed.encode.format == "webvtt") && parsed.encode.encoding != "" {
+			encoding, known := codec.NormalizeEncoding(parsed.encode.encoding)
+			if !known || (encoding != codec.EncodingUTF8 && encoding != codec.EncodingUTF8BOM) {
+				return parsed, encodeInvocationError("WebVTT requires UTF-8; --encoding is incompatible with --format vtt")
+			}
+		}
 		stdoutSelected := parsed.encode.stdout || (parsed.encode.outputSet && parsed.encode.output == "-")
 		if parsed.encode.stdout && parsed.encode.outputSet && parsed.encode.output != "-" {
 			return parsed, encodeInvocationError("--stdout and --output are mutually exclusive")
@@ -782,48 +793,28 @@ func writeUsage(writer io.Writer, target helpTarget) {
 }
 
 func writeSchemaFile(path string, payload []byte, force bool) error {
-	info, err := os.Lstat(path)
-	switch {
-	case err == nil:
-		if !info.Mode().IsRegular() {
-			return &outputPreconditionError{message: fmt.Sprintf("output %q is not a regular file", path)}
-		}
-		if !force {
-			return &outputPreconditionError{message: fmt.Sprintf("output %q already exists; use --force to replace it", path)}
-		}
-		return replaceSchemaFile(path, payload)
-	case !errors.Is(err, fs.ErrNotExist):
-		return err
-	default:
-		return createSchemaFile(path, payload)
-	}
+	return writeSchemaFileUsing(path, payload, force, publicationHooks{})
 }
 
-func createSchemaFile(path string, payload []byte) (result error) {
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+type publicationHooks struct {
+	write   func(*os.File, []byte) error
+	sync    func(*os.File) error
+	close   func(*os.File) error
+	verify  func(string, int64, string) error
+	link    func(string, string) error
+	replace func(string, string) error
+}
+
+func replaceSchemaFileUsing(path string, payload []byte, commit func(string, string) error) error {
+	return writeSchemaFileUsing(path, payload, true, publicationHooks{replace: commit})
+}
+
+func writeSchemaFileUsing(path string, payload []byte, force bool, hooks publicationHooks) (result error) {
+	existing, err := inspectOutputDestination(path, force)
 	if err != nil {
-		if errors.Is(err, fs.ErrExist) {
-			return &outputPreconditionError{message: fmt.Sprintf("output %q already exists; use --force to replace it", path)}
-		}
 		return err
 	}
-	defer func() {
-		if result != nil {
-			_ = os.Remove(path)
-		}
-	}()
-	if err := writeAll(file, payload); err != nil {
-		_ = file.Close()
-		return err
-	}
-	return file.Close()
-}
 
-func replaceSchemaFile(path string, payload []byte) (result error) {
-	return replaceSchemaFileUsing(path, payload, os.Rename)
-}
-
-func replaceSchemaFileUsing(path string, payload []byte, commit func(string, string) error) (result error) {
 	directory := filepath.Dir(path)
 	base := filepath.Base(path)
 	temporary, err := os.CreateTemp(directory, "."+base+".tmp-*")
@@ -836,22 +827,266 @@ func replaceSchemaFileUsing(path string, payload []byte, commit func(string, str
 			_ = os.Remove(temporaryPath)
 		}
 	}()
+	closed := false
+	defer func() {
+		if !closed {
+			_ = temporary.Close()
+		}
+	}()
 	if err := temporary.Chmod(0o644); err != nil {
 		_ = temporary.Close()
+		closed = true
 		return err
 	}
-	if err := writeAll(temporary, payload); err != nil {
+	write := hooks.write
+	if write == nil {
+		write = func(file *os.File, data []byte) error { return writeAll(file, data) }
+	}
+	if err := write(temporary, payload); err != nil {
 		_ = temporary.Close()
+		closed = true
 		return err
 	}
-	if err := temporary.Close(); err != nil {
+	sync := hooks.sync
+	if sync == nil {
+		sync = func(file *os.File) error { return file.Sync() }
+	}
+	if err := sync(temporary); err != nil {
+		_ = temporary.Close()
+		closed = true
 		return err
+	}
+	closeFile := hooks.close
+	if closeFile == nil {
+		closeFile = func(file *os.File) error { return file.Close() }
+	}
+	if err := closeFile(temporary); err != nil {
+		_ = temporary.Close()
+		closed = true
+		return err
+	}
+	closed = true
+
+	digest := fmt.Sprintf("%x", sha256.Sum256(payload))
+	verify := hooks.verify
+	if verify == nil {
+		verify = verifyPublishedFile
+	}
+	if err := verify(temporaryPath, int64(len(payload)), digest); err != nil {
+		return fmt.Errorf("verify staged output: %w", err)
+	}
+	stageInfo, err := os.Lstat(temporaryPath)
+	if err != nil {
+		return fmt.Errorf("inspect staged output: %w", err)
+	}
+	if !stageInfo.Mode().IsRegular() {
+		return fmt.Errorf("staged output is not a regular file")
 	}
 
-	if err := commit(temporaryPath, path); err != nil {
-		return err
+	if existing == nil {
+		link := hooks.link
+		if link == nil {
+			link = os.Link
+		}
+		if err := link(temporaryPath, path); err != nil {
+			if errors.Is(err, fs.ErrExist) {
+				return &outputPreconditionError{message: fmt.Sprintf("output %q appeared before publication; use --force to replace it", path)}
+			}
+			return fmt.Errorf("publish new output: %w", err)
+		}
+		committed, err := inspectCommittedOutput(path, stageInfo)
+		if err != nil {
+			return errors.Join(err, rollbackNewOutput(path, stageInfo))
+		}
+		if err := os.Remove(temporaryPath); err != nil {
+			return errors.Join(fmt.Errorf("remove staging link: %w", err), rollbackNewOutput(path, committed))
+		}
+		temporaryPath = ""
+		if err := verify(path, int64(len(payload)), digest); err != nil {
+			return errors.Join(fmt.Errorf("verify published output: %w", err), rollbackNewOutput(path, committed))
+		}
+		return nil
+	}
+
+	current, err := os.Lstat(path)
+	if err != nil || !current.Mode().IsRegular() || !os.SameFile(current, existing) {
+		return fmt.Errorf("output %q changed before replacement", path)
+	}
+	backupPath, err := createOutputBackup(path)
+	if err != nil {
+		return fmt.Errorf("preserve output for rollback: %w", err)
+	}
+	removeBackup := true
+	defer func() {
+		if removeBackup {
+			_ = os.Remove(backupPath)
+		}
+	}()
+	current, err = os.Lstat(path)
+	if err != nil || !current.Mode().IsRegular() || !os.SameFile(current, existing) {
+		return fmt.Errorf("output %q changed while preparing replacement", path)
+	}
+	replace := hooks.replace
+	if replace == nil {
+		replace = os.Rename
+	}
+	if err := replace(temporaryPath, path); err != nil {
+		return fmt.Errorf("replace output: %w", err)
 	}
 	temporaryPath = ""
+	committed, err := inspectPublishedOutput(path)
+	if err != nil {
+		rollbackErr := rollbackReplacedOutput(path, stageInfo, backupPath, existing)
+		removeBackup = rollbackErr == nil
+		return errors.Join(err, rollbackErr)
+	}
+	if err := verify(path, int64(len(payload)), digest); err != nil {
+		rollbackErr := rollbackReplacedOutput(path, committed, backupPath, existing)
+		removeBackup = rollbackErr == nil
+		return errors.Join(fmt.Errorf("verify published output: %w", err), rollbackErr)
+	}
+	if err := os.Remove(backupPath); err != nil {
+		rollbackErr := rollbackReplacedOutput(path, committed, backupPath, existing)
+		removeBackup = rollbackErr == nil
+		return errors.Join(fmt.Errorf("remove rollback backup: %w", err), rollbackErr)
+	}
+	removeBackup = false
+	return nil
+}
+
+func inspectOutputDestination(path string, force bool) (fs.FileInfo, error) {
+	info, err := os.Lstat(path)
+	switch {
+	case err == nil:
+		if info.Mode()&fs.ModeSymlink != 0 || !info.Mode().IsRegular() {
+			return nil, &outputPreconditionError{message: fmt.Sprintf("output %q is not a regular file", path)}
+		}
+		if !force {
+			return nil, &outputPreconditionError{message: fmt.Sprintf("output %q already exists; use --force to replace it", path)}
+		}
+		return info, nil
+	case errors.Is(err, fs.ErrNotExist):
+		return nil, nil
+	default:
+		return nil, err
+	}
+}
+
+func verifyPublishedFile(path string, expectedSize int64, expectedDigest string) error {
+	named, err := os.Lstat(path)
+	if err != nil {
+		return err
+	}
+	if named.Mode()&fs.ModeSymlink != 0 || !named.Mode().IsRegular() {
+		return fmt.Errorf("output is not a regular file")
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	hash := sha256.New()
+	count, readErr := io.Copy(hash, file)
+	opened, statErr := file.Stat()
+	closeErr := file.Close()
+	if readErr != nil {
+		return readErr
+	}
+	if statErr != nil {
+		return statErr
+	}
+	if closeErr != nil {
+		return closeErr
+	}
+	if !opened.Mode().IsRegular() || !os.SameFile(named, opened) {
+		return fmt.Errorf("output changed while it was verified")
+	}
+	current, err := os.Lstat(path)
+	if err != nil || !current.Mode().IsRegular() || !os.SameFile(opened, current) {
+		return fmt.Errorf("output changed after verification")
+	}
+	actualDigest := fmt.Sprintf("%x", hash.Sum(nil))
+	if count != expectedSize || actualDigest != expectedDigest {
+		return fmt.Errorf("output integrity is size %d and SHA-256 %s, want size %d and SHA-256 %s", count, actualDigest, expectedSize, expectedDigest)
+	}
+	return nil
+}
+
+func inspectCommittedOutput(path string, expected fs.FileInfo) (fs.FileInfo, error) {
+	current, err := os.Lstat(path)
+	if err != nil {
+		return nil, fmt.Errorf("inspect published output: %w", err)
+	}
+	if !current.Mode().IsRegular() || !os.SameFile(current, expected) {
+		return nil, fmt.Errorf("published output changed during commit")
+	}
+	return current, nil
+}
+
+func inspectPublishedOutput(path string) (fs.FileInfo, error) {
+	current, err := os.Lstat(path)
+	if err != nil {
+		return nil, fmt.Errorf("inspect published output: %w", err)
+	}
+	if current.Mode()&fs.ModeSymlink != 0 || !current.Mode().IsRegular() {
+		return nil, fmt.Errorf("published output is not a regular file")
+	}
+	return current, nil
+}
+
+func rollbackNewOutput(path string, committed fs.FileInfo) error {
+	current, err := os.Lstat(path)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("inspect new output for rollback: %w", err)
+	}
+	if !current.Mode().IsRegular() || !os.SameFile(current, committed) {
+		return fmt.Errorf("new output changed before rollback and was retained")
+	}
+	if err := os.Remove(path); err != nil {
+		return fmt.Errorf("remove failed new output: %w", err)
+	}
+	return nil
+}
+
+func createOutputBackup(path string) (string, error) {
+	placeholder, err := os.CreateTemp(filepath.Dir(path), "."+filepath.Base(path)+".backup-*")
+	if err != nil {
+		return "", err
+	}
+	backupPath := placeholder.Name()
+	if err := placeholder.Close(); err != nil {
+		_ = os.Remove(backupPath)
+		return "", err
+	}
+	if err := os.Remove(backupPath); err != nil {
+		return "", err
+	}
+	if err := os.Link(path, backupPath); err != nil {
+		return "", err
+	}
+	return backupPath, nil
+}
+
+func rollbackReplacedOutput(path string, committed fs.FileInfo, backupPath string, original fs.FileInfo) error {
+	current, err := os.Lstat(path)
+	if err != nil {
+		return fmt.Errorf("inspect replacement for rollback: %w; original retained at %q", err, backupPath)
+	}
+	if !current.Mode().IsRegular() || !os.SameFile(current, committed) {
+		return fmt.Errorf("replacement changed before rollback; original retained at %q", backupPath)
+	}
+	if err := os.Rename(backupPath, path); err != nil {
+		return fmt.Errorf("restore rollback backup %q: %w", backupPath, err)
+	}
+	restored, err := os.Lstat(path)
+	if err != nil {
+		return fmt.Errorf("verify restored rollback output: %w", err)
+	}
+	if !restored.Mode().IsRegular() || !os.SameFile(restored, original) {
+		return fmt.Errorf("restored rollback output does not match the original")
+	}
 	return nil
 }
 

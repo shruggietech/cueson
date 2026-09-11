@@ -88,6 +88,60 @@ func TestValidateRejectsStructuralViolations(t *testing.T) {
 	}
 }
 
+func TestValidateWebVTTNativeShapeAndSubRipRegression(t *testing.T) {
+	t.Parallel()
+
+	webvtt := representativeWebVTTMap(t)
+	assertMapValid(t, webvtt)
+	assertMapValid(t, representativeMap(t))
+}
+
+func TestValidateRejectsWebVTTNativeShapeViolations(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		mutate func(map[string]any)
+		want   string
+	}{
+		{name: "missing signature raw", mutate: func(doc map[string]any) { delete(webvttRoot(doc), "signature_line_raw") }, want: "signature_line_raw"},
+		{name: "missing block lines", mutate: func(doc map[string]any) { delete(firstWebVTTBlock(doc), "raw_lines") }, want: "raw_lines"},
+		{name: "block embedded line ending", mutate: func(doc map[string]any) { firstWebVTTBlock(doc)["raw_lines"] = []any{"REGION", "id:fred\nwidth:40%"} }, want: "raw_lines"},
+		{name: "region missing data", mutate: func(doc map[string]any) { delete(firstWebVTTBlock(doc), "region") }, want: "region"},
+		{name: "region on note", mutate: func(doc map[string]any) { firstWebVTTBlock(doc)["type"] = "note" }, want: "not"},
+		{name: "missing cue occurrences", mutate: func(doc map[string]any) { delete(webvttCue(doc), "setting_occurrences") }, want: "setting_occurrences"},
+		{name: "empty occurrence raw", mutate: func(doc map[string]any) {
+			webvttCue(doc)["setting_occurrences"].([]any)[0].(map[string]any)["raw"] = ""
+		}, want: "raw"},
+		{name: "valid occurrence empty value", mutate: func(doc map[string]any) {
+			webvttCue(doc)["setting_occurrences"].([]any)[0].(map[string]any)["value"] = ""
+		}, want: "value"},
+		{name: "unknown effective cue setting", mutate: func(doc map[string]any) { webvttCue(doc)["settings"].(map[string]any)["unknown"] = "x" }, want: "unknown"},
+		{name: "missing raw payload lines", mutate: func(doc map[string]any) { delete(webvttCue(doc), "raw_payload_lines") }, want: "raw_payload_lines"},
+		{name: "payload embedded line ending", mutate: func(doc map[string]any) { webvttCue(doc)["raw_payload_lines"] = []any{"bad\nline"} }, want: "raw_payload_lines"},
+		{name: "payload lines empty", mutate: func(doc map[string]any) { webvttCue(doc)["raw_payload_lines"] = []any{} }, want: "raw_payload_lines"},
+		{name: "payload line blank", mutate: func(doc map[string]any) { webvttCue(doc)["raw_payload_lines"] = []any{""} }, want: "raw_payload_lines"},
+		{name: "heuristic speaker", mutate: func(doc map[string]any) {
+			firstCue(doc)["speakers"].([]any)[0].(map[string]any)["origin"] = "heuristic"
+		}, want: "origin"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			doc := representativeWebVTTMap(t)
+			tt.mutate(doc)
+			encoded, err := json.Marshal(doc)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = Validate(encoded)
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("Validate() error = %v, want rejection containing %q", err, tt.want)
+			}
+		})
+	}
+}
+
 func TestValidateRejectsMalformedJSON(t *testing.T) {
 	t.Parallel()
 
@@ -232,13 +286,7 @@ func TestValidateRecognizedFormatsAndMultipleAssets(t *testing.T) {
 	})
 
 	t.Run("webvtt", func(t *testing.T) {
-		doc := representativeMap(t)
-		doc["format"] = "webvtt"
-		doc["format_support"] = envelopeOnlySupport()
-		firstAsset(doc)["file_name"] = "captions.vtt"
-		firstAsset(doc)["media_type"] = "text/vtt"
-		doc["format_data"] = map[string]any{"webvtt": map[string]any{"signature": "WEBVTT", "description": nil, "metadata_lines": []any{}, "blocks": []any{}}}
-		firstCue(doc)["format_data"] = map[string]any{"webvtt": map[string]any{"identifier_raw": nil, "timing_line_raw": "00:00:01.250 --> 00:00:04.200", "settings_raw": "", "settings": map[string]any{}, "raw_payload": "Hello, world."}}
+		doc := representativeWebVTTMap(t)
 		assertMapValid(t, doc)
 	})
 
@@ -254,6 +302,50 @@ func envelopeOnlySupport() map[string]any {
 		"status": "envelope_only", "ingest_supported": false, "render_supported": false,
 		"restore_supported": true, "ocr_required_for_semantic_output": false,
 	}
+}
+
+func representativeWebVTTMap(t *testing.T) map[string]any {
+	t.Helper()
+	doc := representativeMap(t)
+	doc["format"] = "webvtt"
+	doc["format_support"] = map[string]any{"status": "experimental", "ingest_supported": true, "render_supported": true, "restore_supported": true, "ocr_required_for_semantic_output": false}
+	firstAsset(doc)["file_name"] = "captions.vtt"
+	firstAsset(doc)["media_type"] = "text/vtt"
+	doc["format_data"] = map[string]any{"webvtt": map[string]any{
+		"signature": "WEBVTT", "signature_line_raw": "WEBVTT Example", "description": "Example", "metadata_lines": []any{"Kind: captions"},
+		"blocks": []any{map[string]any{
+			"type": "region", "source_order": float64(0), "raw": "REGION\nid:fred", "raw_lines": []any{"REGION", "id:fred"},
+			"region": map[string]any{"settings_raw": "id:fred", "settings": map[string]any{"id": "fred"}, "setting_occurrences": []any{map[string]any{"raw": "id:fred", "name": "id", "value": "fred", "recognized": true, "valid": true}}},
+		}},
+	}}
+	cue := firstCue(doc)
+	cue["source_order"] = float64(1)
+	cue["source_identifier"] = "intro"
+	cue["payload"] = map[string]any{"raw_text": "<v Narrator>Hello.</v>", "plain_text": "Hello.", "lines": []any{"<v Narrator>Hello.</v>"}}
+	cue["speakers"] = []any{map[string]any{"name": "Narrator", "origin": "native"}}
+	cue["format_data"] = map[string]any{"webvtt": map[string]any{
+		"identifier_raw": "intro", "timing_line_raw": "00:01.250 --> 00:04.200 align:start mystery:opaque", "settings_raw": "align:start mystery:opaque", "settings": map[string]any{"align": "start"},
+		"setting_occurrences": []any{
+			map[string]any{"raw": "align:start", "name": "align", "value": "start", "recognized": true, "valid": true},
+			map[string]any{"raw": "mystery:opaque", "name": "mystery", "value": "opaque", "recognized": false, "valid": false},
+			map[string]any{"raw": ":x", "name": "", "value": "x", "recognized": false, "valid": false},
+			map[string]any{"raw": "bare", "name": "bare", "value": "", "recognized": false, "valid": false},
+		},
+		"raw_payload": "<v Narrator>Hello.</v>", "raw_payload_lines": []any{"<v Narrator>Hello.</v>"},
+	}}
+	return doc
+}
+
+func webvttRoot(doc map[string]any) map[string]any {
+	return doc["format_data"].(map[string]any)["webvtt"].(map[string]any)
+}
+
+func firstWebVTTBlock(doc map[string]any) map[string]any {
+	return webvttRoot(doc)["blocks"].([]any)[0].(map[string]any)
+}
+
+func webvttCue(doc map[string]any) map[string]any {
+	return firstCue(doc)["format_data"].(map[string]any)["webvtt"].(map[string]any)
 }
 
 func TestCanonicalProjectNamesAreLowerSnakeCase(t *testing.T) {

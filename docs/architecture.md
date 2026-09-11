@@ -30,7 +30,7 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 
 Dependencies point inward toward stable, dependency-light contracts. `internal/model` does not depend on CLI, source, codecs, conversion, or OCR. Codec availability is the authority for native ingest and render capability; schema recognition alone is not.
 
-Current source implements `internal/codec` as a capability registry plus shared detection/decoding and native SubRip parser/renderer. `internal/convert` and `internal/ocr` remain reserved future ownership.
+Current source implements `internal/codec` as a capability registry plus bounded detection/decoding and native SubRip and WebVTT parser/renderers. `internal/convert` and `internal/ocr` remain reserved future ownership.
 
 ## Source authority and restoration
 
@@ -46,11 +46,11 @@ Before opening any output, restoration builds the complete destination plan and 
 
 ## Common model and native fidelity
 
-The common model exposes timing and semantic content without requiring consumers to decode source bytes or parse a subtitle grammar. Format-native data remains adjacent wherever normalization would otherwise lose information. Current SubRip encode constructs both views from one bounded exact source acquisition.
+The common model exposes timing and semantic content without requiring consumers to decode source bytes or parse a subtitle grammar. Format-native data remains adjacent wherever normalization would otherwise lose information. Current SubRip and WebVTT encode workflows construct both views from one bounded exact source acquisition.
 
 Unknown, malformed, unsupported, or non-representable source information is preserved when practical and reported through deterministic diagnostics. Strict conversion refuses known loss. A successful operation never silently discards information covered by the active contract.
 
-The dedicated [SubRip](formats/srt.md) page defines the experimental native grammar, diagnostics, fixtures, ingest, and rendering contract. [WebVTT](formats/webvtt.md) remains envelope-only; conversion remains deferred.
+The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages define their experimental native grammars, diagnostics, fixtures, ingest, and rendering contracts. Cross-format conversion remains deferred.
 
 ## Version and schema relationship
 
@@ -90,7 +90,7 @@ Repository-authored fixture metadata and normalized JSON expectations remain UTF
 
 `internal/testutil` remains domain-neutral to avoid import cycles and incompatible format-specific assertion dialects. It compares semantic JSON, ordered diagnostics, exact bytes, integrity values, and explicit timestamp outcomes using fixture IDs and logical surface names. Cross-package tests under `internal/conformance` own projections from the Cueson model and source reports, prove exact restoration from the accepted seed, exercise parse, structure, semantics, and integrity rejection stages, and reject explicit native, slash, backslash, and JSON-escaped local identifiers.
 
-The embedded `internal/schema/testdata/representative.cueson.json` remains the canonical schema contract example owned by `internal/schema`; it is intentionally outside the root manifest rather than an undeclared corpus payload. Initial fuzz boundaries exercise complete Cue JSON decoding, canonical source-envelope base64 integrity, and safe basenames with callback guards and no restoration writes. Native SRT and WebVTT grammar coverage remains downstream codec work. S006 supplies the hosted platform automation described below.
+The embedded `internal/schema/testdata/representative.cueson.json` remains the canonical schema contract example owned by `internal/schema`; it is intentionally outside the root manifest rather than an undeclared corpus payload. Generic fuzz boundaries exercise complete Cue JSON decoding, canonical source-envelope base64 integrity, and safe basenames with callback guards and no restoration writes. Native SubRip and WebVTT packages add format-specific parsing, rendering, and parser-cycle fuzz boundaries. S006 supplies the hosted platform automation described below.
 
 ## Hosted delivery automation
 
@@ -160,5 +160,6 @@ The `Repository text` CI job runs both standalone modules. Historical Spec Kit a
 | [#27](https://github.com/shruggietech/cueson/issues/27) | Authorized v0.0.0 tag and GitHub Release publication, independent public-download verification, and released-state reconciliation |
 | [#30](https://github.com/shruggietech/cueson/issues/30) | Capability-based codec registry, bounded source acquisition, detection, decoding, diagnostics, and development schema/model transition |
 | [#31](https://github.com/shruggietech/cueson/issues/31) | Native SubRip parsing, exact-envelope encode, canonical rendering, CLI workflows, fixtures, and round-trip verification |
+| [#32](https://github.com/shruggietech/cueson/issues/32) | Native WebVTT parsing, exact-envelope encode, canonical rendering, CLI workflows, fixtures, diagnostics, and round-trip verification |
 
-WebVTT native ingest/render and cross-format conversion are deferred. Current SubRip capability is experimental until the v1 acceptance gate is complete; this document does not authorize placeholder commands or premature stable claims.
+Cross-format conversion remains deferred. Current SubRip and WebVTT capabilities are experimental until the v1 acceptance gate is complete; this document does not authorize placeholder commands or premature stable claims.

@@ -1,0 +1,29 @@
+WEBVTT - Cueson complete fixture
+Kind: captions
+Language: en
+
+REGION
+id:fred
+width:40%
+lines:3
+regionanchor:0%,100%
+viewportanchor:10%,90%
+scroll:up
+
+STYLE
+::cue(.important) { color: yellow }
+
+NOTE retained comment
+second note line
+
+X-CUSTOM
+value:retained
+
+intro
+00:00:00.500 --> 00:00:03.000 region:fred line:10%,center position:20%,line-left size:60% align:start vertical:rl
+<v Alice><c.important>Hello &amp; <ruby>world<rt>wɜːld</rt></ruby></c>
+<00:00:02.000>again
+   
+
+00:00:02.500 --> 00:00:04.000 align:end
+<v Bob>rolling caption
