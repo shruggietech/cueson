@@ -69,9 +69,9 @@
 - [x] T024 [US2] Fix candidate version `1.0.0` and immutable schema packaging while retaining the six-target, four-member, pure-Go, snapshot-only, publication-disabled contract in `.goreleaser.yaml`
 - [x] T025 [US2] Convert `.github/workflows/release-proof.yml` to v1 candidate mode, upload one accepted bundle, and fan that exact bundle to read-only native packaged-binary smoke jobs on Ubuntu, Windows, and macOS without tag, credential, secret, signing, release, identity-token, or production authority
 - [x] T026 [US2] Run release-verifier tests, race, vet, policy checks, actionlint, GoReleaser validation, and exact repository schema and legal-file identity checks against the final candidate configuration
-- [ ] T027 [US2] Commit the complete implementation locally, build the six-target candidate with pinned GoReleaser and Syft from that clean exact commit, and run `scripts/release-verify` without development mode including host execution
-- [ ] T028 [US2] Inspect `dist/release-evidence.json` and confirm exact revision, version, intended tag, schema and legal digests, six archives, six software bills of materials, six checksums, complete target digests, host execution, and `published: false`
-- [ ] T029 [US2] Reproduce the release proof from a second clean checkout of the same exact commit, compare stable archive, checksum, schema, legal, and target semantics, and retain truthful non-byte-reproducibility boundaries for Syft documents
+- [x] T027 [US2] Commit the complete implementation locally, build the six-target candidate with pinned GoReleaser and Syft from that clean exact commit, and run `scripts/release-verify` without development mode including host execution
+- [x] T028 [US2] Inspect `dist/release-evidence.json` and confirm exact revision, version, intended tag, schema and legal digests, six archives, six software bills of materials, six checksums, complete target digests, host execution, and `published: false`
+- [x] T029 [US2] Reproduce the release proof from a second clean checkout of the same exact commit, compare stable archive, checksum, schema, legal, and target semantics, and retain truthful non-byte-reproducibility boundaries for Syft documents
 
 **Checkpoint**: User Story 2 is independently complete with exact clean-commit evidence and no protected publication action.
 
@@ -83,8 +83,8 @@
 
 **Independent Test**: Run every local and hosted gate, inspect issue and Project state, and confirm the pull request is green, fully reviewed, configured to close issue #37, and otherwise non-publishing.
 
-- [ ] T030 [US3] Run the complete local quickstart including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, mojibake, fixture, and clean-checkout candidate proof from `specs/S019-prepare-v1-release-candidate/quickstart.md`
-- [ ] T031 [US3] Run Spec Kit convergence against `specs/S019-prepare-v1-release-candidate/` and append and execute any required remediation tasks until convergence is clean
+- [x] T030 [US3] Run the complete local quickstart including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, mojibake, fixture, and clean-checkout candidate proof from `specs/S019-prepare-v1-release-candidate/quickstart.md`
+- [x] T031 [US3] Run Spec Kit convergence against `specs/S019-prepare-v1-release-candidate/` and append and execute any required remediation tasks until convergence is clean
 - [ ] T032 [US3] Push `codex/S019-prepare-v1-release-candidate`, publish the formatted official pull request with `Closes #37`, and verify the rendered GitHub body
 - [ ] T033 [US3] Move issue #37 to Stage `PR review`, retain Slice `S019`, and verify default Status remains empty in `cueson Delivery`
 - [ ] T034 [US3] Monitor every current-head CI, CodeQL, release-proof, native packaged-smoke, pull-request-policy, Codex, security, and review result; address every round-one finding and resolve threads only after remediation
