@@ -2945,7 +2945,7 @@ The checklist below is the foundation closeout ledger. Checked items are backed 
 - [x] the GitHub Project is configured with the required `Stage` and `Slice` fields;
 - [x] PR issue-link enforcement exists;
 - [x] eligible non-Dependabot pull requests receive automatic first-round Codex review;
-- [x] automation can request at most one second Codex review after first-round findings are resolved;
+- [ ] automation can request at most one second Codex review after first-round findings are resolved;
 - [x] GitHub body publication readback is part of the agent contract;
 - [x] GitHub code-quality and security settings are enabled as applicable;
 - [x] protected-default-branch ruleset is configured;
