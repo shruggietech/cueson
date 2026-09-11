@@ -2915,7 +2915,7 @@ Agents working on Cueson MUST:
 
 ## v0.0.0 foundation completion gate
 
-The checklist below is the foundation closeout ledger. Checked items are backed by the [README](../README.md), [architecture](architecture.md), [schema contract](schema.md), [CLI contract](cli.md), [repository controls](repository-controls.md), [release verification](release-verification.md), [project-management contract](project-management.md), [constitution](../.specify/memory/constitution.md), executable tests, and merged issue evidence. The unchecked review-automation item records the known GitHub Actions HTTP 403 limitation; it must remain visible until a later approved change either proves that hosted path or revises the gate. This ledger describes an unpublished candidate, not a public release.
+The checklist below is the foundation closeout ledger. Checked items are backed by the [README](../README.md), [architecture](architecture.md), [schema contract](schema.md), [CLI contract](cli.md), [repository controls](repository-controls.md), [release verification](release-verification.md), [project-management contract](project-management.md), [constitution](../.specify/memory/constitution.md), executable tests, and merged issue evidence. The unchecked review-automation item records the known GitHub Actions HTTP 403 limitation; it must remain visible until a later approved change either proves that hosted path or revises the gate. The foundation was published as v0.0.0 with envelope-only capability; the ledger does not imply native subtitle codecs or production schema hosting.
 
 - [x] the `shruggietech/cueson` repository exists;
 - [x] the Go module builds;
@@ -2937,7 +2937,7 @@ The checklist below is the foundation closeout ledger. Checked items are backed 
 - [x] `AGENTS.md` contains the human-only final merge rule and single-use override semantics;
 - [x] `AGENTS.md` defines the post-merge housekeeping protocol;
 - [x] `AGENTS.md` contains the pre-push/pre-release halt;
-- [x] `CHANGELOG.md` records the candidate under `[Unreleased]` without a premature released-version heading;
+- [x] `CHANGELOG.md` records v0.0.0 under its dated released-version heading and retains a fresh `[Unreleased]` section;
 - [x] `LICENSE` contains Apache License 2.0 and repository metadata uses `Apache-2.0`;
 - [x] `NOTICE` exists;
 - [x] `scripts/github-format` exists and supports `-stdin`;
@@ -2952,6 +2952,9 @@ The checklist below is the foundation closeout ledger. Checked items are backed 
 - [x] automatic head-branch deletion after merge is enabled;
 - [x] cross-platform build jobs prove Windows, macOS, and Linux compilation;
 - [x] release configuration exists but does not auto-publish without authorization;
+- [x] annotated tag `v0.0.0` identifies the exact accepted default-branch release commit;
+- [x] the public v0.0.0 GitHub Release contains the exact six archives, six matching SPDX JSON SBOMs, and one checksum manifest;
+- [x] independent public-download verification matches every published byte with accepted default-branch evidence;
 - [x] repository-authored text files are UTF-8 without BOM, with line endings governed by `.gitattributes`;
 - [x] no generated Cue JSON field stores an original filesystem path;
 - [x] all Cueson-owned schema keys conform to the lowercase `snake_case` rule;

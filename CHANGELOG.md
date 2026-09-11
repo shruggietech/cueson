@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Reconciled repository release status and verification records after publishing the immutable v0.0.0 tag and the exact thirteen-asset GitHub Release from accepted default-branch evidence.
+
 ## [0.0.0] - 2026-09-10
 
 ### Added

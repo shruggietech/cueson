@@ -124,7 +124,7 @@ Repository Actions default to read permission, pull-request approval remains dis
 
 One organization-administrator bypass on the repository-owned ruleset preserves recovery from a misconfigured or renamed gate. It is not ordinary delivery authority: pull requests still follow the bounded review protocol, and final merge remains a human decision.
 
-## Non-publishing release proof
+## Release proof and publication boundary
 
 The repository-root GoReleaser v2 configuration is intentionally snapshot-only. It builds `cueson` with `CGO_ENABLED=0` for Windows, macOS, and Linux on amd64 and arm64, injects the `internal/version` release override with a verifier-readable marker consumed by the public version surface, uses commit-derived timestamps and trimmed build paths, packages the byte-identical canonical schema plus legal files, emits one SHA-256 archive manifest, and asks a pinned Syft command to generate one target-bound SPDX JSON SBOM from each packaged binary. Each SBOM is named for its corresponding archive. Generating from the binary avoids leaking Syft's temporary archive-extraction paths. `release.disable: true` prevents the same configuration from becoming a publishing path when snapshot mode is omitted.
 
@@ -132,9 +132,9 @@ The standalone `scripts/release-verify` module is the release-candidate acceptan
 
 The `Release proof` workflow runs repository code through an ordinary unprivileged pull-request event with read-only repository permission, exact build-tool versions, no secrets, and no publication token. Its short-lived GitHub Actions artifact is review evidence rather than a GitHub Release asset. This is distinct from S006's temporary cross-build binaries and does not change the current required-check ruleset automatically.
 
-S009 proves candidate packaging but does not complete official release lockstep because no release tag exists. A real release, tag, signature, attestation, release asset, immutable release-schema copy, release note, or production-domain publication requires a later specification and explicit operator authority. Syft SBOMs are checked for stable meaning and source binding; they are not claimed byte-for-byte reproducible while upstream output includes variable timestamps and document identifiers.
+S009 established candidate packaging, and S012 admitted the immutable schema and bound the accepted post-squash candidate to `b294a6952c8bd041d852c502f5d7206c0b58edd6`. S013 used explicit operator authority to create annotated tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0), publish the [thirteen-asset GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0), and verify every public file against the accepted evidence. Syft SBOMs are checked for stable meaning and source binding; they are not claimed byte-for-byte reproducible across rebuilds while upstream output includes variable timestamps and document identifiers.
 
-The runnable artifact contract remains in [release verification](release-verification.md). The broader [release process](release-process.md) separates candidate preparation from protected tag, GitHub Release, immutable schema-copy, milestone, and production actions.
+The runnable artifact and public-byte evidence remain in [release verification](release-verification.md). The broader [release process](release-process.md) separates candidate preparation and authorized GitHub publication from milestone closure, signatures, attestations, public schema hosting, and production actions.
 
 ## Maintained documentation verification
 
@@ -155,5 +155,8 @@ The `Repository text` CI job runs both standalone modules. Historical Spec Kit a
 | [#10](https://github.com/shruggietech/cueson/issues/10) | Active repository-owned `main` rules, verified required checks, Actions defaults, action-source restrictions, and recovery bypass |
 | [#11](https://github.com/shruggietech/cueson/issues/11) | Non-publishing six-target candidate packaging, checksums, SBOM generation, and standalone artifact verification |
 | [#12](https://github.com/shruggietech/cueson/issues/12) | Canonical documentation completion, offline link verification, and v0.0.0 milestone-readiness evidence |
+| [#23](https://github.com/shruggietech/cueson/issues/23) | Complete official brand-kit retention, offline integrity verification, and repository brand integration |
+| [#25](https://github.com/shruggietech/cueson/issues/25) | Immutable v0.0.0 schema admission, dated release records, and exact post-squash default-branch candidate proof |
+| [#27](https://github.com/shruggietech/cueson/issues/27) | Authorized v0.0.0 tag and GitHub Release publication, independent public-download verification, and released-state reconciliation |
 
 SRT and WebVTT codecs, model-driven render, and cross-format conversion are deliberately deferred to later implementation slices. This document does not authorize placeholder commands or premature capability claims.
