@@ -76,6 +76,15 @@ func TestConvertStrictReturnsCompleteReportBeforeRendering(t *testing.T) {
 	}
 }
 
+func TestConvertStrictRejectsWebVTTNULReplacement(t *testing.T) {
+	document := conversionTestDocument(t, "WEBVTT\n\n00:00.000 --> 00:01.000\nA\x00B\n", "webvtt")
+	result, err := Convert(context.Background(), document, "subrip", Options{Strict: true})
+	var strict *StrictLossError
+	if !errors.As(err, &strict) || len(result.Bytes) != 0 || len(result.LossReport.Losses) != 1 || result.LossReport.Losses[0].Code != LossCodeNULDegraded {
+		t.Fatalf("strict NUL result = %#v, error = %v", result, err)
+	}
+}
+
 func TestConvertRejectsFatalAndSameFormatBoundaries(t *testing.T) {
 	document := conversionTestDocument(t, "1\n00:00:01,000 --> 00:00:01,000\nx\n", "subrip")
 	result, err := Convert(context.Background(), document, "webvtt", Options{})

@@ -102,6 +102,27 @@ func TestTranslateWebVTTPayloadDecodesSafeAngleCharacterReferences(t *testing.T)
 	}
 }
 
+func TestTranslateWebVTTPayloadAccountsForEveryNUL(t *testing.T) {
+	got, err := translateWebVTTPayload("A\x00B <x\x00>", 0, 1000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Text != "A\ufffdB <x\ufffd>" || strings.Join(issueCodes(got.Issues), ",") != LossCodeNULDegraded+","+LossCodeNULDegraded {
+		t.Fatalf("NUL translation = %#v", got)
+	}
+}
+
+func TestTranslateWebVTTPayloadHandlesManySafeAngleReferences(t *testing.T) {
+	raw := strings.Repeat("&lt;x&gt;", 10000)
+	got, err := translateWebVTTPayload(raw, 0, 1000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Text != strings.Repeat("<x>", 10000) || len(got.Issues) != 0 {
+		t.Fatalf("large safe angle translation length = %d, issues = %#v", len(got.Text), got.Issues)
+	}
+}
+
 func issueCodes(issues []payloadIssue) []string {
 	codes := make([]string, len(issues))
 	for index := range issues {

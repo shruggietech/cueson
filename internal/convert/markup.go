@@ -84,9 +84,9 @@ func translateWebVTTPayload(raw string, cueStart, cueEnd int64) (payloadTranslat
 	cursor := 0
 	for index := range tokens {
 		token := &tokens[index]
-		text := translateWebVTTText(raw[cursor:token.start], &issues, occurrences)
-		output.WriteString(semanticText(text))
-		plain.WriteString(semanticText(text))
+		text := replaceWebVTTNUL(translateWebVTTText(raw[cursor:token.start], &issues, occurrences), &issues, occurrences)
+		output.WriteString(text)
+		plain.WriteString(text)
 		switch {
 		case token.timestamp:
 			appendPayloadIssue(&issues, occurrences, LossCodeWebVTTInlineTimingOmitted, KindOmitted, "inline_timestamp")
@@ -111,13 +111,13 @@ func translateWebVTTPayload(raw string, cueStart, cueEnd int64) (payloadTranslat
 				}
 			}
 		default:
-			literal := semanticText(token.raw)
+			literal := replaceWebVTTNUL(token.raw, &issues, occurrences)
 			output.WriteString(literal)
 			plain.WriteString(literal)
 		}
 		cursor = token.end
 	}
-	tail := semanticText(translateWebVTTText(raw[cursor:], &issues, occurrences))
+	tail := replaceWebVTTNUL(translateWebVTTText(raw[cursor:], &issues, occurrences), &issues, occurrences)
 	output.WriteString(tail)
 	plain.WriteString(tail)
 	translated := output.String()
@@ -348,16 +348,13 @@ func translateWebVTTText(value string, issues *[]payloadIssue, occurrences map[s
 	pairSubRipMarkup(markup)
 	var output strings.Builder
 	cursor := 0
+	markupIndex := 0
 	for _, entity := range angleEntities {
 		output.WriteString(decoded[cursor:entity.start])
-		ambiguous := false
-		for index := range markup {
-			token := markup[index]
-			if token.matched && entity.start < token.end && entity.end > token.start {
-				ambiguous = true
-				break
-			}
+		for markupIndex < len(markup) && (!markup[markupIndex].matched || markup[markupIndex].end <= entity.start) {
+			markupIndex++
 		}
+		ambiguous := markupIndex < len(markup) && markup[markupIndex].matched && entity.start < markup[markupIndex].end && entity.end > markup[markupIndex].start
 		if ambiguous {
 			output.WriteString(entity.raw)
 			appendPayloadIssue(issues, occurrences, LossCodeWebVTTEntityAmbiguous, KindAmbiguous, "character_reference")
@@ -367,6 +364,22 @@ func translateWebVTTText(value string, issues *[]payloadIssue, occurrences map[s
 		cursor = entity.end
 	}
 	output.WriteString(decoded[cursor:])
+	return output.String()
+}
+
+func replaceWebVTTNUL(value string, issues *[]payloadIssue, occurrences map[string]int) string {
+	if !strings.ContainsRune(value, '\x00') {
+		return value
+	}
+	var output strings.Builder
+	for _, character := range value {
+		if character != '\x00' {
+			output.WriteRune(character)
+			continue
+		}
+		output.WriteRune('\ufffd')
+		appendPayloadIssue(issues, occurrences, LossCodeNULDegraded, KindDegraded, "nul")
+	}
 	return output.String()
 }
 
