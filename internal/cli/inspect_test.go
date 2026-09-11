@@ -394,6 +394,21 @@ func TestRunInspectSanitizesFailureDiagnostics(t *testing.T) {
 			t.Fatalf("missing-input diagnostic leaked caller path in stderr %q", stderr.String())
 		}
 	})
+
+	t.Run("deterministic path precondition", func(t *testing.T) {
+		t.Parallel()
+		path := filepath.Join(t.TempDir(), "PRIVATE:BAD.srt")
+		var stdout bytes.Buffer
+		var stderr bytes.Buffer
+		diagnostics := newDiagnosticWriter(&stderr, globalOptions{})
+		status := runInspect(context.Background(), inspectOptions{input: path, format: "auto", json: true}, &stdout, &stderr, diagnostics, inspectHelp)
+		if status != ExitInvocation || stdout.Len() != 0 || !strings.Contains(stderr.String(), "inspect: input path or size precondition failed") || !strings.Contains(stderr.String(), "Usage:") {
+			t.Fatalf("runInspect() = %d, stdout = %q, stderr = %q", status, stdout.String(), stderr.String())
+		}
+		if strings.Contains(stderr.String(), path) || strings.Contains(stderr.String(), filepath.Base(path)) {
+			t.Fatalf("path-precondition diagnostic leaked caller path in stderr %q", stderr.String())
+		}
+	})
 }
 
 type inspectErrorWriter struct{}

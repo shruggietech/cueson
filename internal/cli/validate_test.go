@@ -206,19 +206,24 @@ func TestRunValidateRejectsMalformedUnsupportedOversizedAndNonRegularInputs(t *t
 	}
 
 	for _, test := range []struct {
-		name    string
-		options validateOptions
-		want    string
+		name       string
+		options    validateOptions
+		wantStatus int
+		want       string
 	}{
-		{name: "explicit malformed native", options: validateOptions{input: malformedNative, format: "srt"}, want: "SubRip"},
-		{name: "unsupported auto input", options: validateOptions{input: unsupported, format: "auto"}, want: "format is unknown"},
-		{name: "oversized input", options: validateOptions{input: oversized, format: "auto"}, want: "byte limit"},
-		{name: "non-regular input", options: validateOptions{input: directory, format: "auto"}, want: "capture input"},
+		{name: "explicit malformed native", options: validateOptions{input: malformedNative, format: "srt"}, wantStatus: ExitRuntimeFailure, want: "SubRip"},
+		{name: "unsupported auto input", options: validateOptions{input: unsupported, format: "auto"}, wantStatus: ExitRuntimeFailure, want: "format is unknown"},
+		{name: "oversized input", options: validateOptions{input: oversized, format: "auto"}, wantStatus: ExitInvocation, want: "input path or size precondition failed"},
+		{name: "non-regular input", options: validateOptions{input: directory, format: "auto"}, wantStatus: ExitInvocation, want: "input path or size precondition failed"},
+		{name: "unsafe basename", options: validateOptions{input: filepath.Join(directory, "PRIVATE:BAD.srt"), format: "auto"}, wantStatus: ExitInvocation, want: "input path or size precondition failed"},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			status, stderr := runValidateForTest(context.Background(), test.options, globalOptions{})
-			if status != ExitRuntimeFailure || !strings.Contains(stderr, test.want) {
-				t.Fatalf("runValidate() = (%d, %q), want runtime error containing %q", status, stderr, test.want)
+			if status != test.wantStatus || !strings.Contains(stderr, test.want) {
+				t.Fatalf("runValidate() = (%d, %q), want status %d containing %q", status, stderr, test.wantStatus, test.want)
+			}
+			if test.wantStatus == ExitInvocation && !strings.Contains(stderr, "Usage:") {
+				t.Fatalf("runValidate() invocation stderr = %q, want usage", stderr)
 			}
 		})
 	}

@@ -256,6 +256,11 @@ func runInspect(ctx context.Context, options inspectOptions, stdout, stderr io.W
 			writeUsage(stderr, usage)
 			return ExitInvocation
 		}
+		if source.IsCapturePrecondition(err) {
+			diagnostics.write(diagnosticError, "inspect: input path or size precondition failed")
+			writeUsage(stderr, usage)
+			return ExitInvocation
+		}
 		diagnostics.write(diagnosticError, "inspect: input acquisition failed")
 		return ExitRuntimeFailure
 	}

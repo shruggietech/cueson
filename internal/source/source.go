@@ -6,8 +6,10 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -48,6 +50,35 @@ type Captured struct {
 	Bytes []byte
 }
 
+type capturePreconditionError struct {
+	cause error
+}
+
+func (err *capturePreconditionError) Error() string {
+	if err == nil || err.cause == nil {
+		return "source capture precondition failed"
+	}
+	return err.cause.Error()
+}
+
+func (err *capturePreconditionError) Unwrap() error {
+	if err == nil {
+		return nil
+	}
+	return err.cause
+}
+
+// IsCapturePrecondition reports whether capture rejected a deterministic path
+// or size condition before accepting the input for processing.
+func IsCapturePrecondition(err error) bool {
+	var precondition *capturePreconditionError
+	return errors.As(err, &precondition)
+}
+
+func newCapturePrecondition(err error) error {
+	return &capturePreconditionError{cause: err}
+}
+
 // CaptureContext acquires a regular source file once, records metadata before
 // reading content, and returns the same bounded bytes stored in the envelope.
 func CaptureContext(ctx context.Context, path string, options CaptureOptions) (Captured, error) {
@@ -55,14 +86,17 @@ func CaptureContext(ctx context.Context, path string, options CaptureOptions) (C
 		return Captured{}, fmt.Errorf("capture source canceled: %w", err)
 	}
 	if path == "" {
-		return Captured{}, fmt.Errorf("source path must not be empty")
+		return Captured{}, newCapturePrecondition(fmt.Errorf("source path must not be empty"))
 	}
 	name := filepath.Base(path)
 	if err := validateSafeBasename(name); err != nil {
-		return Captured{}, err
+		return Captured{}, newCapturePrecondition(err)
 	}
 	file, err := openRegularNoFollow(path, false)
 	if err != nil {
+		if captureOpenPrecondition(path, err) {
+			return Captured{}, newCapturePrecondition(fmt.Errorf("open source %q: %w", path, err))
+		}
 		return Captured{}, fmt.Errorf("open source %q: %w", path, err)
 	}
 	defer file.Close()
@@ -85,10 +119,10 @@ func captureContextFromOpenFile(ctx context.Context, file *os.File, name string,
 		return Captured{}, fmt.Errorf("inspect source before read: %w", err)
 	}
 	if !before.Mode().IsRegular() {
-		return Captured{}, fmt.Errorf("source is not a regular file")
+		return Captured{}, newCapturePrecondition(fmt.Errorf("source is not a regular file"))
 	}
 	if before.Size() > maxBytes {
-		return Captured{}, fmt.Errorf("source size %d exceeds the %d-byte limit", before.Size(), maxBytes)
+		return Captured{}, newCapturePrecondition(fmt.Errorf("source size %d exceeds the %d-byte limit", before.Size(), maxBytes))
 	}
 
 	var exact bytes.Buffer
@@ -99,7 +133,7 @@ func captureContextFromOpenFile(ctx context.Context, file *os.File, name string,
 		return Captured{}, fmt.Errorf("read source bytes: %w", err)
 	}
 	if count > maxBytes {
-		return Captured{}, fmt.Errorf("source size exceeds the %d-byte limit", maxBytes)
+		return Captured{}, newCapturePrecondition(fmt.Errorf("source size exceeds the %d-byte limit", maxBytes))
 	}
 	after, err := file.Stat()
 	if err != nil {
@@ -129,6 +163,14 @@ func captureContextFromOpenFile(ctx context.Context, file *os.File, name string,
 		DataBase64: base64.StdEncoding.EncodeToString(payload),
 	}
 	return Captured{Asset: asset, Bytes: append([]byte(nil), payload...)}, nil
+}
+
+func captureOpenPrecondition(path string, openErr error) bool {
+	if errors.Is(openErr, fs.ErrNotExist) || errors.Is(openErr, fs.ErrPermission) {
+		return true
+	}
+	info, err := os.Lstat(path)
+	return err == nil && (info.Mode()&os.ModeSymlink != 0 || !info.Mode().IsRegular())
 }
 
 // TimestampKind identifies one filesystem timestamp.

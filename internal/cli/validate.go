@@ -98,6 +98,11 @@ func runValidate(ctx context.Context, options validateOptions, stderr io.Writer,
 			writeUsage(stderr, usage)
 			return ExitInvocation
 		}
+		if source.IsCapturePrecondition(err) {
+			diagnostics.write(diagnosticError, "validate: input path or size precondition failed")
+			writeUsage(stderr, usage)
+			return ExitInvocation
+		}
 		diagnostics.write(diagnosticError, fmt.Sprintf("validate: capture input: %v", err))
 		return ExitRuntimeFailure
 	}

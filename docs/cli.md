@@ -147,7 +147,7 @@ cueson [global options] validate [options] INPUT
 
 Auto mode recognizes valid Cue JSON first. JSON-looking or `.json`-named invalid content remains a Cue JSON failure rather than falling through to a native grammar. Cue JSON validation covers UTF-8 JSON parsing, the embedded schema, model semantics, source-envelope integrity, and executable/schema lockstep. Native validation covers bounded capture, content-first selection, decoding, the installed grammar, model semantics, and generated-envelope integrity.
 
-Validation creates no file and writes no stdout payload. Ordered warnings and one successful-validation diagnostic use stderr. Quiet suppresses the success diagnostic, silent also suppresses warnings, and errors remain visible. Invalid invocation and deterministic missing-input preconditions exit 2; accepted-input parsing, schema, semantic, integrity, capability, cancellation, and runtime failures exit 1.
+Validation creates no file and writes no stdout payload. Ordered warnings and one successful-validation diagnostic use stderr. Quiet suppresses the success diagnostic, silent also suppresses warnings, and errors remain visible. Invalid invocation and deterministic input-path or size preconditions exit 2; accepted-input parsing, schema, semantic, integrity, capability, cancellation, and runtime failures exit 1.
 
 ## `inspect`
 
