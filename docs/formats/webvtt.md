@@ -64,3 +64,19 @@ WebVTT-to-SubRip conversion preserves cue order, integer-millisecond timing, ove
 ## Explicit exclusions
 
 Current development source does not provide stable v1 support declarations, schema publication to `cueson.io`, or any claim that rendered or converted output is byte-identical to the captured source. Validation, privacy-bounded inspection, and static shell completion are available but do not change those stability or publication boundaries.
+
+## Conformance evidence index
+
+These stable row identifiers are paired with governed fixtures and executable tests by `testdata/conformance-matrix.json`.
+
+| Row ID | Contract surface |
+|---|---|
+| `vtt-detection-utf8` | Boundary-valid signature detection, BOM handling, and UTF-8-only decoding. |
+| `vtt-header-block-order` | Signature description, header metadata, native block kinds, raw preservation, and total source order. |
+| `vtt-timing-identifiers` | Cue identifiers, timestamp forms, interval validity, overflow, overlap, and decreasing starts. |
+| `vtt-settings-regions` | Ordered cue and REGION setting occurrences plus valid effective values. |
+| `vtt-markup-entities-tokens` | Raw payload, readable derived text, entities, voices, language, ruby, and inline timing. |
+| `vtt-source-restoration` | Source-envelope integrity and exact byte restoration across accepted inputs. |
+| `vtt-rendering` | Canonical deterministic model rendering and parser-renderer agreement. |
+| `vtt-conversion` | Loss-free and lossy SubRip projection, complete loss reports, and strict refusal. |
+| `vtt-hostile-bounds` | Deterministic parser item, occurrence, markup, entity, and diagnostic ceilings for hostile inputs. |

@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/shruggietech/cueson/internal/model"
 )
 
 func TestDetectAndDecodeUTF8Boundary(t *testing.T) {
@@ -152,5 +154,20 @@ func TestParsePreservesNULInNativeFieldsAndReplacesOnlyDerivedText(t *testing.T)
 	}
 	if strings.ContainsRune(result.Cues[0].Payload.PlainText, '\x00') || !strings.Contains(result.Cues[0].Payload.PlainText, "\ufffd") {
 		t.Fatalf("plain_text = %q", result.Cues[0].Payload.PlainText)
+	}
+}
+
+func TestParseRejectsOccurrenceAndDiagnosticAmplification(t *testing.T) {
+	t.Parallel()
+
+	settings := strings.Repeat("x:y ", model.MaxItemOccurrences+1)
+	input := "WEBVTT\n\n00:00.000 --> 00:01.000 " + settings + "\nx\n"
+	if _, err := Parse(input); err == nil || !strings.Contains(err.Error(), "webvtt_occurrence_limit_exceeded") {
+		t.Fatalf("setting limit error = %v", err)
+	}
+
+	input = "WEBVTT\n\n" + strings.Repeat("unknown\n\n", model.MaxDiagnostics+1) + "00:00.000 --> 00:01.000\nx\n"
+	if _, err := Parse(input); err == nil || !strings.Contains(err.Error(), "webvtt_diagnostic_limit_exceeded") {
+		t.Fatalf("diagnostic limit error = %v", err)
 	}
 }

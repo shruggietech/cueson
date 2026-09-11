@@ -167,14 +167,14 @@ func runRender(ctx context.Context, options renderOptions, stdout io.Writer, std
 		diagnostics.write(diagnosticError, "operation canceled")
 		return ExitRuntimeFailure
 	}
-	payload, err := os.ReadFile(options.input)
+	payload, err := source.ReadFileContext(ctx, options.input)
 	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			diagnostics.write(diagnosticError, fmt.Sprintf("input %q does not exist", options.input))
+		if source.IsCapturePrecondition(err) {
+			diagnostics.write(diagnosticError, "render: input does not satisfy path or size requirements")
 			writeUsage(stderr, renderHelp)
 			return ExitInvocation
 		}
-		diagnostics.write(diagnosticError, fmt.Sprintf("render: read Cue JSON: %v", err))
+		diagnostics.write(diagnosticError, "render: Cue JSON acquisition failed")
 		return ExitRuntimeFailure
 	}
 	document, err := schema.Decode(payload)
@@ -232,7 +232,10 @@ func workflowRegistry(encoding string) (*codec.Registry, error) {
 		if document.Format != string(codec.FormatSubRip) {
 			return codec.RenderResult{}, fmt.Errorf("document format %q cannot be rendered as SubRip", document.Format)
 		}
-		observations := convert.SubRipRenderDiagnostics(document)
+		observations, err := convert.SubRipRenderDiagnostics(document)
+		if err != nil {
+			return codec.RenderResult{}, err
+		}
 		if options.Strict && len(observations) > 0 {
 			return codec.RenderResult{}, fmt.Errorf("strict SubRip render blocked %d non-representable structured field set(s); first: %s", len(observations), observations[0].Message)
 		}

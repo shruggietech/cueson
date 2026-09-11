@@ -13,11 +13,13 @@ import (
 	"github.com/shruggietech/cueson/internal/model"
 )
 
+const maxFuzzInputBytes = 64 << 10
+
 func FuzzSubRipConversionCycle(f *testing.F) {
 	f.Add("1\n00:00:01,000 --> 00:00:02,000\n<b>x & y</b>\n")
 	f.Add("7\n00:00:01,000 --> 00:00:02,000 X1:1 X2:2 Y1:3 Y2:4\n<font>x</font>\n")
 	f.Fuzz(func(t *testing.T, input string) {
-		if len(input) > 1<<20 {
+		if len(input) > maxFuzzInputBytes {
 			t.Skip()
 		}
 		if _, err := subrip.Parse(input, subrip.Options{}); err != nil {
@@ -32,7 +34,7 @@ func FuzzWebVTTConversionCycle(f *testing.F) {
 	f.Add("WEBVTT\n\n00:00.000 --> 00:01.000\n<b>x &amp; y</b>\n")
 	f.Add("WEBVTT note\nKind: captions\n\nNOTE x\n\n00:00.000 --> 00:01.000 align:start\n<v A>x\n")
 	f.Fuzz(func(t *testing.T, input string) {
-		if len(input) > 1<<20 {
+		if len(input) > maxFuzzInputBytes {
 			t.Skip()
 		}
 		if _, err := webvtt.Parse(input); err != nil {
@@ -48,7 +50,7 @@ func FuzzStructuredConversion(f *testing.F) {
 	f.Add(`C:\Users\operator\secret.srt`, uint8(1))
 	f.Add("text\n\nmore", uint8(2))
 	f.Fuzz(func(t *testing.T, payload string, mutation uint8) {
-		if len(payload) > 1<<20 || strings.ContainsRune(payload, '\r') {
+		if len(payload) > maxFuzzInputBytes || strings.ContainsRune(payload, '\r') {
 			t.Skip()
 		}
 		document := conversionTestDocument(t, "1\n00:00:01,000 --> 00:00:02,000\ntext\n", "subrip")

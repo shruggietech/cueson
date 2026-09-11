@@ -1,10 +1,10 @@
 # Cue JSON Schema Baseline
 
-**Status:** Ratified v0.0.0 implementation baseline
+**Status:** v1 contract candidate at development identity 0.1.0, with an immutable published v0.0.0 baseline
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document defines the current development schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), and native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32). Issue [#33](https://github.com/shruggietech/cueson/issues/33) adds conversion without changing this persisted contract. The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable.
+This document defines the current development schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32), and conversion behavior added by issue [#33](https://github.com/shruggietech/cueson/issues/33). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable and now includes machine-readable annotations for schema-aware consumers.
 
 ## Dialect, identity, and version
 
@@ -16,15 +16,29 @@ The schema artifact uses JSON Schema Draft 2020-12. Three similar-looking fields
 
 The canonical Cueson URI remains an identifier until `cueson.io` separately serves public schema files. Current development consumers resolve 0.1.0 through the repository or executable embedding. Published v0.0.0 consumers use the immutable [v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0). Cueson never emits a mutable `latest` alias.
 
+Users can discover the embedded contract version with `cueson schema --version` and emit the exact embedded schema with `cueson schema` or `cueson schema --output PATH`. A Cue JSON instance identifies its target contract through `$schema` and `schema_version`; consumers must evaluate both against an exact supported version rather than infer compatibility from the producer software version.
+
 The v0.0.0 schema is released and immutable at [`schema/releases/v0.0.0/cueson.schema.json`](https://github.com/shruggietech/cueson/blob/v0.0.0/schema/releases/v0.0.0/cueson.schema.json), with SHA-256 `d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975`. The evolving canonical source has advanced to 0.1.0 and does not alter that released file, tag, or archive. Production publication remains separately governed by the [release process](release-process.md).
 
 Before v1.0.0, a documented breaking contract change requires a minor-version increase and patch releases remain non-breaking. Additive compatible changes may occur in a minor release. At and after v1.0.0, breaking changes require a major-version increase. Official software and schema versions remain equal; a third-party producer version is independent from the schema version it targets.
+
+S018 freezes the implemented CLI and Cue JSON behavior as the v1 contract candidate while deliberately retaining development identity 0.1.0. It does not create an immutable v1.0.0 schema, tag, release, hosted schema, or production alias. The later release-candidate transaction owns the coordinated software and schema version transition after this contract passes review.
+
+## Machine-readable annotations
+
+The canonical development schema gives every Cueson-owned root property and every consumer-facing property reachable through `$defs` a specific `description`. Public object, union, and constrained-scalar definitions have titles suitable for generated reference documentation. Examples cover every root semantic area, enumeration, format-native structure, and non-obvious constrained value such as identifiers, versions, safe basenames, digests, base64 payloads, timestamps, timings, and diagnostics.
+
+`title`, `description`, and `examples` are non-normative JSON Schema annotations. They explain the contract but never broaden an `enum`, relax a pattern, satisfy a missing required property, override a conditional branch, replace model semantics, or weaken source-integrity checks. Validation keywords, the semantic model, and source-envelope integrity remain authoritative when an annotation is incomplete or a consumer does not process annotations.
+
+Examples attached to a property or definition are valid for that exact schema fragment. Complete root examples additionally pass structural validation, semantic validation, and source-reference checks. Examples contain portable basenames and public identifiers only; they contain no original filesystem path, username, hostname, drive, mount, or other local machine identity. The examples under the safe-basename exclusion enum show values rejected by the enclosing basename contract, while examples on `safe_basename` itself show valid portable values.
+
+Schema-aware tooling should present a property's own description together with the title and description of any referenced definition. It must not treat example values as defaults or assume an example exhausts allowed values. In particular, a producer `version` example identifies producer software and does not assert the Cue JSON schema version.
 
 ## Naming and root shape
 
 Cueson-owned property names and enum values use lowercase `snake_case`. Standards-defined JSON Schema keywords such as `$schema`, `$id`, `$defs`, `oneOf`, and `additionalProperties` retain their standard spellings.
 
-The v0.0.0 root contract contains these semantic areas:
+The current development root contract contains these semantic areas:
 
 ```text
 $schema
@@ -45,7 +59,7 @@ The exact JSON Schema defines required versus optional properties. The common cu
 
 ## Initial format keys
 
-The initial canonical schema and `format_data` keys are:
+The canonical schema and `format_data` keys are:
 
 ```text
 subrip

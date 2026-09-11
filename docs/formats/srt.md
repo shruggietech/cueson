@@ -53,7 +53,7 @@ The parser scans physical CRLF, LF, and lone-CR lines and uses an explicit block
 
 ## Detection and diagnostics
 
-Explicit `--format srt` selects SubRip. In auto mode, valid content grammar outranks `.srt` extension evidence. A content/extension disagreement emits a warning. Ambiguous input, unknown format, invalid encoding, and malformed source fail without output. Selecting `vtt` identifies a schema-recognized format whose native decoder is unavailable rather than calling it unknown.
+Explicit `--format srt` selects SubRip. In auto mode, valid content grammar outranks `.srt` extension evidence. A content/extension disagreement emits a warning. Ambiguous input, unknown format, invalid encoding, and malformed source fail without output. Explicit `vtt` selection uses the installed WebVTT decoder and remains distinct from SubRip detection.
 
 Diagnostics are ordered deterministically by source position and code. Stdout mode contains only Cue JSON or rendered SubRip; diagnostics use stderr and follow global quiet/silent rules.
 
@@ -71,4 +71,19 @@ SubRip-to-WebVTT conversion preserves cue order, integer-millisecond timing, ove
 
 ## Fixture and stability boundary
 
-The manifest-governed `testdata/subrip/` and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. Stable support still requires completion of the broader v1 milestone.
+The manifest-governed `testdata/fixtures/subrip/`, `testdata/malformed/subrip/`, `testdata/fuzz/`, and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. Stable support still requires completion of the broader v1 milestone.
+
+## Conformance evidence index
+
+These stable row identifiers are paired with governed fixtures and executable tests by `testdata/conformance-matrix.json`.
+
+| Row ID | Contract surface |
+|---|---|
+| `srt-detection-encoding` | Content-first format selection, Unicode detection, explicit legacy decoding, BOM behavior, and line-ending observations. |
+| `srt-sequence-order` | Sequence variants, missing separators, diagnostics, and retained source order. |
+| `srt-timing-coordinates` | Timestamp grammar, interval validity, overflow rejection, and complete coordinate groups. |
+| `srt-payload-markup-speaker` | Ordered payload lines, raw and plain text, recognized tags, literal unknown syntax, and derived speakers. |
+| `srt-source-restoration` | Source-envelope integrity and exact byte restoration across accepted inputs. |
+| `srt-rendering` | Canonical deterministic model rendering and parser-renderer agreement. |
+| `srt-conversion` | Loss-free and lossy WebVTT projection, complete loss reports, and strict refusal. |
+| `srt-hostile-bounds` | Deterministic parser item, occurrence, and diagnostic ceilings for hostile inputs. |

@@ -1,8 +1,8 @@
 # Contributing to Cueson
 
-Cueson is an unreleased v0.0.0 foundation candidate. There is no supported installation package or public binary release, and native SubRip/WebVTT ingest, model-driven rendering, and conversion are not implemented. Development and verification use the Go 1.25 source tree.
+Cueson has a published, immutable v0.0.0 envelope-only foundation and a v0.1.0 development source tree implementing the complete v1-bound SubRip, WebVTT, conversion, validation, inspection, and completion workflows. The stable v1 release has not been prepared or published. Development and verification require Go 1.25.0 or newer.
 
-Start with an issue so the intended outcome, dependencies, and verification can be agreed before implementation begins. Read the [architecture](docs/architecture.md), [CLI contract](docs/cli.md), and [schema baseline](docs/schema.md) before changing their surfaces. Format work must also begin with the dedicated [SubRip](docs/formats/srt.md) or [WebVTT](docs/formats/webvtt.md) boundary, which distinguishes current envelope-only behavior from planned v1 work. Read the [brand guide](docs/brand.md) before referencing, updating, or distributing Cueson identity assets.
+Start with an issue so the intended outcome, dependencies, and verification can be agreed before implementation begins. Read the [architecture](docs/architecture.md), [CLI contract](docs/cli.md), [schema contract](docs/schema.md), and [compatibility contract](docs/compatibility.md) before changing public surfaces. Format or conversion work must also begin with the dedicated [SubRip](docs/formats/srt.md), [WebVTT](docs/formats/webvtt.md), and [conversion](docs/conversion.md) contracts. Read the [brand guide](docs/brand.md) before referencing, updating, or distributing Cueson identity assets.
 
 ## Development workflow
 
@@ -25,6 +25,8 @@ go -C scripts/docs-verify run . -repo ../..
 go -C scripts/brand-verify test -count=1 ./...
 go -C scripts/brand-verify run . -repo ../..
 ```
+
+The documentation verifier requires registered README workflows, checks maintained contract markers and stale claims, and links every machine-readable conformance row to its format guide. Root-module CLI tests execute the registered workflows with governed inputs, temporary destinations, and captured streams; do not point documentation tests at writable fixture destinations.
 
 The official brand archive and extracted kit are immutable byte-protected inputs. Do not format, optimize, repair, rename, or edit imported files in place. A revised official kit requires a separately specified versioned acquisition and a regenerated Cueson import manifest.
 

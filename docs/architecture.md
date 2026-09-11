@@ -8,7 +8,7 @@ This document is the architecture of record for current development. The [projec
 
 ## Public and internal boundaries
 
-Cueson's approved public v1 contracts are the `cueson` command-line interface and Cue JSON Schema. Go packages remain under `internal/` and make no public compatibility promise until a separate specification approves a library API.
+Cueson's approved public v1 contracts are the `cueson` command-line interface and Cue JSON Schema. Go packages remain under `internal/` and make no public compatibility promise until a separate specification approves a library API. The maintained [compatibility contract](compatibility.md) defines version, format-state, platform, fidelity, and release boundaries for those surfaces.
 
 The executable entry point under `cmd/cueson` is a minimal operating-system adapter. It passes context, arguments, standard input, standard output, and standard error to `internal/cli`, then exits with the returned status. Business and format packages do not import the CLI package.
 
@@ -142,7 +142,7 @@ The runnable artifact and public-byte evidence remain in [release verification](
 
 ## Maintained documentation verification
 
-The standalone `scripts/docs-verify` module verifies the canonical documentation inventory and resolves maintained local file, directory, image, and heading-fragment links without network access. It remains outside the shipped product module and performs no repair. `scripts/github-format` separately owns repository text encoding, line endings, mojibake rejection, Markdown source layout, and GitHub publication formatting.
+The standalone `scripts/docs-verify` module verifies the canonical documentation inventory, registered README workflow set, required schema and compatibility markers, stale capability claims, conformance-row linkage, and maintained local file, directory, image, and heading-fragment links without network access. It remains outside the shipped product module and performs no repair. Root-module CLI tests execute the registered workflows with governed fixtures, temporary destinations, and captured streams. `scripts/github-format` separately owns repository text encoding, line endings, mojibake rejection, Markdown source layout, and GitHub publication formatting.
 
 The `Repository text` CI job runs both standalone modules. Historical Spec Kit artifacts remain formatter-governed delivery evidence but are not part of the maintained-document link graph.
 
@@ -166,5 +166,9 @@ The `Repository text` CI job runs both standalone modules. Historical Spec Kit a
 | [#31](https://github.com/shruggietech/cueson/issues/31) | Native SubRip parsing, exact-envelope encode, canonical rendering, CLI workflows, fixtures, and round-trip verification |
 | [#32](https://github.com/shruggietech/cueson/issues/32) | Native WebVTT parsing, exact-envelope encode, canonical rendering, CLI workflows, fixtures, diagnostics, and round-trip verification |
 | [#33](https://github.com/shruggietech/cueson/issues/33) | Bidirectional SubRip and WebVTT conversion, deterministic loss accounting, strict rejection, CLI workflows, and cross-format verification |
+| [#34](https://github.com/shruggietech/cueson/issues/34) | Complete validation, privacy-bounded inspection, static completion, generated help, and shared validated-input workflows |
+| [#35](https://github.com/shruggietech/cueson/issues/35) | Whole-system conformance, hostile-input bounds, corpus and fuzz evidence, platform proof, and release-readiness hardening |
+| [#36](https://github.com/shruggietech/cueson/issues/36) | Executable installation, CLI, format, conversion, compatibility, security, and release-transition documentation |
+| [#41](https://github.com/shruggietech/cueson/issues/41) | Consumer-facing canonical-schema descriptions, titles, examples, and automated annotation coverage |
 
-Current SubRip, WebVTT, and cross-format conversion capabilities are experimental until the v1 acceptance gate is complete; this document does not authorize placeholder commands or premature stable claims.
+The v1-bound SubRip, WebVTT, and cross-format contracts are frozen by S018 while development documents continue to declare `experimental` capability at version 0.1.0. A later release-candidate slice must change software, schema, and capability identity together before any `stable` or published v1 claim. This document does not authorize placeholder commands, release publication, public schema hosting, or premature stable claims.

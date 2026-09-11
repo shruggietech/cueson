@@ -7,6 +7,7 @@ import (
 
 	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/codec/webvtt"
+	"github.com/shruggietech/cueson/internal/model"
 )
 
 type payloadTranslation struct {
@@ -19,6 +20,19 @@ type payloadIssue struct {
 	Kind       Kind
 	Feature    string
 	Occurrence int
+}
+
+type payloadIssueCollector struct {
+	issues   []payloadIssue
+	overflow bool
+}
+
+func (collector *payloadIssueCollector) append(issue payloadIssue) {
+	if len(collector.issues) >= MaxLosses {
+		collector.overflow = true
+		return
+	}
+	collector.issues = append(collector.issues, issue)
 }
 
 type markupToken struct {
@@ -38,16 +52,19 @@ func translateSubRipPayload(raw string) (payloadTranslation, error) {
 	if strings.ContainsRune(raw, '\r') {
 		return payloadTranslation{}, fmt.Errorf("SubRip payload contains a non-physical carriage return")
 	}
+	if err := validateTranslationComplexity(raw, "SubRip"); err != nil {
+		return payloadTranslation{}, err
+	}
 	tokens := scanSubRipMarkup(raw)
 	pairSubRipMarkup(tokens)
-	issues := make([]payloadIssue, 0)
+	collector := payloadIssueCollector{issues: make([]payloadIssue, 0)}
 	var output strings.Builder
 	cursor := 0
 	fontOccurrence := 0
 	nulOccurrence := 0
 	for index := range tokens {
 		token := &tokens[index]
-		writeWebVTTText(&output, raw[cursor:token.start], &issues, &nulOccurrence)
+		writeWebVTTText(&output, raw[cursor:token.start], &collector, &nulOccurrence)
 		switch {
 		case token.matched && (token.name == "b" || token.name == "i" || token.name == "u"):
 			if token.closing {
@@ -57,42 +74,48 @@ func translateSubRipPayload(raw string) (payloadTranslation, error) {
 			}
 		case token.matched && token.name == "font":
 			if !token.closing {
-				issues = append(issues, payloadIssue{Code: LossCodeSubRipFontDegraded, Kind: KindDegraded, Occurrence: fontOccurrence})
+				collector.append(payloadIssue{Code: LossCodeSubRipFontDegraded, Kind: KindDegraded, Occurrence: fontOccurrence})
 				fontOccurrence++
 			}
 		default:
-			writeWebVTTText(&output, token.raw, &issues, &nulOccurrence)
+			writeWebVTTText(&output, token.raw, &collector, &nulOccurrence)
 		}
 		cursor = token.end
 	}
-	writeWebVTTText(&output, raw[cursor:], &issues, &nulOccurrence)
+	writeWebVTTText(&output, raw[cursor:], &collector, &nulOccurrence)
 	translated := output.String()
-	translated, issues = replaceEmptyLines(translated, raw, "<i></i>", issues)
-	return payloadTranslation{Text: translated, Issues: issues}, nil
+	translated = replaceEmptyLines(translated, raw, "<i></i>", &collector)
+	if collector.overflow {
+		return payloadTranslation{}, fmt.Errorf("SubRip payload produces more than %d conversion losses", MaxLosses)
+	}
+	return payloadTranslation{Text: translated, Issues: collector.issues}, nil
 }
 
 func translateWebVTTPayload(raw string, cueStart, cueEnd int64) (payloadTranslation, error) {
 	if strings.ContainsRune(raw, '\r') {
 		return payloadTranslation{}, fmt.Errorf("WebVTT payload contains a non-physical carriage return")
 	}
+	if err := validateTranslationComplexity(raw, "WebVTT"); err != nil {
+		return payloadTranslation{}, err
+	}
 	tokens := scanWebVTTMarkup(raw, cueStart, cueEnd)
 	pairMarkup(tokens, true)
-	issues := make([]payloadIssue, 0)
+	collector := payloadIssueCollector{issues: make([]payloadIssue, 0)}
 	occurrences := make(map[string]int)
 	var output strings.Builder
 	var plain strings.Builder
 	cursor := 0
 	for index := range tokens {
 		token := &tokens[index]
-		text := replaceWebVTTNUL(translateWebVTTText(raw[cursor:token.start], &issues, occurrences), &issues, occurrences)
+		text := replaceWebVTTNUL(translateWebVTTText(raw[cursor:token.start], &collector, occurrences), &collector, occurrences)
 		output.WriteString(text)
 		plain.WriteString(text)
 		switch {
 		case token.timestamp:
-			appendPayloadIssue(&issues, occurrences, LossCodeWebVTTInlineTimingOmitted, KindOmitted, "inline_timestamp")
+			appendPayloadIssue(&collector, occurrences, LossCodeWebVTTInlineTimingOmitted, KindOmitted, "inline_timestamp")
 		case token.matched && (token.name == "b" || token.name == "i" || token.name == "u"):
 			if token.classes && !token.closing {
-				appendPayloadIssue(&issues, occurrences, LossCodeWebVTTMarkupDegraded, KindDegraded, "class")
+				appendPayloadIssue(&collector, occurrences, LossCodeWebVTTMarkupDegraded, KindDegraded, "class")
 			}
 			if token.closing {
 				output.WriteString("</" + token.name + ">")
@@ -107,25 +130,38 @@ func translateWebVTTPayload(raw string, cueStart, cueEnd int64) (payloadTranslat
 				}[token.name]
 				if code != "" {
 					kind := KindDegraded
-					appendPayloadIssue(&issues, occurrences, code, kind, token.name)
+					appendPayloadIssue(&collector, occurrences, code, kind, token.name)
 				}
 			}
 		default:
-			literal := replaceWebVTTNUL(token.raw, &issues, occurrences)
+			literal := replaceWebVTTNUL(token.raw, &collector, occurrences)
 			output.WriteString(literal)
 			plain.WriteString(literal)
 		}
 		cursor = token.end
 	}
-	tail := replaceWebVTTNUL(translateWebVTTText(raw[cursor:], &issues, occurrences), &issues, occurrences)
+	tail := replaceWebVTTNUL(translateWebVTTText(raw[cursor:], &collector, occurrences), &collector, occurrences)
 	output.WriteString(tail)
 	plain.WriteString(tail)
 	translated := output.String()
-	translated, issues = replaceEmptyLines(translated, plain.String(), "<u></u>", issues)
+	translated = replaceEmptyLines(translated, plain.String(), "<u></u>", &collector)
+	if collector.overflow {
+		return payloadTranslation{}, fmt.Errorf("WebVTT payload produces more than %d conversion losses", MaxLosses)
+	}
 	if subrip.PlainText(translated) != plain.String() {
 		return payloadTranslation{}, fmt.Errorf("WebVTT payload cannot be represented without SubRip markup reinterpretation")
 	}
-	return payloadTranslation{Text: translated, Issues: issues}, nil
+	return payloadTranslation{Text: translated, Issues: collector.issues}, nil
+}
+
+func validateTranslationComplexity(raw, format string) error {
+	if strings.Count(raw, "\n") >= model.MaxItemOccurrences {
+		return fmt.Errorf("%s payload contains more than %d physical lines", format, model.MaxItemOccurrences)
+	}
+	if strings.Count(raw, "<") > model.MaxItemOccurrences || strings.Count(raw, "&") > model.MaxItemOccurrences {
+		return fmt.Errorf("%s payload contains more than %d markup or entity occurrences", format, model.MaxItemOccurrences)
+	}
+	return nil
 }
 
 func scanSubRipMarkup(raw string) []markupToken {
@@ -282,7 +318,7 @@ func pairSubRipMarkup(tokens []markupToken) {
 	}
 }
 
-func writeWebVTTText(output *strings.Builder, value string, issues *[]payloadIssue, nulOccurrence *int) {
+func writeWebVTTText(output *strings.Builder, value string, collector *payloadIssueCollector, nulOccurrence *int) {
 	for _, character := range value {
 		switch character {
 		case '&':
@@ -293,7 +329,7 @@ func writeWebVTTText(output *strings.Builder, value string, issues *[]payloadIss
 			output.WriteString("&gt;")
 		case '\x00':
 			output.WriteRune('\ufffd')
-			*issues = append(*issues, payloadIssue{Code: LossCodeNULDegraded, Kind: KindDegraded, Occurrence: *nulOccurrence})
+			collector.append(payloadIssue{Code: LossCodeNULDegraded, Kind: KindDegraded, Occurrence: *nulOccurrence})
 			*nulOccurrence++
 		default:
 			output.WriteRune(character)
@@ -301,7 +337,7 @@ func writeWebVTTText(output *strings.Builder, value string, issues *[]payloadIss
 	}
 }
 
-func translateWebVTTText(value string, issues *[]payloadIssue, occurrences map[string]int) string {
+func translateWebVTTText(value string, collector *payloadIssueCollector, occurrences map[string]int) string {
 	type entitySpan struct {
 		start   int
 		end     int
@@ -357,7 +393,7 @@ func translateWebVTTText(value string, issues *[]payloadIssue, occurrences map[s
 		ambiguous := markupIndex < len(markup) && markup[markupIndex].matched && entity.start < markup[markupIndex].end && entity.end > markup[markupIndex].start
 		if ambiguous {
 			output.WriteString(entity.raw)
-			appendPayloadIssue(issues, occurrences, LossCodeWebVTTEntityAmbiguous, KindAmbiguous, "character_reference")
+			appendPayloadIssue(collector, occurrences, LossCodeWebVTTEntityAmbiguous, KindAmbiguous, "character_reference")
 		} else {
 			output.WriteString(entity.decoded)
 		}
@@ -367,7 +403,7 @@ func translateWebVTTText(value string, issues *[]payloadIssue, occurrences map[s
 	return output.String()
 }
 
-func replaceWebVTTNUL(value string, issues *[]payloadIssue, occurrences map[string]int) string {
+func replaceWebVTTNUL(value string, collector *payloadIssueCollector, occurrences map[string]int) string {
 	if !strings.ContainsRune(value, '\x00') {
 		return value
 	}
@@ -378,28 +414,28 @@ func replaceWebVTTNUL(value string, issues *[]payloadIssue, occurrences map[stri
 			continue
 		}
 		output.WriteRune('\ufffd')
-		appendPayloadIssue(issues, occurrences, LossCodeNULDegraded, KindDegraded, "nul")
+		appendPayloadIssue(collector, occurrences, LossCodeNULDegraded, KindDegraded, "nul")
 	}
 	return output.String()
 }
 
-func replaceEmptyLines(translated, semantic, placeholder string, issues []payloadIssue) (string, []payloadIssue) {
+func replaceEmptyLines(translated, semantic, placeholder string, collector *payloadIssueCollector) string {
 	lines := strings.Split(translated, "\n")
 	semanticLines := strings.Split(semantic, "\n")
 	emptyOccurrence := 0
 	for index := range lines {
 		if lines[index] == "" && index < len(semanticLines) && semanticLines[index] == "" {
 			lines[index] = placeholder
-			issues = append(issues, payloadIssue{Code: LossCodePayloadLineDegraded, Kind: KindDegraded, Occurrence: emptyOccurrence})
+			collector.append(payloadIssue{Code: LossCodePayloadLineDegraded, Kind: KindDegraded, Occurrence: emptyOccurrence})
 			emptyOccurrence++
 		}
 	}
-	return strings.Join(lines, "\n"), issues
+	return strings.Join(lines, "\n")
 }
 
-func appendPayloadIssue(issues *[]payloadIssue, occurrences map[string]int, code string, kind Kind, feature string) {
+func appendPayloadIssue(collector *payloadIssueCollector, occurrences map[string]int, code string, kind Kind, feature string) {
 	occurrence := occurrences[code]
-	*issues = append(*issues, payloadIssue{Code: code, Kind: kind, Feature: feature, Occurrence: occurrence})
+	collector.append(payloadIssue{Code: code, Kind: kind, Feature: feature, Occurrence: occurrence})
 	occurrences[code] = occurrence + 1
 }
 

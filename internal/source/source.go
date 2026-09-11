@@ -79,6 +79,68 @@ func newCapturePrecondition(err error) error {
 	return &capturePreconditionError{cause: err}
 }
 
+// ReadFileContext reads one regular file through the same bounded, no-follow,
+// change-detecting boundary used by native source capture. It does not derive
+// or retain source-envelope metadata.
+func ReadFileContext(ctx context.Context, path string) ([]byte, error) {
+	return readFileContextWithLimit(ctx, path, MaxCaptureBytes)
+}
+
+func readFileContextWithLimit(ctx context.Context, path string, maxBytes int64) ([]byte, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("read input: nil context")
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, fmt.Errorf("read input canceled: %w", err)
+	}
+	if maxBytes < 0 {
+		return nil, fmt.Errorf("input byte limit must not be negative")
+	}
+	if path == "" {
+		return nil, newCapturePrecondition(fmt.Errorf("input path must not be empty"))
+	}
+	if err := validateSafeBasename(filepath.Base(path)); err != nil {
+		return nil, newCapturePrecondition(err)
+	}
+	file, err := openRegularNoFollow(path, false)
+	if err != nil {
+		if captureOpenPrecondition(path, err) {
+			return nil, newCapturePrecondition(fmt.Errorf("open input: %w", err))
+		}
+		return nil, fmt.Errorf("open input: %w", err)
+	}
+	defer file.Close()
+
+	before, err := file.Stat()
+	if err != nil {
+		return nil, fmt.Errorf("inspect input before read: %w", err)
+	}
+	if !before.Mode().IsRegular() {
+		return nil, newCapturePrecondition(fmt.Errorf("input is not a regular file"))
+	}
+	if before.Size() > maxBytes {
+		return nil, newCapturePrecondition(fmt.Errorf("input exceeds the %d-byte limit", maxBytes))
+	}
+
+	var exact bytes.Buffer
+	limited := io.LimitReader(contextReader{ctx: ctx, reader: file}, maxBytes+1)
+	count, err := io.Copy(&exact, limited)
+	if err != nil {
+		return nil, fmt.Errorf("read input bytes: %w", err)
+	}
+	if count > maxBytes {
+		return nil, newCapturePrecondition(fmt.Errorf("input exceeds the %d-byte limit", maxBytes))
+	}
+	after, err := file.Stat()
+	if err != nil {
+		return nil, fmt.Errorf("inspect input after read: %w", err)
+	}
+	if !os.SameFile(before, after) || before.Size() != count || after.Size() != count || !before.ModTime().Equal(after.ModTime()) {
+		return nil, fmt.Errorf("input changed while it was being read")
+	}
+	return append([]byte(nil), exact.Bytes()...), nil
+}
+
 // CaptureContext acquires a regular source file once, records metadata before
 // reading content, and returns the same bounded bytes stored in the envelope.
 func CaptureContext(ctx context.Context, path string, options CaptureOptions) (Captured, error) {

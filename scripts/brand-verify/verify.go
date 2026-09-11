@@ -498,11 +498,11 @@ func validatePortablePath(value string) error {
 			return errors.New("components must not end in a dot or space")
 		}
 		if strings.ContainsAny(component, `<>:"|?*`) {
-			return errors.New("Windows-reserved path characters are not allowed")
+			return errors.New("windows-reserved path characters are not allowed")
 		}
 		base := strings.ToUpper(strings.SplitN(component, ".", 2)[0])
 		if windowsReservedName(base) {
-			return fmt.Errorf("Windows-reserved name %q is not allowed", component)
+			return fmt.Errorf("windows-reserved name %q is not allowed", component)
 		}
 	}
 	return nil

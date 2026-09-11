@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "formats": [
+    {
+      "format": "srt",
+      "rows": [
+        {
+          "row_id": "srt-detection-encoding",
+          "description": "Content-first detection and supported Unicode or explicit legacy decoding remain deterministic.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "subrip/encoding-line-endings"},
+            {"kind": "render_test", "reference": "internal/codec/subrip:TestEncodingAndLineEndingFixturesPreserveExactCapture"},
+            {"kind": "fuzz_target", "reference": "internal/codec:FuzzFormatSelection"}
+          ]
+        },
+        {
+          "row_id": "srt-sequence-order",
+          "description": "Sequence variants and missing separators preserve source order with deterministic diagnostics.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "subrip/grammar-variants"},
+            {"kind": "render_test", "reference": "internal/codec/subrip:TestGovernedSubRipFixtures"},
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"}
+          ]
+        },
+        {
+          "row_id": "srt-timing-coordinates",
+          "description": "Timestamps and complete coordinates are accepted while malformed or reversed intervals fail.",
+          "evidence": [
+            {"kind": "malformed_fixture", "reference": "subrip/reversed-time"},
+            {"kind": "malformed_fixture", "reference": "subrip/incomplete-coordinates"},
+            {"kind": "render_test", "reference": "internal/codec/subrip:TestParseTimecodeLineRejectsMalformedValues"},
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParseTimecodeLine"}
+          ]
+        },
+        {
+          "row_id": "srt-payload-markup-speaker",
+          "description": "Payload lines remain raw while formatting and speaker observations stay derived.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "subrip/grammar-variants"},
+            {"kind": "render_test", "reference": "internal/codec/subrip:TestPlainTextRemovesOnlyDocumentedTags"},
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzPlainText"}
+          ]
+        },
+        {
+          "row_id": "srt-source-restoration",
+          "description": "Every accepted source remains byte-identical through the source envelope and exact restore.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "source-envelope/basic-lf"},
+            {"kind": "render_test", "reference": "internal/conformance:TestAcceptedSourceEnvelopeConformance"},
+            {"kind": "platform_test", "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"}
+          ]
+        },
+        {
+          "row_id": "srt-rendering",
+          "description": "Canonical model-driven SubRip rendering is deterministic and reparses safely.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "subrip/grammar-variants"},
+            {"kind": "render_test", "reference": "internal/codec/subrip:TestRenderCanonicalSubRip"},
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"}
+          ]
+        },
+        {
+          "row_id": "srt-conversion",
+          "description": "SubRip to WebVTT conversion is deterministic, complete in loss reporting, and strict when lossy.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "conversion/srt-loss-free"},
+            {"kind": "conversion_test", "reference": "internal/convert:TestSubRipCompatibilityMatrixAccountsForEveryLossyFixtureSemantic"},
+            {"kind": "fuzz_target", "reference": "internal/convert:FuzzSubRipConversionCycle"}
+          ]
+        },
+        {
+          "row_id": "srt-hostile-bounds",
+          "description": "Malformed grammar and amplified parser observations reject without truncation or panic.",
+          "evidence": [
+            {"kind": "malformed_fixture", "reference": "subrip/reversed-time"},
+            {"kind": "render_test", "reference": "internal/codec/subrip:TestParseRejectsOccurrenceAndDiagnosticAmplification"},
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"}
+          ]
+        }
+      ]
+    },
+    {
+      "format": "vtt",
+      "rows": [
+        {
+          "row_id": "vtt-detection-utf8",
+          "description": "The boundary-valid WebVTT signature and UTF-8-only decoding rules are enforced.",
+          "evidence": [
+            {"kind": "malformed_fixture", "reference": "webvtt/invalid-utf8"},
+            {"kind": "render_test", "reference": "internal/codec/webvtt:TestDetectAndDecodeUTF8Boundary"},
+            {"kind": "fuzz_target", "reference": "internal/codec:FuzzFormatSelection"}
+          ]
+        },
+        {
+          "row_id": "vtt-header-block-order",
+          "description": "Headers and all native block kinds retain raw content in one contiguous source order.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "webvtt/complete"},
+            {"kind": "render_test", "reference": "internal/codec/webvtt:TestParsePreservesHeaderBlocksCueOrderAndRawFields"},
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseWebVTT"}
+          ]
+        },
+        {
+          "row_id": "vtt-timing-identifiers",
+          "description": "Identifiers remain native observations and timing grammar rejects invalid intervals.",
+          "evidence": [
+            {"kind": "malformed_fixture", "reference": "webvtt/invalid-timing"},
+            {"kind": "render_test", "reference": "internal/codec/webvtt:TestParseTimingLineRequiresConformingDelimiterAndIncreasingRange"},
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseTimestamp"}
+          ]
+        },
+        {
+          "row_id": "vtt-settings-regions",
+          "description": "Cue and REGION setting occurrences remain ordered while valid effective values are exposed.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "webvtt/tolerated"},
+            {"kind": "render_test", "reference": "internal/codec/webvtt:TestCueSettingsRetainOccurrencesAndLastValidValue"},
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzSettingsAndMarkup"}
+          ]
+        },
+        {
+          "row_id": "vtt-markup-entities-tokens",
+          "description": "Markup, entities, voices, and inline timestamps preserve raw text and produce bounded derived observations.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "webvtt/complete"},
+            {"kind": "render_test", "reference": "internal/codec/webvtt:TestPayloadScannerDerivesMarkupEntitiesSpeakerAndInlineTiming"},
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzSettingsAndMarkup"}
+          ]
+        },
+        {
+          "row_id": "vtt-source-restoration",
+          "description": "Every accepted WebVTT fixture restores to its exact captured bytes on supported hosts.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "webvtt/bom-crlf"},
+            {"kind": "render_test", "reference": "internal/cli:TestEveryAcceptedWebVTTFixtureEncodesAndRestoresExactly"},
+            {"kind": "platform_test", "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"}
+          ]
+        },
+        {
+          "row_id": "vtt-rendering",
+          "description": "Canonical rendering preserves total body order and parser-compatible structured semantics.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "webvtt/complete"},
+            {"kind": "render_test", "reference": "internal/codec/webvtt:TestRenderCanonicalOrderAndParserCycle"},
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzRenderParseCycle"}
+          ]
+        },
+        {
+          "row_id": "vtt-conversion",
+          "description": "WebVTT to SubRip conversion accounts for every native incompatibility and strict refusal.",
+          "evidence": [
+            {"kind": "accepted_fixture", "reference": "conversion/webvtt-loss-free"},
+            {"kind": "conversion_test", "reference": "internal/convert:TestWebVTTCompatibilityMatrixAccountsForDocumentBlockCueAndPayloadLosses"},
+            {"kind": "fuzz_target", "reference": "internal/convert:FuzzWebVTTConversionCycle"}
+          ]
+        },
+        {
+          "row_id": "vtt-hostile-bounds",
+          "description": "Malformed and amplified block, setting, markup, entity, and diagnostic input rejects safely.",
+          "evidence": [
+            {"kind": "malformed_fixture", "reference": "webvtt/empty-payload"},
+            {"kind": "render_test", "reference": "internal/codec/webvtt:TestParseRejectsOccurrenceAndDiagnosticAmplification"},
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseWebVTT"}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -254,6 +254,9 @@ type Stats struct {
 
 // Validate checks invariants that are intentionally clearer outside JSON Schema.
 func (document Document) Validate() error {
+	if err := validateCollectionLimits(document); err != nil {
+		return err
+	}
 	if err := validateCapability(document.Format, document.FormatSupport); err != nil {
 		return err
 	}

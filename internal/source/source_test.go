@@ -140,3 +140,44 @@ func TestCaptureContextClassifiesDeterministicPreconditions(t *testing.T) {
 		}
 	}
 }
+
+func TestReadFileContextUsesBoundedNoFollowBoundary(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	exactPath := filepath.Join(directory, "exact.json")
+	if err := os.WriteFile(exactPath, []byte("1234"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	payload, err := readFileContextWithLimit(context.Background(), exactPath, 4)
+	if err != nil || !bytes.Equal(payload, []byte("1234")) {
+		t.Fatalf("exact boundary = (%q, %v)", payload, err)
+	}
+
+	overPath := filepath.Join(directory, "over.json")
+	if err := os.WriteFile(overPath, []byte("12345"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readFileContextWithLimit(context.Background(), overPath, 4); !IsCapturePrecondition(err) {
+		t.Fatalf("limit-plus-one error = %v, want precondition", err)
+	}
+
+	for _, path := range []string{filepath.Join(directory, "missing.json"), directory, filepath.Join(directory, "PRIVATE:BAD.json")} {
+		if _, err := readFileContextWithLimit(context.Background(), path, 4); !IsCapturePrecondition(err) {
+			t.Errorf("readFileContextWithLimit(%q) error = %v, want precondition", path, err)
+		}
+	}
+
+	linkPath := filepath.Join(directory, "linked.json")
+	if err := os.Symlink(exactPath, linkPath); err == nil {
+		if _, err := readFileContextWithLimit(context.Background(), linkPath, 4); !IsCapturePrecondition(err) {
+			t.Errorf("symlink error = %v, want precondition", err)
+		}
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := readFileContextWithLimit(ctx, exactPath, 4); !errors.Is(err, context.Canceled) {
+		t.Fatalf("canceled read error = %v", err)
+	}
+}

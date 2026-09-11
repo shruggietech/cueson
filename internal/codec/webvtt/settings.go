@@ -131,6 +131,23 @@ func splitASCIIWhitespace(value string) []string {
 	return fields
 }
 
+func countASCIIWhitespaceFields(value string) int {
+	count := 0
+	inField := false
+	for index := 0; index < len(value); index++ {
+		separator := value[index] == ' ' || value[index] == '\t' || value[index] == '\n' || value[index] == '\r'
+		if separator {
+			inField = false
+			continue
+		}
+		if !inField {
+			count++
+			inField = true
+		}
+	}
+	return count
+}
+
 func settingDiagnostic(code, message string, sourceOrder int, cueID *string) Diagnostic {
 	order := sourceOrder
 	diagnostic := Diagnostic{Severity: "warning", Code: code, Message: message, SourceOrder: &order}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/codec/webvtt"
+	"github.com/shruggietech/cueson/internal/model"
 )
 
 func TestTranslateSubRipPayloadPreservesSharedMarkupAndEscapesWebVTTSyntax(t *testing.T) {
@@ -113,13 +114,30 @@ func TestTranslateWebVTTPayloadAccountsForEveryNUL(t *testing.T) {
 }
 
 func TestTranslateWebVTTPayloadHandlesManySafeAngleReferences(t *testing.T) {
-	raw := strings.Repeat("&lt;x&gt;", 10000)
+	raw := strings.Repeat("&lt;x&gt;", model.MaxItemOccurrences/2)
 	got, err := translateWebVTTPayload(raw, 0, 1000)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Text != strings.Repeat("<x>", 10000) || len(got.Issues) != 0 {
+	if got.Text != strings.Repeat("<x>", model.MaxItemOccurrences/2) || len(got.Issues) != 0 {
 		t.Fatalf("large safe angle translation length = %d, issues = %#v", len(got.Text), got.Issues)
+	}
+}
+
+func TestTranslatePayloadRejectsAmplifyingOccurrencesBeforeTranslation(t *testing.T) {
+	tooManyLines := strings.Repeat("line\n", model.MaxItemOccurrences)
+	if _, err := translateSubRipPayload(tooManyLines); err == nil || !strings.Contains(err.Error(), "physical lines") {
+		t.Fatalf("SubRip line limit error = %v", err)
+	}
+
+	tooManyEntities := strings.Repeat("&amp;", model.MaxItemOccurrences+1)
+	if _, err := translateWebVTTPayload(tooManyEntities, 0, 1000); err == nil || !strings.Contains(err.Error(), "markup or entity occurrences") {
+		t.Fatalf("WebVTT entity limit error = %v", err)
+	}
+
+	tooManyLosses := strings.Repeat("\x00", MaxLosses+1)
+	if _, err := translateWebVTTPayload(tooManyLosses, 0, 1000); err == nil || !strings.Contains(err.Error(), "conversion losses") {
+		t.Fatalf("WebVTT loss limit error = %v", err)
 	}
 }
 
