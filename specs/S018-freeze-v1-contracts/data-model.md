@@ -6,7 +6,10 @@ Represents the deterministic ceilings applied before untrusted input can amplify
 
 Fields:
 
-- `input_bytes`: 67,108,864 bytes accepted from one native or Cue JSON input.
+- `native_input_bytes`: 67,108,864 bytes accepted from one native input by `encode`, `convert`, `validate`, or `inspect`.
+- `classified_cue_json_input_bytes`: 67,108,864 bytes accepted from one Cue JSON input by `convert`, `validate`, or `inspect`, whose shared classification path also admits native input.
+- `encoded_cue_json_output_bytes`: 1,073,741,824 bytes eligible for publication by one `encode` operation; a larger expanded representation is rejected.
+- `expanded_cue_json_input_bytes`: 1,073,741,824 bytes accepted from one Cue JSON input by `restore` or `render`, matching the maximum representation that `encode` can publish.
 - `document_items`: 65,536 common cues or native body items in one document.
 - `item_occurrences`: 1,024 repeated settings or derived observations attached to one item.
 - `diagnostics`: 8,192 ordered diagnostics accumulated for one operation.
@@ -16,7 +19,7 @@ Fields:
 
 Rules:
 
-- Limits are named and shared from one owner where multiple packages rely on the same meaning.
+- Limits are named and shared from one owner where multiple packages rely on the same meaning; commands sharing a no-follow acquisition mechanism may select different named byte ceilings according to their accepted input contract.
 - Exceeding a limit rejects the operation with one stable error.
 - No accepted array or diagnostic list is silently truncated.
 - These numeric limits are the S018 development contract and may change only through an explicit later contract decision.

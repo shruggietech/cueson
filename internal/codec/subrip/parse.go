@@ -132,6 +132,9 @@ func Parse(input string, options Options) (Result, error) {
 		}
 
 		rawText := strings.Join(payloadLines, "\n")
+		if strings.Count(rawText, "<") > model.MaxItemOccurrences {
+			return Result{}, &ParseError{Code: "subrip_occurrence_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("cue contains more than %d markup occurrences", model.MaxItemOccurrences)}
+		}
 		cue := model.Cue{
 			ID: cueID, Ordinal: ordinal, SourceOrder: order, SourceIdentifier: sourceIdentifier,
 			Timing:   model.Timing{StartMilliseconds: timing.StartMilliseconds, EndMilliseconds: timing.EndMilliseconds, DurationMilliseconds: timing.EndMilliseconds - timing.StartMilliseconds},

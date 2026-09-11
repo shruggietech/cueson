@@ -19,10 +19,9 @@ import (
 const (
 	// MaxCaptureBytes is the maximum source asset size accepted by native ingest.
 	MaxCaptureBytes int64 = 64 << 20
-	// MaxCueJSONBytes bounds the expanded Cue JSON representation of an accepted
-	// source. The envelope base64 and structured views can make a document much
-	// larger than its source asset, so this limit must remain above the maximum
-	// output produced from MaxCaptureBytes of accepted native input.
+	// MaxCueJSONBytes bounds Cue JSON produced and consumed by the CLI. The
+	// envelope base64 and structured views can make a document much larger than
+	// its source asset, so encode rejects any representation beyond this bound.
 	MaxCueJSONBytes int64 = 16 * MaxCaptureBytes
 )
 

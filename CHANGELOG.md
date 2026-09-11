@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
-- Prevented restore and render from bypassing the shared regular-file, no-follow, cancellation-aware input boundary, allowed their Cue JSON inputs to expand to 1 GiB so maximum accepted native sources remain restorable, and rejected collection amplification instead of truncating source truth.
+- Prevented restore and render from bypassing the shared regular-file, no-follow, cancellation-aware input boundary, allowed Cue JSON to expand to 1 GiB, refused encode output beyond that consumer boundary, and rejected collection amplification instead of truncating source truth.
 - Made shared schema, encode, and render file publication transactional across short writes, failed writes, new destinations, and forced replacements so a failed operation does not leave partial or lost output.
 - Preserved WebVTT raw NUL and setting whitespace independently from semantic text, hardened model-driven rendering against unsafe or inconsistent settings, mismatched block headers, and empty payloads, regenerated edited REGION settings, enforced BOM-specific UTF-8 aliases, and diagnosed malformed empty voice or language annotations without losing their source syntax.
 

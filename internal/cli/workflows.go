@@ -377,6 +377,10 @@ func updateDiagnosticStats(document *model.Document) {
 }
 
 func marshalDocument(document model.Document, pretty bool) ([]byte, error) {
+	return marshalDocumentWithLimit(document, pretty, source.MaxCueJSONBytes)
+}
+
+func marshalDocumentWithLimit(document model.Document, pretty bool, maxBytes int64) ([]byte, error) {
 	var payload []byte
 	var err error
 	if pretty {
@@ -386,6 +390,9 @@ func marshalDocument(document model.Document, pretty bool) ([]byte, error) {
 	}
 	if err != nil {
 		return nil, err
+	}
+	if int64(len(payload)) >= maxBytes {
+		return nil, fmt.Errorf("cue JSON exceeds the %d-byte limit", maxBytes)
 	}
 	return append(payload, '\n'), nil
 }

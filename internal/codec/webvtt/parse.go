@@ -122,6 +122,9 @@ func Parse(input string) (Result, error) {
 			}
 			result.DocumentData.Blocks = append(result.DocumentData.Blocks, model.WebVTTBlock{Type: "unrecognized", SourceOrder: sourceOrder, Raw: strings.Join(rawLines, "\n"), RawLines: rawLines})
 			result.Diagnostics = append(result.Diagnostics, blockDiagnostic("webvtt_block_unrecognized", fmt.Sprintf("unrecognized WebVTT block beginning at line %d was preserved", lines[position].number), sourceOrder))
+			if len(result.Diagnostics) > model.MaxDiagnostics {
+				return Result{}, &ParseError{Code: "webvtt_diagnostic_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("document produces more than %d diagnostics", model.MaxDiagnostics)}
+			}
 			position = end
 			continue
 		}

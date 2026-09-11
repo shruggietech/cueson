@@ -172,6 +172,31 @@ func TestParseRejectsOccurrenceAndDiagnosticAmplification(t *testing.T) {
 	}
 }
 
+func TestParseEnforcesDiagnosticLimitOnUnrecognizedBlocks(t *testing.T) {
+	t.Parallel()
+
+	inputWithBlocks := func(count int) string {
+		return "WEBVTT\n\n" + strings.Repeat("unknown\n\n", count) + "00:00.000 --> 00:01.000\nx\n"
+	}
+
+	result, err := Parse(inputWithBlocks(model.MaxDiagnostics))
+	if err != nil {
+		t.Fatalf("Parse() rejected unrecognized-block diagnostics at the limit: %v", err)
+	}
+	if len(result.Diagnostics) != model.MaxDiagnostics {
+		t.Fatalf("diagnostic count at limit = %d, want %d", len(result.Diagnostics), model.MaxDiagnostics)
+	}
+
+	result, err = Parse(inputWithBlocks(model.MaxDiagnostics + 1))
+	parseError, ok := err.(*ParseError)
+	if !ok || parseError.Code != "webvtt_diagnostic_limit_exceeded" {
+		t.Fatalf("limit-plus-one error = %v, want webvtt_diagnostic_limit_exceeded", err)
+	}
+	if len(result.Diagnostics) != 0 || len(result.DocumentData.Blocks) != 0 {
+		t.Fatalf("limit-plus-one returned partial result: %#v", result)
+	}
+}
+
 func TestParseEnforcesOccurrenceLimitOnUnrecognizedBlocks(t *testing.T) {
 	t.Parallel()
 

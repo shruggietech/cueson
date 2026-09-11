@@ -181,6 +181,34 @@ func TestParseRejectsOccurrenceAndDiagnosticAmplification(t *testing.T) {
 	}
 }
 
+func TestParseEnforcesMarkupOccurrenceLimitBeforePlainTextDerivation(t *testing.T) {
+	t.Parallel()
+
+	inputWithTagOccurrences := func(count int) string {
+		payload := strings.Repeat("<i></i>", count/2)
+		if count%2 != 0 {
+			payload += "<i>"
+		}
+		return "1\n00:00:00,000 --> 00:00:01,000\n" + payload + "\n"
+	}
+
+	t.Run("accepts boundary", func(t *testing.T) {
+		result, err := Parse(inputWithTagOccurrences(model.MaxItemOccurrences), Options{})
+		if err != nil {
+			t.Fatalf("Parse() rejected markup at the limit: %v", err)
+		}
+		if len(result.Cues) != 1 || result.Cues[0].Payload.PlainText != "" {
+			t.Fatalf("cue at the markup limit = %#v", result.Cues)
+		}
+	})
+
+	t.Run("rejects above boundary", func(t *testing.T) {
+		if _, err := Parse(inputWithTagOccurrences(model.MaxItemOccurrences+1), Options{}); err == nil || !strings.Contains(err.Error(), "subrip_occurrence_limit_exceeded") {
+			t.Fatalf("markup limit error = %v", err)
+		}
+	})
+}
+
 func TestGovernedSubRipFixtures(t *testing.T) {
 	t.Parallel()
 	root := filepath.Join("..", "..", "..", "testdata")

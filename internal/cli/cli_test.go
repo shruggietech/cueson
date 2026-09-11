@@ -1091,6 +1091,25 @@ func TestEncodeRenderAndRestoreWorkflow(t *testing.T) {
 	}
 }
 
+func TestMarshalDocumentEnforcesPublishedCueJSONLimit(t *testing.T) {
+	t.Parallel()
+
+	document, err := schema.Decode(schema.Representative())
+	if err != nil {
+		t.Fatal(err)
+	}
+	payload, err := marshalDocument(document, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if exact, exactErr := marshalDocumentWithLimit(document, false, int64(len(payload))); exactErr != nil || !bytes.Equal(exact, payload) {
+		t.Fatalf("exact output boundary = (%d bytes, %v), want %d bytes", len(exact), exactErr, len(payload))
+	}
+	if _, err := marshalDocumentWithLimit(document, false, int64(len(payload)-1)); err == nil || !strings.Contains(err.Error(), "cue JSON exceeds") {
+		t.Fatalf("limit-minus-one error = %v", err)
+	}
+}
+
 func TestEncodeDefaultOutputAndWebVTTCodec(t *testing.T) {
 	t.Parallel()
 

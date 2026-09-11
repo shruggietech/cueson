@@ -10,7 +10,7 @@
 
 ## Decision 2: Bound every file input before allocation
 
-**Decision**: Reuse one context-aware, regular-file, no-follow reader with the existing 64 MiB ceiling for native inputs and a 1 GiB ceiling for `restore` and `render` Cue JSON. The larger Cue JSON ceiling covers base64 and structured-view expansion from every accepted native input while retaining a deterministic byte bound.
+**Decision**: Reuse one context-aware, regular-file, no-follow reader with the existing 64 MiB ceiling for native inputs and a 1 GiB ceiling for `restore` and `render` Cue JSON. `encode` rejects a Cue JSON representation larger than that consumer boundary instead of publishing a document that Cueson cannot read back.
 
 **Rationale**: Those two commands currently call an unbounded whole-file reader while newer validated-input commands use bounded source capture. A shared acquisition boundary prevents drift and preserves stable path, cancellation, and exit-status classification.
 
@@ -18,7 +18,7 @@
 
 ## Decision 3: Reject complexity overflow without truncation
 
-**Decision**: Retain the 64 MiB native file-input ceiling, allow up to 1 GiB for Cue JSON consumed by exact restore or model-driven render, cap common cues and native body items at 65,536 per document, cap repeated settings or derived observations at 1,024 per item, cap diagnostics and conversion losses at 8,192 per operation, cap an optional external-corpus run at 10,000 files, and guard individual fuzz inputs at 64 KiB. Exceeding a ceiling returns one stable typed failure before further amplification; accepted data is never silently truncated.
+**Decision**: Retain the 64 MiB native file-input ceiling, cap Cue JSON produced by encode and consumed by exact restore or model-driven render at 1 GiB, cap common cues and native body items at 65,536 per document, cap repeated settings or derived observations at 1,024 per item, cap diagnostics and conversion losses at 8,192 per operation, cap an optional external-corpus run at 10,000 files, and guard individual fuzz inputs at 64 KiB. Exceeding a ceiling returns one stable typed failure before further amplification; accepted data is never silently truncated.
 
 **Rationale**: The byte limit alone still permits millions of tiny objects or diagnostics. Explicit ownership-local limits make resource behavior testable and preserve the constitution's no-silent-loss rule.
 
