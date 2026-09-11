@@ -80,7 +80,7 @@ func TestRunRootHelp(t *testing.T) {
 		if stderr != "" {
 			t.Errorf("Run(%q) stderr = %q, want empty", args, stderr)
 		}
-		for _, want := range []string{"Usage:", "Commands:", "version", "Global options:", "Examples:", "cueson version"} {
+		for _, want := range []string{"Usage:", "Commands:", "version", "Global options:", "Streams:", "Exit codes:", "Examples:"} {
 			if !strings.Contains(stdout, want) {
 				t.Errorf("Run(%q) stdout does not contain %q:\n%s", args, want, stdout)
 			}
@@ -91,14 +91,9 @@ func TestRunRootHelp(t *testing.T) {
 		if !strings.Contains(stdout, "\n  restore") {
 			t.Errorf("Run(%q) help does not expose restore command:\n%s", args, stdout)
 		}
-		for _, implemented := range []string{"encode", "render", "convert"} {
+		for _, implemented := range []string{"encode", "restore", "render", "convert", "validate", "inspect", "schema", "version", "completion"} {
 			if !strings.Contains(stdout, "\n  "+implemented) {
 				t.Errorf("Run(%q) help does not expose implemented command %q:\n%s", args, implemented, stdout)
-			}
-		}
-		for _, deferred := range []string{"validate", "inspect", "completion"} {
-			if strings.Contains(stdout, "\n  "+deferred) {
-				t.Errorf("Run(%q) help exposes deferred command %q:\n%s", args, deferred, stdout)
 			}
 		}
 	}
@@ -550,7 +545,7 @@ func TestRunVersionHelp(t *testing.T) {
 		if stderr != "" {
 			t.Errorf("Run(%q) stderr = %q, want empty", args, stderr)
 		}
-		for _, want := range []string{"Usage:", "cueson version", "Print the Cueson executable version", "Example:"} {
+		for _, want := range []string{"Usage:", "cueson version", "Print the Cueson executable version", "Examples:"} {
 			if !strings.Contains(stdout, want) {
 				t.Errorf("Run(%q) stdout does not contain %q:\n%s", args, want, stdout)
 			}
@@ -943,6 +938,19 @@ func TestDiagnosticColorRendering(t *testing.T) {
 	diagnostics.write(diagnosticError, "failed")
 	if got := output.String(); !strings.Contains(got, "\x1b[31merror:\x1b[0m failed\n") {
 		t.Errorf("colored diagnostic = %q, want red error label", got)
+	}
+}
+
+func TestDiagnosticWriteFailureFinalizesSuccessfulStatus(t *testing.T) {
+	t.Parallel()
+
+	diagnostics := newDiagnosticWriter(errorWriter{err: errors.New("diagnostic unavailable")}, globalOptions{})
+	diagnostics.write(diagnosticSuccess, "valid input")
+	if got := diagnostics.finalize(ExitSuccess); got != ExitRuntimeFailure {
+		t.Fatalf("finalize(success) = %d, want %d", got, ExitRuntimeFailure)
+	}
+	if got := diagnostics.finalize(ExitInvocation); got != ExitInvocation {
+		t.Fatalf("finalize(invocation) = %d, want %d", got, ExitInvocation)
 	}
 }
 

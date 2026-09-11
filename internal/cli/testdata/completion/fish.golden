@@ -1,0 +1,65 @@
+# Fish completion for cueson.
+function __fish_cueson_options_active
+  set -l tokens (commandline -opc)
+  not contains -- -- $tokens[2..-1]
+end
+
+function __fish_cueson_command_is
+  set -l tokens (commandline -opc)
+  for token in $tokens[2..-1]
+    switch $token
+      case 'encode' 'restore' 'render' 'convert' 'validate' 'inspect' 'schema' 'version' 'completion'
+        test "$token" = "$argv[1]"
+        return
+    end
+  end
+  return 1
+end
+
+complete -c cueson -f
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'encode' -d 'Encode a subtitle source as Cue JSON.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'restore' -d 'Restore exact source-envelope bytes.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'render' -d 'Render Cue JSON from its structured model.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'convert' -d 'Convert SubRip and WebVTT through the common model.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'validate' -d 'Validate Cue JSON or a native subtitle without output.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'inspect' -d 'Inspect safe structural facts about an input.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'schema' -d 'Print or save the embedded Cue JSON schema.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'version' -d 'Print the Cueson executable version.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_use_subcommand' -a 'completion' -d 'Generate static shell completion.'
+complete -c cueson -f -n '__fish_cueson_options_active' -s q -l quiet -d 'Suppress informational and success diagnostics.'
+complete -c cueson -f -n '__fish_cueson_options_active' -l silent -d 'Suppress every non-error diagnostic.'
+complete -c cueson -f -n '__fish_cueson_options_active' -l no-color -d 'Disable diagnostic color.'
+complete -c cueson -f -n '__fish_cueson_options_active' -s h -l help -d 'Show help.'
+complete -c cueson -f -n '__fish_cueson_options_active' -a '--' -d 'End option processing; following paths and operands remain literal.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is encode' -s o -l output -x -d 'Write Cue JSON to PATH (default INPUT.cueson.json).'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is encode' -s f -l force -d 'Replace an existing regular output file.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is encode' -l format -x -a 'auto srt vtt' -d 'Select auto, srt, or vtt (default auto).'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is encode' -l encoding -x -a 'utf-8 utf-8-bom utf-16le utf-16be windows-1252 iso-8859-1' -d 'Select the source text encoding.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is encode' -l pretty -d 'Indent Cue JSON output.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is encode' -l stdout -d 'Write Cue JSON to stdout.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is encode' -l no-speaker-detection -d 'Disable derived Name: speaker observations.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is restore' -s o -l output -x -d 'Restore one asset to a literal path.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is restore' -l output-dir -x -d 'Restore all assets beneath an existing directory.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is restore' -s f -l force -d 'Replace approved existing regular files.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is restore' -l strict-metadata -d 'Require every captured timestamp to be restored.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is restore' -l no-metadata -d 'Skip timestamp restoration.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is render' -l to -x -a 'srt vtt' -d 'Select srt or vtt.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is render' -s o -l output -x -d 'Write native output to PATH instead of stdout.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is render' -s f -l force -d 'Replace an existing regular output file.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is render' -l strict -d 'Reject known non-representable model content.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is convert' -l to -x -a 'srt vtt' -d 'Select srt or vtt.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is convert' -l from -x -a 'auto cueson srt vtt' -d 'Select auto, cueson, srt, or vtt (default auto).'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is convert' -l encoding -x -a 'utf-8 utf-8-bom utf-16le utf-16be windows-1252 iso-8859-1' -d 'Select the native source text encoding.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is convert' -s o -l output -x -d 'Write native output to PATH instead of stdout.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is convert' -s f -l force -d 'Replace an existing regular output file.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is convert' -l strict -d 'Reject conversion when any known loss exists.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is convert' -l no-speaker-detection -d 'Disable derived speaker observations for native input.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is validate' -l format -x -a 'auto cueson srt vtt' -d 'Select auto, cueson, srt, or vtt (default auto).'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is validate' -l encoding -x -a 'utf-8 utf-8-bom utf-16le utf-16be windows-1252 iso-8859-1' -d 'Select the native source text encoding.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is inspect' -l format -x -a 'auto cueson srt vtt' -d 'Select auto, cueson, srt, or vtt (default auto).'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is inspect' -l encoding -x -a 'utf-8 utf-8-bom utf-16le utf-16be windows-1252 iso-8859-1' -d 'Select the native source text encoding.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is inspect' -l json -d 'Write the compact inspection report version 1 as JSON.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is schema' -l version -d 'Print the embedded schema version.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is schema' -s o -l output -x -d 'Write the schema to a literal path instead of stdout.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is schema' -s f -l force -d 'Replace an existing regular output file.'
+complete -c cueson -f -n '__fish_cueson_options_active; and __fish_cueson_command_is completion' -a 'bash zsh fish powershell' -d 'Supported shell'

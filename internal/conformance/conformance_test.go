@@ -83,6 +83,98 @@ func TestBidirectionalConversionConformance(t *testing.T) {
 	}
 }
 
+func TestValidationWorkflowConformance(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	nativePath := filepath.Join(directory, "captions.vtt")
+	nativeBytes := []byte("WEBVTT\n\n00:00.000 --> 00:01.000\nHello\n")
+	if err := os.WriteFile(nativePath, nativeBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	jsonPath := filepath.Join(directory, "document.cueson.json")
+	if err := os.WriteFile(jsonPath, schema.Representative(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, test := range []struct {
+		name string
+		path string
+	}{
+		{name: "native WebVTT", path: nativePath},
+		{name: "Cue JSON", path: jsonPath},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			before, err := os.ReadDir(directory)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var stdout, stderr bytes.Buffer
+			status := cli.Run(context.Background(), []string{"validate", test.path}, strings.NewReader(""), &stdout, &stderr)
+			if status != cli.ExitSuccess || stdout.Len() != 0 || !strings.Contains(stderr.String(), "success: valid ") {
+				t.Fatalf("validate = (%d, %q, %q)", status, stdout.String(), stderr.String())
+			}
+			after, err := os.ReadDir(directory)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(after) != len(before) {
+				t.Fatalf("validation changed directory entries: before %d, after %d", len(before), len(after))
+			}
+			if err := testutil.CheckNoForbidden("validation/"+test.name, "diagnostics", stderr.Bytes(), directory, test.path, string(nativeBytes)); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+
+	var encoded, encodeDiagnostics bytes.Buffer
+	if status := cli.Run(context.Background(), []string{"encode", "--stdout", nativePath}, strings.NewReader(""), &encoded, &encodeDiagnostics); status != cli.ExitSuccess {
+		t.Fatalf("encode native validation fixture = (%d, %q)", status, encodeDiagnostics.String())
+	}
+	document, err := schema.Decode(encoded.Bytes())
+	if err != nil {
+		t.Fatalf("decode generated envelope: %v", err)
+	}
+	if err := source.ValidateIntegrity(context.Background(), document); err != nil {
+		t.Fatalf("generated envelope integrity: %v", err)
+	}
+}
+
+func TestValidationRejectsCorruptEnvelopeWithoutOutputOrPathLeak(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	document, err := schema.Decode(schema.Representative())
+	if err != nil {
+		t.Fatal(err)
+	}
+	document.Source.Assets[0].Hashes.SHA256 = strings.Repeat("0", 64)
+	payload, err := json.Marshal(document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(directory, "corrupt.cueson.json")
+	if err := os.WriteFile(path, payload, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	status := cli.Run(context.Background(), []string{"validate", path}, strings.NewReader(""), &stdout, &stderr)
+	if status != cli.ExitRuntimeFailure || stdout.Len() != 0 || !strings.Contains(stderr.String(), "SHA-256") {
+		t.Fatalf("validate corrupt envelope = (%d, %q, %q)", status, stdout.String(), stderr.String())
+	}
+	entries, err := os.ReadDir(directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(entries) != 1 || entries[0].Name() != filepath.Base(path) {
+		t.Fatalf("integrity failure created output: %#v", entries)
+	}
+	if err := testutil.CheckNoForbidden("validation/corrupt-envelope", "diagnostics", stderr.Bytes(), directory, path); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestAcceptedSourceEnvelopeConformance(t *testing.T) {
 	t.Parallel()
 

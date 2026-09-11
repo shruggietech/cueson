@@ -93,17 +93,23 @@ const (
 	encodeHelp
 	renderHelp
 	convertHelp
+	validateHelp
+	inspectHelp
+	completionHelp
 )
 
 type invocation struct {
-	command string
-	help    helpTarget
-	options globalOptions
-	schema  schemaOptions
-	restore restoreOptions
-	encode  encodeOptions
-	render  renderOptions
-	convert convertOptions
+	command         string
+	help            helpTarget
+	options         globalOptions
+	schema          schemaOptions
+	restore         restoreOptions
+	encode          encodeOptions
+	render          renderOptions
+	convert         convertOptions
+	validate        validateOptions
+	inspect         inspectOptions
+	completionShell string
 }
 
 type invocationError struct {
@@ -137,177 +143,12 @@ type diagnosticWriter struct {
 	quiet  bool
 	silent bool
 	color  bool
+	state  *diagnosticState
 }
 
-const rootHelpText = `Cueson command-line interface.
-
-Usage:
-  cueson [global options] <command>
-
-Commands:
-  encode   Encode a subtitle source as Cue JSON.
-  render   Render Cue JSON from its structured model.
-  convert  Convert SubRip and WebVTT through the common model.
-  version  Print the Cueson executable version.
-  schema   Print or save the embedded Cue JSON schema.
-  restore  Restore exact source-envelope bytes.
-
-Global options:
-  -q, --quiet  Suppress informational and success diagnostics.
-  --silent     Suppress every non-error diagnostic.
-  --no-color   Disable diagnostic color.
-  -h, --help   Show help.
-  --            End option processing.
-
-Examples:
-  cueson --help
-  cueson version
-  cueson schema --version
-  cueson schema --output cueson.schema.json
-  cueson encode captions.srt
-  cueson render captions.srt.cueson.json --to srt
-  cueson render captions.vtt.cueson.json --to vtt
-  cueson convert captions.vtt --to srt
-  cueson restore --output restored.srt document.cueson.json
-`
-
-const versionHelpText = `Print the Cueson executable version.
-
-Usage:
-  cueson [global options] version
-
-Example:
-  cueson version
-`
-
-const schemaHelpText = `Print or save the embedded canonical Cue JSON schema.
-
-Usage:
-  cueson [global options] schema [options]
-
-Options:
-  --version          Print the embedded schema version.
-  -o, --output PATH  Write the schema to a literal path instead of stdout.
-  -f, --force        Replace an existing regular output file.
-  -h, --help         Show schema help.
-
-Examples:
-  cueson schema
-  cueson schema --version
-  cueson schema --output cueson.schema.json
-  cueson schema --output cueson.schema.json --force
-`
-
-const restoreHelpText = `Restore exact source-envelope bytes without a format codec.
-
-Usage:
-  cueson [global options] restore [options] INPUT
-
-Options:
-  -o, --output PATH       Restore one asset to a literal path.
-  --output-dir DIR        Restore all assets beneath an existing directory.
-  -f, --force             Replace approved existing regular files.
-  --strict-metadata       Require every captured timestamp to be restored.
-  --no-metadata           Skip timestamp restoration.
-  -h, --help              Show restore help.
-
-Successful restoration writes no stdout payload. Warnings and errors use stderr.
-Multi-asset documents require --output-dir. Metadata modes are mutually exclusive.
-
-Example:
-  cueson restore --output restored.srt document.cueson.json
-`
-
-const encodeHelpText = `Encode a subtitle source as Cue JSON while preserving its exact bytes.
-
-Usage:
-  cueson [global options] encode [options] INPUT
-
-Options:
-  -o, --output PATH       Write Cue JSON to PATH (default INPUT.cueson.json).
-  -f, --force             Replace an existing regular output file.
-  --format FORMAT         Select auto, srt, or vtt (default auto).
-  --encoding NAME         Select utf-8, utf-16le, utf-16be, windows-1252, or iso-8859-1.
-  --pretty                Indent Cue JSON output.
-  --stdout                Write Cue JSON to stdout.
-  --no-speaker-detection  Disable derived Name: speaker observations.
-  -h, --help              Show encode help.
-
-Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le;
-utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.
-
-Example:
-  cueson encode --pretty captions.srt
-  cueson encode --pretty captions.vtt
-`
-
-const renderHelpText = `Render Cue JSON from its structured model.
-
-Usage:
-  cueson [global options] render [options] INPUT.cueson.json --to FORMAT
-
-Options:
-  --to FORMAT        Select srt or vtt.
-  -o, --output PATH  Write output to PATH instead of stdout.
-  -f, --force        Replace an existing regular output file.
-  --strict           Reject known non-representable model content.
-  -h, --help         Show render help.
-
-Example:
-  cueson render captions.srt.cueson.json --to srt --output captions.rendered.srt
-  cueson render captions.vtt.cueson.json --to vtt --output captions.rendered.vtt
-`
-
-const convertHelpText = `Convert SubRip and WebVTT through the common Cue JSON model.
-
-Usage:
-  cueson [global options] convert [options] INPUT --to FORMAT
-
-Options:
-  --to FORMAT              Select srt or vtt.
-  --from FORMAT            Select auto, cueson, srt, or vtt (default auto).
-  --encoding NAME          Select the native source text encoding.
-  -o, --output PATH        Write output to PATH instead of stdout.
-  -f, --force              Replace an existing regular output file.
-  --strict                 Reject conversion when any known loss exists.
-  --no-speaker-detection   Disable derived speaker observations for native input.
-  -h, --help               Show convert help.
-
-Input aliases: json and cue-json for cueson; subrip for srt; webvtt for vtt.
-Encoding aliases match encode. WebVTT accepts UTF-8 only.
-
-Examples:
-  cueson convert captions.vtt --to srt
-  cueson convert document.cueson.json --from cueson --to vtt --output captions.vtt
-`
-
-const rootUsageText = `Usage:
-  cueson [global options] <command>
-`
-
-const versionUsageText = `Usage:
-  cueson [global options] version
-`
-
-const schemaUsageText = `Usage:
-  cueson [global options] schema [--version | --output PATH [--force]]
-`
-
-const restoreUsageText = `Usage:
-  cueson [global options] restore [--output PATH | --output-dir DIR] [--force] [--strict-metadata | --no-metadata] INPUT
-`
-
-const encodeUsageText = `Usage:
-  cueson [global options] encode [--output PATH | --stdout] [--force] [--format FORMAT] [--encoding NAME] [--pretty] [--no-speaker-detection] INPUT
-`
-
-const renderUsageText = `Usage:
-  cueson [global options] render [--output PATH] [--force] [--strict] INPUT --to FORMAT
-`
-
-const convertUsageText = `Usage:
-  cueson [global options] convert [--from FORMAT] [--encoding NAME] [--output PATH] [--force] [--strict] [--no-speaker-detection] INPUT --to FORMAT
-`
+type diagnosticState struct {
+	err error
+}
 
 // Run executes one Cueson command against the supplied process streams.
 func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.Writer) int {
@@ -318,50 +159,49 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 	if parseErr != nil {
 		diagnostics.write(diagnosticError, parseErr.Error())
 		writeUsage(stderr, parseErr.usage)
-		return ExitInvocation
+		return diagnostics.finalize(ExitInvocation)
 	}
 
-	switch parsed.help {
-	case rootHelp:
-		return writeStdout(stdout, diagnostics, []byte(rootHelpText))
-	case versionHelp:
-		return writeStdout(stdout, diagnostics, []byte(versionHelpText))
-	case schemaHelp:
-		return writeStdout(stdout, diagnostics, []byte(schemaHelpText))
-	case restoreHelp:
-		return writeStdout(stdout, diagnostics, []byte(restoreHelpText))
-	case encodeHelp:
-		return writeStdout(stdout, diagnostics, []byte(encodeHelpText))
-	case renderHelp:
-		return writeStdout(stdout, diagnostics, []byte(renderHelpText))
-	case convertHelp:
-		return writeStdout(stdout, diagnostics, []byte(convertHelpText))
+	if parsed.help != noHelp {
+		helpText, ok := fullHelpText(commandForHelp(parsed.help))
+		if !ok {
+			diagnostics.write(diagnosticError, "internal help dispatch failure")
+			return diagnostics.finalize(ExitRuntimeFailure)
+		}
+		return diagnostics.finalize(writeStdout(stdout, diagnostics, []byte(helpText)))
 	}
 
 	select {
 	case <-ctx.Done():
 		diagnostics.write(diagnosticError, "operation canceled")
-		return ExitRuntimeFailure
+		return diagnostics.finalize(ExitRuntimeFailure)
 	default:
 	}
 
+	status := ExitRuntimeFailure
 	switch parsed.command {
 	case "version":
-		return writeStdout(stdout, diagnostics, []byte(version.String()+"\n"))
+		status = writeStdout(stdout, diagnostics, []byte(version.String()+"\n"))
 	case "schema":
-		return runSchema(parsed.schema, stdout, stderr, diagnostics)
+		status = runSchema(parsed.schema, stdout, stderr, diagnostics)
 	case "restore":
-		return runRestore(ctx, parsed.restore, stderr, diagnostics)
+		status = runRestore(ctx, parsed.restore, stderr, diagnostics)
 	case "encode":
-		return runEncode(ctx, parsed.encode, stdout, stderr, diagnostics)
+		status = runEncode(ctx, parsed.encode, stdout, stderr, diagnostics)
 	case "render":
-		return runRender(ctx, parsed.render, stdout, stderr, diagnostics)
+		status = runRender(ctx, parsed.render, stdout, stderr, diagnostics)
 	case "convert":
-		return runConvert(ctx, parsed.convert, stdout, stderr, diagnostics)
+		status = runConvert(ctx, parsed.convert, stdout, stderr, diagnostics)
+	case "validate":
+		status = runValidate(ctx, parsed.validate, stderr, diagnostics, validateHelp)
+	case "inspect":
+		status = runInspect(ctx, parsed.inspect, stdout, stderr, diagnostics, inspectHelp)
+	case "completion":
+		status = runCompletion(parsed.completionShell, stdout, stderr, diagnostics)
 	default:
 		diagnostics.write(diagnosticError, "internal command dispatch failure")
-		return ExitRuntimeFailure
 	}
+	return diagnostics.finalize(status)
 }
 
 func runRestore(ctx context.Context, options restoreOptions, stderr io.Writer, diagnostics diagnosticWriter) int {
@@ -736,6 +576,75 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 					continue
 				}
 			}
+			if parsed.command == "validate" {
+				switch arg {
+				case "--format", "--encoding":
+					if index+1 >= len(args) {
+						return parsed, validateInvocationError(arg + " requires a value")
+					}
+					index++
+					if args[index] == "" {
+						return parsed, validateInvocationError(arg + " requires a value")
+					}
+					if err := setValidateValue(&parsed.validate, arg, args[index]); err != nil {
+						return parsed, validateInvocationError(err.Error())
+					}
+					continue
+				}
+				for _, option := range []string{"--format=", "--encoding="} {
+					if !strings.HasPrefix(arg, option) {
+						continue
+					}
+					value := strings.TrimPrefix(arg, option)
+					if value == "" {
+						return parsed, validateInvocationError(strings.TrimSuffix(option, "=") + " requires a value")
+					}
+					if err := setValidateValue(&parsed.validate, strings.TrimSuffix(option, "="), value); err != nil {
+						return parsed, validateInvocationError(err.Error())
+					}
+					continue
+				}
+				if strings.HasPrefix(arg, "--format=") || strings.HasPrefix(arg, "--encoding=") {
+					continue
+				}
+			}
+			if parsed.command == "inspect" {
+				switch arg {
+				case "--json":
+					if err := setInspectJSON(&parsed.inspect); err != nil {
+						return parsed, inspectInvocationError(err.Error())
+					}
+					continue
+				case "--format", "--encoding":
+					if index+1 >= len(args) {
+						return parsed, inspectInvocationError(arg + " requires a value")
+					}
+					index++
+					if args[index] == "" {
+						return parsed, inspectInvocationError(arg + " requires a value")
+					}
+					if err := setInspectValue(&parsed.inspect, arg, args[index]); err != nil {
+						return parsed, inspectInvocationError(err.Error())
+					}
+					continue
+				}
+				for _, option := range []string{"--format=", "--encoding="} {
+					if !strings.HasPrefix(arg, option) {
+						continue
+					}
+					value := strings.TrimPrefix(arg, option)
+					if value == "" {
+						return parsed, inspectInvocationError(strings.TrimSuffix(option, "=") + " requires a value")
+					}
+					if err := setInspectValue(&parsed.inspect, strings.TrimSuffix(option, "="), value); err != nil {
+						return parsed, inspectInvocationError(err.Error())
+					}
+					continue
+				}
+				if strings.HasPrefix(arg, "--format=") || strings.HasPrefix(arg, "--encoding=") {
+					continue
+				}
+			}
 
 			if strings.HasPrefix(arg, "-") {
 				return parsed, &invocationError{message: fmt.Sprintf("unknown option %q", arg), usage: usageForCommand(parsed.command)}
@@ -744,7 +653,7 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 
 		if parsed.command == "" {
 			parsed.command = arg
-			if parsed.command != "version" && parsed.command != "schema" && parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" && parsed.command != "convert" {
+			if _, exists := lookupCommandSurface(parsed.command); !exists {
 				return parsed, &invocationError{message: fmt.Sprintf("unknown command %q", parsed.command), usage: rootHelp}
 			}
 			continue
@@ -766,7 +675,23 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 			parsed.convert.input = arg
 			continue
 		}
-		if parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" && parsed.command != "convert" {
+		if parsed.command == "validate" {
+			if err := setValidateOperand(&parsed.validate, arg); err != nil {
+				return parsed, validateInvocationError(err.Error())
+			}
+			continue
+		}
+		if parsed.command == "inspect" {
+			if err := setInspectOperand(&parsed.inspect, arg); err != nil {
+				return parsed, inspectInvocationError(err.Error())
+			}
+			continue
+		}
+		if parsed.command == "completion" && parsed.completionShell == "" {
+			parsed.completionShell = arg
+			continue
+		}
+		if parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" && parsed.command != "convert" && parsed.command != "validate" && parsed.command != "inspect" && parsed.command != "completion" {
 			return parsed, &invocationError{message: fmt.Sprintf("%s accepts no arguments", parsed.command), usage: usageForCommand(parsed.command)}
 		}
 		return parsed, &invocationError{message: fmt.Sprintf("%s accepts no additional arguments", parsed.command), usage: usageForCommand(parsed.command)}
@@ -873,6 +798,24 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 			return parsed, convertInvocationError("--force requires a filesystem output")
 		}
 	}
+	if parsed.command == "validate" {
+		if err := finalizeValidateOptions(&parsed.validate); err != nil {
+			return parsed, validateInvocationError(err.Error())
+		}
+	}
+	if parsed.command == "inspect" {
+		if err := finalizeInspectOptions(&parsed.inspect); err != nil {
+			return parsed, inspectInvocationError(err.Error())
+		}
+	}
+	if parsed.command == "completion" {
+		if parsed.completionShell == "" {
+			return parsed, completionInvocationError("completion requires one SHELL selector")
+		}
+		if _, ok := completionScript(parsed.completionShell); !ok {
+			return parsed, completionInvocationError("completion SHELL must be bash, zsh, fish, or powershell")
+		}
+	}
 	return parsed, nil
 }
 
@@ -944,6 +887,18 @@ func convertInvocationError(message string) *invocationError {
 	return &invocationError{message: message, usage: convertHelp}
 }
 
+func validateInvocationError(message string) *invocationError {
+	return &invocationError{message: message, usage: validateHelp}
+}
+
+func inspectInvocationError(message string) *invocationError {
+	return &invocationError{message: message, usage: inspectHelp}
+}
+
+func completionInvocationError(message string) *invocationError {
+	return &invocationError{message: message, usage: completionHelp}
+}
+
 func usageForCommand(command string) helpTarget {
 	switch command {
 	case "version":
@@ -958,28 +913,58 @@ func usageForCommand(command string) helpTarget {
 		return renderHelp
 	case "convert":
 		return convertHelp
+	case "validate":
+		return validateHelp
+	case "inspect":
+		return inspectHelp
+	case "completion":
+		return completionHelp
 	default:
 		return rootHelp
 	}
 }
 
 func writeUsage(writer io.Writer, target helpTarget) {
+	usage, ok := shortUsageText(commandForHelp(target))
+	if !ok {
+		usage, _ = shortUsageText("")
+	}
+	fmt.Fprint(writer, usage)
+}
+
+func commandForHelp(target helpTarget) string {
 	switch target {
 	case versionHelp:
-		fmt.Fprint(writer, versionUsageText)
+		return "version"
 	case schemaHelp:
-		fmt.Fprint(writer, schemaUsageText)
+		return "schema"
 	case restoreHelp:
-		fmt.Fprint(writer, restoreUsageText)
+		return "restore"
 	case encodeHelp:
-		fmt.Fprint(writer, encodeUsageText)
+		return "encode"
 	case renderHelp:
-		fmt.Fprint(writer, renderUsageText)
+		return "render"
 	case convertHelp:
-		fmt.Fprint(writer, convertUsageText)
+		return "convert"
+	case validateHelp:
+		return "validate"
+	case inspectHelp:
+		return "inspect"
+	case completionHelp:
+		return "completion"
 	default:
-		fmt.Fprint(writer, rootUsageText)
+		return ""
 	}
+}
+
+func runCompletion(shell string, stdout, stderr io.Writer, diagnostics diagnosticWriter) int {
+	payload, ok := completionScript(shell)
+	if !ok {
+		diagnostics.write(diagnosticError, "completion SHELL must be bash, zsh, fish, or powershell")
+		writeUsage(stderr, completionHelp)
+		return ExitInvocation
+	}
+	return writeStdout(stdout, diagnostics, payload)
 }
 
 func writeSchemaFile(path string, payload []byte, force bool) error {
@@ -1290,7 +1275,7 @@ func writeAll(writer io.Writer, payload []byte) error {
 
 func newDiagnosticWriter(writer io.Writer, options globalOptions) diagnosticWriter {
 	_, noColorPresent := os.LookupEnv("NO_COLOR")
-	return diagnosticWriter{writer: writer, quiet: options.quiet, silent: options.silent, color: diagnosticColorEnabled(options.noColor, noColorPresent, isTerminal(writer))}
+	return diagnosticWriter{writer: writer, quiet: options.quiet, silent: options.silent, color: diagnosticColorEnabled(options.noColor, noColorPresent, isTerminal(writer)), state: &diagnosticState{}}
 }
 
 func diagnosticColorEnabled(explicitOff, noColorPresent, terminal bool) bool {
@@ -1314,11 +1299,22 @@ func (diagnostics diagnosticWriter) write(level diagnosticLevel, message string)
 		return
 	}
 	label, colorCode := diagnosticLabel(level)
+	var err error
 	if diagnostics.color {
-		fmt.Fprintf(diagnostics.writer, "\x1b[%sm%s:\x1b[0m %s\n", colorCode, label, message)
-		return
+		_, err = fmt.Fprintf(diagnostics.writer, "\x1b[%sm%s:\x1b[0m %s\n", colorCode, label, message)
+	} else {
+		_, err = fmt.Fprintf(diagnostics.writer, "%s: %s\n", label, message)
 	}
-	fmt.Fprintf(diagnostics.writer, "%s: %s\n", label, message)
+	if err != nil && diagnostics.state != nil && diagnostics.state.err == nil {
+		diagnostics.state.err = err
+	}
+}
+
+func (diagnostics diagnosticWriter) finalize(status int) int {
+	if status == ExitSuccess && diagnostics.state != nil && diagnostics.state.err != nil {
+		return ExitRuntimeFailure
+	}
+	return status
 }
 
 func (diagnostics diagnosticWriter) suppresses(level diagnosticLevel) bool {

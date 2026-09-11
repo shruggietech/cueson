@@ -17,7 +17,7 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 | Boundary | Responsibility | Must not own |
 |---|---|---|
 | `cmd/cueson` | Process entry and exit | Argument policy, domain behavior, or format parsing |
-| `internal/cli` | Command registration, argument parsing, help, stream and color policy, typed-error mapping | Cue model rules or source restoration |
+| `internal/cli` | Command registration, argument parsing, validated-input classification, inspection reports, static completion, help, stream and color policy, typed-error mapping | Cue model rules or source restoration |
 | `internal/version` | Single executable build-version source | Schema identity as a second mutable version source |
 | `internal/model` | Cue JSON types and format-neutral semantic invariants | Filesystem I/O, command behavior, or codec selection |
 | `internal/schema` | Embedded schema bytes, identity and version access, structural validation, and schema/software lockstep checks | Native codec capability inference |
@@ -31,6 +31,8 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 Dependencies point inward toward stable, dependency-light contracts. `internal/model` does not depend on CLI, source, codecs, conversion, or OCR. Codec availability is the authority for native ingest and render capability; schema recognition alone is not.
 
 Current source implements `internal/codec` as a capability registry plus bounded detection/decoding and native SubRip and WebVTT parser/renderers. `internal/convert` owns target projection, compatibility analysis, deterministic runtime-only loss reports, and conversion rendering. `internal/ocr` remains reserved future ownership.
+
+Validation, inspection, and conversion share one CLI-owned validated-input path so Cue JSON precedence, native content-first selection, schema and semantic checks, source integrity, and codec availability cannot drift among commands. Inspection projects that result into a fixed privacy-bounded report rather than exposing the Cue model directly. Help and four static shell completion definitions derive their public vocabulary from one ordered CLI surface catalogue while semantic option conflicts remain in the explicit parser.
 
 ## Source authority and restoration
 
@@ -61,6 +63,8 @@ Third-party producer software versions are independent from the Cue JSON schema 
 ## CLI and domain error boundary
 
 Domain packages return errors that retain enough type or classification for `internal/cli` to select a stable exit code and diagnostic. They do not print directly. The CLI owns help, quiet/silent filtering, color, stream selection, and final process status.
+
+The CLI diagnostic writer retains output failures. A command that otherwise succeeded but could not deliver a promised success or warning diagnostic becomes a runtime failure; an existing invocation or runtime failure keeps its original status class.
 
 Invalid invocation and missing pre-execution requirements use exit code 2. Failures after a valid shipped command is accepted, including missing runtime capability, parsing, validation, integrity, rendering, conversion, and I/O, use exit code 1. Success uses exit code 0.
 

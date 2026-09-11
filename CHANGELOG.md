@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added bounded native WebVTT detection and UTF-8 decoding, source-ordered cue and block parsing, setting and markup fidelity, deterministic diagnostics, exact source-envelope preservation, model-driven rendering, governed fixtures, and CLI workflows.
 - Added a capability-based internal codec registry for experimental native SubRip and WebVTT support.
 - Added bidirectional SubRip and WebVTT conversion with native or Cue JSON input, deterministic runtime loss reports, strict pre-publication rejection, and transactional file output.
+- Added complete Cue JSON and native subtitle validation, privacy-bounded human and JSON inspection, deterministic static Bash, Zsh, Fish, and PowerShell completion, and exact help coverage for the full development command surface.
 
 ### Fixed
 
@@ -29,6 +30,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-11: Reject reversed SubRip timing instead of silently swapping endpoints, and retain speaker prefixes in raw and plain payload views while exposing speaker identity only as a derived observation.
 - 2026-09-11: Keep WebVTT source bytes authoritative while representing cues and non-cue blocks in one contiguous source order, retain ordered raw setting occurrences beside effective values, and derive plain text, speakers, and inline timing without replacing native payload syntax.
 - 2026-09-11: Keep conversion target projections and loss reports outside Cue JSON, preserve schema version 0.1.0, and make strict conversion evaluate the complete compatibility report before rendering or publication.
+- 2026-09-11: Keep inspection reports outside Cue JSON, omit source content and user-controlled identifiers from both inspection modes, and label conversion loss as not evaluated until a target is requested.
+- 2026-09-11: Generate help and static completion vocabulary from one ordered CLI surface catalogue while retaining the explicit semantic parser and avoiding a new command framework dependency.
 
 ## [0.0.0] - 2026-09-10
 

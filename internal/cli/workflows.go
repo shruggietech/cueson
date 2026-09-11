@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -10,7 +9,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/shruggietech/cueson/internal/codec"
 	"github.com/shruggietech/cueson/internal/codec/subrip"
@@ -64,93 +62,23 @@ func runEncode(ctx context.Context, options encodeOptions, stdout io.Writer, std
 }
 
 func decodeCapturedSource(ctx context.Context, captured source.Captured, requested, encoding string, disableSpeakerDetection bool) (model.Document, error) {
-	registry, err := workflowRegistry(encoding)
+	loaded, err := loadNativeInput(ctx, captured, inputOptions{format: requested, encoding: encoding, disableSpeakerDetection: disableSpeakerDetection})
 	if err != nil {
 		return model.Document{}, err
 	}
-	selection, err := registry.Select(captured.Bytes, captured.Asset.FileName, requested)
-	if err != nil {
-		return model.Document{}, err
-	}
-	captured.Asset.MediaType = mediaTypeForFormat(selection.Format)
-	decoder, err := registry.RequireDecoder(selection.Format)
-	if err != nil {
-		return model.Document{}, err
-	}
-	document, err := decoder(ctx, captured, codec.DecodeOptions{Encoding: encoding, DisableSpeakerDetection: disableSpeakerDetection})
-	if err != nil {
-		return model.Document{}, err
-	}
-	combined := make([]model.Diagnostic, 0, len(selection.Diagnostics)+len(document.Diagnostics))
-	combined = append(combined, selection.Diagnostics...)
-	document.Diagnostics = append(combined, document.Diagnostics...)
-	updateDiagnosticStats(&document)
-	return document, nil
+	return loaded.document, nil
 }
 
 func loadConversionDocument(ctx context.Context, captured source.Captured, options convertOptions) (model.Document, error) {
-	if options.from == "cueson" {
-		return decodeConversionCueJSON(ctx, captured.Bytes, options.encoding)
-	}
-	if options.from != "auto" {
-		document, err := decodeCapturedSource(ctx, captured, options.from, options.encoding, options.noSpeakerDetection)
-		if err != nil {
-			return model.Document{}, err
-		}
-		if err := document.Validate(); err != nil {
-			return model.Document{}, fmt.Errorf("validate source model: %w", err)
-		}
-		return document, nil
-	}
-
-	document, cueJSONErr := schema.Decode(captured.Bytes)
-	if cueJSONErr == nil {
-		if options.encoding != "" {
-			return model.Document{}, convertInvocationError("--encoding cannot be used with automatically detected Cue JSON input")
-		}
-		if err := schema.CheckLockstep(version.String()); err != nil {
-			return model.Document{}, fmt.Errorf("schema version lockstep: %w", err)
-		}
-		if err := source.ValidateIntegrity(ctx, document); err != nil {
-			return model.Document{}, fmt.Errorf("validate Cue JSON source integrity: %w", err)
-		}
-		return document, nil
-	}
-	if cueJSONCandidate(captured.Bytes, captured.Asset.FileName) {
-		return model.Document{}, fmt.Errorf("decode Cue JSON input: %w", cueJSONErr)
-	}
-	document, err := decodeCapturedSource(ctx, captured, "auto", options.encoding, options.noSpeakerDetection)
+	loaded, err := loadValidatedInput(ctx, captured, inputOptions{format: options.from, encoding: options.encoding, disableSpeakerDetection: options.noSpeakerDetection})
 	if err != nil {
+		var constraint *inputConstraintError
+		if errors.As(err, &constraint) {
+			return model.Document{}, convertInvocationError(constraint.Error())
+		}
 		return model.Document{}, err
 	}
-	if err := document.Validate(); err != nil {
-		return model.Document{}, fmt.Errorf("validate source model: %w", err)
-	}
-	return document, nil
-}
-
-func decodeConversionCueJSON(ctx context.Context, payload []byte, encoding string) (model.Document, error) {
-	if encoding != "" {
-		return model.Document{}, convertInvocationError("--encoding cannot be used with Cue JSON input")
-	}
-	if err := schema.CheckLockstep(version.String()); err != nil {
-		return model.Document{}, fmt.Errorf("schema version lockstep: %w", err)
-	}
-	document, err := schema.Decode(payload)
-	if err != nil {
-		return model.Document{}, fmt.Errorf("decode Cue JSON input: %w", err)
-	}
-	if err := source.ValidateIntegrity(ctx, document); err != nil {
-		return model.Document{}, fmt.Errorf("validate Cue JSON source integrity: %w", err)
-	}
-	return document, nil
-}
-
-func cueJSONCandidate(payload []byte, fileName string) bool {
-	trimmed := bytes.TrimSpace(payload)
-	trimmed = bytes.TrimPrefix(trimmed, []byte{0xef, 0xbb, 0xbf})
-	trimmed = bytes.TrimSpace(trimmed)
-	return (len(trimmed) > 0 && (trimmed[0] == '{' || trimmed[0] == '[')) || strings.EqualFold(filepath.Ext(fileName), ".json")
+	return loaded.document, nil
 }
 
 func runConvert(ctx context.Context, options convertOptions, stdout io.Writer, stderr io.Writer, diagnostics diagnosticWriter) int {

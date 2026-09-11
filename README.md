@@ -50,7 +50,7 @@ cueson schema
 cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
 
-Current development source adds experimental SubRip and WebVTT encode, render, and conversion workflows:
+Current development source adds experimental SubRip and WebVTT encode, render, conversion, validation, privacy-bounded inspection, and static shell-completion workflows:
 
 ```text
 go run ./cmd/cueson --help
@@ -60,10 +60,13 @@ go run ./cmd/cueson encode --pretty captions.vtt
 go run ./cmd/cueson render captions.vtt.cueson.json --to vtt --output rendered.vtt
 go run ./cmd/cueson convert captions.srt --to vtt --output captions.vtt
 go run ./cmd/cueson convert captions.vtt.cueson.json --to srt --strict --output captions.srt
+go run ./cmd/cueson validate captions.srt
+go run ./cmd/cueson inspect --json captions.vtt.cueson.json
+go run ./cmd/cueson completion powershell
 go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
 
-`encode` writes Cue JSON to `INPUT.cueson.json` by default and retains the exact source bytes. SubRip supports explicit encoding selection for ambiguous legacy files; WebVTT accepts UTF-8 only, with an optional UTF-8 BOM. `render --to srt` and `render --to vtt` serialize the structured model as canonical LF syntax and remain intentionally distinct from exact `restore`. `convert` accepts Cue JSON or native subtitle input, writes the requested native format to stdout by default, reports every known omission or degradation on stderr, and rejects any known loss before publication when `--strict` is selected.
+`encode` writes Cue JSON to `INPUT.cueson.json` by default and retains the exact source bytes. SubRip supports explicit encoding selection for ambiguous legacy files; WebVTT accepts UTF-8 only, with an optional UTF-8 BOM. `render --to srt` and `render --to vtt` serialize the structured model as canonical LF syntax and remain intentionally distinct from exact `restore`. `convert` accepts Cue JSON or native subtitle input, writes the requested native format to stdout by default, reports every known omission or degradation on stderr, and rejects any known loss before publication when `--strict` is selected. `validate` checks canonical or native input without producing a payload, while `inspect` reports structural facts without source bytes, content text, or local identifiers. `completion` emits deterministic static definitions for Bash, Zsh, Fish, and PowerShell without modifying a profile.
 
 The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Seventeen GitHub Actions-owned CI and CodeQL checks are required. The two pull-request policy statuses remain visible but are not required checks while the GitHub Actions-authored second-round comment path lacks complete activation proof. Native codec behavior is exercised by the schema-and-conformance, native-test, race-detection, static-analysis, and vulnerability gates.
 

@@ -16,7 +16,7 @@ v0.0.0 is publicly available from the [official GitHub Release](https://github.c
 | [#5](https://github.com/shruggietech/cueson/issues/5) | `schema`, `schema --version`, schema output | Embedded canonical schema |
 | [#6](https://github.com/shruggietech/cueson/issues/6) | `restore` | Generic exact source-envelope restoration without a codec |
 
-Current v0.1.0 source additionally ships `encode`, `render`, and `convert` for experimental SubRip and WebVTT support. `validate`, `inspect`, and `completion` remain absent.
+Current v0.1.0 source additionally ships `encode`, `render`, `convert`, `validate`, `inspect`, and `completion` for the experimental SubRip and WebVTT workflow.
 
 ## `encode`
 
@@ -137,8 +137,44 @@ Successful restoration writes no stdout payload. It emits stderr only for warnin
 
 All caller-selected output directories and parents must already exist. Existing symbolic links, directories, devices, and other non-regular entries are refused even with `--force`. The command stages and verifies the complete bundle before publication, preserves forced regular-file destinations for rollback, and does not claim cross-process transaction isolation or crash atomicity.
 
-## Remaining command contract
+## `validate`
 
-The remaining intended v1 surface includes validate, inspect, and completion. A future Spec Kit slice must ratify and implement each command before it appears in help.
+```text
+cueson [global options] validate [options] INPUT
+```
+
+`validate` accepts Cue JSON, SubRip, or WebVTT. `--format auto|cueson|srt|vtt` selects the input class and defaults to `auto`; `json` and `cue-json` alias `cueson`, while `subrip` and `webvtt` are native-format aliases. `--encoding` uses the same native text names as `encode`, is invalid with Cue JSON, and accepts only UTF-8 selections for explicitly selected WebVTT.
+
+Auto mode recognizes valid Cue JSON first. JSON-looking or `.json`-named invalid content remains a Cue JSON failure rather than falling through to a native grammar. Cue JSON validation covers UTF-8 JSON parsing, the embedded schema, model semantics, source-envelope integrity, and executable/schema lockstep. Native validation covers bounded capture, content-first selection, decoding, the installed grammar, model semantics, and generated-envelope integrity.
+
+Validation creates no file and writes no stdout payload. Ordered warnings and one successful-validation diagnostic use stderr. Quiet suppresses the success diagnostic, silent also suppresses warnings, and errors remain visible. Invalid invocation and deterministic missing-input preconditions exit 2; accepted-input parsing, schema, semantic, integrity, capability, cancellation, and runtime failures exit 1.
+
+## `inspect`
+
+```text
+cueson [global options] inspect [options] INPUT
+cueson [global options] inspect [options] --json INPUT
+```
+
+Input classification, `--format`, `--encoding`, and validation depth match `validate`. Default output is one concise human report on stdout. `--json` emits one compact deterministic inspection-report-version-1 object followed by LF, with lowercase `snake_case` keys and no commentary on stdout.
+
+Both modes report input classification, canonical format, schema compatibility, declared and installed capabilities, verified source-integrity status, safe source-asset facts, aggregate document state, structural cue and block summaries, and diagnostic codes and locations. They exclude preserved bytes, content hashes, asset and cue IDs, payload and annotation text, native raw fields, timestamps, free-form diagnostic messages, caller paths, and machine identifiers. Because conversion loss depends on a target, inspection reports it as `not_evaluated` with reason `target_format_required`; this is not a lossless-conversion claim.
+
+## `completion`
+
+```text
+cueson [global options] completion bash
+cueson [global options] completion zsh
+cueson [global options] completion fish
+cueson [global options] completion powershell
+```
+
+Completion accepts exactly one case-sensitive supported shell selector and writes only one deterministic UTF-8 LF static script to stdout. Generation is non-interactive and does not modify a shell profile. The generated definitions use shell-native completion registration and never invoke Cueson recursively, execute subprocesses, access a network, inspect subtitle content, infer a shell from environment values, or interpret completion candidates as code.
+
+Missing, unsupported, or extra selectors are invocation failures with exit 2 and empty stdout. A valid generation whose stdout write fails exits 1. Quiet, silent, and no-color do not alter the requested script payload.
+
+## Complete development command contract
+
+The v0.1.0 development executable now exposes the complete intended v1 command names: `encode`, `restore`, `render`, `convert`, `validate`, `inspect`, `schema`, `version`, and `completion`. Completion of the command surface does not by itself declare format stability or release readiness; the remaining v1 hardening, end-to-end documentation, release-candidate, publication, and release work retain their own acceptance gates.
 
 Release packaging does not expand this command contract. See [release verification](release-verification.md) for the v0.0.0 artifact and publication proof and the [release process](release-process.md) for the separately authorized release lifecycle. The standalone documentation verifier checks that these maintained CLI and documentation links resolve offline; it is repository tooling, not a `cueson` subcommand.

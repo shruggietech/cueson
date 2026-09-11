@@ -136,9 +136,11 @@ Schema implementation distinguishes:
 1. JSON parsing.
 2. Draft 2020-12 structural validation.
 3. Cueson semantic validation, including cross-field references and capability consistency.
-4. Source-envelope integrity validation, including canonical base64, decoded length, SHA-256, portable basename collision, and destination-plan checks.
+4. Source-envelope integrity validation, including canonical base64, decoded length, SHA-256, safe basenames, and portable basename collisions; restoration separately validates its complete destination plan.
 5. Official software/schema version equality.
 
 Schema validation does not infer codec availability. Native codec presence remains an executable capability concern described by [the architecture](architecture.md) and [CLI contract](cli.md). Maintained documentation paths and local heading links are checked offline by the repository's standalone documentation verifier; that check does not publish the schema or validate external network availability.
 
 Cross-format conversion loss reports and private target projections are runtime-only values. They are not Cue JSON properties, do not change schema version 0.1.0, and never replace the validated source document or its exact source envelope.
+
+The versioned `inspect --json` report is likewise a separate CLI output contract rather than Cue JSON. It reports only bounded structural facts, excludes source bytes and content-bearing identifiers, and represents target-dependent conversion loss as not evaluated when no target was requested.

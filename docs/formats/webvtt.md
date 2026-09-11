@@ -16,6 +16,7 @@ This page defines the native WebVTT (`.vtt`) capability implemented in current d
 | Model-driven rendering | Experimental | `cueson render --to vtt` writes deterministic LF WebVTT from validated structured data. |
 | Exact source restoration | Available | `cueson restore` verifies and recreates source-envelope bytes without invoking the WebVTT codec. |
 | Cross-format conversion | Experimental | `cueson convert INPUT --to srt` projects common cue semantics and reports every known incompatible WebVTT feature. |
+| Validation and inspection | Experimental | `cueson validate` checks native grammar without producing Cue JSON; `cueson inspect` reports privacy-bounded structural facts. |
 | Stable WebVTT support | Unavailable | Stable support remains a v1.0.0 acceptance gate. |
 
 ## Detection, Unicode, and source authority
@@ -62,4 +63,4 @@ WebVTT-to-SubRip conversion preserves cue order, integer-millisecond timing, ove
 
 ## Explicit exclusions
 
-Current development source does not provide a public `validate` or `inspect` command, shell completion, stable v1 support declarations, schema publication to `cueson.io`, or any claim that rendered or converted output is byte-identical to the captured source.
+Current development source does not provide stable v1 support declarations, schema publication to `cueson.io`, or any claim that rendered or converted output is byte-identical to the captured source. Validation, privacy-bounded inspection, and static shell completion are available but do not change those stability or publication boundaries.
