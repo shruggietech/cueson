@@ -62,4 +62,6 @@ test("deployment workflow is manual-only and binds a full main revision", async 
   assert.ok(workflow.includes("^[0-9a-f]{40}$"));
   assert.match(workflow, /git merge-base --is-ancestor/);
   assert.match(workflow, /wrangler deploy/);
+  assert.match(workflow, /verify:production -- --expected-commit "\$REVISION"/);
+  assert.ok(workflow.indexOf("wrangler deploy") < workflow.indexOf("verify:production"));
 });

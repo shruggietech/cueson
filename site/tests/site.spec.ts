@@ -16,6 +16,8 @@ test("landing page makes installation, documentation, and release downloads obvi
   await expect(page.getByRole("link", { name: /Read the docs/i })).toHaveAttribute("href", "/docs/");
   await expect(page.getByRole("link", { name: /Download v1.0.0/i })).toHaveAttribute("href", /releases\/tag\/v1\.0\.0/);
   await expect(page.getByText("go install github.com/shruggietech/cueson/cmd/cueson@v1.0.0")).toBeVisible();
+  const primaryNavigation = page.getByRole("navigation", { name: "Primary" });
+  for (const name of ["Documentation", "Media guide", "GitHub", "Download"]) await expect(primaryNavigation.getByRole("link", { name, exact: true })).toBeVisible();
   await expectMetadata(page, "https://cueson.io/");
 });
 

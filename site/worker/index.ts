@@ -34,9 +34,11 @@ function applyPolicy(request: Request, response: Response): Response {
     headers.set("Cache-Control", "public, max-age=31536000, immutable");
   } else if (url.pathname === "/deployment.json") {
     headers.set("Cache-Control", "no-store, max-age=0");
+  } else if (!response.ok) {
+    headers.set("Cache-Control", "no-store, max-age=0");
   } else if ((headers.get("content-type") ?? "").startsWith("text/html")) {
     headers.set("Cache-Control", "public, max-age=0, must-revalidate");
-  } else if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/assets/")) {
+  } else if (url.pathname.startsWith("/_next/static/")) {
     headers.set("Cache-Control", "public, max-age=31536000, immutable");
   } else {
     headers.set("Cache-Control", "public, max-age=300, must-revalidate");

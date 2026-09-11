@@ -71,10 +71,12 @@ a { text-underline-offset: 0.2em; }
 .not-found { min-height: 70vh; display: grid; place-content: center; padding: 2rem; text-align: center; }
 
 @media (max-width: 800px) {
+  .site-nav { flex-wrap: wrap; gap: 0.75rem; padding: 0.75rem 0; }
+  .site-links { width: 100%; margin-left: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; padding-bottom: 0.25rem; }
+  .site-links a { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; text-align: center; }
   .hero { grid-template-columns: 1fr; padding-top: 4rem; gap: 2rem; }
   .cue-card { max-width: 34rem; }
   .feature-grid { grid-template-columns: 1fr; }
-  .site-links a:not(.nav-download) { display: none; }
   .hero h1 { font-size: clamp(3rem, 15vw, 5rem); }
 }
 @media (prefers-reduced-motion: reduce) {

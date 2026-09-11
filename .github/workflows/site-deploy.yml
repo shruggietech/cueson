@@ -57,3 +57,18 @@ jobs:
       - name: Deploy exact verified artifact
         run: corepack pnpm exec wrangler deploy
         working-directory: site
+      - name: Verify public deployment
+        shell: bash
+        working-directory: site
+        run: |
+          for attempt in $(seq 1 12); do
+            if corepack pnpm verify:production -- --expected-commit "$REVISION"; then
+              exit 0
+            fi
+            if [[ "$attempt" -eq 12 ]]; then
+              echo "public deployment verification failed after $attempt attempts" >&2
+              exit 1
+            fi
+            echo "public deployment is not ready yet; retrying in 15 seconds ($attempt/12)" >&2
+            sleep 15
+          done

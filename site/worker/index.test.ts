@@ -40,4 +40,17 @@ test("deployment metadata is never cached and missing aliases stay missing", asy
   assert.equal(deployment.headers.get("cache-control"), "no-store, max-age=0");
   const latest = await handleRequest(new Request("https://cueson.io/schema/latest/cueson.schema.json"), environment());
   assert.equal(latest.status, 404);
+  assert.equal(latest.headers.get("cache-control"), "no-store, max-age=0");
+});
+
+test("only successful content-addressed framework assets receive immutable caching", async () => {
+  const frameworkAsset = await handleRequest(new Request("https://cueson.io/_next/static/chunks/app-abc123.js"), environment());
+  assert.equal(frameworkAsset.headers.get("cache-control"), "public, max-age=31536000, immutable");
+
+  const stableBrandAsset = await handleRequest(new Request("https://cueson.io/assets/logos/cueson-horizontal-color.svg"), environment());
+  assert.equal(stableBrandAsset.headers.get("cache-control"), "public, max-age=300, must-revalidate");
+
+  const missingAsset = await handleRequest(new Request("https://cueson.io/assets/latest.svg"), environment());
+  assert.equal(missingAsset.status, 404);
+  assert.equal(missingAsset.headers.get("cache-control"), "no-store, max-age=0");
 });
