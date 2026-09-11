@@ -35,7 +35,7 @@
 - [x] T019 Update development release-proof and conformance expectations where required in `.github/workflows/release-proof.yml`, `.goreleaser.yaml`, `scripts/release-verify/`, and `internal/conformance/` without modifying immutable v0.0.0 material.
 - [x] T020 Run formatting, UTF-8 and mojibake checks, fixture-manifest verification, focused tests, full tests, race tests, bounded fuzz seeds, pure-Go cross-builds, quickstart scenarios, and development release proof for FR-030 through FR-033.
 - [x] T021 Run Spec Kit convergence and the blocking analysis gate, append and complete any traceable remediation tasks, and verify every specification requirement and success criterion has implementation evidence in `specs/S015-webvtt-workflows/tasks.md`.
-- [ ] T022 Reconcile issue #32 and the `cueson Delivery` Project, publish a formatter-verified pull request closing #32, read the body back, and move the issue to `PR review` under the user's push and PR authorization.
+- [x] T022 Reconcile issue #32 and the `cueson Delivery` Project, publish a formatter-verified pull request closing #32, read the body back, and move the issue to `PR review` under the user's push and PR authorization.
 - [ ] T023 Watch every current-head CI and external review result, address every finding, request at most one second Codex review with `@codex review` only if round one has findings, and stop only after the pull request is green and fully reviewed for FR-036 and SC-008.
 
 ## Dependencies and execution order
