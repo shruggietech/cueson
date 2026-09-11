@@ -44,7 +44,7 @@ Repository configuration is changed in dependency order and each write is follow
 
 ## Foundation delivery state
 
-The repository bootstrap and work slices S001 through S009 are present on `main`. The resulting foundation includes the ratified constitution and planning structure, buildable CLI, canonical v0.0.0 schema, source restoration, conformance fixtures, native and cross-platform CI, CodeQL, pull-request policy, verified repository controls, and a non-publishing release proof.
+The repository bootstrap and work slices S001 through S012 are present on `main`. The resulting foundation includes the ratified constitution and planning structure, buildable CLI, canonical and immutable v0.0.0 schemas, source restoration, conformance fixtures, native and cross-platform CI, CodeQL, pull-request policy, verified repository controls, maintained documentation, the complete official brand kit, and exact post-squash release proof. S013 has published and independently verified v0.0.0 while its repository-record pull request remains under review.
 
 | Outcome | Delivery evidence on `main` |
 |---|---|
@@ -58,7 +58,11 @@ The repository bootstrap and work slices S001 through S009 are present on `main`
 | Issue [#9](https://github.com/shruggietech/cueson/issues/9), pull-request policy automation | Pull request [#19](https://github.com/shruggietech/cueson/pull/19), merge commit `bce3ebe` |
 | Issue [#10](https://github.com/shruggietech/cueson/issues/10), repository controls | Pull request [#20](https://github.com/shruggietech/cueson/pull/20), merge commit `cc2bac0` |
 | Issue [#11](https://github.com/shruggietech/cueson/issues/11), non-publishing release proof | Pull request [#21](https://github.com/shruggietech/cueson/pull/21), merge commit `3da0a4b` |
+| Issue [#12](https://github.com/shruggietech/cueson/issues/12), documentation and milestone verification | Pull request [#22](https://github.com/shruggietech/cueson/pull/22), merge commit `730b649` |
+| Issue [#23](https://github.com/shruggietech/cueson/issues/23), official brand-kit integration | Pull request [#24](https://github.com/shruggietech/cueson/pull/24), merge commit `7756309` |
+| Issue [#25](https://github.com/shruggietech/cueson/issues/25), protected release preparation | Pull request [#26](https://github.com/shruggietech/cueson/pull/26), merge commit `b294a69` |
+| Issue [#27](https://github.com/shruggietech/cueson/issues/27), public v0.0.0 publication and verification | Annotated tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0) and [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0), with closure pending the official S013 pull-request merge |
 
-GitHub issues [#1](https://github.com/shruggietech/cueson/issues/1) and [#3](https://github.com/shruggietech/cueson/issues/3) through [#11](https://github.com/shruggietech/cueson/issues/11) are closed. Issue [#12](https://github.com/shruggietech/cueson/issues/12) remains the final open child of epic [#2](https://github.com/shruggietech/cueson/issues/2) while S010 completes documentation and milestone evidence. Closure of those two issues belongs to the official S010 pull request merge, not to preparation of the evidence.
+GitHub issues [#1](https://github.com/shruggietech/cueson/issues/1) through [#12](https://github.com/shruggietech/cueson/issues/12), epic [#2](https://github.com/shruggietech/cueson/issues/2), issue [#23](https://github.com/shruggietech/cueson/issues/23), and issue [#25](https://github.com/shruggietech/cueson/issues/25) are closed. Issue [#27](https://github.com/shruggietech/cueson/issues/27) is the sole open repository issue and closes only when the official S013 pull request merges.
 
-The `v0.0.0` milestone describes a repository foundation without production format-completeness claims. Candidate readiness does not create release authority: the milestone, any tag, any GitHub Release, any immutable release-schema copy, and production publication remain separate protected transitions.
+The `v0.0.0` milestone describes a released repository foundation without production format-completeness claims. Tag and GitHub Release publication are complete, while milestone closure, production schema hosting, signatures, attestations, and production-domain activation remain separate protected transitions.

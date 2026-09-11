@@ -1,8 +1,8 @@
 # Release verification
 
-**Status:** Non-publishing v0.0.0 release-candidate proof
+**Status:** Published v0.0.0 verified from accepted non-publishing proof
 
-This guide defines the repository-owned release proof completed by issue [#11](https://github.com/shruggietech/cueson/issues/11). It produces and verifies candidate artifacts only. It does not create a tag, GitHub Release, release asset, signature, attestation, or production `cueson.io` state.
+This guide defines the repository-owned release proof completed by issue [#11](https://github.com/shruggietech/cueson/issues/11) and records how its accepted default-branch evidence was used to publish and independently verify [v0.0.0](https://github.com/shruggietech/cueson/releases/tag/v0.0.0). The checked-in workflow still produces candidate evidence only; it does not create tags, GitHub Releases, release assets, signatures, attestations, or production `cueson.io` state.
 
 ## Supported matrix
 
@@ -17,7 +17,7 @@ The snapshot builds with `CGO_ENABLED=0` for:
 | `windows/amd64` | `cueson_0.0.0_windows_amd64.zip` | `cueson.exe` |
 | `windows/arm64` | `cueson_0.0.0_windows_arm64.zip` | `cueson.exe` |
 
-Every archive contains exactly the target executable, `cueson.schema.json`, `LICENSE`, and `NOTICE` at its root. The packaged schema is sourced from the [versioned v0.0.0 release candidate](../schema/releases/v0.0.0/cueson.schema.json), whose bytes must match the canonical embedded source before artifact inspection begins. `cueson_0.0.0_checksums.txt` covers exactly those six archives. Each target binary produces one target-bound SPDX JSON SBOM named for the corresponding archive, which avoids introducing temporary archive-extraction paths into the document.
+Every archive contains exactly the target executable, `cueson.schema.json`, `LICENSE`, and `NOTICE` at its root. The packaged schema is sourced from the immutable [versioned v0.0.0 release schema](../schema/releases/v0.0.0/cueson.schema.json), whose bytes must match the canonical embedded source before artifact inspection begins. `cueson_0.0.0_checksums.txt` covers exactly those six archives. Each target binary produces one target-bound SPDX JSON SBOM named for the corresponding archive, which avoids introducing temporary archive-extraction paths into the document.
 
 ## Exact tools
 
@@ -61,7 +61,7 @@ goreleaser release --snapshot --clean --skip=publish
 
 The `.goreleaser.yaml` file fixes the snapshot identity to `0.0.0`, packages the versioned release schema, disables release publishing in configuration, closes the build matrix to six targets, normalizes artifact timestamps to the source commit, strips build paths, and injects the `internal/version` release override with a verifier-readable marker consumed by the public version surface. GoReleaser writes only beneath ignored `dist/`.
 
-GoReleaser snapshot mode does not upload artifacts. `release.disable: true` is a second boundary so the checked-in configuration cannot publish even if a caller omits snapshot mode. A future public release requires a separate specification and operator authorization.
+GoReleaser snapshot mode does not upload artifacts. `release.disable: true` is a second boundary so the checked-in configuration cannot publish even if a caller omits snapshot mode. Any later public release requires a separate specification and operator authorization.
 
 ## Repository-owned verification
 
@@ -110,7 +110,11 @@ The repository ruleset does not require this check. S009 nevertheless required i
 
 The `Non-publishing snapshot` job passed on the final head of pull request [#21](https://github.com/shruggietech/cueson/pull/21), together with all CI, CodeQL, and pull-request-policy gates. The operator then merged the pull request into `main` as `3da0a4b4eeae57024d837c5f46e9d62537ffab95` on 2026-09-10, closing issue [#11](https://github.com/shruggietech/cueson/issues/11). Post-merge [CI run 34421328445](https://github.com/shruggietech/cueson/actions/runs/34421328445) and [CodeQL run 34421328401](https://github.com/shruggietech/cueson/actions/runs/34421328401) also completed successfully.
 
-That evidence proves the reviewed snapshot pipeline and verifier reached the default branch. S012 extends the workflow so the eventual release-preparation squash-merge commit receives a distinct proof rather than inheriting the pull-request head's evidence. It does not convert either retained workflow artifact into a release asset, and no `v0.0.0` tag or GitHub Release exists. Publication remains governed by the separate release process.
+S012 extended the workflow so its release-preparation squash-merge commit received a distinct proof rather than inheriting the pull-request head's evidence. For exact revision `b294a6952c8bd041d852c502f5d7206c0b58edd6`, [CI run 34543376819](https://github.com/shruggietech/cueson/actions/runs/34543376819), [CodeQL run 34543376786](https://github.com/shruggietech/cueson/actions/runs/34543376786), and [Release proof run 34543376814](https://github.com/shruggietech/cueson/actions/runs/34543376814) all completed successfully. Artifact `10178231596` recorded schema SHA-256 `d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975`, six archive digests, six SBOM digests, six checksum entries, Linux amd64 host execution, and `published: false` as the truthful state of the non-publishing verifier.
+
+S013 created unsigned annotated tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0), proved its remote peeled target was the same exact revision, and published the final [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) at `2026-09-11T00:20:19Z`. The public set contains exactly the accepted six archives, six matching SPDX JSON SBOMs, and `cueson_0.0.0_checksums.txt`; internal `release-evidence.json`, GoReleaser metadata and configuration, and extracted directories were not published.
+
+Independent post-publication verification downloaded all thirteen assets into a new clean directory, matched every SHA-256 value against the accepted evidence, applied the exact six-entry checksum bijection, executed the public Windows amd64 binary through a hidden non-interactive process, required exact `0.0.0` output from `version` and `schema --version`, and compared emitted schema bytes with the tagged immutable schema. GitHub API read-back also proved the release body matched `docs/releases/v0.0.0.md`, every asset was uploaded, and the release was public, final, and non-prerelease. Milestone v0.0.0 remained open, no signature or attestation asset was added, and the production schema hostname remained inactive.
 
 ## Complete local gate
 
@@ -134,4 +138,4 @@ go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 0.0.0 -
 git diff --check
 ```
 
-Success proves a non-published candidate. It does not authorize the final merge, a tag, release publication, schema publication, milestone closure, or production mutation.
+Success proves a candidate at the current revision. It does not republish v0.0.0 or authorize a later merge, tag, release, schema publication, milestone closure, or production mutation.

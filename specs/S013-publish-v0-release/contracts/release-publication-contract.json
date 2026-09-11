@@ -1,0 +1,102 @@
+{
+  "version": "0.0.0",
+  "tag": "v0.0.0",
+  "release_name": "Cueson v0.0.0",
+  "source_revision": "b294a6952c8bd041d852c502f5d7206c0b58edd6",
+  "release_schema_sha256": "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975",
+  "proof_run_id": 34543376814,
+  "proof_artifact_id": 10178231596,
+  "draft": false,
+  "prerelease": false,
+  "assets": [
+    {
+      "name": "cueson_0.0.0_darwin_amd64.tar.gz",
+      "kind": "archive",
+      "sha256": "3f4fb58a99c940111f3080859c99188cf886d6fd6522d9300a055a08562d2a71",
+      "goos": "darwin",
+      "goarch": "amd64"
+    },
+    {
+      "name": "cueson_0.0.0_darwin_amd64.tar.gz.sbom.json",
+      "kind": "sbom",
+      "sha256": "b37bee5ae80773e17206aea87eca5a83bd00818855b4372e67be8540e74e80d9",
+      "goos": "darwin",
+      "goarch": "amd64"
+    },
+    {
+      "name": "cueson_0.0.0_darwin_arm64.tar.gz",
+      "kind": "archive",
+      "sha256": "db98c0a983c4dc92fcfc212d14a21346179e423c2162776f1d977bf4d858eaec",
+      "goos": "darwin",
+      "goarch": "arm64"
+    },
+    {
+      "name": "cueson_0.0.0_darwin_arm64.tar.gz.sbom.json",
+      "kind": "sbom",
+      "sha256": "75b93500296eb9b90c14330998ec5afb1c4380c3e2066a2f8d500cad04eecd38",
+      "goos": "darwin",
+      "goarch": "arm64"
+    },
+    {
+      "name": "cueson_0.0.0_linux_amd64.tar.gz",
+      "kind": "archive",
+      "sha256": "08e1b8de5c5881908c50ac9a66c8a06356cd86148b36da91909d7871e95e51a3",
+      "goos": "linux",
+      "goarch": "amd64"
+    },
+    {
+      "name": "cueson_0.0.0_linux_amd64.tar.gz.sbom.json",
+      "kind": "sbom",
+      "sha256": "0ccdd648ea399ccf375c83ae7c4f52d2a94e4769fb1bd4b44d51e2115024e693",
+      "goos": "linux",
+      "goarch": "amd64"
+    },
+    {
+      "name": "cueson_0.0.0_linux_arm64.tar.gz",
+      "kind": "archive",
+      "sha256": "ec08d673f1379814aec4773c33e0a34658b4912c999c3b2726befb71afaf8980",
+      "goos": "linux",
+      "goarch": "arm64"
+    },
+    {
+      "name": "cueson_0.0.0_linux_arm64.tar.gz.sbom.json",
+      "kind": "sbom",
+      "sha256": "1eb4a8d41db736da231bbd50f9338d63beccc6bfee4bb851338501a0922fd9c5",
+      "goos": "linux",
+      "goarch": "arm64"
+    },
+    {
+      "name": "cueson_0.0.0_windows_amd64.zip",
+      "kind": "archive",
+      "sha256": "30871bd994dd9f1ed16a952e918ec705561ed602e24f70d0434d087b9c8a803c",
+      "goos": "windows",
+      "goarch": "amd64"
+    },
+    {
+      "name": "cueson_0.0.0_windows_amd64.zip.sbom.json",
+      "kind": "sbom",
+      "sha256": "0ccf1d21fb3e064fecac3ca078ee09cc13823445a6e212f33f590608bce2890f",
+      "goos": "windows",
+      "goarch": "amd64"
+    },
+    {
+      "name": "cueson_0.0.0_windows_arm64.zip",
+      "kind": "archive",
+      "sha256": "44072fbf01ac17381a5c0304e363d0e49f8a7447608222cdb265df78d817ea7c",
+      "goos": "windows",
+      "goarch": "arm64"
+    },
+    {
+      "name": "cueson_0.0.0_windows_arm64.zip.sbom.json",
+      "kind": "sbom",
+      "sha256": "9aab3aabd945cf035bbaa2d43ec82eae2af82c75d335bc8aad40c832f456795f",
+      "goos": "windows",
+      "goarch": "arm64"
+    },
+    {
+      "name": "cueson_0.0.0_checksums.txt",
+      "kind": "checksums",
+      "sha256": "fb9205aaf3a4a0d9e77f1bd7f5a91f9359133bdd46356f3a8e399289ce253203"
+    }
+  ]
+}

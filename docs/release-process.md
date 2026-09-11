@@ -1,8 +1,8 @@
 # Release process
 
-**Current state:** v0.0.0 release candidate, not publicly released
+**Current state:** v0.0.0 publicly released and independently verified
 
-This document defines the protected release lifecycle around Cueson's repository-owned candidate proof. It does not provide an executable publishing path and does not authorize any release action. The runnable, non-publishing artifact checks remain in [release verification](release-verification.md).
+This document defines the protected release lifecycle around Cueson's repository-owned candidate proof and authorized public releases. It does not provide an executable publishing path or grant release authority by itself. The runnable, non-publishing artifact checks and v0.0.0 publication evidence are recorded in [release verification](release-verification.md).
 
 ## Authority split
 
@@ -10,13 +10,13 @@ Candidate construction and verification are ordinary reviewed repository work. F
 
 An authorization applies only to the named action and state under review. It does not silently authorize a later retry after material changes, another pull request, another tag, another release, or production publication.
 
-## v0.0.0 candidate state
+## v0.0.0 released state
 
-The repository currently has a buildable `0.0.0` executable, an embedded `0.0.0` Cue JSON schema, a byte-identical [versioned release-schema candidate](../schema/releases/v0.0.0/cueson.schema.json), prepared [v0.0.0 release notes](releases/v0.0.0.md), and a verified non-publishing six-target snapshot pipeline. The current CLI and schema boundary is documented in the [CLI contract](cli.md) and [schema baseline](schema.md).
+The repository has a buildable `0.0.0` executable, an embedded `0.0.0` Cue JSON schema, a byte-identical immutable [versioned release schema](../schema/releases/v0.0.0/cueson.schema.json), published [v0.0.0 release notes](releases/v0.0.0.md), and a verified non-publishing six-target snapshot pipeline. The current CLI and schema boundary is documented in the [CLI contract](cli.md) and [schema baseline](schema.md).
 
-The candidate is not a public release. There is no release tag, GitHub Release, published schema endpoint, signature, attestation, or production-domain activation. The versioned schema remains a reviewed candidate until publication binds it to the authorized tag, and candidate artifacts retained by GitHub Actions are review evidence rather than release assets.
+The immutable annotated tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0) peels to `b294a6952c8bd041d852c502f5d7206c0b58edd6`. The [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) is public, final, and contains exactly six archives, six target-bound SPDX JSON SBOMs, and one checksum manifest copied byte for byte from accepted default-branch proof run [34543376814](https://github.com/shruggietech/cueson/actions/runs/34543376814).
 
-S012 prepares the permanent release record and extends the same non-publishing proof to pushes on `main`. Its pull request proves the reviewed head only. If the operator later squash-merges it, the resulting default-branch commit receives its own proof and becomes the proposed publication target. Neither merge nor successful default-branch proof publishes v0.0.0 or closes the v0.0.0 milestone.
+The release does not publish the canonical schema endpoint, add a signature or attestation, activate production `cueson.io`, implement native subtitle codecs, or close milestone v0.0.0. Those remain distinct governed outcomes. GitHub Actions artifacts from later snapshot runs remain review evidence rather than release assets unless another release is explicitly authorized.
 
 ## Candidate readiness
 
@@ -35,14 +35,14 @@ Candidate readiness proves that a release decision can be made. It does not make
 
 ## Release preparation lifecycle
 
-S012 prepares the publication state without weakening the existing non-publishing controls.
+For v0.0.0, S012 prepared the publication state without weakening the existing non-publishing controls.
 
-1. Review the dated v0.0.0 changelog, concise release notes, and versioned release-schema candidate together on the S012 pull request.
-2. Prove the pull-request head with the complete six-target snapshot and repository-owned verifier. Treat that run as review evidence only because squash merge creates a different commit.
-3. Stop for the operator's final review and specific merge decision after the pull request is green and fully reviewed.
-4. If the operator squash-merges S012, wait for the `main` push workflow to rebuild and verify the exact resulting commit. Do not substitute the pull-request head or pre-merge default-branch revision.
-5. Inspect the default-branch `release-evidence.json` and confirm the full source revision, version, `release_schema_sha256`, target inventory, archive and SBOM digests, counts, compatible-host execution result, and `published: false`.
-6. Present the complete decision package described below and stop before tag creation or release publication until the operator grants authority for those exact actions and artifacts.
+1. The dated v0.0.0 changelog, concise release notes, and versioned release-schema candidate were reviewed together on the S012 pull request.
+2. The complete six-target snapshot and repository-owned verifier proved the pull-request head as review evidence only because squash merge created a different commit.
+3. The operator completed the final review and specific merge decision after the pull request was green and fully reviewed.
+4. The `main` push workflow rebuilt and verified the exact squash-merge commit rather than substituting the pull-request head or pre-merge default-branch revision.
+5. The default-branch `release-evidence.json` recorded the full source revision, version, `release_schema_sha256`, target inventory, archive and SBOM digests, counts, compatible-host execution result, and `published: false`.
+6. S013 froze the complete decision package, received exact tag and release authority, published only the authorized state, and verified the public result independently.
 
 The checked-in GoReleaser configuration remains snapshot-only and has publication disabled. A release slice must not repurpose that reviewed configuration into a hidden publication mechanism.
 
@@ -50,7 +50,7 @@ The checked-in GoReleaser configuration remains snapshot-only and has publicatio
 
 Pull-request proof answers whether the reviewed change can produce the expected candidate. It does not identify the final publication commit. Repository policy uses squash merges, so the pull-request head is not the resulting `main` revision and must never be recorded as the release target by prediction.
 
-The non-publishing workflow also runs on pushes to `main`. After an authorized S012 merge, only a successful run for the exact 40-character squash-merge revision can promote that revision from reviewed repository state to proposed publication target. If the default branch moves again before authorization, or if artifacts, tools, dependencies, notes, schema bytes, or checks change materially, the decision package must be regenerated and reviewed against the new state.
+The non-publishing workflow also runs on pushes to `main`. After the authorized S012 merge, successful run [34543376814](https://github.com/shruggietech/cueson/actions/runs/34543376814) promoted exact 40-character squash-merge revision `b294a6952c8bd041d852c502f5d7206c0b58edd6` from reviewed repository state to the authorized publication target. Future releases must repeat this binding; if the default branch moves before authorization, or artifacts, tools, dependencies, notes, schema bytes, or checks change materially, the decision package must be regenerated and reviewed against the new state.
 
 ## Operator decision package
 
@@ -81,7 +81,7 @@ Authority for one row does not authorize another row. In particular, permission 
 
 ## Tag and GitHub Release boundary
 
-After release preparation reaches the verified default branch, the operator may authorize tag and release publication for the exact commit and artifact set recorded by the successful `main` proof. The publishing actor must read back the resulting tag target, release notes, release state, and asset inventory before treating an API success as completion.
+After release preparation reaches the verified default branch, the operator may authorize tag and release publication for the exact commit and artifact set recorded by the successful `main` proof. For v0.0.0, the operator authorized the exact S012 commit and thirteen public files, and S013 read back the resulting tag target, release notes, release state, and asset inventory before treating publication as complete.
 
 The release must use the verified artifacts associated with the approved source commit. A rebuild from different source, a changed dependency, a changed tool version, or a materially different artifact set requires verification and operator judgment again. Draft, partial, or failed publication is not silently promoted to success.
 
@@ -101,7 +101,7 @@ Publication is complete only after read-back and independent comparison prove:
 - the GitHub Release identifies the intended tag and is in the intended publication state;
 - the published asset inventory is complete and contains no unexpected artifact;
 - archive checksums match the published archives;
-- every packaged executable and embedded schema reports the release version;
+- every packaged executable contains the verified release marker and expected build identity, the host-compatible executable reports the release version, and every embedded schema reports the schema version;
 - every packaged schema matches the immutable tagged repository schema byte-for-byte;
 - SBOMs remain associated with the correct target and source revision;
 - release notes are the reviewed highlights and end with the exact tagged changelog link;
@@ -111,12 +111,12 @@ If any comparison fails, stop dependent actions, retain the evidence, and ask th
 
 ## Milestone lifecycle
 
-The v0.0.0 milestone remains open when S012 finishes because release preparation and public release completion are different states. After an authorized v0.0.0 publication passes post-publication verification, the milestone can be closed through its separately governed lifecycle action.
+The v0.0.0 milestone remains open after S013 publication verification because milestone closure is a separate lifecycle action that was not included in the operator's release authority. It can be closed only through a separately authorized reconciliation.
 
-If the operator decides not to publish v0.0.0, the milestone may be retired or its remaining commitments moved only through an explicit recorded decision. The repository must continue to say that no v0.0.0 release occurred.
+For a future abandoned release, its milestone may be retired or its remaining commitments moved only through an explicit recorded decision. Repository status must continue to reflect the actual publication outcome.
 
 ## After a successful release
 
-After publication and milestone reconciliation, maintainers retain the fresh `[Unreleased]` section for later work, preserve the released changelog and schema, complete post-merge housekeeping, and record any release follow-up as new issues rather than editing historical evidence.
+After publication, maintainers retain the fresh `[Unreleased]` section for later work, preserve the released changelog and schema, complete post-merge housekeeping, and record any release follow-up as new issues rather than editing historical evidence. Milestone reconciliation follows only when separately authorized.
 
 Signatures, attestations, public schema hosting, DNS, redirects, TLS, documentation hosting, and other production `cueson.io` work remain separate future outcomes. None is implied by the existing snapshot verifier or by a successful v0.0.0 release.

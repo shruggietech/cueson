@@ -65,4 +65,4 @@ Native SubRip work must add focused accepted, malformed, parser, renderer, and c
 
 ## Explicit v0.0.0 exclusions
 
-The v0.0.0 release candidate does not provide raw SubRip ingest, format detection, text decoding, cue parsing, speaker extraction, model-driven SubRip rendering, native round trips, cross-format conversion, or a stable SubRip compatibility promise. The presence of `subrip` in the schema and the ability to restore source-envelope bytes must not be presented as any of those capabilities.
+The v0.0.0 release does not provide raw SubRip ingest, format detection, text decoding, cue parsing, speaker extraction, model-driven SubRip rendering, native round trips, cross-format conversion, or a stable SubRip compatibility promise. The presence of `subrip` in the schema and the ability to restore source-envelope bytes must not be presented as any of those capabilities.

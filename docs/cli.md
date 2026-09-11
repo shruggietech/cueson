@@ -6,7 +6,7 @@
 
 This document is the release-specific CLI authority for the v0.0.0 foundation. Commands enter help and command listings only when the executable implements their documented behavior. The broader command surface in the [working project specification](Cueson-Project-Specification-v0.0.0.md) is a roadmap, not permission to register placeholders.
 
-v0.0.0 is an unreleased source candidate. There is no supported installer or published binary distribution. The implemented commands may be exercised with `go run ./cmd/cueson ...` from a Go 1.25 source checkout; candidate archives produced by release verification are review evidence rather than installable releases.
+v0.0.0 is publicly available from the [official GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) as six verified platform archives with checksums and matching SPDX JSON SBOMs. The implemented commands may also be exercised with `go run ./cmd/cueson ...` from a Go 1.25 source checkout. Snapshot archives produced by later non-publishing verification runs remain review evidence unless separately published through an authorized release.
 
 ## v0.0.0 command delivery
 
@@ -113,4 +113,4 @@ All caller-selected output directories and parents must already exist. Existing 
 
 The intended v1 surface includes encode, restore, render, convert, validate, inspect, schema, version, and completion. A future Spec Kit slice must ratify and implement each command before it appears in release help. Documentation may describe roadmap intent only when it labels the behavior as unavailable in the current release.
 
-Candidate packaging does not expand this command contract or authorize publication. See [release verification](release-verification.md) for the non-publishing artifact proof and the [release process](release-process.md) for the separately authorized release lifecycle. The standalone documentation verifier checks that these maintained CLI and documentation links resolve offline; it is repository tooling, not a `cueson` subcommand.
+Release packaging does not expand this command contract. See [release verification](release-verification.md) for the v0.0.0 artifact and publication proof and the [release process](release-process.md) for the separately authorized release lifecycle. The standalone documentation verifier checks that these maintained CLI and documentation links resolve offline; it is repository tooling, not a `cueson` subcommand.

@@ -68,4 +68,4 @@ Native WebVTT work must add focused accepted, malformed, parser, renderer, order
 
 ## Explicit v0.0.0 exclusions
 
-The v0.0.0 release candidate does not provide raw WebVTT ingest, signature detection, UTF-8 decoding, cue or block parsing, markup interpretation, speaker or token extraction, model-driven WebVTT rendering, native round trips, cross-format conversion, or a stable WebVTT compatibility promise. The presence of `webvtt` in the schema and the ability to restore source-envelope bytes must not be presented as any of those capabilities.
+The v0.0.0 release does not provide raw WebVTT ingest, signature detection, UTF-8 decoding, cue or block parsing, markup interpretation, speaker or token extraction, model-driven WebVTT rendering, native round trips, cross-format conversion, or a stable WebVTT compatibility promise. The presence of `webvtt` in the schema and the ability to restore source-envelope bytes must not be presented as any of those capabilities.
