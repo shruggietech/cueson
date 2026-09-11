@@ -78,6 +78,20 @@ func TestReferenceMarkersAndStaleClaims(t *testing.T) {
 	assertViolation(t, result.violations, "CONTRIBUTING.md: stale capability or release claim remains: Cueson is an unreleased v0.0.0 foundation candidate")
 }
 
+func TestPublishedV1DocsRejectCandidateClaims(t *testing.T) {
+	repo := newRepository(t)
+	writeFile(t, repo, "docs/formats/srt.md", readFileForVerifierTest(t, repo, "docs/formats/srt.md")+"\nThat evidence supports the stable candidate declaration; tag and release publication remain separate.\n")
+	writeFile(t, repo, "docs/cueson-media-format-guide.html", "<p>Current v1.0.0 candidate boundary: The candidate is not yet published. SRT is a v1.0.0 release candidate.</p>\n")
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "docs/formats/srt.md: stale capability or release claim remains: stable candidate declaration; tag and release publication remain separate")
+	assertViolation(t, result.violations, "docs/cueson-media-format-guide.html: stale capability or release claim remains: Current v1.0.0 candidate boundary:")
+	assertViolation(t, result.violations, "docs/cueson-media-format-guide.html: stale capability or release claim remains: The candidate is not yet published")
+	assertViolation(t, result.violations, "docs/cueson-media-format-guide.html: stale capability or release claim remains: v1.0.0 release candidate")
+}
+
 func TestFormatMatrixRowsMustAppearInMatchingGuide(t *testing.T) {
 	repo := newRepository(t)
 	writeFile(t, repo, "docs/formats/srt.md", "# SRT\n")

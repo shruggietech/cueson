@@ -69,7 +69,7 @@ SubRip-to-WebVTT conversion preserves cue order, integer-millisecond timing, ove
 
 ## Fixture and stability boundary
 
-The manifest-governed `testdata/fixtures/subrip/`, `testdata/malformed/subrip/`, `testdata/fuzz/`, and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. That evidence supports the stable candidate declaration; tag and release publication remain separate.
+The manifest-governed `testdata/fixtures/subrip/`, `testdata/malformed/subrip/`, `testdata/fuzz/`, and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. That evidence supports the stable v1.0.0 release, which is published and independently verified.
 
 ## Conformance evidence index
 
