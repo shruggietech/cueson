@@ -64,7 +64,7 @@ func ParseTimingLine(line string) (TimingLine, error) {
 	settingsRaw := ""
 	if endBoundary >= 0 {
 		endText = right[:endBoundary]
-		settingsRaw = asciiTrim(right[endBoundary:])
+		settingsRaw = right[endBoundary:]
 	}
 	start, err := ParseTimestamp(startText)
 	if err != nil {

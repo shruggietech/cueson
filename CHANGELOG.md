@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Made shared schema, encode, and render file publication transactional across short writes, failed writes, new destinations, and forced replacements so a failed operation does not leave partial or lost output.
+- Preserved WebVTT raw NUL and setting whitespace independently from semantic text, hardened model-driven rendering against unsafe or inconsistent settings and empty payloads, regenerated edited REGION settings, and diagnosed malformed empty voice annotations without losing their source syntax.
 
 ### Decisions
 

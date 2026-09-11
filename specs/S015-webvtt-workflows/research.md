@@ -34,7 +34,7 @@ Keep `settings_raw` and a recognized effective settings map, and add ordered set
 
 ## Decision: Iterative parser and tokenizer
 
-Implement an iterative document state machine and a bounded cue-text tokenizer. The document parser validates signature and header, collects empty-line-delimited units, recognizes exact NOTE, STYLE, REGION, or cue grammar, and preserves unknown units. The tokenizer recognizes WebVTT tags, class suffixes, voice and language annotations, the WebVTT character-reference subset, and inline timestamps while keeping malformed or unknown text literal and diagnosed.
+Implement an iterative document state machine and a bounded cue-text tokenizer. The document parser validates signature and header, collects empty-line-delimited units, recognizes exact NOTE, STYLE, REGION, or cue grammar, and preserves unknown units. The tokenizer recognizes WebVTT tags, class suffixes, voice and language annotations, HTML character references as required by WebVTT, and inline timestamps while keeping malformed or unknown text literal and diagnosed.
 
 **Rationale**: Iterative scanning keeps memory and stack behavior proportional to the existing 64 MiB source ceiling and makes line, block, and diagnostic order deterministic.
 

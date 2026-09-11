@@ -534,7 +534,7 @@ func validateWebVTTCue(index int, cue *Cue) error {
 	if !equalOptionalString(cue.SourceIdentifier, native.IdentifierRaw) {
 		return fmt.Errorf("cues[%d].source_identifier must equal format_data.webvtt.identifier_raw", index)
 	}
-	if native.RawPayloadLines == nil || !webVTTLinesArePhysical(native.RawPayloadLines) || native.RawPayload != strings.Join(native.RawPayloadLines, "\n") {
+	if !webVTTPayloadLinesValid(native.RawPayloadLines) || native.RawPayload != strings.Join(native.RawPayloadLines, "\n") {
 		return fmt.Errorf("cues[%d].format_data.webvtt.raw_payload_lines must LF-join to raw_payload", index)
 	}
 	if cue.Payload.RawText != native.RawPayload {
@@ -589,6 +589,18 @@ func validWebVTTBlockType(value string) bool {
 func webVTTLinesArePhysical(lines []string) bool {
 	for _, line := range lines {
 		if strings.ContainsAny(line, "\r\n") {
+			return false
+		}
+	}
+	return true
+}
+
+func webVTTPayloadLinesValid(lines []string) bool {
+	if len(lines) == 0 || !webVTTLinesArePhysical(lines) {
+		return false
+	}
+	for _, line := range lines {
+		if line == "" {
 			return false
 		}
 	}

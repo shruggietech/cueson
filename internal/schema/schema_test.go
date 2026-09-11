@@ -119,6 +119,8 @@ func TestValidateRejectsWebVTTNativeShapeViolations(t *testing.T) {
 		{name: "unknown effective cue setting", mutate: func(doc map[string]any) { webvttCue(doc)["settings"].(map[string]any)["unknown"] = "x" }, want: "unknown"},
 		{name: "missing raw payload lines", mutate: func(doc map[string]any) { delete(webvttCue(doc), "raw_payload_lines") }, want: "raw_payload_lines"},
 		{name: "payload embedded line ending", mutate: func(doc map[string]any) { webvttCue(doc)["raw_payload_lines"] = []any{"bad\nline"} }, want: "raw_payload_lines"},
+		{name: "payload lines empty", mutate: func(doc map[string]any) { webvttCue(doc)["raw_payload_lines"] = []any{} }, want: "raw_payload_lines"},
+		{name: "payload line blank", mutate: func(doc map[string]any) { webvttCue(doc)["raw_payload_lines"] = []any{""} }, want: "raw_payload_lines"},
 		{name: "heuristic speaker", mutate: func(doc map[string]any) {
 			firstCue(doc)["speakers"].([]any)[0].(map[string]any)["origin"] = "heuristic"
 		}, want: "origin"},

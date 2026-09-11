@@ -29,3 +29,10 @@ func TestSettingsUseOnlyASCIIWhitespaceAndStrictPercentages(t *testing.T) {
 		t.Fatalf("occurrences=%#v settings=%#v diagnostics=%#v", occurrences, settings, diagnostics)
 	}
 }
+
+func TestSettingsPreserveNULLexicallyAndReplaceItInEffectiveSemantics(t *testing.T) {
+	occurrences, settings, diagnostics := parseRegionSettings("id:r\x00name", 0)
+	if len(occurrences) != 1 || occurrences[0].Value != "r\x00name" || settings["id"] != "r\ufffdname" || len(diagnostics) != 0 {
+		t.Fatalf("occurrences=%#v settings=%#v diagnostics=%#v", occurrences, settings, diagnostics)
+	}
+}

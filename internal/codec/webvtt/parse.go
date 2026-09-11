@@ -9,23 +9,22 @@ import (
 
 // Parse converts decoded WebVTT text into common and native model views.
 func Parse(input string) (Result, error) {
-	lines := splitPhysicalLines(input)
-	if len(lines) == 0 {
+	lexicalLines := splitPhysicalLines(input)
+	if len(lexicalLines) == 0 {
 		return Result{}, &ParseError{Code: "webvtt_signature_invalid", Line: 1, Text: "input is empty"}
 	}
+	lines := lexicalLines
 	result := Result{Cues: []model.Cue{}, Diagnostics: []Diagnostic{}}
 	if strings.ContainsRune(input, '\x00') {
-		input = strings.ReplaceAll(input, "\x00", "\ufffd")
-		lines = splitPhysicalLines(input)
+		lines = splitPhysicalLines(strings.ReplaceAll(input, "\x00", "\ufffd"))
 		result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: "warning", Code: "webvtt_nul_replaced", Message: "embedded NUL was replaced only in the decoded semantic view"})
 	}
-	signatureLine := lines[0].text
-	description, ok := parseSignature(signatureLine)
+	description, ok := parseSignature(lines[0].text)
 	if !ok {
 		return Result{}, &ParseError{Code: "webvtt_signature_invalid", Line: 1, Text: "signature must be WEBVTT followed by a valid boundary"}
 	}
 	result.DocumentData = model.WebVTTDocumentData{
-		Signature: "WEBVTT", SignatureLineRaw: signatureLine, Description: description,
+		Signature: "WEBVTT", SignatureLineRaw: lexicalLines[0].text, Description: description,
 		MetadataLines: []string{}, Blocks: []model.WebVTTBlock{},
 	}
 	if len(lines) == 1 {
@@ -41,7 +40,7 @@ func Parse(input string) (Result, error) {
 		if strings.Contains(lines[position].text, "-->") {
 			return Result{}, &ParseError{Code: "webvtt_header_invalid", Line: lines[position].number, Text: "header metadata must not contain -->"}
 		}
-		result.DocumentData.MetadataLines = append(result.DocumentData.MetadataLines, lines[position].text)
+		result.DocumentData.MetadataLines = append(result.DocumentData.MetadataLines, lexicalLines[position].text)
 		position++
 	}
 	for position < len(lines) && blank(lines[position].text) {
@@ -65,7 +64,7 @@ func Parse(input string) (Result, error) {
 			for end < len(lines) && !blank(lines[end].text) {
 				end++
 			}
-			rawLines := lineTexts(lines[position:end])
+			rawLines := lineTexts(lexicalLines[position:end])
 			blockType := strings.ToLower(strings.Fields(line)[0])
 			block := model.WebVTTBlock{Type: blockType, SourceOrder: sourceOrder, Raw: strings.Join(rawLines, "\n"), RawLines: rawLines}
 			if (blockType == "style" || blockType == "region") && seenCue {
@@ -102,7 +101,7 @@ func Parse(input string) (Result, error) {
 			for end < len(lines) && !blank(lines[end].text) && !cueStartAt(lines, end) {
 				end++
 			}
-			rawLines := lineTexts(lines[position:end])
+			rawLines := lineTexts(lexicalLines[position:end])
 			result.DocumentData.Blocks = append(result.DocumentData.Blocks, model.WebVTTBlock{Type: "unrecognized", SourceOrder: sourceOrder, Raw: strings.Join(rawLines, "\n"), RawLines: rawLines})
 			result.Diagnostics = append(result.Diagnostics, blockDiagnostic("webvtt_block_unrecognized", fmt.Sprintf("unrecognized WebVTT block beginning at line %d was preserved", lines[position].number), sourceOrder))
 			position = end
@@ -126,22 +125,27 @@ func Parse(input string) (Result, error) {
 		cueID := fmt.Sprintf("cue-%06d", ordinal)
 		var identifierRaw *string
 		if identifierIndex >= 0 {
-			identifier := lines[identifierIndex].text
+			identifier := lexicalLines[identifierIndex].text
 			identifierRaw = &identifier
-			if identifiers[identifier] {
+			semanticIdentifier := lines[identifierIndex].text
+			if identifiers[semanticIdentifier] {
 				result.Diagnostics = append(result.Diagnostics, cueDiagnostic("webvtt_cue_identifier_duplicate", "duplicate WebVTT cue identifier was preserved", sourceOrder, cueID))
 			}
-			identifiers[identifier] = true
+			identifiers[semanticIdentifier] = true
 		}
 		if seenCue && timing.StartMilliseconds < previousStart {
 			result.Diagnostics = append(result.Diagnostics, cueDiagnostic("webvtt_start_order_invalid", "decreasing cue start time was preserved in source order", sourceOrder, cueID))
+		}
+		lexicalTiming, lexicalTimingErr := ParseTimingLine(lexicalLines[timingIndex].text)
+		if lexicalTimingErr == nil {
+			timing.SettingsRaw = lexicalTiming.SettingsRaw
 		}
 		occurrences, settings, settingDiagnostics := parseCueSettings(timing.SettingsRaw, sourceOrder, cueID)
 		result.Diagnostics = append(result.Diagnostics, settingDiagnostics...)
 		if missingSeparator {
 			result.Diagnostics = append(result.Diagnostics, cueDiagnostic("webvtt_separator_missing", "cue boundary was recovered without a blank separator", sourceOrder, cueID))
 		}
-		payloadLines := lineTexts(lines[payloadStart:payloadEnd])
+		payloadLines := lineTexts(lexicalLines[payloadStart:payloadEnd])
 		rawPayload := strings.Join(payloadLines, "\n")
 		plain, speakers, tokens, markupDiagnostics := scanPayload(rawPayload, timing.StartMilliseconds, timing.EndMilliseconds, sourceOrder, cueID)
 		result.Diagnostics = append(result.Diagnostics, markupDiagnostics...)
@@ -150,7 +154,7 @@ func Parse(input string) (Result, error) {
 			Timing:   model.Timing{StartMilliseconds: timing.StartMilliseconds, EndMilliseconds: timing.EndMilliseconds, DurationMilliseconds: timing.EndMilliseconds - timing.StartMilliseconds},
 			Payload:  model.Payload{RawText: rawPayload, PlainText: plain, Lines: payloadLines},
 			Speakers: speakers, Tokens: tokens, OCRObservations: []model.OCRObservation{},
-			FormatData: model.CueFormatData{WebVTT: &model.WebVTTCueData{IdentifierRaw: identifierRaw, TimingLineRaw: lines[timingIndex].text, SettingsRaw: timing.SettingsRaw, Settings: settings, SettingOccurrences: occurrences, RawPayload: rawPayload, RawPayloadLines: payloadLines}},
+			FormatData: model.CueFormatData{WebVTT: &model.WebVTTCueData{IdentifierRaw: identifierRaw, TimingLineRaw: lexicalLines[timingIndex].text, SettingsRaw: timing.SettingsRaw, Settings: settings, SettingOccurrences: occurrences, RawPayload: rawPayload, RawPayloadLines: payloadLines}},
 		}
 		cue.Placement = placementFromSettings(settings)
 		result.Cues = append(result.Cues, cue)

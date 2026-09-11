@@ -64,17 +64,17 @@ func scanPayload(raw string, cueStart, cueEnd int64, sourceOrder int, cueID stri
 				native := lexeme.raw
 				nativeTiming = &native
 			} else {
-				plain.WriteString(lexeme.raw)
-				span.WriteString(lexeme.raw)
+				plain.WriteString(semanticText(lexeme.raw))
+				span.WriteString(semanticText(lexeme.raw))
 			}
 		case "timestamp_invalid":
-			plain.WriteString(lexeme.raw)
-			span.WriteString(lexeme.raw)
+			plain.WriteString(semanticText(lexeme.raw))
+			span.WriteString(semanticText(lexeme.raw))
 			pending = append(pending, diagnosticAt{offset: lexeme.start, diag: cueDiagnostic("webvtt_inline_timestamp_invalid", "malformed inline timestamp was preserved literally", sourceOrder, cueID)})
 		case "tag":
 			if !lexeme.matched {
-				plain.WriteString(lexeme.raw)
-				span.WriteString(lexeme.raw)
+				plain.WriteString(semanticText(lexeme.raw))
+				span.WriteString(semanticText(lexeme.raw))
 				pending = append(pending, diagnosticAt{offset: lexeme.start, diag: cueDiagnostic("webvtt_markup_unbalanced", "unbalanced WebVTT markup was preserved literally", sourceOrder, cueID)})
 			} else if !lexeme.closing && lexeme.name == "v" {
 				name, diagnostics := decodeEntities(lexeme.annotation, sourceOrder, cueID, lexeme.start)
@@ -82,8 +82,8 @@ func scanPayload(raw string, cueStart, cueEnd int64, sourceOrder int, cueID stri
 				speakers = append(speakers, model.Speaker{Name: name, Origin: "native"})
 			}
 		default:
-			plain.WriteString(lexeme.raw)
-			span.WriteString(lexeme.raw)
+			plain.WriteString(semanticText(lexeme.raw))
+			span.WriteString(semanticText(lexeme.raw))
 			pending = append(pending, diagnosticAt{offset: lexeme.start, diag: cueDiagnostic("webvtt_markup_unknown", "unknown WebVTT markup was preserved literally", sourceOrder, cueID)})
 		}
 		cursor = lexeme.end
@@ -165,7 +165,10 @@ func parseTag(inner string) (name, annotation string, closing, known bool) {
 	}
 	annotationStart := strings.IndexAny(inner, " \t")
 	if annotationStart >= 0 {
-		annotation = strings.TrimLeft(inner[annotationStart:], " \t")
+		annotation = normalizeASCIIWhitespace(inner[annotationStart:])
+	}
+	if name == "v" && annotation == "" {
+		return name, "", false, false
 	}
 	return name, annotation, false, true
 }
@@ -205,11 +208,11 @@ func decodeEntities(text string, sourceOrder int, cueID string, baseOffset int) 
 	for position := 0; position < len(text); {
 		relative := strings.IndexByte(text[position:], '&')
 		if relative < 0 {
-			output.WriteString(text[position:])
+			output.WriteString(semanticText(text[position:]))
 			break
 		}
 		start := position + relative
-		output.WriteString(text[position:start])
+		output.WriteString(semanticText(text[position:start]))
 		semicolon := strings.IndexByte(text[start+1:], ';')
 		if semicolon < 0 {
 			output.WriteByte('&')
@@ -221,7 +224,7 @@ func decodeEntities(text string, sourceOrder int, cueID string, baseOffset int) 
 		entity := text[start:end]
 		decoded, valid := decodeWebVTTEntity(entity)
 		if !valid {
-			output.WriteString(entity)
+			output.WriteString(semanticText(entity))
 			diagnostics = append(diagnostics, diagnosticAt{offset: baseOffset + start, diag: cueDiagnostic("webvtt_entity_invalid", "unknown or malformed character reference was preserved literally", sourceOrder, cueID)})
 		} else {
 			output.WriteString(decoded)
@@ -232,19 +235,21 @@ func decodeEntities(text string, sourceOrder int, cueID string, baseOffset int) 
 }
 
 func decodeWebVTTEntity(entity string) (string, bool) {
-	named := map[string]string{
-		"&amp;": "&", "&lt;": "<", "&gt;": ">", "&lrm;": "\u200e", "&rlm;": "\u200f", "&nbsp;": "\u00a0",
-	}
-	if decoded, exists := named[entity]; exists {
+	decoded := html.UnescapeString(entity)
+	if decoded != entity {
 		return decoded, true
 	}
-	if strings.HasPrefix(entity, "&#") {
-		decoded := html.UnescapeString(entity)
-		if decoded != entity {
-			return decoded, true
-		}
-	}
 	return entity, false
+}
+
+func semanticText(value string) string {
+	return strings.ReplaceAll(value, "\x00", "\ufffd")
+}
+
+func normalizeASCIIWhitespace(value string) string {
+	return strings.Join(strings.FieldsFunc(value, func(r rune) bool {
+		return r == ' ' || r == '\t' || r == '\n' || r == '\r' || r == '\f'
+	}), " ")
 }
 
 func appendSpanToken(tokens *[]model.Token, text string, start, end int64, native *string) {

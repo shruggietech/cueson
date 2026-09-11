@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/shruggietech/cueson/internal/model"
 )
@@ -37,16 +38,22 @@ func Render(document model.Document, options RenderOptions) (RenderResult, error
 		if strings.ContainsAny(*data.Description, "\r\n") {
 			return RenderResult{}, fmt.Errorf("render WebVTT: description contains a line terminator")
 		}
-		header += " " + *data.Description
+		header += " " + semanticText(*data.Description)
 	}
 	headerLines := []string{header}
 	for index, line := range data.MetadataLines {
 		if strings.ContainsAny(line, "\r\n") || strings.Contains(line, "-->") {
 			return RenderResult{}, fmt.Errorf("render WebVTT: metadata line %d is unsafe", index)
 		}
-		headerLines = append(headerLines, line)
+		headerLines = append(headerLines, semanticText(line))
 	}
 
+	firstCueOrder := len(document.Cues) + len(data.Blocks)
+	for index := range document.Cues {
+		if document.Cues[index].SourceOrder < firstCueOrder {
+			firstCueOrder = document.Cues[index].SourceOrder
+		}
+	}
 	items := make([]renderItem, 0, len(document.Cues)+len(data.Blocks))
 	orders := make(map[int]bool, cap(items))
 	for index := range data.Blocks {
@@ -61,23 +68,33 @@ func Render(document model.Document, options RenderOptions) (RenderResult, error
 		if strings.Contains(block.Raw, "\n\n") {
 			return RenderResult{}, fmt.Errorf("render WebVTT block %d: embedded blank line is unsafe", index)
 		}
-		if block.Type == "unrecognized" {
-			knownNonconforming = true
-			if options.Strict {
-				return RenderResult{}, fmt.Errorf("render WebVTT strict: unrecognized block %d", index)
-			}
+		blockNonconforming := block.Type == "unrecognized" || ((block.Type == "style" || block.Type == "region") && block.SourceOrder > firstCueOrder)
+		if (block.Type == "note" || block.Type == "style") && strings.Contains(block.Raw, "-->") {
+			blockNonconforming = true
 		}
+		text := semanticText(block.Raw)
 		if block.Type == "region" {
 			if block.Region == nil {
 				return RenderResult{}, fmt.Errorf("render WebVTT block %d: REGION data is missing", index)
 			}
-			occurrences, effective, _ := parseRegionSettings(block.Region.SettingsRaw, block.SourceOrder)
-			if !reflect.DeepEqual(occurrences, block.Region.SettingOccurrences) || !reflect.DeepEqual(effective, block.Region.Settings) {
-				return RenderResult{}, fmt.Errorf("render WebVTT block %d: REGION lexical and structured settings disagree", index)
+			regionText, regionNonconforming, err := renderRegionBlock(*block)
+			if err != nil {
+				return RenderResult{}, fmt.Errorf("render WebVTT block %d: %w", index, err)
+			}
+			text = regionText
+			blockNonconforming = blockNonconforming || regionNonconforming
+		}
+		if blockNonconforming {
+			knownNonconforming = true
+			if options.Strict {
+				return RenderResult{}, fmt.Errorf("render WebVTT strict: block %d contains nonconforming native content", index)
 			}
 		}
-		items = append(items, renderItem{order: block.SourceOrder, text: block.Raw})
+		items = append(items, renderItem{order: block.SourceOrder, text: text})
 	}
+
+	seenIdentifiers := make(map[string]bool)
+	var previousStart int64
 	for index := range document.Cues {
 		cue := &document.Cues[index]
 		if cue.SourceOrder < 0 || orders[cue.SourceOrder] {
@@ -94,8 +111,13 @@ func Render(document model.Document, options RenderOptions) (RenderResult, error
 		if native.RawPayload != cue.Payload.RawText || native.RawPayload != strings.Join(native.RawPayloadLines, "\n") || !reflect.DeepEqual(native.RawPayloadLines, cue.Payload.Lines) {
 			return RenderResult{}, fmt.Errorf("render WebVTT cue %d: payload lexical and structured fields disagree", index)
 		}
-		if strings.ContainsRune(native.RawPayload, '\r') || strings.Contains(native.RawPayload, "\n\n") {
-			return RenderResult{}, fmt.Errorf("render WebVTT cue %d: payload contains an unsafe separator", index)
+		if len(native.RawPayloadLines) == 0 {
+			return RenderResult{}, fmt.Errorf("render WebVTT cue %d: at least one payload line is required", index)
+		}
+		for lineIndex, line := range native.RawPayloadLines {
+			if line == "" || strings.ContainsAny(line, "\r\n") {
+				return RenderResult{}, fmt.Errorf("render WebVTT cue %d: payload line %d is an unsafe blank or non-physical line", index, lineIndex)
+			}
 		}
 		start, err := formatTimestamp(cue.Timing.StartMilliseconds)
 		if err != nil {
@@ -105,27 +127,38 @@ func Render(document model.Document, options RenderOptions) (RenderResult, error
 		if err != nil {
 			return RenderResult{}, fmt.Errorf("render WebVTT cue %d end: %w", index, err)
 		}
-		settings, err := renderCueSettings(*native, cue.SourceOrder, cue.ID)
+		settingsSuffix, settingsNonconforming, err := renderCueSettingsSuffix(*native, cue.SourceOrder, cue.ID)
 		if err != nil {
 			return RenderResult{}, fmt.Errorf("render WebVTT cue %d: %w", index, err)
 		}
-		lines := make([]string, 0, 3+len(native.RawPayloadLines))
+		_, _, _, markupDiagnostics := scanPayload(native.RawPayload, cue.Timing.StartMilliseconds, cue.Timing.EndMilliseconds, cue.SourceOrder, cue.ID)
+		cueNonconforming := settingsNonconforming || len(markupDiagnostics) > 0 || index > 0 && cue.Timing.StartMilliseconds < previousStart
 		if native.IdentifierRaw != nil {
-			if strings.ContainsAny(*native.IdentifierRaw, "\r\n") || strings.Contains(*native.IdentifierRaw, "-->") {
+			semanticIdentifier := semanticText(*native.IdentifierRaw)
+			if strings.ContainsAny(semanticIdentifier, "\r\n") || strings.Contains(semanticIdentifier, "-->") {
 				return RenderResult{}, fmt.Errorf("render WebVTT cue %d: identifier is unsafe", index)
 			}
-			lines = append(lines, *native.IdentifierRaw)
+			if seenIdentifiers[semanticIdentifier] {
+				cueNonconforming = true
+			}
+			seenIdentifiers[semanticIdentifier] = true
 		}
-		timingLine := start + " --> " + end
-		if settings != "" {
-			timingLine += " " + settings
+		if cueNonconforming {
+			knownNonconforming = true
+			if options.Strict {
+				return RenderResult{}, fmt.Errorf("render WebVTT strict: cue %d contains nonconforming native content", index)
+			}
 		}
-		lines = append(lines, timingLine)
-		lines = append(lines, native.RawPayloadLines...)
+		lines := make([]string, 0, 3+len(native.RawPayloadLines))
+		if native.IdentifierRaw != nil {
+			lines = append(lines, semanticText(*native.IdentifierRaw))
+		}
+		lines = append(lines, start+" --> "+end+settingsSuffix)
+		for _, line := range native.RawPayloadLines {
+			lines = append(lines, semanticText(line))
+		}
 		items = append(items, renderItem{order: cue.SourceOrder, text: strings.Join(lines, "\n")})
-	}
-	if len(orders) != len(items) {
-		return RenderResult{}, fmt.Errorf("render WebVTT: source order is incomplete")
+		previousStart = cue.Timing.StartMilliseconds
 	}
 	for expected := 0; expected < len(items); expected++ {
 		if !orders[expected] {
@@ -145,27 +178,131 @@ func Render(document model.Document, options RenderOptions) (RenderResult, error
 	return result, nil
 }
 
-func renderCueSettings(native model.WebVTTCueData, sourceOrder int, cueID string) (string, error) {
+func renderRegionBlock(block model.WebVTTBlock) (string, bool, error) {
+	region := block.Region
+	if region == nil {
+		return "", false, fmt.Errorf("REGION data is missing")
+	}
+	if err := validateRawSettingOccurrences(region.SettingOccurrences, regionSettingOrder, validRegionSetting); err != nil {
+		return "", false, err
+	}
+	occurrences, effective, _ := parseRegionSettings(region.SettingsRaw, block.SourceOrder)
+	rawSettings := ""
+	if len(block.RawLines) > 1 {
+		rawSettings = strings.Join(block.RawLines[1:], "\n")
+	}
+	lexicalConsistent := rawSettings == region.SettingsRaw && reflect.DeepEqual(occurrences, region.SettingOccurrences) && reflect.DeepEqual(effective, region.Settings)
+	nonconforming := settingOccurrencesNonconforming(region.SettingOccurrences)
+	if _, exists := region.Settings["id"]; !exists {
+		nonconforming = true
+	}
+	if lexicalConsistent {
+		return semanticText(block.Raw), nonconforming, nil
+	}
+	settings, err := canonicalSettings(regionSettingOrder, region.Settings, region.SettingOccurrences, validRegionSetting)
+	if err != nil {
+		return "", false, err
+	}
+	if settings == "" {
+		return "REGION", nonconforming, nil
+	}
+	return "REGION\n" + settings, nonconforming, nil
+}
+
+// renderCueSettingsSuffix returns the entire timing-line suffix, including its
+// leading delimiter whitespace when settings are present.
+func renderCueSettingsSuffix(native model.WebVTTCueData, sourceOrder int, cueID string) (string, bool, error) {
 	if strings.ContainsAny(native.SettingsRaw, "\r\n") {
-		return "", fmt.Errorf("settings_raw contains a line terminator")
+		return "", false, fmt.Errorf("settings_raw contains a line terminator")
+	}
+	if err := validateRawSettingOccurrences(native.SettingOccurrences, cueSettingOrder, validCueSetting); err != nil {
+		return "", false, err
 	}
 	occurrences, effective, _ := parseCueSettings(native.SettingsRaw, sourceOrder, cueID)
+	nonconforming := settingOccurrencesNonconforming(native.SettingOccurrences)
 	if reflect.DeepEqual(occurrences, native.SettingOccurrences) && reflect.DeepEqual(effective, native.Settings) {
-		return native.SettingsRaw, nil
+		if native.SettingsRaw == "" || isASCIISpace(native.SettingsRaw[0]) {
+			return semanticText(native.SettingsRaw), nonconforming, nil
+		}
+		return " " + semanticText(native.SettingsRaw), nonconforming, nil
 	}
-	parts := make([]string, 0, len(native.Settings)+len(native.SettingOccurrences))
-	for _, name := range cueSettingOrder {
-		if value, exists := native.Settings[name]; exists {
-			if !validCueSetting(name, value) {
+	settings, err := canonicalSettings(cueSettingOrder, native.Settings, native.SettingOccurrences, validCueSetting)
+	if err != nil {
+		return "", false, err
+	}
+	if settings == "" {
+		return "", nonconforming, nil
+	}
+	return " " + settings, nonconforming, nil
+}
+
+func canonicalSettings(order []string, effective map[string]string, occurrences []model.WebVTTSettingOccurrence, validate func(string, string) bool) (string, error) {
+	parts := make([]string, 0, len(effective)+len(occurrences))
+	known := make(map[string]bool, len(order))
+	for _, name := range order {
+		known[name] = true
+		if value, exists := effective[name]; exists {
+			value = semanticText(value)
+			if !validate(name, value) {
 				return "", fmt.Errorf("effective setting %s is invalid", name)
 			}
 			parts = append(parts, name+":"+value)
 		}
 	}
-	for _, occurrence := range native.SettingOccurrences {
+	for name := range effective {
+		if !known[name] {
+			return "", fmt.Errorf("effective setting %s is unknown", name)
+		}
+	}
+	for _, occurrence := range occurrences {
 		if !occurrence.Recognized || !occurrence.Valid {
-			parts = append(parts, occurrence.Raw)
+			parts = append(parts, semanticText(occurrence.Raw))
 		}
 	}
 	return strings.Join(parts, " "), nil
+}
+
+func validateRawSettingOccurrences(occurrences []model.WebVTTSettingOccurrence, recognizedNames []string, validate func(string, string) bool) error {
+	recognized := make(map[string]bool, len(recognizedNames))
+	for _, name := range recognizedNames {
+		recognized[name] = true
+	}
+	for index, occurrence := range occurrences {
+		if occurrence.Raw == "" || strings.Contains(occurrence.Raw, "-->") {
+			return fmt.Errorf("setting occurrence %d has unsafe raw syntax", index)
+		}
+		for _, character := range occurrence.Raw {
+			if character != '\x00' && (character <= ' ' || character == '\x7f') {
+				return fmt.Errorf("setting occurrence %d has unsafe raw syntax", index)
+			}
+		}
+		name, value, found := strings.Cut(occurrence.Raw, ":")
+		if !found {
+			value = ""
+		}
+		if name != occurrence.Name || value != occurrence.Value {
+			return fmt.Errorf("setting occurrence %d raw syntax disagrees with name and value", index)
+		}
+		semanticName, semanticValue := semanticText(name), semanticText(value)
+		wantRecognized := recognized[semanticName]
+		wantValid := found && semanticName != "" && semanticValue != "" && wantRecognized && validate(semanticName, semanticValue)
+		if occurrence.Recognized != wantRecognized || occurrence.Valid != wantValid {
+			return fmt.Errorf("setting occurrence %d has forged recognition or validity flags", index)
+		}
+		if !utf8.ValidString(occurrence.Raw) {
+			return fmt.Errorf("setting occurrence %d is not valid UTF-8", index)
+		}
+	}
+	return nil
+}
+
+func settingOccurrencesNonconforming(occurrences []model.WebVTTSettingOccurrence) bool {
+	seen := make(map[string]bool)
+	for _, occurrence := range occurrences {
+		if !occurrence.Recognized || !occurrence.Valid || seen[occurrence.Name] {
+			return true
+		}
+		seen[occurrence.Name] = true
+	}
+	return false
 }

@@ -47,9 +47,25 @@ func TestPayloadScannerAcceptsSoleVoiceSpanWithOmittedEndTag(t *testing.T) {
 	}
 }
 
-func TestPayloadScannerUsesWebVTTCharacterReferenceSubset(t *testing.T) {
+func TestPayloadScannerUsesFullHTMLCharacterReferences(t *testing.T) {
 	plain, _, _, diagnostics := scanPayload("&lt;&gt;&lrm;&rlm;&nbsp;&#65;&copy;", 0, 1000, 0, "cue-000000")
-	if plain != "<>\u200e\u200f\u00a0A&copy;" || len(diagnostics) != 1 || diagnostics[0].Code != "webvtt_entity_invalid" {
+	if plain != "<>\u200e\u200f\u00a0A©" || len(diagnostics) != 0 {
 		t.Fatalf("plain=%q diagnostics=%#v", plain, diagnostics)
+	}
+}
+
+func TestPayloadScannerPreservesVoiceTagsWithoutAnnotations(t *testing.T) {
+	for _, raw := range []string{"<v>text", "<v></v>"} {
+		plain, speakers, _, diagnostics := scanPayload(raw, 0, 1000, 0, "cue-000000")
+		if plain != raw || len(speakers) != 0 || len(diagnostics) == 0 {
+			t.Fatalf("scanPayload(%q) = plain %q, speakers %#v, diagnostics %#v", raw, plain, speakers, diagnostics)
+		}
+	}
+}
+
+func TestPayloadScannerReplacesNULOnlyInDerivedViews(t *testing.T) {
+	plain, speakers, _, diagnostics := scanPayload("<v A\x00B>x\x00y</v>", 0, 1000, 0, "cue-000000")
+	if plain != "x\ufffdy" || len(speakers) != 1 || speakers[0].Name != "A\ufffdB" || len(diagnostics) != 0 {
+		t.Fatalf("plain=%q speakers=%#v diagnostics=%#v", plain, speakers, diagnostics)
 	}
 }

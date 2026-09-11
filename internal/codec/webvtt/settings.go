@@ -35,8 +35,9 @@ func parseSettings(raw string, recognized []string, validate func(string, string
 	seen := make(map[string]bool)
 	for _, token := range splitASCIIWhitespace(raw) {
 		name, value, found := strings.Cut(token, ":")
-		_, known := recognizedSet[name]
-		valid := found && name != "" && value != "" && known && validate(name, value)
+		semanticName, semanticValue := semanticText(name), semanticText(value)
+		_, known := recognizedSet[semanticName]
+		valid := found && semanticName != "" && semanticValue != "" && known && validate(semanticName, semanticValue)
 		occurrences = append(occurrences, model.WebVTTSettingOccurrence{Raw: token, Name: name, Value: value, Recognized: known, Valid: valid})
 		switch {
 		case !known:
@@ -44,11 +45,11 @@ func parseSettings(raw string, recognized []string, validate func(string, string
 		case !valid:
 			diagnostics = append(diagnostics, settingDiagnostic("webvtt_setting_invalid", "invalid WebVTT setting was preserved", sourceOrder, cueID))
 		default:
-			if seen[name] {
+			if seen[semanticName] {
 				diagnostics = append(diagnostics, settingDiagnostic("webvtt_setting_duplicate", "duplicate WebVTT setting was preserved; the last valid value is effective", sourceOrder, cueID))
 			}
-			seen[name] = true
-			effective[name] = value
+			seen[semanticName] = true
+			effective[semanticName] = semanticValue
 		}
 	}
 	return occurrences, effective, diagnostics

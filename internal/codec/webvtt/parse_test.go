@@ -115,7 +115,24 @@ func TestGovernedToleratedFixturePreservesEveryDiagnosedConstruct(t *testing.T) 
 			t.Errorf("missing diagnostic %s: %#v", code, result.Diagnostics)
 		}
 	}
-	if !strings.Contains(result.Cues[1].Payload.RawText, "\ufffd") || !strings.ContainsRune(string(source), '\x00') {
+	if !strings.ContainsRune(result.Cues[1].Payload.RawText, '\x00') || !strings.Contains(result.Cues[1].Payload.PlainText, "\ufffd") || !strings.ContainsRune(string(source), '\x00') {
 		t.Fatalf("NUL source and semantic replacement were not kept distinct")
+	}
+}
+
+func TestParsePreservesNULInNativeFieldsAndReplacesOnlyDerivedText(t *testing.T) {
+	input := "WEBVTT desc\x00value\n\nNOTE raw\x00note\nkept\n\nid\x00raw\n00:00.000 --> 00:01.000\npayload\x00text\n"
+	result, err := Parse(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.ContainsRune(result.DocumentData.SignatureLineRaw, '\x00') || result.DocumentData.Description == nil || !strings.Contains(*result.DocumentData.Description, "\ufffd") {
+		t.Fatalf("signature=%q description=%v", result.DocumentData.SignatureLineRaw, result.DocumentData.Description)
+	}
+	if !strings.ContainsRune(result.DocumentData.Blocks[0].Raw, '\x00') || !strings.ContainsRune(*result.Cues[0].FormatData.WebVTT.IdentifierRaw, '\x00') || !strings.ContainsRune(result.Cues[0].Payload.RawText, '\x00') {
+		t.Fatalf("native fields lost NUL: %#v %#v", result.DocumentData.Blocks[0], result.Cues[0])
+	}
+	if strings.ContainsRune(result.Cues[0].Payload.PlainText, '\x00') || !strings.Contains(result.Cues[0].Payload.PlainText, "\ufffd") {
+		t.Fatalf("plain_text = %q", result.Cues[0].Payload.PlainText)
 	}
 }

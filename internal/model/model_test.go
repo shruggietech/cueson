@@ -84,6 +84,18 @@ func TestDocumentValidateRejectsWebVTTNativeInconsistency(t *testing.T) {
 			doc.Cues[0].Payload.Lines = lines
 			doc.Cues[0].Payload.RawText = strings.Join(lines, "\n")
 		}, want: "raw_payload_lines"},
+		{name: "payload lines empty", mutate: func(doc *Document) {
+			doc.Cues[0].FormatData.WebVTT.RawPayloadLines = []string{}
+			doc.Cues[0].FormatData.WebVTT.RawPayload = ""
+			doc.Cues[0].Payload.Lines = []string{}
+			doc.Cues[0].Payload.RawText = ""
+		}, want: "raw_payload_lines"},
+		{name: "payload line blank", mutate: func(doc *Document) {
+			doc.Cues[0].FormatData.WebVTT.RawPayloadLines = []string{""}
+			doc.Cues[0].FormatData.WebVTT.RawPayload = ""
+			doc.Cues[0].Payload.Lines = []string{""}
+			doc.Cues[0].Payload.RawText = ""
+		}, want: "raw_payload_lines"},
 		{name: "identifier", mutate: func(doc *Document) { doc.Cues[0].SourceIdentifier = stringPointer("other") }, want: "identifier_raw"},
 		{name: "speaker origin", mutate: func(doc *Document) { doc.Cues[0].Speakers[0].Origin = "heuristic" }, want: "speakers"},
 		{name: "token order", mutate: func(doc *Document) { doc.Cues[0].Tokens[1].StartMilliseconds = 1900 }, want: "tokens"},

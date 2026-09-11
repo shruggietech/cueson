@@ -27,12 +27,22 @@ func TestParseTimingLineRequiresConformingDelimiterAndIncreasingRange(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.StartMilliseconds != 1000 || got.EndMilliseconds != 2500 || got.SettingsRaw != "line:20% align:start" {
+	if got.StartMilliseconds != 1000 || got.EndMilliseconds != 2500 || got.SettingsRaw != " line:20% align:start" {
 		t.Fatalf("ParseTimingLine() = %#v", got)
 	}
 	for _, input := range []string{"00:01.000-->00:02.000", "00:02.000 --> 00:02.000", "00:03.000 --> 00:02.000", "00:01.000 -> 00:02.000"} {
 		if _, err := ParseTimingLine(input); err == nil {
 			t.Fatalf("ParseTimingLine(%q) unexpectedly succeeded", input)
 		}
+	}
+}
+
+func TestParseTimingLinePreservesRawSettingWhitespace(t *testing.T) {
+	got, err := ParseTimingLine("00:00.000 --> 00:01.000   align:start  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.SettingsRaw != "   align:start  " {
+		t.Fatalf("SettingsRaw = %q", got.SettingsRaw)
 	}
 }
