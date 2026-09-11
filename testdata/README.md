@@ -25,7 +25,7 @@ testdata/
             └── input/
 ```
 
-`fixtures/` contains accepted source material and its expectations. `malformed/` contains human-named permanent rejection cases with stable stages and diagnostic fragments. `fuzz/` reserves byte-preserved input paths for a future retained seed that has a distinct reason not to live in the accepted or malformed corpus. Useful fuzz discoveries normally move into a minimized manifest-governed malformed or fuzz-regression case rather than remaining opaque package-local files.
+`fixtures/` contains accepted source material and its expectations. `malformed/` contains human-named permanent rejection cases with stable stages and diagnostic fragments. `fuzz/` contains byte-preserved mutation seeds that have a distinct reason not to live in the accepted or malformed corpus. Useful fuzz discoveries normally move into a minimized manifest-governed malformed or fuzz-regression case rather than remaining opaque package-local files.
 
 Every regular payload beneath `fixtures/`, `malformed/`, or `fuzz/` must be declared exactly once by `manifest.json`. The manifest and README are repository metadata and are not self-listed. The canonical embedded example at `internal/schema/testdata/representative.cueson.json` is governed by the schema package and is not part of this root inventory.
 
@@ -82,6 +82,18 @@ Bounded fuzz smoke commands and checkout-normalization proof are maintained in `
 
 ## Scope boundary
 
-This corpus foundation does not implement or claim native SRT or WebVTT parsing, rendering, conversion, dialect, or grammar coverage. Format-specific fixture coverage begins with the later codec slices.
+The governed corpus now covers source-envelope integrity, Cue JSON rejection, native SubRip and WebVTT parsing and rendering, bidirectional conversion, strict loss handling, diagnostics, encodings, line endings, malformed input, and bounded fuzz seeds. `testdata/conformance-matrix.json` maps maintained format-contract rows to governed fixtures, focused tests, fuzz targets, platform evidence, or explicit inapplicability reasons.
 
-S005 does not add hosted CI workflows or prove cross-platform execution. Issue #8 owns that automation. Large or non-redistributable real-world corpora remain external, and local corpus paths must never appear in portable expectations.
+Large, private, or non-redistributable real-world corpora remain external. The optional maintainer corpus verifier may read such a caller-selected directory, but it must not modify source files, admit external bytes or absolute paths into the repository, or make the private corpus a hosted-CI prerequisite. Local corpus paths, usernames, hostnames, and machine identifiers must never appear in portable expectations or retained reports.
+
+## Optional external corpus verification
+
+Run the standalone verifier from the repository root with an explicitly selected private directory:
+
+```text
+go -C scripts/corpus-verify run . -root DIRECTORY
+```
+
+Add `-json` for a machine-readable report. One run accepts at most 10,000 regular files and applies the shared 64 MiB per-file limit. The verifier rejects a linked or non-directory root, every symbolic link or non-regular entry, unsafe relative identity, limit overflow, and cancellation. It uses bounded no-follow reads, the real CLI encode path, and native parser-renderer cycles without creating corpus, sibling, or repository files.
+
+Output excludes the supplied root, absolute paths, source content, source bytes, and machine identity. It contains aggregate counts and, only when needed for a rejection, a portable path relative to the selected root. External bytes and results never enter `manifest.json`, the governed fixture tree, or hosted CI.

@@ -308,7 +308,7 @@ func rejectAtDeclaredBoundary(t *testing.T, fixture testutil.Fixture, input []by
 		}
 		return "semantics", stderr.String()
 	}
-	if fixture.ID == "subrip/reversed-time" {
+	if strings.HasPrefix(fixture.ID, "subrip/") {
 		_, err := subrip.Parse(string(input), subrip.Options{DetectSpeakers: true})
 		if err == nil {
 			t.Fatal("subrip.Parse() accepted malformed fixture")

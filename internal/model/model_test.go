@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -126,6 +127,62 @@ func TestDocumentValidatePreservesSubRipContract(t *testing.T) {
 	doc.Cues[0].Speakers = []Speaker{{Name: "Narrator", Origin: "heuristic"}}
 	if err := doc.Validate(); err != nil {
 		t.Fatalf("Validate() rejected existing SubRip model: %v", err)
+	}
+}
+
+func TestDocumentValidateRejectsCollectionAmplification(t *testing.T) {
+	tests := []struct {
+		name string
+		doc  func() Document
+		want string
+	}{
+		{name: "assets", doc: func() Document {
+			doc := representativeDocument()
+			doc.Source.Assets = make([]SourceAsset, MaxDocumentItems+1)
+			return doc
+		}, want: "source.assets"},
+		{name: "cues", doc: func() Document {
+			doc := representativeDocument()
+			doc.Cues = make([]Cue, MaxDocumentItems+1)
+			return doc
+		}, want: "cues"},
+		{name: "diagnostics", doc: func() Document {
+			doc := representativeDocument()
+			doc.Diagnostics = make([]Diagnostic, MaxDiagnostics+1)
+			return doc
+		}, want: "diagnostics"},
+		{name: "payload lines", doc: func() Document {
+			doc := representativeDocument()
+			doc.Cues[0].Payload.Lines = make([]string, MaxItemOccurrences+1)
+			return doc
+		}, want: "payload.lines"},
+		{name: "ocr nested alternatives", doc: func() Document {
+			doc := representativeDocument()
+			doc.Cues[0].OCRObservations = []OCRObservation{{Alternatives: make([]string, MaxItemOccurrences+1)}}
+			return doc
+		}, want: "alternatives"},
+		{name: "webvtt blocks", doc: func() Document {
+			doc := representativeWebVTTDocument()
+			doc.FormatData.WebVTT.Blocks = make([]WebVTTBlock, MaxDocumentItems+1)
+			return doc
+		}, want: "format_data.webvtt.blocks"},
+		{name: "webvtt settings", doc: func() Document {
+			doc := representativeWebVTTDocument()
+			doc.Cues[0].FormatData.WebVTT.Settings = make(map[string]string, MaxItemOccurrences+1)
+			for index := 0; index <= MaxItemOccurrences; index++ {
+				doc.Cues[0].FormatData.WebVTT.Settings[fmt.Sprintf("setting_%d", index)] = "x"
+			}
+			return doc
+		}, want: "format_data.webvtt.settings"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.doc().Validate()
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("Validate() error = %v, want bounded rejection containing %q", err, tt.want)
+			}
+		})
 	}
 }
 

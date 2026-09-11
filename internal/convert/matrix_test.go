@@ -1,10 +1,12 @@
 package convert
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/shruggietech/cueson/internal/model"
@@ -178,6 +180,35 @@ func TestLossyFixtureReportsMatchCanonicalGoldens(t *testing.T) {
 				t.Fatalf("canonical report SHA-256 = %s, want %s; report = %s", got, test.want, canonical)
 			}
 		})
+	}
+}
+
+func TestCompatibilityAnalysisRejectsLossAmplificationBeforeBuildingAnOversizedReport(t *testing.T) {
+	t.Parallel()
+
+	document := conversionTestDocument(t, "1\n00:00:01,000 --> 00:00:02,000\nx\n", "subrip")
+	base := document.Cues[0]
+	document.Cues = make([]model.Cue, 5)
+	for index := range document.Cues {
+		cue := base
+		cue.ID = fmt.Sprintf("cue-%06d", index)
+		cue.Ordinal = index
+		cue.SourceOrder = index
+		cue.Speakers = make([]model.Speaker, model.MaxItemOccurrences)
+		cue.Tokens = make([]model.Token, model.MaxItemOccurrences)
+		for occurrence := 0; occurrence < model.MaxItemOccurrences; occurrence++ {
+			cue.Speakers[occurrence] = model.Speaker{Name: "speaker", Origin: "heuristic"}
+			cue.Tokens[occurrence] = model.Token{Text: "x", StartMilliseconds: cue.Timing.StartMilliseconds, EndMilliseconds: cue.Timing.EndMilliseconds}
+		}
+		document.Cues[index] = cue
+	}
+	document.Document.CueCount = len(document.Cues)
+	document.Document.HasWordLevelTiming = true
+	document.Stats.CueCount = len(document.Cues)
+	document.Stats.HasWordLevelTiming = true
+	result, err := Convert(context.Background(), document, "webvtt", Options{})
+	if err == nil || !strings.Contains(err.Error(), "more than 8192 losses") || len(result.Bytes) != 0 || len(result.LossReport.Losses) != 0 {
+		t.Fatalf("conversion = %#v, %v", result, err)
 	}
 }
 

@@ -17,7 +17,9 @@ type matrixAnalysis struct {
 
 func analyzeCompatibility(document model.Document, targetFormat string) (matrixAnalysis, error) {
 	analysis := matrixAnalysis{Translations: make([]payloadTranslation, len(document.Cues)), Losses: []Loss{}}
-	appendMetadataLosses(&analysis.Losses, document, targetFormat)
+	if err := appendMetadataLosses(&analysis.Losses, document, targetFormat); err != nil {
+		return matrixAnalysis{}, err
+	}
 	switch document.Format {
 	case "subrip":
 		if targetFormat != "webvtt" {
@@ -27,7 +29,9 @@ func analyzeCompatibility(document model.Document, targetFormat string) (matrixA
 			if diagnostic.Code != "subrip_block_unrecognized" {
 				continue
 			}
-			analysis.Losses = append(analysis.Losses, newLoss(document, targetFormat, LossCodeSubRipUnrecognizedBlockOmitted, KindOmitted, "unrecognized SubRip block is omitted", fmt.Sprintf("/diagnostics/%d", index), diagnostic.SourceOrder, nil, []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}}))
+			if err := appendOneLoss(&analysis.Losses, newLoss(document, targetFormat, LossCodeSubRipUnrecognizedBlockOmitted, KindOmitted, "unrecognized SubRip block is omitted", fmt.Sprintf("/diagnostics/%d", index), diagnostic.SourceOrder, nil, []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}})); err != nil {
+				return matrixAnalysis{}, err
+			}
 		}
 		for index := range document.Cues {
 			cue := &document.Cues[index]
@@ -39,13 +43,17 @@ func analyzeCompatibility(document model.Document, targetFormat string) (matrixA
 				return matrixAnalysis{}, projectionFailure(document.Format, targetFormat, fmt.Sprintf("/cues/%d/payload/raw_text", index), err)
 			}
 			analysis.Translations[index] = translation
-			appendSubRipCueLosses(&analysis.Losses, document, targetFormat, index, cue, translation)
+			if err := appendSubRipCueLosses(&analysis.Losses, document, targetFormat, index, cue, translation); err != nil {
+				return matrixAnalysis{}, err
+			}
 		}
 	case "webvtt":
 		if targetFormat != "subrip" {
 			return matrixAnalysis{}, &UnsupportedPairError{SourceFormat: document.Format, TargetFormat: targetFormat}
 		}
-		appendWebVTTDocumentLosses(&analysis.Losses, document, targetFormat)
+		if err := appendWebVTTDocumentLosses(&analysis.Losses, document, targetFormat); err != nil {
+			return matrixAnalysis{}, err
+		}
 		for index := range document.Cues {
 			cue := &document.Cues[index]
 			translation, err := translateWebVTTPayload(cue.Payload.RawText, cue.Timing.StartMilliseconds, cue.Timing.EndMilliseconds)
@@ -56,7 +64,9 @@ func analyzeCompatibility(document model.Document, targetFormat string) (matrixA
 				return matrixAnalysis{}, projectionFailure(document.Format, targetFormat, fmt.Sprintf("/cues/%d/payload/raw_text", index), fmt.Errorf("payload cannot retain its cue boundary in SubRip"))
 			}
 			analysis.Translations[index] = translation
-			appendWebVTTCueLosses(&analysis.Losses, document, targetFormat, index, cue, translation)
+			if err := appendWebVTTCueLosses(&analysis.Losses, document, targetFormat, index, cue, translation); err != nil {
+				return matrixAnalysis{}, err
+			}
 		}
 	default:
 		return matrixAnalysis{}, &UnsupportedPairError{SourceFormat: document.Format, TargetFormat: targetFormat}
@@ -64,7 +74,7 @@ func analyzeCompatibility(document model.Document, targetFormat string) (matrixA
 	return analysis, nil
 }
 
-func appendMetadataLosses(losses *[]Loss, document model.Document, targetFormat string) {
+func appendMetadataLosses(losses *[]Loss, document model.Document, targetFormat string) error {
 	fields := []struct {
 		name  string
 		value *string
@@ -78,42 +88,58 @@ func appendMetadataLosses(losses *[]Loss, document model.Document, targetFormat 
 		if field.value == nil {
 			continue
 		}
-		*losses = append(*losses, newLoss(document, targetFormat, LossCodeMetadataOmitted, KindOmitted, "document metadata is omitted from subtitle output", "/metadata/"+field.name, nil, nil, []Attribute{{Name: "field", Value: field.name}}))
+		if err := appendOneLoss(losses, newLoss(document, targetFormat, LossCodeMetadataOmitted, KindOmitted, "document metadata is omitted from subtitle output", "/metadata/"+field.name, nil, nil, []Attribute{{Name: "field", Value: field.name}})); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func appendSubRipCueLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, translation payloadTranslation) {
+func appendSubRipCueLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, translation payloadTranslation) error {
 	base := fmt.Sprintf("/cues/%d", cueIndex)
 	if cue.FormatData.SubRip != nil && cue.FormatData.SubRip.Coordinates != nil {
-		*losses = append(*losses, cueLoss(document, targetFormat, *cue, LossCodeSubRipCoordinatesOmitted, KindOmitted, "SubRip pixel coordinates are omitted without viewport evidence", base+"/format_data/subrip/coordinates", nil))
+		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeSubRipCoordinatesOmitted, KindOmitted, "SubRip pixel coordinates are omitted without viewport evidence", base+"/format_data/subrip/coordinates", nil)); err != nil {
+			return err
+		}
 	}
-	appendCommonCueLosses(losses, document, targetFormat, cueIndex, cue, false)
-	appendPayloadLosses(losses, document, targetFormat, cueIndex, cue, translation)
+	if err := appendCommonCueLosses(losses, document, targetFormat, cueIndex, cue, false); err != nil {
+		return err
+	}
+	return appendPayloadLosses(losses, document, targetFormat, cueIndex, cue, translation)
 }
 
-func appendWebVTTDocumentLosses(losses *[]Loss, document model.Document, targetFormat string) {
+func appendWebVTTDocumentLosses(losses *[]Loss, document model.Document, targetFormat string) error {
 	data := document.FormatData.WebVTT
 	if data == nil {
-		return
+		return nil
 	}
 	if data.Description != nil {
-		*losses = append(*losses, newLoss(document, targetFormat, LossCodeWebVTTDescriptionOmitted, KindOmitted, "WebVTT signature description is omitted", "/format_data/webvtt/description", nil, nil, nil))
+		if err := appendOneLoss(losses, newLoss(document, targetFormat, LossCodeWebVTTDescriptionOmitted, KindOmitted, "WebVTT signature description is omitted", "/format_data/webvtt/description", nil, nil, nil)); err != nil {
+			return err
+		}
 	}
 	for index := range data.MetadataLines {
-		*losses = append(*losses, newLoss(document, targetFormat, LossCodeWebVTTMetadataOmitted, KindOmitted, "WebVTT header metadata line is omitted", fmt.Sprintf("/format_data/webvtt/metadata_lines/%d", index), nil, nil, []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}}))
+		if err := appendOneLoss(losses, newLoss(document, targetFormat, LossCodeWebVTTMetadataOmitted, KindOmitted, "WebVTT header metadata line is omitted", fmt.Sprintf("/format_data/webvtt/metadata_lines/%d", index), nil, nil, []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}})); err != nil {
+			return err
+		}
 	}
 	for index := range data.Blocks {
 		block := &data.Blocks[index]
 		order := block.SourceOrder
-		*losses = append(*losses, newLoss(document, targetFormat, LossCodeWebVTTBlockOmitted, KindOmitted, "WebVTT non-cue block is omitted", fmt.Sprintf("/format_data/webvtt/blocks/%d", index), &order, nil, []Attribute{{Name: "block_type", Value: block.Type}, {Name: "occurrence", Value: strconv.Itoa(index)}}))
+		if err := appendOneLoss(losses, newLoss(document, targetFormat, LossCodeWebVTTBlockOmitted, KindOmitted, "WebVTT non-cue block is omitted", fmt.Sprintf("/format_data/webvtt/blocks/%d", index), &order, nil, []Attribute{{Name: "block_type", Value: block.Type}, {Name: "occurrence", Value: strconv.Itoa(index)}})); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func appendWebVTTCueLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, translation payloadTranslation) {
+func appendWebVTTCueLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, translation payloadTranslation) error {
 	base := fmt.Sprintf("/cues/%d", cueIndex)
 	native := cue.FormatData.WebVTT
 	if cue.SourceIdentifier != nil {
-		*losses = append(*losses, cueLoss(document, targetFormat, *cue, LossCodeWebVTTIdentifierOmitted, KindOmitted, "WebVTT cue identifier is omitted", base+"/source_identifier", nil))
+		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeWebVTTIdentifierOmitted, KindOmitted, "WebVTT cue identifier is omitted", base+"/source_identifier", nil)); err != nil {
+			return err
+		}
 	}
 	settingPaths := make(map[string]bool)
 	if native != nil {
@@ -122,7 +148,9 @@ func appendWebVTTCueLosses(losses *[]Loss, document model.Document, targetFormat
 				continue
 			}
 			settingPaths[name] = true
-			*losses = append(*losses, cueLoss(document, targetFormat, *cue, LossCodeWebVTTSettingOmitted, KindOmitted, "WebVTT cue setting is omitted", base+"/format_data/webvtt/settings/"+escapePointer(name), []Attribute{{Name: "setting", Value: name}}))
+			if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeWebVTTSettingOmitted, KindOmitted, "WebVTT cue setting is omitted", base+"/format_data/webvtt/settings/"+escapePointer(name), []Attribute{{Name: "setting", Value: name}})); err != nil {
+				return err
+			}
 		}
 		seen := make(map[string]bool)
 		for occurrenceIndex, occurrence := range native.SettingOccurrences {
@@ -133,38 +161,62 @@ func appendWebVTTCueLosses(losses *[]Loss, document model.Document, targetFormat
 			if occurrence.Recognized && occurrence.Valid && !duplicate {
 				continue
 			}
-			*losses = append(*losses, cueLoss(document, targetFormat, *cue, LossCodeWebVTTSettingOccurrenceOmitted, KindOmitted, "WebVTT setting occurrence is omitted", fmt.Sprintf("%s/format_data/webvtt/setting_occurrences/%d", base, occurrenceIndex), []Attribute{{Name: "occurrence", Value: strconv.Itoa(occurrenceIndex)}}))
+			if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeWebVTTSettingOccurrenceOmitted, KindOmitted, "WebVTT setting occurrence is omitted", fmt.Sprintf("%s/format_data/webvtt/setting_occurrences/%d", base, occurrenceIndex), []Attribute{{Name: "occurrence", Value: strconv.Itoa(occurrenceIndex)}})); err != nil {
+				return err
+			}
 		}
 	}
-	appendCommonCueLosses(losses, document, targetFormat, cueIndex, cue, len(settingPaths) > 0)
-	appendPayloadLosses(losses, document, targetFormat, cueIndex, cue, translation)
+	if err := appendCommonCueLosses(losses, document, targetFormat, cueIndex, cue, len(settingPaths) > 0); err != nil {
+		return err
+	}
+	return appendPayloadLosses(losses, document, targetFormat, cueIndex, cue, translation)
 }
 
-func appendCommonCueLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, placementAccounted bool) {
+func appendCommonCueLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, placementAccounted bool) error {
 	base := fmt.Sprintf("/cues/%d", cueIndex)
 	for index := range cue.Speakers {
-		*losses = append(*losses, cueLoss(document, targetFormat, *cue, LossCodeSpeakerObservationOmitted, KindOmitted, "speaker observation is omitted from target structure", fmt.Sprintf("%s/speakers/%d", base, index), []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}}))
+		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeSpeakerObservationOmitted, KindOmitted, "speaker observation is omitted from target structure", fmt.Sprintf("%s/speakers/%d", base, index), []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}})); err != nil {
+			return err
+		}
 	}
 	for index := range cue.Tokens {
-		*losses = append(*losses, cueLoss(document, targetFormat, *cue, LossCodeTokenTimingOmitted, KindOmitted, "token timing is omitted from target structure", fmt.Sprintf("%s/tokens/%d", base, index), []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}}))
+		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeTokenTimingOmitted, KindOmitted, "token timing is omitted from target structure", fmt.Sprintf("%s/tokens/%d", base, index), []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}})); err != nil {
+			return err
+		}
 	}
 	for index := range cue.OCRObservations {
-		*losses = append(*losses, cueLoss(document, targetFormat, *cue, LossCodeOCRObservationOmitted, KindOmitted, "OCR observation is omitted from subtitle output", fmt.Sprintf("%s/ocr_observations/%d", base, index), []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}}))
+		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeOCRObservationOmitted, KindOmitted, "OCR observation is omitted from subtitle output", fmt.Sprintf("%s/ocr_observations/%d", base, index), []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}})); err != nil {
+			return err
+		}
 	}
 	if cue.Placement != nil && !placementAccounted {
-		*losses = append(*losses, cueLoss(document, targetFormat, *cue, LossCodePlacementOmitted, KindOmitted, "common placement is omitted from target output", base+"/placement", nil))
+		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodePlacementOmitted, KindOmitted, "common placement is omitted from target output", base+"/placement", nil)); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func appendPayloadLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, translation payloadTranslation) {
+func appendPayloadLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, translation payloadTranslation) error {
 	path := fmt.Sprintf("/cues/%d/payload/raw_text", cueIndex)
 	for _, issue := range translation.Issues {
 		context := []Attribute{{Name: "occurrence", Value: occurrenceValue(issue.Occurrence)}}
 		if issue.Feature != "" {
 			context = append(context, Attribute{Name: "syntax", Value: issue.Feature})
 		}
-		*losses = append(*losses, cueLoss(document, targetFormat, *cue, issue.Code, issue.Kind, payloadLossMessage(issue.Code), path, context))
+		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, issue.Code, issue.Kind, payloadLossMessage(issue.Code), path, context)); err != nil {
+			return err
+		}
 	}
+	return nil
+}
+
+func appendOneLoss(losses *[]Loss, loss Loss) error {
+	if len(*losses) >= MaxLosses {
+		return fmt.Errorf("conversion produces more than %d losses", MaxLosses)
+	}
+	*losses = append(*losses, loss)
+	return nil
 }
 
 func payloadLossMessage(code string) string {

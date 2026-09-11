@@ -137,6 +137,19 @@ func TestReportValidationRejectsDuplicateAndNoncanonicalOrder(t *testing.T) {
 	}
 }
 
+func TestLossReportsRejectCollectionAmplificationBeforeCanonicalization(t *testing.T) {
+	t.Parallel()
+
+	document := reportTestDocument(t)
+	losses := make([]Loss, MaxLosses+1)
+	if _, err := NewReport(document, losses); err == nil || !strings.Contains(err.Error(), "maximum") {
+		t.Fatalf("NewReport() error = %v, want bounded rejection", err)
+	}
+	if err := (Report{Losses: losses}).Validate(document); err == nil || !strings.Contains(err.Error(), "maximum") {
+		t.Fatalf("Report.Validate() error = %v, want bounded rejection", err)
+	}
+}
+
 func TestTypedConversionErrorsRetainStableContext(t *testing.T) {
 	t.Parallel()
 

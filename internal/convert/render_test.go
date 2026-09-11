@@ -56,7 +56,10 @@ func TestSubRipRenderDiagnosticsPreserveEstablishedAggregation(t *testing.T) {
 	document.Cues[0].Payload.RawText = "text\n"
 	document.Cues[0].Speakers = []model.Speaker{{Name: "Alice", Origin: "heuristic"}}
 	document.Cues[0].Tokens = []model.Token{{Text: "text", StartMilliseconds: 1000, EndMilliseconds: 2000}}
-	diagnostics := SubRipRenderDiagnostics(document)
+	diagnostics, err := SubRipRenderDiagnostics(document)
+	if err != nil {
+		t.Fatal(err)
+	}
 	wantCodes := []string{"subrip_render_metadata_unrepresented", "subrip_render_payload_ambiguous", "subrip_render_fields_unrepresented"}
 	gotCodes := make([]string, len(diagnostics))
 	for index := range diagnostics {
@@ -64,6 +67,21 @@ func TestSubRipRenderDiagnosticsPreserveEstablishedAggregation(t *testing.T) {
 	}
 	if !reflect.DeepEqual(gotCodes, wantCodes) {
 		t.Fatalf("diagnostic codes = %v, want %v", gotCodes, wantCodes)
+	}
+}
+
+func TestSubRipRenderDiagnosticsRejectsBeforeExceedingLimit(t *testing.T) {
+	document := conversionTestDocument(t, "1\n00:00:01,000 --> 00:00:02,000\ntext\n", "subrip")
+	cue := document.Cues[0]
+	cue.Speakers = []model.Speaker{{Name: "Alice", Origin: "heuristic"}}
+	document.Cues = make([]model.Cue, model.MaxDiagnostics+1)
+	for index := range document.Cues {
+		document.Cues[index] = cue
+	}
+
+	diagnostics, err := SubRipRenderDiagnostics(document)
+	if err == nil || len(diagnostics) != 0 {
+		t.Fatalf("diagnostics = %d, error = %v", len(diagnostics), err)
 	}
 }
 

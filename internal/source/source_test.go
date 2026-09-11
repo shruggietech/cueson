@@ -140,3 +140,81 @@ func TestCaptureContextClassifiesDeterministicPreconditions(t *testing.T) {
 		}
 	}
 }
+
+func TestReadFileContextUsesBoundedNoFollowBoundary(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	exactPath := filepath.Join(directory, "exact.json")
+	if err := os.WriteFile(exactPath, []byte("1234"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	payload, err := readFileContextWithLimit(context.Background(), exactPath, 4)
+	if err != nil || !bytes.Equal(payload, []byte("1234")) {
+		t.Fatalf("exact boundary = (%q, %v)", payload, err)
+	}
+
+	overPath := filepath.Join(directory, "over.json")
+	if err := os.WriteFile(overPath, []byte("12345"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readFileContextWithLimit(context.Background(), overPath, 4); !IsCapturePrecondition(err) {
+		t.Fatalf("limit-plus-one error = %v, want precondition", err)
+	}
+
+	for _, path := range []string{filepath.Join(directory, "missing.json"), directory, filepath.Join(directory, "PRIVATE:BAD.json")} {
+		if _, err := readFileContextWithLimit(context.Background(), path, 4); !IsCapturePrecondition(err) {
+			t.Errorf("readFileContextWithLimit(%q) error = %v, want precondition", path, err)
+		}
+	}
+
+	linkPath := filepath.Join(directory, "linked.json")
+	if err := os.Symlink(exactPath, linkPath); err == nil {
+		if _, err := readFileContextWithLimit(context.Background(), linkPath, 4); !IsCapturePrecondition(err) {
+			t.Errorf("symlink error = %v, want precondition", err)
+		}
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := readFileContextWithLimit(ctx, exactPath, 4); !errors.Is(err, context.Canceled) {
+		t.Fatalf("canceled read error = %v", err)
+	}
+}
+
+func TestReadCueJSONContextAllowsBoundedSourceExpansion(t *testing.T) {
+	directory := t.TempDir()
+	expandedPath := filepath.Join(directory, "expanded.cueson.json")
+	file, err := os.OpenFile(expandedPath, os.O_CREATE|os.O_WRONLY, 0o600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Truncate(MaxCaptureBytes + 1); err != nil {
+		_ = file.Close()
+		t.Fatal(err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	payload, err := ReadCueJSONContext(context.Background(), expandedPath)
+	if err != nil || int64(len(payload)) != MaxCaptureBytes+1 {
+		t.Fatalf("expanded Cue JSON boundary = (%d bytes, %v)", len(payload), err)
+	}
+
+	tooLargePath := filepath.Join(directory, "too-large.cueson.json")
+	file, err = os.OpenFile(tooLargePath, os.O_CREATE|os.O_WRONLY, 0o600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Truncate(MaxCueJSONBytes + 1); err != nil {
+		_ = file.Close()
+		t.Fatal(err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := ReadCueJSONContext(context.Background(), tooLargePath); !IsCapturePrecondition(err) {
+		t.Fatalf("Cue JSON limit-plus-one error = %v, want precondition", err)
+	}
+}

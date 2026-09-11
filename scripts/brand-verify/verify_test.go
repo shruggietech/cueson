@@ -74,7 +74,7 @@ func TestVerifyRepositoryRejectsMaliciousZIPPaths(t *testing.T) {
 		{name: "traversal", path: "../escape.svg", want: "parent components are not allowed"},
 		{name: "absolute", path: "/absolute.svg", want: "absolute or drive-qualified"},
 		{name: "backslash", path: `logos\evil.svg`, want: "backslashes are not allowed"},
-		{name: "reserved", path: "logos/CON.svg", want: "Windows-reserved name"},
+		{name: "reserved", path: "logos/CON.svg", want: "windows-reserved name"},
 		{name: "symlink", path: "logos/link.svg", mode: os.ModeSymlink | 0o777, want: "only regular files"},
 	}
 	for _, test := range tests {
@@ -167,7 +167,7 @@ func TestValidatePortablePathRejectsAllWindowsDeviceAliases(t *testing.T) {
 	}
 	for _, name := range reserved {
 		t.Run(name, func(t *testing.T) {
-			if err := validatePortablePath("assets/" + name); err == nil || !strings.Contains(err.Error(), "Windows-reserved name") {
+			if err := validatePortablePath("assets/" + name); err == nil || !strings.Contains(err.Error(), "windows-reserved name") {
 				t.Fatalf("validatePortablePath(%q) = %v", name, err)
 			}
 		})

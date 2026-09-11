@@ -24,10 +24,10 @@ A release decision starts only from a clean, reviewed default-branch commit. Bef
 
 1. Every issue committed to the candidate is closed or truthfully moved, and the Project and milestone agree with that state.
 2. The executable version, embedded schema version, and intended tag version are identical.
-3. The detailed candidate history is complete under the dated `[0.0.0]` section in [CHANGELOG.md](../CHANGELOG.md), with a fresh empty `[Unreleased]` section retained for later work.
+3. The detailed candidate history is complete under a dated section matching the intended version in [CHANGELOG.md](../CHANGELOG.md), with a fresh empty `[Unreleased]` section retained for later work.
 4. Repository formatting, tests, race detection, vet, vulnerability analysis, CodeQL, platform-native tests, and pure-Go target builds are green.
 5. The non-publishing snapshot and repository-owned verifier pass for the exact default-branch candidate commit and record its full revision plus `release_schema_sha256` in deterministic evidence.
-6. Documentation describes shipped commands and `envelope_only` format support without claiming native SRT or WebVTT codecs.
+6. Documentation describes the candidate's actual commands and format-support declarations, distinguishes exact restoration from rendering and conversion, and contains no capability inherited from a different release.
 7. No unresolved review or security finding remains.
 8. The proposed release does not depend on an unapproved production-domain change.
 
@@ -44,7 +44,7 @@ For v0.0.0, S012 prepared the publication state without weakening the existing n
 5. The default-branch `release-evidence.json` recorded the full source revision, version, `release_schema_sha256`, target inventory, archive and SBOM digests, counts, compatible-host execution result, and `published: false`.
 6. S013 froze the complete decision package, received exact tag and release authority, published only the authorized state, and verified the public result independently.
 
-The checked-in GoReleaser configuration remains snapshot-only and has publication disabled. A release slice must not repurpose that reviewed configuration into a hidden publication mechanism.
+The checked-in GoReleaser configuration remains snapshot-only and has publication disabled. A release slice must not repurpose that reviewed configuration into a hidden publication mechanism. For v1.0.0, candidate versioning, immutable-schema admission, dated changelog and concise release-note preparation, and exact candidate proof belong to the later release-candidate slice; S018 contract hardening does not perform those actions.
 
 ## Pull-request and default-branch candidate binding
 
@@ -56,13 +56,13 @@ The non-publishing workflow also runs on pushes to `main`. After the authorized 
 
 Before requesting tag or GitHub Release authority, present the operator with one bounded package containing:
 
-- the exact 40-character post-squash `main` commit proposed for tag `v0.0.0`;
-- version `0.0.0`, the dated [changelog](../CHANGELOG.md), and the reviewed [release notes](releases/v0.0.0.md);
+- the exact 40-character post-squash `main` commit proposed for the intended semantic-version tag;
+- the intended version, dated [changelog](../CHANGELOG.md), and reviewed concise release notes;
 - the lowercase `release_schema_sha256` for the byte-identical canonical, versioned, embedded, and packaged schema;
 - the exact six-archive and six-SBOM inventory, the six archive checksum entries, and every recorded archive and SBOM digest;
 - the accepted `release-evidence.json`, including target identities, compatible-host execution result, and `published: false`;
 - the green default-branch CI, CodeQL, and release-proof results plus the resolved review and security record;
-- the envelope-only limitation and the explicit absence of native SRT/WebVTT ingest, model-driven render, conversion, signatures, attestations, public schema hosting, and production activation.
+- every capability limitation that applies to that candidate, plus the explicit absence of signatures, attestations, public schema hosting, or production activation unless those items were separately specified, proved, and authorized.
 
 The operator decision must name the target commit and intended actions. Approval to create or push the tag does not authorize GitHub Release or asset publication, and approval to publish the release does not authorize production-domain work or milestone closure.
 
@@ -71,11 +71,11 @@ The operator decision must name the target commit and intended actions. Approval
 | Action | Required boundary |
 |---|---|
 | Merge the release-preparation pull request | Human operator approval for that specific pull request unless a single-use override explicitly identifies it. |
-| Create, move, or push `v0.0.0` | Explicit authorization for the exact tag and target commit. Moving an existing tag requires fresh judgment and must never be inferred from creation authority. |
+| Create, move, or push a version tag | Explicit authorization for the exact tag and target commit. Moving an existing tag requires fresh judgment and must never be inferred from creation authority. |
 | Publish a GitHub Release or release assets | Explicit authorization for the exact release, notes, and verified artifact set. |
 | Admit the immutable release-schema copy | Reviewed release change plus byte-identity proof; released copies are never mutated in place. |
-| Close the v0.0.0 milestone | Separate lifecycle decision after publication and post-publication verification, or an explicit operator decision to retire the milestone without publishing. |
-| Publish a schema or change production `cueson.io` | Separate post-v1 production specification and explicit production authorization. It is not part of the v0.0.0 transaction. |
+| Close a release milestone | Separate lifecycle decision after publication and post-publication verification, or an explicit operator decision to retire the milestone without publishing. |
+| Publish a schema or change production `cueson.io` | Separate post-v1 production specification and explicit production authorization. It is not implied by a GitHub release transaction. |
 
 Authority for one row does not authorize another row. In particular, permission to merge a release-preparation pull request is not permission to create a tag or GitHub Release.
 

@@ -205,24 +205,14 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 }
 
 func runRestore(ctx context.Context, options restoreOptions, stderr io.Writer, diagnostics diagnosticWriter) int {
-	inputInfo, err := os.Stat(options.input)
+	payload, err := source.ReadCueJSONContext(ctx, options.input)
 	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			diagnostics.write(diagnosticError, fmt.Sprintf("input %q does not exist", options.input))
+		if source.IsCapturePrecondition(err) {
+			diagnostics.write(diagnosticError, "restore: input does not satisfy path or size requirements")
 			writeUsage(stderr, restoreHelp)
 			return ExitInvocation
 		}
-		diagnostics.write(diagnosticError, fmt.Sprintf("read Cue JSON %q: %v", options.input, err))
-		return ExitRuntimeFailure
-	}
-	if !inputInfo.Mode().IsRegular() {
-		diagnostics.write(diagnosticError, fmt.Sprintf("input %q is not a regular file", options.input))
-		writeUsage(stderr, restoreHelp)
-		return ExitInvocation
-	}
-	payload, err := os.ReadFile(options.input)
-	if err != nil {
-		diagnostics.write(diagnosticError, fmt.Sprintf("read Cue JSON %q: %v", options.input, err))
+		diagnostics.write(diagnosticError, "restore: Cue JSON acquisition failed")
 		return ExitRuntimeFailure
 	}
 	document, err := schema.Decode(payload)

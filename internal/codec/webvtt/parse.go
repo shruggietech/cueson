@@ -40,6 +40,9 @@ func Parse(input string) (Result, error) {
 		if strings.Contains(lines[position].text, "-->") {
 			return Result{}, &ParseError{Code: "webvtt_header_invalid", Line: lines[position].number, Text: "header metadata must not contain -->"}
 		}
+		if len(result.DocumentData.MetadataLines) >= model.MaxItemOccurrences {
+			return Result{}, &ParseError{Code: "webvtt_occurrence_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("header contains more than %d metadata lines", model.MaxItemOccurrences)}
+		}
 		result.DocumentData.MetadataLines = append(result.DocumentData.MetadataLines, lexicalLines[position].text)
 		position++
 	}
@@ -58,6 +61,9 @@ func Parse(input string) (Result, error) {
 			break
 		}
 		sourceOrder := len(result.Cues) + len(result.DocumentData.Blocks)
+		if sourceOrder >= model.MaxDocumentItems {
+			return Result{}, &ParseError{Code: "webvtt_item_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("document contains more than %d body items", model.MaxDocumentItems)}
+		}
 		line := lines[position].text
 		if noteLine(line) || keywordLine(line, "STYLE") || keywordLine(line, "REGION") {
 			end := position + 1
@@ -65,6 +71,9 @@ func Parse(input string) (Result, error) {
 				end++
 			}
 			rawLines := lineTexts(lexicalLines[position:end])
+			if len(rawLines) > model.MaxItemOccurrences {
+				return Result{}, &ParseError{Code: "webvtt_occurrence_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("block contains more than %d physical lines", model.MaxItemOccurrences)}
+			}
 			blockType := strings.ToLower(strings.Fields(line)[0])
 			block := model.WebVTTBlock{Type: blockType, SourceOrder: sourceOrder, Raw: strings.Join(rawLines, "\n"), RawLines: rawLines}
 			if (blockType == "style" || blockType == "region") && seenCue {
@@ -80,6 +89,9 @@ func Parse(input string) (Result, error) {
 			}
 			if blockType == "region" {
 				settingsRaw := strings.Join(rawLines[1:], "\n")
+				if countASCIIWhitespaceFields(settingsRaw) > model.MaxItemOccurrences {
+					return Result{}, &ParseError{Code: "webvtt_occurrence_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("REGION contains more than %d setting occurrences", model.MaxItemOccurrences)}
+				}
 				occurrences, settings, diagnostics := parseRegionSettings(settingsRaw, sourceOrder)
 				block.Region = &model.WebVTTRegionData{SettingsRaw: settingsRaw, Settings: settings, SettingOccurrences: occurrences}
 				result.Diagnostics = append(result.Diagnostics, diagnostics...)
@@ -88,6 +100,9 @@ func Parse(input string) (Result, error) {
 				}
 			}
 			result.DocumentData.Blocks = append(result.DocumentData.Blocks, block)
+			if len(result.Diagnostics) > model.MaxDiagnostics {
+				return Result{}, &ParseError{Code: "webvtt_diagnostic_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("document produces more than %d diagnostics", model.MaxDiagnostics)}
+			}
 			position = end
 			continue
 		}
@@ -102,8 +117,14 @@ func Parse(input string) (Result, error) {
 				end++
 			}
 			rawLines := lineTexts(lexicalLines[position:end])
+			if len(rawLines) > model.MaxItemOccurrences {
+				return Result{}, &ParseError{Code: "webvtt_occurrence_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("block contains more than %d physical lines", model.MaxItemOccurrences)}
+			}
 			result.DocumentData.Blocks = append(result.DocumentData.Blocks, model.WebVTTBlock{Type: "unrecognized", SourceOrder: sourceOrder, Raw: strings.Join(rawLines, "\n"), RawLines: rawLines})
 			result.Diagnostics = append(result.Diagnostics, blockDiagnostic("webvtt_block_unrecognized", fmt.Sprintf("unrecognized WebVTT block beginning at line %d was preserved", lines[position].number), sourceOrder))
+			if len(result.Diagnostics) > model.MaxDiagnostics {
+				return Result{}, &ParseError{Code: "webvtt_diagnostic_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("document produces more than %d diagnostics", model.MaxDiagnostics)}
+			}
 			position = end
 			continue
 		}
@@ -120,6 +141,9 @@ func Parse(input string) (Result, error) {
 		}
 		if payloadEnd == payloadStart {
 			return Result{}, &ParseError{Code: "webvtt_payload_empty", Line: lines[timingIndex].number, Text: "cue must contain at least one payload line"}
+		}
+		if payloadEnd-payloadStart > model.MaxItemOccurrences {
+			return Result{}, &ParseError{Code: "webvtt_occurrence_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("cue contains more than %d payload lines", model.MaxItemOccurrences)}
 		}
 		ordinal := len(result.Cues)
 		cueID := fmt.Sprintf("cue-%06d", ordinal)
@@ -140,6 +164,9 @@ func Parse(input string) (Result, error) {
 		if lexicalTimingErr == nil {
 			timing.SettingsRaw = lexicalTiming.SettingsRaw
 		}
+		if countASCIIWhitespaceFields(timing.SettingsRaw) > model.MaxItemOccurrences {
+			return Result{}, &ParseError{Code: "webvtt_occurrence_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("cue contains more than %d setting occurrences", model.MaxItemOccurrences)}
+		}
 		occurrences, settings, settingDiagnostics := parseCueSettings(timing.SettingsRaw, sourceOrder, cueID)
 		result.Diagnostics = append(result.Diagnostics, settingDiagnostics...)
 		if missingSeparator {
@@ -147,6 +174,9 @@ func Parse(input string) (Result, error) {
 		}
 		payloadLines := lineTexts(lexicalLines[payloadStart:payloadEnd])
 		rawPayload := strings.Join(payloadLines, "\n")
+		if strings.Count(rawPayload, "<") > model.MaxItemOccurrences || strings.Count(rawPayload, "&") > model.MaxItemOccurrences {
+			return Result{}, &ParseError{Code: "webvtt_occurrence_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("cue contains more than %d markup or entity occurrences", model.MaxItemOccurrences)}
+		}
 		plain, speakers, tokens, markupDiagnostics := scanPayload(rawPayload, timing.StartMilliseconds, timing.EndMilliseconds, sourceOrder, cueID)
 		result.Diagnostics = append(result.Diagnostics, markupDiagnostics...)
 		cue := model.Cue{
@@ -158,6 +188,9 @@ func Parse(input string) (Result, error) {
 		}
 		cue.Placement = placementFromSettings(settings)
 		result.Cues = append(result.Cues, cue)
+		if len(result.Diagnostics) > model.MaxDiagnostics {
+			return Result{}, &ParseError{Code: "webvtt_diagnostic_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("document produces more than %d diagnostics", model.MaxDiagnostics)}
+		}
 		seenCue = true
 		previousStart = timing.StartMilliseconds
 		position = payloadEnd

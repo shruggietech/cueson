@@ -15,8 +15,45 @@ import (
 	"testing"
 
 	"github.com/shruggietech/cueson/internal/schema"
+	"github.com/shruggietech/cueson/internal/source"
 	"github.com/shruggietech/cueson/internal/testutil"
 )
+
+func TestCueJSONCommandsRejectBoundedPathPreconditionsWithoutOutputOrPathLeak(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	overPath := filepath.Join(directory, "PRIVATE-OVERSIZED.cueson.json")
+	file, err := os.OpenFile(overPath, os.O_CREATE|os.O_WRONLY, 0o600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Truncate(source.MaxCueJSONBytes + 1); err != nil {
+		_ = file.Close()
+		t.Fatal(err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, command := range []struct {
+		name string
+		args func(string) []string
+	}{
+		{name: "restore", args: func(path string) []string { return []string{"restore", "--no-metadata", path} }},
+		{name: "render", args: func(path string) []string { return []string{"render", path, "--to", "srt"} }},
+	} {
+		for _, path := range []string{directory, overPath, filepath.Join(directory, "PRIVATE-MISSING.cueson.json")} {
+			status, stdout, stderr := runForTest(context.Background(), command.args(path))
+			if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, "path or size requirements") {
+				t.Errorf("%s %q = (%d, %q, %q)", command.name, path, status, stdout, stderr)
+			}
+			if strings.Contains(stderr, path) || strings.Contains(stderr, directory) {
+				t.Errorf("%s diagnostic leaked caller path: %q", command.name, stderr)
+			}
+		}
+	}
+}
 
 func TestRunVersion(t *testing.T) {
 	t.Parallel()
@@ -1054,6 +1091,25 @@ func TestEncodeRenderAndRestoreWorkflow(t *testing.T) {
 	}
 }
 
+func TestMarshalDocumentEnforcesPublishedCueJSONLimit(t *testing.T) {
+	t.Parallel()
+
+	document, err := schema.Decode(schema.Representative())
+	if err != nil {
+		t.Fatal(err)
+	}
+	payload, err := marshalDocument(document, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if exact, exactErr := marshalDocumentWithLimit(document, false, int64(len(payload))); exactErr != nil || !bytes.Equal(exact, payload) {
+		t.Fatalf("exact output boundary = (%d bytes, %v), want %d bytes", len(exact), exactErr, len(payload))
+	}
+	if _, err := marshalDocumentWithLimit(document, false, int64(len(payload)-1)); err == nil || !strings.Contains(err.Error(), "cue JSON exceeds") {
+		t.Fatalf("limit-minus-one error = %v", err)
+	}
+}
+
 func TestEncodeDefaultOutputAndWebVTTCodec(t *testing.T) {
 	t.Parallel()
 
@@ -1289,6 +1345,60 @@ func TestEveryAcceptedWebVTTFixtureEncodesAndRestoresExactly(t *testing.T) {
 				t.Fatal("restored bytes differ from governed source")
 			}
 		})
+	}
+}
+
+func TestEveryAcceptedSubRipFixtureEncodesAndRestoresExactly(t *testing.T) {
+	t.Parallel()
+
+	root := filepath.Join("..", "..", "testdata")
+	manifest, err := testutil.VerifyFixtures(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, fixture := range manifest.Fixtures {
+		if fixture.Expectation.Result != "accepted" || !strings.HasPrefix(fixture.ID, "subrip/") {
+			continue
+		}
+		for _, artifact := range fixture.Artifacts {
+			if artifact.Role != "source" {
+				continue
+			}
+			fixture, artifact := fixture, artifact
+			t.Run(strings.TrimPrefix(fixture.ID, "subrip/")+"/"+artifact.ID, func(t *testing.T) {
+				t.Parallel()
+				sourcePath := testutil.ArtifactFile(root, artifact)
+				sourceBytes := readFileForCLI(t, sourcePath)
+				args := []string{"encode", "--stdout"}
+				switch artifact.ID {
+				case "windows_1252":
+					args = append(args, "--encoding", "windows-1252")
+				case "iso_8859_1":
+					args = append(args, "--encoding", "iso-8859-1")
+				}
+				args = append(args, sourcePath)
+				status, encoded, stderr := runForTest(context.Background(), args)
+				if status != ExitSuccess {
+					t.Fatalf("encode = (%d, %q, %q)", status, encoded, stderr)
+				}
+				if _, err := schema.Decode([]byte(encoded)); err != nil {
+					t.Fatalf("schema.Decode(encoded) error = %v", err)
+				}
+				directory := t.TempDir()
+				documentPath := filepath.Join(directory, "document.cueson.json")
+				if err := os.WriteFile(documentPath, []byte(encoded), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				restoredPath := filepath.Join(directory, "restored.srt")
+				status, stdout, stderr := runForTest(context.Background(), []string{"restore", "--no-metadata", "--output", restoredPath, documentPath})
+				if status != ExitSuccess || stdout != "" || stderr != "" {
+					t.Fatalf("restore = (%d, %q, %q)", status, stdout, stderr)
+				}
+				if restored := readFileForCLI(t, restoredPath); !bytes.Equal(restored, sourceBytes) {
+					t.Fatal("restored bytes differ from governed source")
+				}
+			})
+		}
 	}
 }
 

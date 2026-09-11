@@ -347,7 +347,7 @@ func readArchive(name string, data []byte) (map[string]archiveMember, error) {
 		if err != nil {
 			return nil, err
 		}
-		if !safeMemberName(header.Name) || (header.Typeflag != tar.TypeReg && header.Typeflag != tar.TypeRegA) {
+		if !safeMemberName(header.Name) || header.Typeflag != tar.TypeReg {
 			return nil, fmt.Errorf("unsafe or non-regular tar member %q", header.Name)
 		}
 		if _, exists := members[header.Name]; exists {

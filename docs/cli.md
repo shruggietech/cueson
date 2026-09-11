@@ -1,22 +1,28 @@
 # Cueson CLI Contract
 
-**Status:** v0.1.0 development contract with published v0.0.0 baseline
+**Status:** Complete v1-bound command contract implemented by v0.1.0 development source, with a published v0.0.0 envelope-only baseline
 
-**Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
+This document is the maintained CLI authority. The public command names and behavior described here are intended to become stable at v1.0.0, but no v1 binary has been published. The exact generated help under `internal/cli/testdata/help/` and executable documentation tests are checked against this reference.
 
-This document is the CLI authority for current development. Commands enter help and command listings only when the executable implements their documented behavior. The broader command surface in the [working project specification](Cueson-Project-Specification-v0.0.0.md) is a roadmap, not permission to register placeholders.
+## Invocation, streams, and status
 
-v0.0.0 is publicly available from the [official GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) as six verified platform archives with checksums and matching SPDX JSON SBOMs. The implemented commands may also be exercised with `go run ./cmd/cueson ...` from a Go 1.25 source checkout. Snapshot archives produced by later non-publishing verification runs remain review evidence unless separately published through an authorized release.
+The root form is `cueson [global options] <command>`. Global options may appear before or after the command until the `--` delimiter ends option processing. User paths are literal; Cueson does not expand globs, tildes, or environment-variable syntax.
 
-## v0.0.0 command delivery
+- `-q`, `--quiet`: suppress informational and success diagnostics while retaining warnings and errors.
+- `--silent`: suppress every non-error diagnostic while retaining errors.
+- `--no-color`: disable diagnostic color. `NO_COLOR` is honored, and non-terminal diagnostics are uncolored.
+- `-h`, `--help`: print complete explicit help to stdout and exit successfully.
+- `--`: end option processing so following operands remain literal.
 
-| Owning issue | Commands added | Capability boundary |
-|---|---|---|
-| [#4](https://github.com/shruggietech/cueson/issues/4) | Root help, `version` | Executable and CLI foundation |
-| [#5](https://github.com/shruggietech/cueson/issues/5) | `schema`, `schema --version`, schema output | Embedded canonical schema |
-| [#6](https://github.com/shruggietech/cueson/issues/6) | `restore` | Generic exact source-envelope restoration without a codec |
+Stdout contains only a requested payload or explicit help. Diagnostics, warnings, errors, and error-associated short usage use stderr. Quiet and silent never suppress an explicitly requested stdout payload. Cueson emits no decorative banner or emoji. Generated text is UTF-8 without BOM and LF-only unless exact restoration reproduces different preserved source bytes.
 
-Current v0.1.0 source additionally ships `encode`, `render`, `convert`, `validate`, `inspect`, and `completion` for the experimental SubRip and WebVTT workflow.
+- Exit code `0`: the command or explicit help completed successfully; warnings may be present.
+- Exit code `1`: an accepted operation failed during processing, cancellation, validation, integrity checking, strict rejection, capability handling, output delivery, or runtime I/O.
+- Exit code `2`: command syntax, an operand, an option, or a deterministic pre-execution path or environment requirement was invalid.
+
+Existing output is never replaced implicitly. A filesystem destination requires `--force` before Cueson will replace an existing regular file. `--force` does not permit replacing a directory, symbolic link, device, or other non-regular entry, and it is invalid when output is stdout.
+
+The root help lists exactly nine commands: `encode`, `restore`, `render`, `convert`, `validate`, `inspect`, `schema`, `version`, and `completion`.
 
 ## `encode`
 
@@ -24,88 +30,23 @@ Current v0.1.0 source additionally ships `encode`, `render`, `convert`, `validat
 cueson [global options] encode [options] INPUT
 ```
 
-`encode` detects or explicitly selects SubRip or WebVTT, decodes the exact bounded source bytes, derives common and native cue data, validates the resulting document, and writes Cue JSON to `INPUT.cueson.json` by default. It accepts `--output`, `--force`, `--format auto|srt|vtt`, `--encoding`, `--pretty`, `--stdout`, and `--no-speaker-detection`. `--output -` is equivalent to `--stdout`.
+`encode` captures one bounded regular SubRip or WebVTT input, derives common and native cue data, validates the resulting document, and preserves the exact source bytes in Cue JSON.
 
-SubRip automatic decoding accepts UTF-8 and BOM-marked UTF-16. BOM-less UTF-16 requires strong byte-pattern evidence. Ambiguous single-byte SubRip input requires an explicit `--encoding windows-1252` or `--encoding iso-8859-1`; aliases shown by command help normalize to the same canonical observations. WebVTT accepts UTF-8 only, with an optional UTF-8 BOM, and rejects an incompatible explicit `--encoding` before execution. Input is limited to 64 MiB. Standard output contains only Cue JSON.
+- `-o`, `--output` `PATH`: write Cue JSON to `PATH`; without an output selection, the destination is `INPUT.cueson.json`. `--output -` selects stdout.
+- `-f`, `--force`: replace an approved existing regular filesystem output.
+- `--format` `FORMAT`: select `auto`, `srt`, or `vtt`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--encoding` `NAME`: select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.
+- `--pretty`: indent Cue JSON output.
+- `--stdout`: write Cue JSON to stdout; it is mutually exclusive with a filesystem output.
+- `--no-speaker-detection`: disable conservative derived `Name:` speaker observations.
 
-## `render`
+WebVTT accepts UTF-8 only, including BOM-specific UTF-8 selection when the input has the matching BOM. SubRip accepts automatic UTF-8, BOM-marked UTF-16, strongly evidenced BOM-less UTF-16, and explicitly selected legacy single-byte encodings. Input is limited to 64 MiB.
 
-```text
-cueson [global options] render [options] INPUT.cueson.json --to srt|vtt
-```
-
-`render` validates Cue JSON and serializes its structured cue model rather than restoring captured bytes. Without `--output` it writes stdout; `--output -` is equivalent. `--force` applies only to real filesystem destinations. The `--to` value must match the document's native format; use `convert` for a different target format. Canonical SubRip uses ordered integer sequence lines, `HH:MM:SS,mmm`, complete coordinates when present, raw payload text, LF line endings, one blank line between cues, and a final LF. Canonical WebVTT uses a `WEBVTT` signature, preserved header metadata, the contiguous merged cue and non-cue source order, normalized dot-millisecond timestamps, retained native cue settings and payload, LF separators, and a final LF. Normal rendering warns when preserved content is known to be nonconforming; `--strict` rejects known ambiguity or nonconformance before publishing output.
-
-## `convert`
-
-```text
-cueson [global options] convert [options] INPUT --to srt|vtt
-```
-
-`convert` accepts Cue JSON, SubRip, or WebVTT input and serializes the requested native target from a private target projection. Input format defaults to `auto` and may be selected explicitly with `--from auto|cueson|srt|vtt`. Cue JSON recognition has precedence over native detection; content presented as Cue JSON that fails JSON, schema, semantic, or source-integrity validation does not fall through to a native codec. Native input shares the bounded acquisition, `--encoding`, and `--no-speaker-detection` behavior of `encode`.
-
-Without `--output`, conversion writes the target bytes to stdout; `--output -` is equivalent. `--force` applies only to a real filesystem destination. The converter retains cue order, integer-millisecond timing, overlap, multiline payloads, and shared `b`, `i`, and `u` emphasis. Target-incompatible metadata, placement, native blocks, identifiers, annotations, and markup produce deterministic stderr warnings. Conversion losses are runtime-only observations identified by stable code, severity, kind, source and target format, and a portable JSON Pointer path; they never enter Cue JSON or expose source bytes, input paths, or machine identity. `--strict` computes the complete loss report and fails before target rendering or destination publication when any loss is known. A non-positive SubRip cue duration cannot be represented as valid WebVTT and is fatal in every mode.
-
-## General invocation rules
-
-- `-h` and `--help` are reserved for help.
-- Explicit help prints to stdout and exits 0.
-- `--` ends option processing.
-- User paths are literal. Cueson does not expand globs, tildes, or environment-variable syntax.
-- Existing output is never replaced implicitly. `--force` is required.
-- `--no-color` disables color, `NO_COLOR` is honored, and non-TTY diagnostics are uncolored.
-- No emoji or decorative banner appears in command output.
-- Command help provides meaningful descriptions and worked examples only for shipped behavior.
-
-## Streams and suppression
-
-Stdout contains payload data only. Diagnostics, progress, warnings, errors, and error-associated usage use stderr. Structured JSON on stdout contains no commentary or decoration.
-
-`--quiet` suppresses informational and success diagnostics while retaining warnings and errors. `--silent` suppresses every non-error diagnostic. Neither option suppresses command payloads explicitly requested on stdout.
-
-Text generated by Cueson uses UTF-8 without BOM and LF unless the operation is exact restoration of preserved source bytes.
-
-## Exit codes
-
-| Code | Meaning |
-|---:|---|
-| `0` | Success |
-| `1` | Failure after a valid shipped command is accepted |
-| `2` | Invocation or pre-execution environment failure |
-
-Exit code 2 covers unknown or unregistered commands, unknown flags, missing required operands, invalid option combinations, and deterministic environment requirements checked before the operation begins.
-
-Exit code 1 covers runtime I/O, parsing, schema or semantic validation, integrity, restoration, rendering, conversion, assertion, strict-loss, and missing-runtime-capability failures.
-
-Higher exit codes require an explicit contract amendment and changelog decision.
-
-## Capability diagnostics
-
-Diagnostics must distinguish these conditions:
-
-- **Unknown format**: the input or requested output does not name a schema-recognized format.
-- **Schema-recognized format with missing codec**: the format exists in the contract, but the shipped command lacks native ingest or render capability.
-- **Strict loss rejection**: the operation is understood but cannot represent known information without loss under strict policy.
-
-A missing codec for a valid shipped command is a runtime capability failure with exit code 1. It is not an invocation error and does not make the format unknown.
-
-## `version`
+For a filesystem output, success exits 0 with empty stdout and only source warnings on stderr. The executable README scenario is:
 
 ```text
-cueson version
+cueson encode --pretty --output quickstart/document.cueson.json testdata/fixtures/conversion/srt-loss-free/source/input.srt
 ```
-
-Current development `version` prints exactly `0.1.0` followed by one LF. The published v0.0.0 binary continues to print `0.0.0`.
-
-## `schema`
-
-```text
-cueson schema
-cueson schema --version
-cueson schema --output PATH
-```
-
-`schema` prints the embedded canonical schema to stdout unless an output path is selected. Current development `schema --version` prints exactly `0.1.0` followed by one LF. Output replacement follows the explicit `--force` rule. The schema version equals the executable version.
 
 ## `restore`
 
@@ -113,29 +54,63 @@ cueson schema --output PATH
 cueson [global options] restore [options] INPUT.cueson.json
 ```
 
-`restore` accepts Cue JSON, validates its already-populated source envelope, and recreates its exact asset bytes without calling a format codec. It does not accept an SRT or WebVTT file as input, parse native subtitle syntax, derive semantic cues, or render the normalized model. With no destination option, a single asset uses its stored portable safe basename in the current directory. `--output-dir` places one or more assets beneath the caller-selected directory using their stored basenames. `--output` is valid only for a single-asset document and supplies a separately validated literal runtime destination that may rename the file; it is not required to match the stored basename. `--output` and `--output-dir` are mutually exclusive.
+`restore` validates the source envelope and recreates its exact asset bytes without invoking a codec or rendering the structured model. Cue JSON input is bounded at 1 GiB, and `encode` refuses to publish a larger representation, so every document produced by the CLI remains within the exact-restore boundary.
 
-Before opening any output, restoration validates every stored basename, builds the full destination plan, and rejects portable basename-key or destination collisions. Overwrite checks apply to the completed plan, so `--force` never permits one source asset to replace another asset from the same bundle.
+- `-o`, `--output` `PATH`: restore a single asset to a separately validated literal path.
+- `--output-dir` `DIR`: restore all assets beneath an existing directory using their safe stored basenames.
+- `-f`, `--force`: replace approved existing regular files after the complete restoration plan passes preflight.
+- `--strict-metadata`: require every captured timestamp to be restored; an unsupported value rolls back the operation and exits 1.
+- `--no-metadata`: skip timestamp restoration. It is mutually exclusive with `--strict-metadata`.
 
-Baseline options are:
+Without a destination option, one asset uses its safe stored basename in the current directory. `--output` and `--output-dir` are mutually exclusive, and multi-asset documents require `--output-dir`. Parents must already exist. Restoration validates canonical base64, length, SHA-256, safe basenames, portable collisions, and the complete destination plan before publication. It does not claim crash atomicity or cross-process isolation.
+
+Success writes no stdout. Stderr contains only metadata warnings allowed by the global filters. The executable README scenario is:
 
 ```text
--o, --output PATH
---output-dir DIRECTORY
--f, --force
---strict-metadata
---no-metadata
--q, --quiet
---silent
---no-color
--h, --help
+cueson restore --no-metadata --output quickstart/restored.srt quickstart/document.cueson.json
 ```
 
-Restoration verifies length and SHA-256 before acceptance. Timestamp application occurs after bytes, integrity, and final name are established. Without `--strict-metadata`, unsupported timestamp restoration produces a warning. With strict metadata enabled, a requested timestamp that cannot be reproduced fails with exit code 1 and must not leave a partially accepted artifact.
+## `render`
 
-Successful restoration writes no stdout payload. It emits stderr only for warnings and errors according to the global diagnostic filters. Input parsing, schema validation, semantic validation, encoded-byte integrity, runtime I/O, and metadata application failures use exit code 1. Invalid option combinations and destination preconditions known before execution use exit code 2.
+```text
+cueson [global options] render [options] INPUT.cueson.json --to FORMAT
+```
 
-All caller-selected output directories and parents must already exist. Existing symbolic links, directories, devices, and other non-regular entries are refused even with `--force`. The command stages and verifies the complete bundle before publication, preserves forced regular-file destinations for rollback, and does not claim cross-process transaction isolation or crash atomicity.
+`render` validates Cue JSON and serializes its structured cue model in the document's matching native format. It is intentionally distinct from exact restoration.
+
+- `--to` `FORMAT`: select `srt` or `vtt`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `-o`, `--output` `PATH`: write native output to a filesystem path instead of stdout; `--output -` selects stdout.
+- `-f`, `--force`: replace an approved existing regular filesystem output.
+- `--strict`: reject known non-representable, ambiguous, or preserved nonconforming model content before publication.
+
+The target must match the document's native format; use `convert` for another target. Success writes canonical native bytes to stdout unless a filesystem output is selected. Warnings and errors use stderr.
+
+```text
+cueson render --to srt --output quickstart/rendered.srt quickstart/document.cueson.json
+```
+
+## `convert`
+
+```text
+cueson [global options] convert [options] INPUT --to FORMAT
+```
+
+`convert` accepts Cue JSON, SubRip, or WebVTT and serializes a private target projection in the requested native format. Cue JSON recognition has precedence; JSON-looking or `.json`-named invalid content does not fall through to a native codec.
+
+- `--to` `FORMAT`: select `srt` or `vtt`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--from` `FORMAT`: select `auto`, `cueson`, `srt`, or `vtt`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--encoding` `NAME`: for native input, select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.
+- `-o`, `--output` `PATH`: write native output to a filesystem path instead of stdout; `--output -` selects stdout.
+- `-f`, `--force`: replace an approved existing regular filesystem output.
+- `--strict`: compute the complete loss report and reject before rendering or publication when any known loss exists.
+- `--no-speaker-detection`: disable derived speaker observations for native input.
+
+Normal conversion writes all representable target bytes and reports every known omission, degradation, or ambiguity on stderr. Loss records have a stable code, severity, kind, source and target format, portable JSON Pointer, and bounded occurrence context; they never enter Cue JSON or expose source bytes or local identity. Fatal target incompatibility fails in normal and strict modes. The complete mapping is maintained in the [conversion contract](conversion.md).
+
+```text
+cueson convert --strict --no-speaker-detection --to vtt --output quickstart/converted.vtt testdata/fixtures/conversion/srt-loss-free/source/input.srt
+cueson convert --strict --to srt --output quickstart/converted.srt testdata/fixtures/conversion/webvtt-loss-free/source/input.vtt
+```
 
 ## `validate`
 
@@ -143,38 +118,83 @@ All caller-selected output directories and parents must already exist. Existing 
 cueson [global options] validate [options] INPUT
 ```
 
-`validate` accepts Cue JSON, SubRip, or WebVTT. `--format auto|cueson|srt|vtt` selects the input class and defaults to `auto`; `json` and `cue-json` alias `cueson`, while `subrip` and `webvtt` are native-format aliases. `--encoding` uses the same native text names as `encode`, is invalid with Cue JSON, and accepts only UTF-8 selections for explicitly selected WebVTT.
+`validate` accepts Cue JSON, SubRip, or WebVTT and performs the complete applicable validation stack without creating or printing a payload.
 
-Auto mode recognizes valid Cue JSON first. JSON-looking or `.json`-named invalid content remains a Cue JSON failure rather than falling through to a native grammar. Cue JSON validation covers UTF-8 JSON parsing, the embedded schema, model semantics, source-envelope integrity, and executable/schema lockstep. Native validation covers bounded capture, content-first selection, decoding, the installed grammar, model semantics, and generated-envelope integrity.
+- `--format` `FORMAT`: select `auto`, `cueson`, `srt`, or `vtt`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--encoding` `NAME`: for native input, select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.
 
-Validation creates no file and writes no stdout payload. Ordered warnings and one successful-validation diagnostic use stderr. Quiet suppresses the success diagnostic, silent also suppresses warnings, and errors remain visible. Invalid invocation and deterministic input-path or size preconditions exit 2; accepted-input parsing, schema, semantic, integrity, capability, cancellation, and runtime failures exit 1.
+Cue JSON prohibits `--encoding`; WebVTT accepts only compatible UTF-8 selections. Auto mode gives valid Cue JSON precedence, then uses native content evidence and extension evidence. Success exits 0, writes empty stdout, and emits one success diagnostic plus any ordered warnings on stderr. Quiet suppresses success; silent also suppresses warnings.
+
+```text
+cueson validate testdata/fixtures/webvtt/minimal/source/minimal.vtt
+```
 
 ## `inspect`
 
 ```text
 cueson [global options] inspect [options] INPUT
-cueson [global options] inspect [options] --json INPUT
 ```
 
-Input classification, `--format`, `--encoding`, and validation depth match `validate`. Default output is one concise human report on stdout. `--json` emits one compact deterministic inspection-report-version-1 object followed by LF, with lowercase `snake_case` keys and no commentary on stdout.
+`inspect` uses the same classification and validation depth as `validate`, then emits a privacy-bounded structural report.
 
-Both modes report input classification, canonical format, schema compatibility, declared and installed capabilities, verified source-integrity status, safe source-asset facts, aggregate document state, structural cue and block summaries, and diagnostic codes and locations. They exclude preserved bytes, content hashes, asset and cue IDs, payload and annotation text, native raw fields, timestamps, free-form diagnostic messages, caller paths, and machine identifiers. Failure diagnostics use stable stage descriptions and do not echo source-integrity details, parser content, caller paths, underlying writer errors, or other potentially sensitive values. Because conversion loss depends on a target, inspection reports it as `not_evaluated` with reason `target_format_required`; this is not a lossless-conversion claim.
+- `--format` `FORMAT`: select `auto`, `cueson`, `srt`, or `vtt`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--encoding` `NAME`: for native input, select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.
+- `--json`: emit one compact deterministic inspection-report-version-1 JSON object plus LF instead of the human report.
+
+Success places the report on stdout and source warnings on stderr. Both modes exclude preserved bytes, content hashes, asset and cue IDs, payload and annotation text, native raw fields, timestamps, free-form diagnostic messages, caller paths, and machine identifiers. Loss is `not_evaluated` with reason `target_format_required` until a target-specific operation is requested.
+
+```text
+cueson inspect testdata/fixtures/webvtt/minimal/source/minimal.vtt
+cueson inspect --json testdata/fixtures/webvtt/minimal/source/minimal.vtt
+```
+
+## `schema`
+
+```text
+cueson [global options] schema [options]
+```
+
+`schema` emits the byte-identical canonical schema embedded in the executable.
+
+- `--version`: print the embedded schema version followed by one LF.
+- `-o`, `--output` `PATH`: write schema bytes to a filesystem path instead of stdout.
+- `-f`, `--force`: replace an approved existing regular filesystem output.
+
+`--version` cannot be combined with `--output` or `--force`; `--force` requires a filesystem output. Schema or version bytes use stdout unless a file is selected; errors and error-associated short usage use stderr.
+
+```text
+cueson schema
+cueson schema --version
+cueson schema --output quickstart/cueson.schema.json
+```
+
+## `version`
+
+```text
+cueson [global options] version
+```
+
+`version` accepts no local options or operands. Current development source writes exactly `0.1.0` plus LF to stdout and uses stderr only for errors. The published v0.0.0 binary continues to write `0.0.0`.
+
+```text
+cueson version
+```
 
 ## `completion`
 
 ```text
-cueson [global options] completion bash
-cueson [global options] completion zsh
-cueson [global options] completion fish
-cueson [global options] completion powershell
+cueson [global options] completion bash|zsh|fish|powershell
 ```
 
-Completion accepts exactly one case-sensitive supported shell selector and writes only one deterministic UTF-8 LF static script to stdout. Generation is non-interactive and does not modify a shell profile. The generated definitions use shell-native completion registration and never invoke Cueson recursively, execute subprocesses, access a network, inspect subtitle content, infer a shell from environment values, or interpret completion candidates as code.
+`completion` accepts exactly one case-sensitive selector: `bash`, `zsh`, `fish`, or `powershell`. It has no local options. Success writes one deterministic UTF-8 LF static definition to stdout and nothing to stderr. Missing, unsupported, or extra selectors exit 2 with empty stdout and an error plus short usage on stderr.
 
-Missing, unsupported, or extra selectors are invocation failures with exit 2 and empty stdout. A valid generation whose stdout write fails exits 1. Quiet, silent, and no-color do not alter the requested script payload.
+Generated definitions use shell-native registration and never invoke Cueson recursively, execute a subprocess, access a network, inspect subtitle content, infer a shell from environment values, interpret completion candidates as code, or modify a profile.
 
-## Complete development command contract
+```text
+cueson completion bash
+cueson completion powershell
+```
 
-The v0.1.0 development executable now exposes the complete intended v1 command names: `encode`, `restore`, `render`, `convert`, `validate`, `inspect`, `schema`, `version`, and `completion`. Completion of the command surface does not by itself declare format stability or release readiness; the remaining v1 hardening, end-to-end documentation, release-candidate, publication, and release work retain their own acceptance gates.
+## Compatibility and release boundary
 
-Release packaging does not expand this command contract. See [release verification](release-verification.md) for the v0.0.0 artifact and publication proof and the [release process](release-process.md) for the separately authorized release lifecycle. The standalone documentation verifier checks that these maintained CLI and documentation links resolve offline; it is repository tooling, not a `cueson` subcommand.
+The command names, options, aliases, streams, and exit-code classes above form the intended v1 CLI compatibility surface. Go packages remain under `internal/` and are not public APIs. Current source and schema identity remains `0.1.0`; S018 does not create a v1 binary, immutable v1 schema, tag, release, public schema endpoint, or production deployment. See the [compatibility contract](compatibility.md) and [release process](release-process.md).

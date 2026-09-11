@@ -36,6 +36,6 @@ func runCLI(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
-	fmt.Fprintf(stdout, "docs-verify: checked %d documents and %d local links\n", result.documents, result.localLinks)
+	fmt.Fprintf(stdout, "docs-verify: checked %d documents, %d local links, %d registered examples, and %d format rows\n", result.documents, result.localLinks, result.registeredExamples, result.formatRows)
 	return 0
 }

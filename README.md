@@ -17,7 +17,7 @@
   <a href="docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-repository-58A6FF"></a>
 </p>
 
-**A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial stable-release targets:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v0.1.0 development (experimental native SubRip and WebVTT)
+**A lossless, structured interchange layer for subtitle and caption content.**<br>**v1 contract formats:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v0.1.0 development with the v1-bound contract frozen; native capabilities remain `experimental` until the separately prepared release candidate
 
 Cueson encodes SubRip and WebVTT subtitle files into a canonical, versioned JSON representation called Cue JSON, renders the structured model back to deterministic native syntax, and converts between those formats with explicit loss reporting. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration.
 
@@ -37,64 +37,101 @@ The official Cueson identity is retained in the repository as the complete [bran
 
 The dated v0.0.0 history and concise [release notes](docs/releases/v0.0.0.md) are bound to immutable tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0) at `b294a6952c8bd041d852c502f5d7206c0b58edd6`. [Release verification](docs/release-verification.md) records the accepted six-target proof and independent public-download audit. The governed [release process](docs/release-process.md) keeps milestone closure, signatures, attestations, public schema hosting, and production actions separately authorized.
 
+## Installation status
+
+The [v0.0.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) is the only published binary release. Its six archives and matching SPDX SBOMs are verified by `cueson_0.0.0_checksums.txt`, but that foundation is envelope-only: it provides `version`, `schema`, and exact `restore`, not the native subtitle workflows described below.
+
+The current v0.1.0 source requires Go 1.25.0 or newer and remains pure Go with `CGO_ENABLED=0`. Clone the repository, then use `go run ./cmd/cueson` directly, build with `go build ./cmd/cueson`, or install the development executable from that checkout with `go install ./cmd/cueson`. A v1.0.0 binary, immutable v1 schema, public schema endpoint, and production documentation site do not exist yet; their preparation and publication remain separately reviewed and authorized work.
+
+## Executable quick start
+
+Run these examples from the repository root. Create an empty `quickstart` directory first. Every input below is a committed, redistributable fixture, and every created file stays beneath that scratch directory. Existing destinations are refused unless `--force` is explicitly supplied.
+
+<!-- docs-verify:example source-run -->
+
+```text
+go run ./cmd/cueson version
+```
+
+Expected result: exit status 0, stdout is exactly `0.1.0` plus LF, and stderr is empty.
+
+<!-- docs-verify:example encode -->
+
+```text
+go run ./cmd/cueson encode --pretty --output quickstart/document.cueson.json testdata/fixtures/conversion/srt-loss-free/source/input.srt
+```
+
+Expected result: exit status 0, stdout and stderr are empty, and `quickstart/document.cueson.json` is valid Cue JSON containing the exact source bytes in its source envelope.
+
+<!-- docs-verify:example restore -->
+
+```text
+go run ./cmd/cueson restore --no-metadata --output quickstart/restored.srt quickstart/document.cueson.json
+```
+
+Expected result: exit status 0 with empty stdout and stderr. `quickstart/restored.srt` is byte-for-byte identical to `testdata/fixtures/conversion/srt-loss-free/source/input.srt`; `restore` does not render the structured cue model.
+
+<!-- docs-verify:example render -->
+
+```text
+go run ./cmd/cueson render --to srt --output quickstart/rendered.srt quickstart/document.cueson.json
+```
+
+Expected result: exit status 0 with empty stdout and stderr. `quickstart/rendered.srt` is canonical LF SubRip produced from the structured model and is not claimed to preserve the source's original bytes.
+
+<!-- docs-verify:example convert-srt-vtt -->
+
+```text
+go run ./cmd/cueson convert --strict --no-speaker-detection --to vtt --output quickstart/converted.vtt testdata/fixtures/conversion/srt-loss-free/source/input.srt
+```
+
+<!-- docs-verify:example convert-vtt-srt -->
+
+```text
+go run ./cmd/cueson convert --strict --to srt --output quickstart/converted.srt testdata/fixtures/conversion/webvtt-loss-free/source/input.vtt
+```
+
+Both governed inputs are explicitly loss-free for the requested direction. Each command exits 0 with empty stdout and stderr and writes parser-valid native output. For other inputs, normal conversion reports every known loss on stderr; `--strict` rejects the complete conversion before publishing any output when one or more losses exist. See the [conversion contract](docs/conversion.md).
+
+<!-- docs-verify:example validate -->
+
+```text
+go run ./cmd/cueson validate testdata/fixtures/webvtt/minimal/source/minimal.vtt
+```
+
+Expected result: exit status 0, empty stdout, and one successful-validation diagnostic on stderr. `--quiet` suppresses that success diagnostic; `--silent` also suppresses warnings.
+
+<!-- docs-verify:example inspect-human -->
+
+```text
+go run ./cmd/cueson inspect testdata/fixtures/webvtt/minimal/source/minimal.vtt
+```
+
+<!-- docs-verify:example inspect-json -->
+
+```text
+go run ./cmd/cueson inspect --json testdata/fixtures/webvtt/minimal/source/minimal.vtt
+```
+
+Each inspection command exits 0 with its report on stdout and no stderr for this fixture. Reports contain bounded structural facts, not preserved source bytes, content text, caller paths, usernames, hostnames, or other local identifiers.
+
+<!-- docs-verify:example completion -->
+
+```text
+go run ./cmd/cueson completion bash > quickstart/cueson.bash
+```
+
+Expected result: exit status 0 and one deterministic UTF-8 LF Bash completion definition on stdout, redirected here to the scratch file. Cueson does not modify a shell profile.
+
+The complete command, option, alias, stream, exit-status, overwrite, and strict-mode behavior is in the [CLI contract](docs/cli.md). The [compatibility contract](docs/compatibility.md) defines the intended v1 stability boundary, platform targets, and the distinction between the published foundation, current source, and future stable release.
+
 ## Development
 
-Development is specification-driven with [GitHub Spec Kit](https://github.com/github/spec-kit). The current source requires Go 1.25.0 or newer and remains pure Go with native dependencies disabled. The minimum increased when the Go 1.24 line and its compatible text dependency could no longer satisfy the repository's vulnerability gate.
+Development is specification-driven with [GitHub Spec Kit](https://github.com/github/spec-kit). Run the product tests and build with `go test ./...` and `go build ./cmd/cueson`. Repository publication formatting, executable-documentation checks, and offline link verification run through `scripts/github-format` and `scripts/docs-verify` as described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Download the archive and matching SBOM for a supported target from the [v0.0.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0), then verify the archive with `cueson_0.0.0_checksums.txt`. That published foundation provides the version, schema, and exact-restore commands:
+The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Required CI and CodeQL checks cover schema and conformance, native platforms, race detection, static analysis, vulnerability analysis, and pure-Go cross-builds. The non-publishing release proof and its exact commands are documented in [release verification](docs/release-verification.md); successful candidate verification does not publish Cueson.
 
-```text
-cueson version
-cueson schema --version
-cueson schema
-cueson restore --no-metadata --output restored.srt document.cueson.json
-```
-
-Current development source adds experimental SubRip and WebVTT encode, render, conversion, validation, privacy-bounded inspection, and static shell-completion workflows:
-
-```text
-go run ./cmd/cueson --help
-go run ./cmd/cueson encode --pretty captions.srt
-go run ./cmd/cueson render captions.srt.cueson.json --to srt --output rendered.srt
-go run ./cmd/cueson encode --pretty captions.vtt
-go run ./cmd/cueson render captions.vtt.cueson.json --to vtt --output rendered.vtt
-go run ./cmd/cueson convert captions.srt --to vtt --output captions.vtt
-go run ./cmd/cueson convert captions.vtt.cueson.json --to srt --strict --output captions.srt
-go run ./cmd/cueson validate captions.srt
-go run ./cmd/cueson inspect --json captions.vtt.cueson.json
-go run ./cmd/cueson completion powershell
-go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.json
-```
-
-`encode` writes Cue JSON to `INPUT.cueson.json` by default and retains the exact source bytes. SubRip supports explicit encoding selection for ambiguous legacy files; WebVTT accepts UTF-8 only, with an optional UTF-8 BOM. `render --to srt` and `render --to vtt` serialize the structured model as canonical LF syntax and remain intentionally distinct from exact `restore`. `convert` accepts Cue JSON or native subtitle input, writes the requested native format to stdout by default, reports every known omission or degradation on stderr, and rejects any known loss before publication when `--strict` is selected. `validate` checks canonical or native input without producing a payload, while `inspect` reports structural facts without source bytes, content text, or local identifiers. `completion` emits deterministic static definitions for Bash, Zsh, Fish, and PowerShell without modifying a profile.
-
-The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Seventeen GitHub Actions-owned CI and CodeQL checks are required. The two pull-request policy statuses remain visible but are not required checks while the GitHub Actions-authored second-round comment path lacks complete activation proof. Native codec behavior is exercised by the schema-and-conformance, native-test, race-detection, static-analysis, and vulnerability gates.
-
-Run the product tests and build:
-
-```text
-go test ./...
-go build ./cmd/cueson
-```
-
-Repository publication formatting and offline documentation-link verification remain intentionally separate modules:
-
-```text
-go -C scripts/github-format test ./...
-go -C scripts/docs-verify test ./...
-go -C scripts/docs-verify run . -repo ../..
-```
-
-The non-publishing release proof remains the acceptance path for candidate builds and inspects the complete six-target matrix through a separate verifier module:
-
-```text
-goreleaser release --snapshot --clean --skip=publish
-go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 0.1.0 -commit <full-commit> -development -execute-host
-```
-
-See [release verification](docs/release-verification.md) for exact tool versions, artifact contents, checksums, SBOM expectations, the published v0.0.0 evidence, and the boundary between candidate proof and authorized publication. Candidate verification does not publish Cueson by itself.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes. Report security concerns privately through [GitHub Security Advisories](https://github.com/shruggietech/cueson/security/advisories/new) rather than a public issue.
+Report security concerns privately through [GitHub Security Advisories](https://github.com/shruggietech/cueson/security/advisories/new) rather than a public issue.
 
 ## License
 

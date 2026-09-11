@@ -14,6 +14,8 @@ import (
 )
 
 const (
+	// MaxLosses bounds report amplification before cloning, sorting, or indexing.
+	MaxLosses              = 8_192
 	maxLossMessageBytes    = 512
 	maxLossPathBytes       = 1024
 	maxContextAttributes   = 16
@@ -131,6 +133,9 @@ type Options struct {
 // NewReport clones, canonicalizes, and validates a loss list against its
 // immutable source document.
 func NewReport(document model.Document, losses []Loss) (Report, error) {
+	if len(losses) > MaxLosses {
+		return Report{}, fmt.Errorf("losses contains %d items, maximum is %d", len(losses), MaxLosses)
+	}
 	prepared := make([]Loss, len(losses))
 	for index := range losses {
 		prepared[index] = cloneLoss(losses[index])
@@ -150,6 +155,9 @@ func NewReport(document model.Document, losses []Loss) (Report, error) {
 // Validate checks loss vocabulary, bounds, source associations, uniqueness,
 // and canonical order without changing the report or source document.
 func (report Report) Validate(document model.Document) error {
+	if len(report.Losses) > MaxLosses {
+		return fmt.Errorf("losses contains %d items, maximum is %d", len(report.Losses), MaxLosses)
+	}
 	cueByID := make(map[string]model.Cue, len(document.Cues))
 	orders := make(map[int]struct{}, len(document.Cues)+len(document.Diagnostics))
 	for _, cue := range document.Cues {

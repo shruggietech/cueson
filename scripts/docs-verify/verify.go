@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"html"
 	"net/url"
@@ -27,6 +28,8 @@ var requiredDocuments = []string{
 	"docs/brand.md",
 	"docs/schema.md",
 	"docs/cli.md",
+	"docs/compatibility.md",
+	"docs/conversion.md",
 	"docs/formats/srt.md",
 	"docs/formats/webvtt.md",
 	"docs/project-management.md",
@@ -46,7 +49,34 @@ var (
 	htmlTagPattern         = regexp.MustCompile(`<[^>]*>`)
 	markdownMarkupPattern  = regexp.MustCompile("[`*_~]")
 	schemePattern          = regexp.MustCompile(`^([A-Za-z][A-Za-z0-9+.-]*):`)
+	exampleMarkerPattern   = regexp.MustCompile(`<!--\s*docs-verify:example\s+([a-z0-9-]+)\s*-->`)
 )
+
+var requiredExampleIDs = []string{
+	"source-run",
+	"encode",
+	"restore",
+	"render",
+	"convert-srt-vtt",
+	"convert-vtt-srt",
+	"validate",
+	"inspect-human",
+	"inspect-json",
+	"completion",
+}
+
+var requiredReferenceMarkers = map[string][]string{
+	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "non-normative"},
+	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v0.1.0", "v1.0.0", "Windows", "macOS", "Linux", "production"},
+}
+
+var staleClaims = map[string][]string{
+	"CONTRIBUTING.md":         {"Cueson is an unreleased v0.0.0 foundation candidate", "native SubRip/WebVTT ingest, model-driven rendering, and conversion are not implemented"},
+	"SECURITY.md":             {"before the first public release"},
+	"testdata/README.md":      {"This corpus foundation does not implement or claim native SRT or WebVTT parsing, rendering, conversion"},
+	"docs/formats/srt.md":     {"native decoder is unavailable"},
+	"docs/release-process.md": {"The detailed candidate history is complete under the dated `[0.0.0]` section", "Documentation describes shipped commands and `envelope_only` format support"},
+}
 
 type violation struct {
 	path    string
@@ -55,9 +85,24 @@ type violation struct {
 }
 
 type verificationResult struct {
-	documents  int
-	localLinks int
-	violations []violation
+	documents          int
+	localLinks         int
+	registeredExamples int
+	formatRows         int
+	violations         []violation
+}
+
+type conformanceMatrix struct {
+	Formats []conformanceFormat `json:"formats"`
+}
+
+type conformanceFormat struct {
+	Format string                 `json:"format"`
+	Rows   []conformanceMatrixRow `json:"rows"`
+}
+
+type conformanceMatrixRow struct {
+	RowID string `json:"row_id"`
 }
 
 type repositoryEntry struct {
@@ -120,6 +165,14 @@ func verifyRepository(repo string) (verificationResult, error) {
 			}
 		}
 	}
+	registered, registrationViolations := verifyRegisteredExamples(root)
+	result.registeredExamples = registered
+	result.violations = append(result.violations, registrationViolations...)
+	result.violations = append(result.violations, verifyReferenceMarkers(root)...)
+	result.violations = append(result.violations, verifyStaleClaims(root)...)
+	rows, matrixViolations := verifyFormatMatrix(root)
+	result.formatRows = rows
+	result.violations = append(result.violations, matrixViolations...)
 	sort.Slice(result.violations, func(i, j int) bool {
 		a, b := result.violations[i], result.violations[j]
 		if a.path != b.path {
@@ -131,6 +184,121 @@ func verifyRepository(repo string) (verificationResult, error) {
 		return a.message < b.message
 	})
 	return result, nil
+}
+
+func verifyRegisteredExamples(root string) (int, []violation) {
+	content, err := readDocument(root, "README.md")
+	if err != nil {
+		return 0, nil
+	}
+	matches := exampleMarkerPattern.FindAllStringSubmatch(content, -1)
+	counts := make(map[string]int, len(matches))
+	for _, match := range matches {
+		counts[match[1]]++
+	}
+	var violations []violation
+	for _, id := range requiredExampleIDs {
+		switch counts[id] {
+		case 0:
+			violations = append(violations, violation{path: "README.md", message: "registered example is missing: " + id})
+		case 1:
+		default:
+			violations = append(violations, violation{path: "README.md", message: "registered example appears more than once: " + id})
+		}
+		delete(counts, id)
+	}
+	for id := range counts {
+		violations = append(violations, violation{path: "README.md", message: "unknown registered example: " + id})
+	}
+	return len(matches), violations
+}
+
+func verifyReferenceMarkers(root string) []violation {
+	var violations []violation
+	for name, markers := range requiredReferenceMarkers {
+		content, err := readDocument(root, name)
+		if err != nil {
+			continue
+		}
+		for _, marker := range markers {
+			if !strings.Contains(content, marker) {
+				violations = append(violations, violation{path: name, message: "required contract marker is missing: " + marker})
+			}
+		}
+	}
+	return violations
+}
+
+func verifyStaleClaims(root string) []violation {
+	var violations []violation
+	for name, claims := range staleClaims {
+		content, err := readDocument(root, name)
+		if err != nil {
+			continue
+		}
+		for _, claim := range claims {
+			if strings.Contains(content, claim) {
+				violations = append(violations, violation{path: name, message: "stale capability or release claim remains: " + claim})
+			}
+		}
+	}
+	return violations
+}
+
+func verifyFormatMatrix(root string) (int, []violation) {
+	const matrixName = "testdata/conformance-matrix.json"
+	payload, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(matrixName)))
+	if err != nil {
+		return 0, []violation{{path: matrixName, message: "conformance matrix is missing or unreadable"}}
+	}
+	var matrix conformanceMatrix
+	if err := json.Unmarshal(payload, &matrix); err != nil {
+		return 0, []violation{{path: matrixName, message: "conformance matrix is not valid JSON"}}
+	}
+	seenFormats := make(map[string]bool)
+	seenRows := make(map[string]bool)
+	var violations []violation
+	rows := 0
+	for _, format := range matrix.Formats {
+		document := ""
+		switch format.Format {
+		case "srt":
+			document = "docs/formats/srt.md"
+		case "vtt":
+			document = "docs/formats/webvtt.md"
+		default:
+			violations = append(violations, violation{path: matrixName, message: "unsupported matrix format: " + format.Format})
+			continue
+		}
+		if seenFormats[format.Format] {
+			violations = append(violations, violation{path: matrixName, message: "duplicate matrix format: " + format.Format})
+		}
+		seenFormats[format.Format] = true
+		guide, readErr := readDocument(root, document)
+		if readErr != nil {
+			continue
+		}
+		for _, row := range format.Rows {
+			rows++
+			if row.RowID == "" {
+				violations = append(violations, violation{path: matrixName, message: "matrix row has an empty row_id"})
+				continue
+			}
+			if seenRows[row.RowID] {
+				violations = append(violations, violation{path: matrixName, message: "duplicate matrix row_id: " + row.RowID})
+			}
+			seenRows[row.RowID] = true
+			if !strings.Contains(guide, "`"+row.RowID+"`") {
+				violations = append(violations, violation{path: document, message: "format guide lacks matrix row: " + row.RowID})
+			}
+		}
+	}
+	for _, format := range []string{"srt", "vtt"} {
+		if !seenFormats[format] {
+			violations = append(violations, violation{path: matrixName, message: "required matrix format is missing: " + format})
+		}
+	}
+	return rows, violations
 }
 
 func repositoryIndex(root string) (map[string]repositoryEntry, map[string][]string, error) {
@@ -374,7 +542,6 @@ func inlineMarkdownLinks(line string) []inlineMarkdownLink {
 				if depth == 0 {
 					links = append(links, inlineMarkdownLink{closingLabel: closingLabel, destinationStart: start, destinationEnd: end})
 					end++
-					break
 				}
 			}
 			if depth == 0 {

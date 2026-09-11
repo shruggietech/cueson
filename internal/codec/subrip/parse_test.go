@@ -5,7 +5,10 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
+
+	"github.com/shruggietech/cueson/internal/model"
 )
 
 func TestParsePreservesNativeAndDerivedViews(t *testing.T) {
@@ -162,6 +165,48 @@ func TestParseRejectsInputWithoutValidCue(t *testing.T) {
 			t.Errorf("Parse(%q) unexpectedly succeeded", input)
 		}
 	}
+}
+
+func TestParseRejectsOccurrenceAndDiagnosticAmplification(t *testing.T) {
+	t.Parallel()
+
+	tooManyLines := "1\n00:00:00,000 --> 00:00:01,000\n" + strings.Repeat("x\n", model.MaxItemOccurrences+1)
+	if _, err := Parse(tooManyLines, Options{}); err == nil || !strings.Contains(err.Error(), "subrip_occurrence_limit_exceeded") {
+		t.Fatalf("payload-line limit error = %v", err)
+	}
+
+	tooManyDiagnostics := strings.Repeat("unknown\n\n", model.MaxDiagnostics+1) + "1\n00:00:00,000 --> 00:00:01,000\nx\n"
+	if _, err := Parse(tooManyDiagnostics, Options{}); err == nil || !strings.Contains(err.Error(), "subrip_diagnostic_limit_exceeded") {
+		t.Fatalf("diagnostic limit error = %v", err)
+	}
+}
+
+func TestParseEnforcesMarkupOccurrenceLimitBeforePlainTextDerivation(t *testing.T) {
+	t.Parallel()
+
+	inputWithTagOccurrences := func(count int) string {
+		payload := strings.Repeat("<i></i>", count/2)
+		if count%2 != 0 {
+			payload += "<i>"
+		}
+		return "1\n00:00:00,000 --> 00:00:01,000\n" + payload + "\n"
+	}
+
+	t.Run("accepts boundary", func(t *testing.T) {
+		result, err := Parse(inputWithTagOccurrences(model.MaxItemOccurrences), Options{})
+		if err != nil {
+			t.Fatalf("Parse() rejected markup at the limit: %v", err)
+		}
+		if len(result.Cues) != 1 || result.Cues[0].Payload.PlainText != "" {
+			t.Fatalf("cue at the markup limit = %#v", result.Cues)
+		}
+	})
+
+	t.Run("rejects above boundary", func(t *testing.T) {
+		if _, err := Parse(inputWithTagOccurrences(model.MaxItemOccurrences+1), Options{}); err == nil || !strings.Contains(err.Error(), "subrip_occurrence_limit_exceeded") {
+			t.Fatalf("markup limit error = %v", err)
+		}
+	})
 }
 
 func TestGovernedSubRipFixtures(t *testing.T) {

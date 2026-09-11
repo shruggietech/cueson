@@ -34,11 +34,17 @@ func Parse(input string, options Options) (Result, error) {
 
 		sequenceIndex, timingIndex, found := cueStart(lines, position)
 		if !found {
+			if sourceOrder >= model.MaxDocumentItems {
+				return Result{}, &ParseError{Code: "subrip_item_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("document contains more than %d source items", model.MaxDocumentItems)}
+			}
 			end := position + 1
 			for end < len(lines) && !isBlank(lines[end].text) && !validCueStart(lines, end) {
 				end++
 			}
 			order := sourceOrder
+			if len(result.Diagnostics) >= model.MaxDiagnostics {
+				return Result{}, &ParseError{Code: "subrip_diagnostic_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("document produces more than %d diagnostics", model.MaxDiagnostics)}
+			}
 			result.Diagnostics = append(result.Diagnostics, Diagnostic{
 				Severity: "warning", Code: "subrip_block_unrecognized",
 				Message:     fmt.Sprintf("unrecognized SubRip content beginning at line %d remains available in the source envelope", lines[position].number),
@@ -74,11 +80,17 @@ func Parse(input string, options Options) (Result, error) {
 			payloadEnd++
 		}
 		payloadLines := make([]string, 0, payloadEnd-payloadStart)
+		if payloadEnd-payloadStart > model.MaxItemOccurrences {
+			return Result{}, &ParseError{Code: "subrip_occurrence_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("cue contains more than %d payload lines", model.MaxItemOccurrences)}
+		}
 		for index := payloadStart; index < payloadEnd; index++ {
 			payloadLines = append(payloadLines, lines[index].text)
 		}
 
 		ordinal := len(result.Cues)
+		if ordinal >= model.MaxDocumentItems {
+			return Result{}, &ParseError{Code: "subrip_item_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("document contains more than %d cues", model.MaxDocumentItems)}
+		}
 		cueID := fmt.Sprintf("cue-%06d", ordinal)
 		order := sourceOrder
 		sequenceRaw := ""
@@ -120,6 +132,9 @@ func Parse(input string, options Options) (Result, error) {
 		}
 
 		rawText := strings.Join(payloadLines, "\n")
+		if strings.Count(rawText, "<") > model.MaxItemOccurrences {
+			return Result{}, &ParseError{Code: "subrip_occurrence_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("cue contains more than %d markup occurrences", model.MaxItemOccurrences)}
+		}
 		cue := model.Cue{
 			ID: cueID, Ordinal: ordinal, SourceOrder: order, SourceIdentifier: sourceIdentifier,
 			Timing:   model.Timing{StartMilliseconds: timing.StartMilliseconds, EndMilliseconds: timing.EndMilliseconds, DurationMilliseconds: timing.EndMilliseconds - timing.StartMilliseconds},
@@ -133,6 +148,9 @@ func Parse(input string, options Options) (Result, error) {
 			}
 		}
 		result.Cues = append(result.Cues, cue)
+		if len(result.Diagnostics) > model.MaxDiagnostics {
+			return Result{}, &ParseError{Code: "subrip_diagnostic_limit_exceeded", Line: lines[timingIndex].number, Text: fmt.Sprintf("document produces more than %d diagnostics", model.MaxDiagnostics)}
+		}
 		sourceOrder++
 		position = nextPosition
 	}

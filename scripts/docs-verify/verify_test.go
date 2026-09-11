@@ -15,7 +15,7 @@ func TestRunCLI(t *testing.T) {
 	if code := runCLI([]string{"-repo", repo}, &stdout, &stderr); code != 0 {
 		t.Fatalf("runCLI() = %d, stderr = %q", code, stderr.String())
 	}
-	if got := stdout.String(); !strings.Contains(got, "checked 15 documents") || !strings.Contains(got, "0 local links") {
+	if got := stdout.String(); !strings.Contains(got, "checked 17 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
 		t.Fatalf("unexpected success output: %q", got)
 	}
 
@@ -51,6 +51,41 @@ func TestRequiredDocuments(t *testing.T) {
 		t.Fatal(err)
 	}
 	assertViolation(t, result.violations, "docs/formats/srt.md: required document is missing")
+}
+
+func TestRegisteredExamplesAreCompleteAndUnique(t *testing.T) {
+	repo := newRepository(t)
+	readme := strings.Replace(readFileForVerifierTest(t, repo, "README.md"), "<!-- docs-verify:example encode -->\n", "", 1)
+	writeFile(t, repo, "README.md", readme+"<!-- docs-verify:example source-run -->\n<!-- docs-verify:example unknown -->\n")
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "README.md: registered example is missing: encode")
+	assertViolation(t, result.violations, "README.md: registered example appears more than once: source-run")
+	assertViolation(t, result.violations, "README.md: unknown registered example: unknown")
+}
+
+func TestReferenceMarkersAndStaleClaims(t *testing.T) {
+	repo := newRepository(t)
+	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0\n")
+	writeFile(t, repo, "CONTRIBUTING.md", "# Contributing\n\nCueson is an unreleased v0.0.0 foundation candidate.\n")
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "docs/schema.md: required contract marker is missing: non-normative")
+	assertViolation(t, result.violations, "CONTRIBUTING.md: stale capability or release claim remains: Cueson is an unreleased v0.0.0 foundation candidate")
+}
+
+func TestFormatMatrixRowsMustAppearInMatchingGuide(t *testing.T) {
+	repo := newRepository(t)
+	writeFile(t, repo, "docs/formats/srt.md", "# SRT\n")
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "docs/formats/srt.md: format guide lacks matrix row: srt-example")
 }
 
 func TestReleaseNotesAreRequired(t *testing.T) {
@@ -257,8 +292,28 @@ func newRepository(t *testing.T) string {
 		}
 		writeFile(t, repo, name, "# "+heading+"\n")
 	}
+	var readme strings.Builder
+	readme.WriteString("# Repository\n\n")
+	for _, id := range requiredExampleIDs {
+		readme.WriteString("<!-- docs-verify:example " + id + " -->\n")
+	}
+	writeFile(t, repo, "README.md", readme.String())
+	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative\n")
+	writeFile(t, repo, "docs/compatibility.md", "# Compatibility\n\nCLI Cue JSON Schema internal/ v0.0.0 v0.1.0 v1.0.0 Windows macOS Linux production\n")
+	writeFile(t, repo, "docs/formats/srt.md", "# SRT\n\n`srt-example`\n")
+	writeFile(t, repo, "docs/formats/webvtt.md", "# WebVTT\n\n`vtt-example`\n")
+	writeFile(t, repo, "testdata/conformance-matrix.json", `{"formats":[{"format":"srt","rows":[{"row_id":"srt-example"}]},{"format":"vtt","rows":[{"row_id":"vtt-example"}]}]}`)
 	writeFile(t, repo, ".specify/memory/constitution.md", "# Constitution\n")
 	return repo
+}
+
+func readFileForVerifierTest(t *testing.T, repo, name string) string {
+	t.Helper()
+	payload, err := os.ReadFile(filepath.Join(repo, filepath.FromSlash(name)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(payload)
 }
 
 func writeFile(t *testing.T, repo, name, content string) {

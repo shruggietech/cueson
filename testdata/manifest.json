@@ -993,6 +993,80 @@
       }
     },
     {
+      "id": "subrip/incomplete-coordinates",
+      "purpose": "Retain the deterministic rejection boundary for a partial SubRip coordinate suffix.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S018 v1 contract hardening",
+        "recipe": "Write one LF SubRip cue with only X1 and X2 from the required four-coordinate group."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/subrip/incomplete-coordinates/input/incomplete.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 49,
+          "sha256": "1f6a905e0d74410366041a2c1318175ba1f59c3a988ff283fb8131e202d486fd",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "coordinate suffix"
+      }
+    },
+    {
+      "id": "webvtt/empty-payload",
+      "purpose": "Retain the deterministic rejection boundary for a timed WebVTT cue without a payload line.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S018 v1 contract hardening",
+        "recipe": "Write a valid LF WebVTT signature and timing line without a following payload line."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/webvtt/empty-payload/input/empty-payload.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 32,
+          "sha256": "91c035ec4a17353275b676adf785375b8aa4decb7ae609eca7efec0465af018d",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "payload"
+      }
+    },
+    {
       "id": "conversion/bidirectional-seed",
       "purpose": "Seed bounded bidirectional conversion, loss ordering, markup translation, strict-policy, and renderer-parser-cycle fuzz targets.",
       "class": "accepted",

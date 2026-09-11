@@ -97,13 +97,19 @@ func validateTargetSemantics(document model.Document, bytes []byte, targetFormat
 // shared by same-format rendering and cross-format conversion.
 func AnalyzeSubRipRepresentability(document model.Document) (Report, error) {
 	losses := make([]Loss, 0)
-	appendMetadataLosses(&losses, document, "webvtt")
+	if err := appendMetadataLosses(&losses, document, "webvtt"); err != nil {
+		return Report{}, err
+	}
 	for index := range document.Cues {
 		cue := &document.Cues[index]
 		if subrip.PayloadHasAmbiguousBoundary(cue.Payload.RawText) {
-			losses = append(losses, cueLoss(document, "webvtt", *cue, LossCodeSubRipPayloadAmbiguous, KindAmbiguous, "payload has an ambiguous SubRip cue boundary", fmt.Sprintf("/cues/%d/payload/raw_text", index), nil))
+			if err := appendOneLoss(&losses, cueLoss(document, "webvtt", *cue, LossCodeSubRipPayloadAmbiguous, KindAmbiguous, "payload has an ambiguous SubRip cue boundary", fmt.Sprintf("/cues/%d/payload/raw_text", index), nil)); err != nil {
+				return Report{}, err
+			}
 		}
-		appendCommonCueLosses(&losses, document, "webvtt", index, cue, false)
+		if err := appendCommonCueLosses(&losses, document, "webvtt", index, cue, false); err != nil {
+			return Report{}, err
+		}
 	}
 	return NewReport(document, losses)
 }
@@ -111,16 +117,20 @@ func AnalyzeSubRipRepresentability(document model.Document) (Report, error) {
 // SubRipRenderDiagnostics preserves the established public render warning
 // vocabulary while keeping the underlying representability policy outside the
 // CLI. Conversion itself uses the atomic Loss report above.
-func SubRipRenderDiagnostics(document model.Document) []model.Diagnostic {
+func SubRipRenderDiagnostics(document model.Document) ([]model.Diagnostic, error) {
 	diagnostics := make([]model.Diagnostic, 0)
 	if document.Metadata.Title != nil || document.Metadata.Language != nil || document.Metadata.Kind != nil || document.Metadata.Description != nil {
-		diagnostics = append(diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_metadata_unrepresented", Message: "document metadata has no canonical SubRip representation"})
+		if err := appendRenderDiagnostic(&diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_metadata_unrepresented", Message: "document metadata has no canonical SubRip representation"}); err != nil {
+			return nil, err
+		}
 	}
 	for index := range document.Cues {
 		cue := &document.Cues[index]
 		order, id := cue.SourceOrder, cue.ID
 		if subrip.PayloadHasAmbiguousBoundary(cue.Payload.RawText) {
-			diagnostics = append(diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_payload_ambiguous", Message: "payload raw_text contains content that canonical SubRip reparses as a cue boundary", SourceOrder: &order, CueID: &id})
+			if err := appendRenderDiagnostic(&diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_payload_ambiguous", Message: "payload raw_text contains content that canonical SubRip reparses as a cue boundary", SourceOrder: &order, CueID: &id}); err != nil {
+				return nil, err
+			}
 		}
 		fields := make([]string, 0, 4)
 		if len(cue.Speakers) > 0 {
@@ -136,10 +146,20 @@ func SubRipRenderDiagnostics(document model.Document) []model.Diagnostic {
 			fields = append(fields, "common placement")
 		}
 		if len(fields) > 0 {
-			diagnostics = append(diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_fields_unrepresented", Message: strings.Join(fields, ", ") + " are not represented by canonical SubRip output", SourceOrder: &order, CueID: &id})
+			if err := appendRenderDiagnostic(&diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_fields_unrepresented", Message: strings.Join(fields, ", ") + " are not represented by canonical SubRip output", SourceOrder: &order, CueID: &id}); err != nil {
+				return nil, err
+			}
 		}
 	}
-	return diagnostics
+	return diagnostics, nil
+}
+
+func appendRenderDiagnostic(diagnostics *[]model.Diagnostic, diagnostic model.Diagnostic) error {
+	if len(*diagnostics) >= model.MaxDiagnostics {
+		return fmt.Errorf("SubRip render produces more than %d diagnostics", model.MaxDiagnostics)
+	}
+	*diagnostics = append(*diagnostics, diagnostic)
+	return nil
 }
 
 func subRipPayloadAmbiguous(payload string) bool {
