@@ -15,6 +15,16 @@ func prepareAssets(document model.Document) ([]preparedAsset, error) {
 	return prepareAssetsContext(context.Background(), document)
 }
 
+// ValidateIntegrity verifies the complete source envelope without planning or
+// publishing any output. The document and its source bytes remain unchanged.
+func ValidateIntegrity(ctx context.Context, document model.Document) error {
+	if ctx == nil {
+		return fmt.Errorf("validate source integrity: nil context")
+	}
+	_, err := prepareAssetsContext(ctx, document)
+	return err
+}
+
 func prepareAssetsContext(ctx context.Context, document model.Document) ([]preparedAsset, error) {
 	prepared := make([]preparedAsset, 0, len(document.Source.Assets))
 	identities := make(map[string]string, len(document.Source.Assets))

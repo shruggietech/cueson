@@ -70,6 +70,18 @@ type renderOptions struct {
 	strict    bool
 }
 
+type convertOptions struct {
+	input              string
+	from               string
+	target             string
+	encoding           string
+	output             string
+	outputSet          bool
+	force              bool
+	strict             bool
+	noSpeakerDetection bool
+}
+
 type helpTarget uint8
 
 const (
@@ -80,6 +92,7 @@ const (
 	restoreHelp
 	encodeHelp
 	renderHelp
+	convertHelp
 )
 
 type invocation struct {
@@ -90,6 +103,7 @@ type invocation struct {
 	restore restoreOptions
 	encode  encodeOptions
 	render  renderOptions
+	convert convertOptions
 }
 
 type invocationError struct {
@@ -131,8 +145,9 @@ Usage:
   cueson [global options] <command>
 
 Commands:
-	encode   Encode a subtitle source as Cue JSON.
-	render   Render Cue JSON from its structured model.
+  encode   Encode a subtitle source as Cue JSON.
+  render   Render Cue JSON from its structured model.
+  convert  Convert SubRip and WebVTT through the common model.
   version  Print the Cueson executable version.
   schema   Print or save the embedded Cue JSON schema.
   restore  Restore exact source-envelope bytes.
@@ -149,9 +164,10 @@ Examples:
   cueson version
   cueson schema --version
   cueson schema --output cueson.schema.json
-	cueson encode captions.srt
-	cueson render captions.srt.cueson.json --to srt
-	cueson render captions.vtt.cueson.json --to vtt
+  cueson encode captions.srt
+  cueson render captions.srt.cueson.json --to srt
+  cueson render captions.vtt.cueson.json --to vtt
+  cueson convert captions.vtt --to srt
   cueson restore --output restored.srt document.cueson.json
 `
 
@@ -242,6 +258,29 @@ Example:
   cueson render captions.vtt.cueson.json --to vtt --output captions.rendered.vtt
 `
 
+const convertHelpText = `Convert SubRip and WebVTT through the common Cue JSON model.
+
+Usage:
+  cueson [global options] convert [options] INPUT --to FORMAT
+
+Options:
+  --to FORMAT              Select srt or vtt.
+  --from FORMAT            Select auto, cueson, srt, or vtt (default auto).
+  --encoding NAME          Select the native source text encoding.
+  -o, --output PATH        Write output to PATH instead of stdout.
+  -f, --force              Replace an existing regular output file.
+  --strict                 Reject conversion when any known loss exists.
+  --no-speaker-detection   Disable derived speaker observations for native input.
+  -h, --help               Show convert help.
+
+Input aliases: json and cue-json for cueson; subrip for srt; webvtt for vtt.
+Encoding aliases match encode. WebVTT accepts UTF-8 only.
+
+Examples:
+  cueson convert captions.vtt --to srt
+  cueson convert document.cueson.json --from cueson --to vtt --output captions.vtt
+`
+
 const rootUsageText = `Usage:
   cueson [global options] <command>
 `
@@ -264,6 +303,10 @@ const encodeUsageText = `Usage:
 
 const renderUsageText = `Usage:
   cueson [global options] render [--output PATH] [--force] [--strict] INPUT --to FORMAT
+`
+
+const convertUsageText = `Usage:
+  cueson [global options] convert [--from FORMAT] [--encoding NAME] [--output PATH] [--force] [--strict] [--no-speaker-detection] INPUT --to FORMAT
 `
 
 // Run executes one Cueson command against the supplied process streams.
@@ -291,6 +334,8 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return writeStdout(stdout, diagnostics, []byte(encodeHelpText))
 	case renderHelp:
 		return writeStdout(stdout, diagnostics, []byte(renderHelpText))
+	case convertHelp:
+		return writeStdout(stdout, diagnostics, []byte(convertHelpText))
 	}
 
 	select {
@@ -311,6 +356,8 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return runEncode(ctx, parsed.encode, stdout, stderr, diagnostics)
 	case "render":
 		return runRender(ctx, parsed.render, stdout, stderr, diagnostics)
+	case "convert":
+		return runConvert(ctx, parsed.convert, stdout, stderr, diagnostics)
 	default:
 		diagnostics.write(diagnosticError, "internal command dispatch failure")
 		return ExitRuntimeFailure
@@ -646,6 +693,49 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 					continue
 				}
 			}
+			if parsed.command == "convert" {
+				switch arg {
+				case "-f", "--force":
+					parsed.convert.force = true
+					continue
+				case "--strict":
+					parsed.convert.strict = true
+					continue
+				case "--no-speaker-detection":
+					parsed.convert.noSpeakerDetection = true
+					continue
+				case "-o", "--output", "--from", "--to", "--encoding":
+					if index+1 >= len(args) {
+						return parsed, convertInvocationError(arg + " requires a value")
+					}
+					index++
+					if args[index] == "" {
+						return parsed, convertInvocationError(arg + " requires a value")
+					}
+					if err := setConvertValue(&parsed.convert, arg, args[index]); err != nil {
+						return parsed, err
+					}
+					continue
+				}
+				matched := false
+				for _, option := range []string{"--output=", "--from=", "--to=", "--encoding="} {
+					if !strings.HasPrefix(arg, option) {
+						continue
+					}
+					value := strings.TrimPrefix(arg, option)
+					if value == "" {
+						return parsed, convertInvocationError(strings.TrimSuffix(option, "=") + " requires a value")
+					}
+					if err := setConvertValue(&parsed.convert, strings.TrimSuffix(option, "="), value); err != nil {
+						return parsed, err
+					}
+					matched = true
+					break
+				}
+				if matched {
+					continue
+				}
+			}
 
 			if strings.HasPrefix(arg, "-") {
 				return parsed, &invocationError{message: fmt.Sprintf("unknown option %q", arg), usage: usageForCommand(parsed.command)}
@@ -654,7 +744,7 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 
 		if parsed.command == "" {
 			parsed.command = arg
-			if parsed.command != "version" && parsed.command != "schema" && parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" {
+			if parsed.command != "version" && parsed.command != "schema" && parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" && parsed.command != "convert" {
 				return parsed, &invocationError{message: fmt.Sprintf("unknown command %q", parsed.command), usage: rootHelp}
 			}
 			continue
@@ -672,7 +762,11 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 			parsed.render.input = arg
 			continue
 		}
-		if parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" {
+		if parsed.command == "convert" && parsed.convert.input == "" {
+			parsed.convert.input = arg
+			continue
+		}
+		if parsed.command != "restore" && parsed.command != "encode" && parsed.command != "render" && parsed.command != "convert" {
 			return parsed, &invocationError{message: fmt.Sprintf("%s accepts no arguments", parsed.command), usage: usageForCommand(parsed.command)}
 		}
 		return parsed, &invocationError{message: fmt.Sprintf("%s accepts no additional arguments", parsed.command), usage: usageForCommand(parsed.command)}
@@ -739,7 +833,95 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 			return parsed, renderInvocationError("--force requires a filesystem output")
 		}
 	}
+	if parsed.command == "convert" {
+		if parsed.convert.input == "" {
+			return parsed, convertInvocationError("convert requires one INPUT path")
+		}
+		if parsed.convert.from == "" {
+			parsed.convert.from = "auto"
+		}
+		from, ok := normalizeConvertSource(parsed.convert.from)
+		if !ok {
+			return parsed, convertInvocationError("--from must be auto, cueson, srt, or vtt")
+		}
+		parsed.convert.from = from
+		if parsed.convert.target == "" {
+			return parsed, convertInvocationError("convert requires --to FORMAT")
+		}
+		target, ok := normalizeSubtitleFormat(parsed.convert.target)
+		if !ok {
+			return parsed, convertInvocationError("--to must be srt or vtt")
+		}
+		parsed.convert.target = target
+		canonicalEncoding := ""
+		if parsed.convert.encoding != "" {
+			var known bool
+			canonicalEncoding, known = codec.NormalizeEncoding(parsed.convert.encoding)
+			if !known {
+				return parsed, convertInvocationError(fmt.Sprintf("encoding %q is not supported", parsed.convert.encoding))
+			}
+		}
+		if parsed.convert.from == "cueson" && parsed.convert.encoding != "" {
+			return parsed, convertInvocationError("--encoding cannot be used with Cue JSON input")
+		}
+		if parsed.convert.from == string(codec.FormatWebVTT) && parsed.convert.encoding != "" {
+			if canonicalEncoding != codec.EncodingUTF8 && canonicalEncoding != codec.EncodingUTF8BOM {
+				return parsed, convertInvocationError("WebVTT requires UTF-8; --encoding is incompatible with --from vtt")
+			}
+		}
+		if parsed.convert.force && (!parsed.convert.outputSet || parsed.convert.output == "-") {
+			return parsed, convertInvocationError("--force requires a filesystem output")
+		}
+	}
 	return parsed, nil
+}
+
+func setConvertValue(options *convertOptions, option, value string) *invocationError {
+	switch option {
+	case "-o", "--output":
+		if options.outputSet {
+			return convertInvocationError("--output may be specified only once")
+		}
+		options.output, options.outputSet = value, true
+	case "--from":
+		if options.from != "" {
+			return convertInvocationError("--from may be specified only once")
+		}
+		options.from = value
+	case "--to":
+		if options.target != "" {
+			return convertInvocationError("--to may be specified only once")
+		}
+		options.target = value
+	case "--encoding":
+		if options.encoding != "" {
+			return convertInvocationError("--encoding may be specified only once")
+		}
+		options.encoding = value
+	}
+	return nil
+}
+
+func normalizeConvertSource(value string) (string, bool) {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "auto":
+		return "auto", true
+	case "cueson", "json", "cue-json":
+		return "cueson", true
+	default:
+		return normalizeSubtitleFormat(value)
+	}
+}
+
+func normalizeSubtitleFormat(value string) (string, bool) {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "srt", "subrip":
+		return string(codec.FormatSubRip), true
+	case "vtt", "webvtt":
+		return string(codec.FormatWebVTT), true
+	default:
+		return "", false
+	}
 }
 
 func schemaInvocationError(message string) *invocationError {
@@ -758,6 +940,10 @@ func renderInvocationError(message string) *invocationError {
 	return &invocationError{message: message, usage: renderHelp}
 }
 
+func convertInvocationError(message string) *invocationError {
+	return &invocationError{message: message, usage: convertHelp}
+}
+
 func usageForCommand(command string) helpTarget {
 	switch command {
 	case "version":
@@ -770,6 +956,8 @@ func usageForCommand(command string) helpTarget {
 		return encodeHelp
 	case "render":
 		return renderHelp
+	case "convert":
+		return convertHelp
 	default:
 		return rootHelp
 	}
@@ -787,6 +975,8 @@ func writeUsage(writer io.Writer, target helpTarget) {
 		fmt.Fprint(writer, encodeUsageText)
 	case renderHelp:
 		fmt.Fprint(writer, renderUsageText)
+	case convertHelp:
+		fmt.Fprint(writer, convertUsageText)
 	default:
 		fmt.Fprint(writer, rootUsageText)
 	}

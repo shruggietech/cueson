@@ -30,7 +30,7 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 
 Dependencies point inward toward stable, dependency-light contracts. `internal/model` does not depend on CLI, source, codecs, conversion, or OCR. Codec availability is the authority for native ingest and render capability; schema recognition alone is not.
 
-Current source implements `internal/codec` as a capability registry plus bounded detection/decoding and native SubRip and WebVTT parser/renderers. `internal/convert` and `internal/ocr` remain reserved future ownership.
+Current source implements `internal/codec` as a capability registry plus bounded detection/decoding and native SubRip and WebVTT parser/renderers. `internal/convert` owns target projection, compatibility analysis, deterministic runtime-only loss reports, and conversion rendering. `internal/ocr` remains reserved future ownership.
 
 ## Source authority and restoration
 
@@ -50,7 +50,7 @@ The common model exposes timing and semantic content without requiring consumers
 
 Unknown, malformed, unsupported, or non-representable source information is preserved when practical and reported through deterministic diagnostics. Strict conversion refuses known loss. A successful operation never silently discards information covered by the active contract.
 
-The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages define their experimental native grammars, diagnostics, fixtures, ingest, and rendering contracts. Cross-format conversion remains deferred.
+The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages define their experimental native grammars, diagnostics, fixtures, ingest, rendering, and conversion contracts. Conversion validates source-envelope integrity, projects only model data into a private target representation, computes its complete loss report before rendering, and keeps that target representation and report outside Cue JSON. Strict conversion rejects every known loss before output publication.
 
 ## Version and schema relationship
 
@@ -161,5 +161,6 @@ The `Repository text` CI job runs both standalone modules. Historical Spec Kit a
 | [#30](https://github.com/shruggietech/cueson/issues/30) | Capability-based codec registry, bounded source acquisition, detection, decoding, diagnostics, and development schema/model transition |
 | [#31](https://github.com/shruggietech/cueson/issues/31) | Native SubRip parsing, exact-envelope encode, canonical rendering, CLI workflows, fixtures, and round-trip verification |
 | [#32](https://github.com/shruggietech/cueson/issues/32) | Native WebVTT parsing, exact-envelope encode, canonical rendering, CLI workflows, fixtures, diagnostics, and round-trip verification |
+| [#33](https://github.com/shruggietech/cueson/issues/33) | Bidirectional SubRip and WebVTT conversion, deterministic loss accounting, strict rejection, CLI workflows, and cross-format verification |
 
-Cross-format conversion remains deferred. Current SubRip and WebVTT capabilities are experimental until the v1 acceptance gate is complete; this document does not authorize placeholder commands or premature stable claims.
+Current SubRip, WebVTT, and cross-format conversion capabilities are experimental until the v1 acceptance gate is complete; this document does not authorize placeholder commands or premature stable claims.

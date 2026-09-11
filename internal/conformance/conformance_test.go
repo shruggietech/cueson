@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/shruggietech/cueson/internal/cli"
 	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/codec/webvtt"
 	"github.com/shruggietech/cueson/internal/model"
@@ -28,8 +29,57 @@ func TestGovernedCorpus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("VerifyFixtures() error = %v", err)
 	}
-	if len(manifest.Fixtures) < 16 {
-		t.Fatalf("fixture count = %d, want at least 16", len(manifest.Fixtures))
+	if len(manifest.Fixtures) < 22 {
+		t.Fatalf("fixture count = %d, want at least 22", len(manifest.Fixtures))
+	}
+}
+
+func TestBidirectionalConversionConformance(t *testing.T) {
+	t.Parallel()
+
+	root := fixtureRoot(t)
+	manifest := verifiedManifest(t, root)
+	tests := []struct {
+		fixtureID string
+		target    string
+	}{
+		{fixtureID: "conversion/srt-loss-free", target: "vtt"},
+		{fixtureID: "conversion/webvtt-loss-free", target: "srt"},
+	}
+	for _, test := range tests {
+		test := test
+		t.Run(test.fixtureID, func(t *testing.T) {
+			t.Parallel()
+
+			fixture := mustFixture(t, manifest, test.fixtureID)
+			sourceArtifact := mustArtifact(t, fixture, "source")
+			expectedArtifact := mustArtifact(t, fixture, "expected_bytes")
+			sourcePath := testutil.ArtifactFile(root, sourceArtifact)
+			var stdout, stderr bytes.Buffer
+			status := cli.Run(context.Background(), []string{"convert", sourcePath, "--to", test.target}, strings.NewReader(""), &stdout, &stderr)
+			if status != cli.ExitSuccess {
+				t.Fatalf("convert status = %d; stderr = %q", status, stderr.String())
+			}
+			if stderr.Len() != 0 {
+				t.Fatalf("loss-free conversion stderr = %q", stderr.String())
+			}
+			if err := testutil.CompareBytes(fixture.ID, "converted_bytes", readArtifact(t, root, expectedArtifact), stdout.Bytes()); err != nil {
+				t.Fatal(err)
+			}
+			if err := testutil.CheckNoForbidden(fixture.ID, "conversion_output", append(stdout.Bytes(), stderr.Bytes()...), root, filepath.Dir(sourcePath), sourcePath); err != nil {
+				t.Fatal(err)
+			}
+			switch test.target {
+			case "srt":
+				if _, err := subrip.Parse(stdout.String(), subrip.Options{}); err != nil {
+					t.Fatalf("SubRip target parser rejected output: %v", err)
+				}
+			case "vtt":
+				if _, err := webvtt.Parse(stdout.String()); err != nil {
+					t.Fatalf("WebVTT target parser rejected output: %v", err)
+				}
+			}
+		})
 	}
 }
 
@@ -154,6 +204,18 @@ func TestMalformedRegressionsAreDeterministic(t *testing.T) {
 
 func rejectAtDeclaredBoundary(t *testing.T, fixture testutil.Fixture, input []byte, run int) (string, string) {
 	t.Helper()
+	if fixture.ID == "conversion/srt-zero-duration" {
+		inputPath := filepath.Join(t.TempDir(), "zero-duration.srt")
+		if err := os.WriteFile(inputPath, input, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		var stdout, stderr bytes.Buffer
+		status := cli.Run(context.Background(), []string{"convert", inputPath, "--to", "vtt"}, strings.NewReader(""), &stdout, &stderr)
+		if status != cli.ExitRuntimeFailure || stdout.Len() != 0 {
+			t.Fatalf("zero-duration conversion = (%d, %q, %q)", status, stdout.String(), stderr.String())
+		}
+		return "semantics", stderr.String()
+	}
 	if fixture.ID == "subrip/reversed-time" {
 		_, err := subrip.Parse(string(input), subrip.Options{DetectSpeakers: true})
 		if err == nil {

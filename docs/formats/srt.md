@@ -17,7 +17,7 @@ Current source implements native SubRip detection, decoding, semantic ingest, ex
 | Semantic ingest | Experimental | `cueson encode` derives cues while retaining exact bytes. |
 | Exact restoration | Available | `cueson restore` verifies and recreates the source envelope without the codec. |
 | Model-driven rendering | Experimental | `cueson render --to srt` emits canonical SubRip from structured fields. |
-| Cross-format conversion | Unavailable | WebVTT conversion is a later slice. |
+| Cross-format conversion | Experimental | `cueson convert INPUT --to vtt` projects common cue semantics and reports every known incompatible SubRip feature. |
 | Stable SubRip support | Unavailable | Stable support remains a v1.0.0 gate. |
 
 ## Source and decoding
@@ -64,6 +64,10 @@ A payload is not representable without ambiguity when its line structure would b
 
 Existing destinations are never replaced without `--force`. Output is staged and committed only after successful validation/rendering, so failures do not leave partial files.
 
+## Conversion to WebVTT
+
+SubRip-to-WebVTT conversion preserves cue order, integer-millisecond timing, overlap, multiline payloads, and shared `b`, `i`, and `u` emphasis. Sequence lexemes are canonicalized into cue order rather than promoted to WebVTT identifiers. Coordinates, `font` presentation, heuristic speaker observations, unanchored token timing, OCR observations, and unrecognized native data are omitted or degraded with one deterministic runtime loss observation per occurrence. A cue whose end does not follow its start is rejected because Cueson does not invent target timing. `--strict` rejects any known loss before WebVTT is rendered or published.
+
 ## Fixture and stability boundary
 
-The manifest-governed `testdata/subrip/` corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, and fuzz seeds. Stable support still requires completion of the broader v1 milestone, including WebVTT and conversion gates.
+The manifest-governed `testdata/subrip/` and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. Stable support still requires completion of the broader v1 milestone.

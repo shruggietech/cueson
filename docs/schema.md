@@ -4,7 +4,7 @@
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document defines the current development schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), and native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable.
+This document defines the current development schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), and native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32). Issue [#33](https://github.com/shruggietech/cueson/issues/33) adds conversion without changing this persisted contract. The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable.
 
 ## Dialect, identity, and version
 
@@ -140,3 +140,5 @@ Schema implementation distinguishes:
 5. Official software/schema version equality.
 
 Schema validation does not infer codec availability. Native codec presence remains an executable capability concern described by [the architecture](architecture.md) and [CLI contract](cli.md). Maintained documentation paths and local heading links are checked offline by the repository's standalone documentation verifier; that check does not publish the schema or validate external network availability.
+
+Cross-format conversion loss reports and private target projections are runtime-only values. They are not Cue JSON properties, do not change schema version 0.1.0, and never replace the validated source document or its exact source envelope.

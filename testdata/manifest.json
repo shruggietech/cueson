@@ -786,6 +786,246 @@
       "expectation": {
         "result": "accepted"
       }
+    },
+    {
+      "id": "conversion/srt-loss-free",
+      "purpose": "Prove loss-free SubRip-to-WebVTT conversion preserves timing, overlap, line order, readable text, and shared presentation markup.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S016 bidirectional conversion work",
+        "recipe": "Write two overlapping LF SubRip cues containing bold, italic, ampersand, and multiline conversion evidence plus the canonical expected WebVTT bytes."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/conversion/srt-loss-free/source/input.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 103,
+          "sha256": "88abcac3c33eae2e72bf6bf0bade0e241e4e1f63913c905420c0bd07fd0fce49",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/conversion/srt-loss-free/expected/bytes/output.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 111,
+          "sha256": "ecfce8ace068d767494dbbab85331c1d9551539be76bc51ec5f30743cf0e02fe",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "conversion/webvtt-loss-free",
+      "purpose": "Prove loss-free WebVTT-to-SubRip conversion preserves timing, overlap, line order, entities, readable text, and shared presentation markup.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S016 bidirectional conversion work",
+        "recipe": "Write two overlapping LF WebVTT cues containing shared markup and one character reference plus the canonical expected SubRip bytes."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/conversion/webvtt-loss-free/source/input.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 116,
+          "sha256": "d9f1718e97dfea1aef5bf120c0cde9a7a7dbe0c2267628e3931e0231bc812e84",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/conversion/webvtt-loss-free/expected/bytes/output.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 108,
+          "sha256": "876e205ec85d44c63cdefbab8b7289013682450b3d028dd82ff77f92990f1b35",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "conversion/srt-lossy",
+      "purpose": "Exercise SubRip coordinate, font-presentation, and heuristic-speaker loss accounting during WebVTT conversion.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S016 bidirectional conversion work",
+        "recipe": "Write one LF SubRip cue with noncanonical sequence numbering, complete coordinates, a visible speaker prefix, and font presentation."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/conversion/srt-lossy/source/input.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 95,
+          "sha256": "13ad903f0e6f458d6c4e7cf2d97d726a8ee2dd5927e5a406594df54922a14ba7",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "conversion/webvtt-lossy",
+      "purpose": "Exercise every WebVTT document-block, cue-setting, identifier, markup, speaker, and inline-timing loss family during SubRip conversion.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S016 bidirectional conversion work",
+        "recipe": "Write one LF WebVTT document with description, metadata, REGION, STYLE, NOTE, unrecognized block, identifier, every cue setting, voice, class, language, ruby, and inline timing."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/conversion/webvtt-lossy/source/input.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 391,
+          "sha256": "757f75cc9ce18b0c699c512c5ce45671b8da2fc60f44ce55a6df57354d4c44f4",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "conversion/srt-zero-duration",
+      "purpose": "Retain the fatal SubRip-to-WebVTT boundary where target validity would require invented cue duration.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S016 bidirectional conversion work",
+        "recipe": "Write one LF SubRip cue whose normalized start and end are equal."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/conversion/srt-zero-duration/input/input.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 53,
+          "sha256": "d5213552065d189def7f06e2bacf4b3f7167453d32a28a1717dd62eb33e07e66",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "positive cue duration"
+      }
+    },
+    {
+      "id": "conversion/bidirectional-seed",
+      "purpose": "Seed bounded bidirectional conversion, loss ordering, markup translation, strict-policy, and renderer-parser-cycle fuzz targets.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S016 bidirectional conversion work",
+        "recipe": "Write one compact LF SubRip cue containing shared presentation markup and a literal ampersand."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fuzz/conversion/bidirectional-seed/input/seed.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 54,
+          "sha256": "b6cd01d9020f5fba780ae97223e44720e5c3af3b03f4bf0fb312d296f1960017",
+          "byte_contract": {
+            "encoding": "ascii",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
     }
   ]
 }

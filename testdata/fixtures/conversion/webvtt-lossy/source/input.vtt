@@ -1,0 +1,20 @@
+WEBVTT - conversion loss fixture
+Kind: captions
+Language: en
+
+REGION
+id:main
+width:50%
+
+STYLE
+::cue(.important) { color: yellow }
+
+NOTE conversion note
+
+X-CUSTOM
+retained only in source
+
+cue-name
+00:00:00.500 --> 00:00:03.000 region:main line:10% position:20% size:60% align:start vertical:rl
+<v Alice><c.important><lang en><ruby>Hello<rt>greeting</rt></ruby></lang></c>
+<00:00:02.000>again

@@ -16,7 +16,7 @@ v0.0.0 is publicly available from the [official GitHub Release](https://github.c
 | [#5](https://github.com/shruggietech/cueson/issues/5) | `schema`, `schema --version`, schema output | Embedded canonical schema |
 | [#6](https://github.com/shruggietech/cueson/issues/6) | `restore` | Generic exact source-envelope restoration without a codec |
 
-Current v0.1.0 source additionally ships `encode` and `render` for experimental SubRip and WebVTT support. `convert`, `validate`, `inspect`, and `completion` remain absent.
+Current v0.1.0 source additionally ships `encode`, `render`, and `convert` for experimental SubRip and WebVTT support. `validate`, `inspect`, and `completion` remain absent.
 
 ## `encode`
 
@@ -34,7 +34,17 @@ SubRip automatic decoding accepts UTF-8 and BOM-marked UTF-16. BOM-less UTF-16 r
 cueson [global options] render [options] INPUT.cueson.json --to srt|vtt
 ```
 
-`render` validates Cue JSON and serializes its structured cue model rather than restoring captured bytes. Without `--output` it writes stdout; `--output -` is equivalent. `--force` applies only to real filesystem destinations. The `--to` value must match the document's native format because cross-format conversion is not yet shipped. Canonical SubRip uses ordered integer sequence lines, `HH:MM:SS,mmm`, complete coordinates when present, raw payload text, LF line endings, one blank line between cues, and a final LF. Canonical WebVTT uses a `WEBVTT` signature, preserved header metadata, the contiguous merged cue and non-cue source order, normalized dot-millisecond timestamps, retained native cue settings and payload, LF separators, and a final LF. Normal rendering warns when preserved content is known to be nonconforming; `--strict` rejects known ambiguity or nonconformance before publishing output.
+`render` validates Cue JSON and serializes its structured cue model rather than restoring captured bytes. Without `--output` it writes stdout; `--output -` is equivalent. `--force` applies only to real filesystem destinations. The `--to` value must match the document's native format; use `convert` for a different target format. Canonical SubRip uses ordered integer sequence lines, `HH:MM:SS,mmm`, complete coordinates when present, raw payload text, LF line endings, one blank line between cues, and a final LF. Canonical WebVTT uses a `WEBVTT` signature, preserved header metadata, the contiguous merged cue and non-cue source order, normalized dot-millisecond timestamps, retained native cue settings and payload, LF separators, and a final LF. Normal rendering warns when preserved content is known to be nonconforming; `--strict` rejects known ambiguity or nonconformance before publishing output.
+
+## `convert`
+
+```text
+cueson [global options] convert [options] INPUT --to srt|vtt
+```
+
+`convert` accepts Cue JSON, SubRip, or WebVTT input and serializes the requested native target from a private target projection. Input format defaults to `auto` and may be selected explicitly with `--from auto|cueson|srt|vtt`. Cue JSON recognition has precedence over native detection; content presented as Cue JSON that fails JSON, schema, semantic, or source-integrity validation does not fall through to a native codec. Native input shares the bounded acquisition, `--encoding`, and `--no-speaker-detection` behavior of `encode`.
+
+Without `--output`, conversion writes the target bytes to stdout; `--output -` is equivalent. `--force` applies only to a real filesystem destination. The converter retains cue order, integer-millisecond timing, overlap, multiline payloads, and shared `b`, `i`, and `u` emphasis. Target-incompatible metadata, placement, native blocks, identifiers, annotations, and markup produce deterministic stderr warnings. Conversion losses are runtime-only observations identified by stable code, severity, kind, source and target format, and a portable JSON Pointer path; they never enter Cue JSON or expose source bytes, input paths, or machine identity. `--strict` computes the complete loss report and fails before target rendering or destination publication when any loss is known. A non-positive SubRip cue duration cannot be represented as valid WebVTT and is fatal in every mode.
 
 ## General invocation rules
 
@@ -129,6 +139,6 @@ All caller-selected output directories and parents must already exist. Existing 
 
 ## Remaining command contract
 
-The remaining intended v1 surface includes convert, validate, inspect, and completion. A future Spec Kit slice must ratify and implement each command before it appears in help.
+The remaining intended v1 surface includes validate, inspect, and completion. A future Spec Kit slice must ratify and implement each command before it appears in help.
 
 Release packaging does not expand this command contract. See [release verification](release-verification.md) for the v0.0.0 artifact and publication proof and the [release process](release-process.md) for the separately authorized release lifecycle. The standalone documentation verifier checks that these maintained CLI and documentation links resolve offline; it is repository tooling, not a `cueson` subcommand.
