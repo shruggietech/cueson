@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -12,14 +13,16 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"unicode/utf8"
 
 	jsonschema "github.com/santhosh-tekuri/jsonschema/v6"
 	"github.com/shruggietech/cueson/internal/testutil"
 )
 
 const (
-	normativeSchemaSHA256 = "33ef838ab89ab491d26bdf8e97ddd6a0828542e173e011be3ce1293305323902"
-	releasedSchemaSHA256  = "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975"
+	normativeSchemaSHA256  = "ae98cebeb31f6bfe1e7a39916a185d0a365d4ef19ef4aa5a0fdfc9afb28e0877"
+	v0ReleasedSchemaSHA256 = "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975"
+	v1ReleasedSchemaSHA256 = "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541"
 )
 
 var identifyingExample = regexp.MustCompile(`(?i)(?:^|["'\s])(?:[a-z]:[\\/]|/(?:home|users)/|\\\\[^\\]+\\|file://|localhost)`)
@@ -217,9 +220,68 @@ func TestReleasedSchemaRemainsImmutable(t *testing.T) {
 		t.Fatal(err)
 	}
 	got := sha256.Sum256(data)
-	if hex.EncodeToString(got[:]) != releasedSchemaSHA256 {
-		t.Fatalf("released v0.0.0 schema digest = %s, want %s", hex.EncodeToString(got[:]), releasedSchemaSHA256)
+	if hex.EncodeToString(got[:]) != v0ReleasedSchemaSHA256 {
+		t.Fatalf("released v0.0.0 schema digest = %s, want %s", hex.EncodeToString(got[:]), v0ReleasedSchemaSHA256)
 	}
+}
+
+func TestV1ReleasedSchemaMatchesCanonical(t *testing.T) {
+	t.Parallel()
+
+	_, currentFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("locate annotation test")
+	}
+	canonicalPath := filepath.Join(filepath.Dir(currentFile), "cueson.schema.json")
+	releasePath := filepath.Join(filepath.Dir(currentFile), "..", "..", "schema", "releases", "v1.0.0", "cueson.schema.json")
+	canonical := readRegularSchemaFile(t, canonicalPath)
+	released := readRegularSchemaFile(t, releasePath)
+	if !bytes.Equal(canonical, Bytes()) {
+		t.Fatal("canonical schema file does not match embedded schema bytes")
+	}
+	if !bytes.Equal(released, canonical) {
+		t.Fatal("released v1.0.0 schema is not byte-identical to the canonical schema")
+	}
+	digest := sha256.Sum256(released)
+	if got := hex.EncodeToString(digest[:]); got != v1ReleasedSchemaSHA256 {
+		t.Fatalf("released v1.0.0 schema digest = %s, want %s", got, v1ReleasedSchemaSHA256)
+	}
+	value, err := decodeOne(released)
+	if err != nil {
+		t.Fatalf("decode released v1.0.0 schema: %v", err)
+	}
+	artifact, ok := value.(map[string]any)
+	if !ok {
+		t.Fatal("released v1.0.0 schema root is not an object")
+	}
+	if err := validateArtifactIdentity(artifact); err != nil {
+		t.Fatalf("released v1.0.0 schema identity: %v", err)
+	}
+}
+
+func readRegularSchemaFile(t *testing.T, path string) []byte {
+	t.Helper()
+	info, err := os.Lstat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !info.Mode().IsRegular() {
+		t.Fatalf("%s is not a regular file", path)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !utf8.Valid(data) {
+		t.Fatalf("%s is not valid UTF-8", path)
+	}
+	if bytes.HasPrefix(data, []byte{0xef, 0xbb, 0xbf}) {
+		t.Fatalf("%s has a UTF-8 BOM", path)
+	}
+	if bytes.Contains(data, []byte("\r")) || !bytes.HasSuffix(data, []byte("\n")) {
+		t.Fatalf("%s does not use canonical LF line endings with a final newline", path)
+	}
+	return data
 }
 
 func annotationArtifact(t *testing.T) map[string]any {

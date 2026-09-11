@@ -25,10 +25,11 @@ func TestDocumentValidateCapabilityProfiles(t *testing.T) {
 		support FormatSupport
 		valid   bool
 	}{
-		{name: "subrip experimental", format: "subrip", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, valid: true},
+		{name: "subrip stable", format: "subrip", support: FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, valid: true},
+		{name: "subrip experimental", format: "subrip", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}},
 		{name: "subrip envelope only", format: "subrip", support: FormatSupport{Status: "envelope_only", RestoreSupported: true}},
-		{name: "subrip stable prematurely", format: "subrip", support: FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}},
-		{name: "webvtt experimental", format: "webvtt", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, valid: true},
+		{name: "webvtt stable", format: "webvtt", support: FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, valid: true},
+		{name: "webvtt experimental", format: "webvtt", support: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}},
 		{name: "webvtt envelope only", format: "webvtt", support: FormatSupport{Status: "envelope_only", RestoreSupported: true}},
 	}
 
@@ -268,10 +269,10 @@ func representativeDocument() Document {
 		return &Timestamp{ISO: "2026-09-09T00:00:00Z", UnixNS: 1788912000000000000}
 	}
 	return Document{
-		Schema:        "https://cueson.io/schema/v0.1.0/cueson.schema.json",
-		SchemaVersion: "0.1.0",
+		Schema:        "https://cueson.io/schema/v1.0.0/cueson.schema.json",
+		SchemaVersion: "1.0.0",
 		Format:        "subrip",
-		FormatSupport: FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+		FormatSupport: FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
 		Producer:      Producer{Name: "test", Version: "1.2.3"},
 		Source: SourceEnvelope{PrimaryAssetID: "asset-0", Assets: []SourceAsset{{
 			ID: "asset-0", Role: "primary", FileName: "captions.srt", MediaType: stringPointer("application/x-subrip"),
@@ -296,7 +297,7 @@ func representativeDocument() Document {
 func representativeWebVTTDocument() Document {
 	doc := representativeDocument()
 	doc.Format = "webvtt"
-	doc.FormatSupport = FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+	doc.FormatSupport = FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
 	doc.Source.Assets[0].FileName = "captions.vtt"
 	doc.Cues[0].SourceOrder = 1
 	doc.Cues[0].SourceIdentifier = stringPointer("intro")

@@ -78,8 +78,8 @@ func TestRunVersion(t *testing.T) {
 			if status != ExitSuccess {
 				t.Fatalf("Run() status = %d, want %d; stderr = %q", status, ExitSuccess, stderr)
 			}
-			if stdout != "0.1.0\n" {
-				t.Errorf("Run() stdout = %q, want %q", stdout, "0.1.0\\n")
+			if stdout != "1.0.0\n" {
+				t.Errorf("Run() stdout = %q, want %q", stdout, "1.0.0\\n")
 			}
 			if stderr != "" {
 				t.Errorf("Run() stderr = %q, want empty", stderr)
@@ -657,8 +657,8 @@ func TestRunSchemaVersion(t *testing.T) {
 
 	for _, args := range [][]string{{"schema", "--version"}, {"--quiet", "schema", "--version"}} {
 		status, stdout, stderr := runForTest(context.Background(), args)
-		if status != ExitSuccess || stdout != "0.1.0\n" || stderr != "" {
-			t.Errorf("Run(%q) = (%d, %q, %q), want (0, %q, empty)", args, status, stdout, stderr, "0.1.0\\n")
+		if status != ExitSuccess || stdout != "1.0.0\n" || stderr != "" {
+			t.Errorf("Run(%q) = (%d, %q, %q), want (0, %q, empty)", args, status, stdout, stderr, "1.0.0\\n")
 		}
 	}
 }
@@ -1057,7 +1057,10 @@ func TestEncodeRenderAndRestoreWorkflow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if document.Format != "subrip" || document.FormatSupport.Status != "experimental" || len(document.Cues) != 1 {
+	if document.Schema != schema.ID() || document.SchemaVersion != "1.0.0" || document.Producer.Name != "cueson" || document.Producer.Version != "1.0.0" {
+		t.Fatalf("encoded identity = (%q, %q, %#v)", document.Schema, document.SchemaVersion, document.Producer)
+	}
+	if document.Format != "subrip" || document.FormatSupport.Status != "stable" || len(document.Cues) != 1 {
 		t.Fatalf("encoded document = %#v", document)
 	}
 	if document.Cues[0].Payload.RawText != "<i>Ada: Hello.</i>" || document.Cues[0].Payload.PlainText != "Ada: Hello." {
@@ -1172,7 +1175,10 @@ func TestWebVTTEncodeRenderRestoreWorkflow(t *testing.T) {
 	if err != nil {
 		t.Fatalf("schema.Decode(encoded) error = %v", err)
 	}
-	if document.Format != "webvtt" || document.FormatSupport.Status != "experimental" || !document.FormatSupport.IngestSupported || !document.FormatSupport.RenderSupported || !document.FormatSupport.RestoreSupported {
+	if document.Schema != schema.ID() || document.SchemaVersion != "1.0.0" || document.Producer.Name != "cueson" || document.Producer.Version != "1.0.0" {
+		t.Fatalf("encoded identity = (%q, %q, %#v)", document.Schema, document.SchemaVersion, document.Producer)
+	}
+	if document.Format != "webvtt" || document.FormatSupport.Status != "stable" || !document.FormatSupport.IngestSupported || !document.FormatSupport.RenderSupported || !document.FormatSupport.RestoreSupported {
 		t.Fatalf("format support = (%q, %#v)", document.Format, document.FormatSupport)
 	}
 	if document.FormatData.WebVTT == nil || len(document.FormatData.WebVTT.Blocks) != 1 || len(document.Cues) != 1 || document.Cues[0].Payload.PlainText != "Hello & welcome" {

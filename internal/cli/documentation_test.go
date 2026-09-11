@@ -105,7 +105,7 @@ func TestExecutableDocumentationScenarios(t *testing.T) {
 	schemaPath := filepath.Join(directory, "cueson.schema.json")
 
 	status, stdout, stderr := runForTest(context.Background(), []string{"version"})
-	requireDocumentedResult(t, "source execution", status, stdout, stderr, ExitSuccess, "0.1.0\n", "")
+	requireDocumentedResult(t, "source execution", status, stdout, stderr, ExitSuccess, "1.0.0\n", "")
 
 	status, stdout, stderr = runForTest(context.Background(), []string{"encode", "--pretty", "--output", documentPath, srtPath})
 	requireDocumentedResult(t, "encode", status, stdout, stderr, ExitSuccess, "", "")
@@ -161,7 +161,7 @@ func TestExecutableDocumentationScenarios(t *testing.T) {
 	status, stdout, stderr = runForTest(context.Background(), []string{"schema"})
 	requireDocumentedResult(t, "schema stdout", status, stdout, stderr, ExitSuccess, string(schema.Bytes()), "")
 	status, stdout, stderr = runForTest(context.Background(), []string{"schema", "--version"})
-	requireDocumentedResult(t, "schema version", status, stdout, stderr, ExitSuccess, "0.1.0\n", "")
+	requireDocumentedResult(t, "schema version", status, stdout, stderr, ExitSuccess, "1.0.0\n", "")
 	status, stdout, stderr = runForTest(context.Background(), []string{"schema", "--output", schemaPath})
 	requireDocumentedResult(t, "schema file", status, stdout, stderr, ExitSuccess, "", "")
 	if !bytes.Equal(readDocumentationBytes(t, schemaPath), schema.Bytes()) {

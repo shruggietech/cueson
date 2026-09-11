@@ -17,11 +17,11 @@
   <a href="docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-repository-58A6FF"></a>
 </p>
 
-**A lossless, structured interchange layer for subtitle and caption content.**<br>**v1 contract formats:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v0.1.0 development with the v1-bound contract frozen; native capabilities remain `experimental` until the separately prepared release candidate
+**A lossless, structured interchange layer for subtitle and caption content.**<br>**v1 contract formats:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v1.0.0 stable release candidate, not yet published
 
 Cueson encodes SubRip and WebVTT subtitle files into a canonical, versioned JSON representation called Cue JSON, renders the structured model back to deterministic native syntax, and converts between those formats with explicit loss reporting. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration.
 
-The repository contains the development `cueson` executable and canonical Draft 2020-12 Cue JSON `0.1.0` schema. The separate [official v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its byte-identical [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain the published foundation. Current source adds bounded native SubRip and WebVTT detection, decoding, semantic ingest, deterministic rendering, and codec-independent exact restoration.
+The repository contains the `cueson` 1.0.0 stable release candidate, its canonical Draft 2020-12 Cue JSON schema, and a byte-identical [immutable v1 schema candidate](schema/releases/v1.0.0/cueson.schema.json). The separate [official v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain the only published foundation. Current candidate source provides bounded native SubRip and WebVTT detection, decoding, semantic ingest, deterministic rendering, cross-format conversion, and codec-independent exact restoration.
 
 ## Capability direction
 
@@ -31,17 +31,17 @@ The repository contains the development `cueson` executable and canonical Draft 
 - Keep the Cueson JSON Schema and official executable versioned together.
 - Deliver portable native binaries for Windows, macOS, and Linux.
 
-The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages define the experimental native [SubRip](docs/formats/srt.md) and [WebVTT](docs/formats/webvtt.md) contracts on the path to v1. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
+The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages define the stable v1 [SubRip](docs/formats/srt.md) and [WebVTT](docs/formats/webvtt.md) contracts. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
 
 The official Cueson identity is retained in the repository as the complete [brand kit](brand/cueson/1.0.0/kit/README.md). See the [Cueson brand guide](docs/brand.md) for provenance, integrity verification, asset selection, licensing boundaries, and the [official ShruggieTech download](https://brand.shruggie.tech/cueson/downloads/cueson-brand-1.0.0.zip).
 
-The dated v0.0.0 history and concise [release notes](docs/releases/v0.0.0.md) are bound to immutable tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0) at `b294a6952c8bd041d852c502f5d7206c0b58edd6`. [Release verification](docs/release-verification.md) records the accepted six-target proof and independent public-download audit. The governed [release process](docs/release-process.md) keeps milestone closure, signatures, attestations, public schema hosting, and production actions separately authorized.
+The dated v0.0.0 history and concise [release notes](docs/releases/v0.0.0.md) are bound to immutable tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0) at `b294a6952c8bd041d852c502f5d7206c0b58edd6`. The v1.0.0 history, immutable schema candidate, and concise [candidate release notes](docs/releases/v1.0.0.md) are reviewed repository records, not evidence that a v1 tag or GitHub Release exists. [Release verification](docs/release-verification.md) defines the non-publishing six-target candidate proof, and the governed [release process](docs/release-process.md) keeps merge, tag and release publication, milestone closure, signatures, attestations, public schema hosting, and production actions separately authorized.
 
 ## Installation status
 
 The [v0.0.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) is the only published binary release. Its six archives and matching SPDX SBOMs are verified by `cueson_0.0.0_checksums.txt`, but that foundation is envelope-only: it provides `version`, `schema`, and exact `restore`, not the native subtitle workflows described below.
 
-The current v0.1.0 source requires Go 1.25.0 or newer and remains pure Go with `CGO_ENABLED=0`. Clone the repository, then use `go run ./cmd/cueson` directly, build with `go build ./cmd/cueson`, or install the development executable from that checkout with `go install ./cmd/cueson`. A v1.0.0 binary, immutable v1 schema, public schema endpoint, and production documentation site do not exist yet; their preparation and publication remain separately reviewed and authorized work.
+The current v1.0.0 stable release candidate requires Go 1.25.0 or newer and remains pure Go with `CGO_ENABLED=0`. Clone the repository, then use `go run ./cmd/cueson` directly, build with `go build ./cmd/cueson`, or install the candidate executable from that checkout with `go install ./cmd/cueson`. Candidate binaries and the immutable v1 schema now exist in reviewed source, but v1 is not yet published: there is no v1 tag, GitHub Release, public schema endpoint, or production documentation site.
 
 ## Executable quick start
 
@@ -53,7 +53,7 @@ Run these examples from the repository root. Create an empty `quickstart` direct
 go run ./cmd/cueson version
 ```
 
-Expected result: exit status 0, stdout is exactly `0.1.0` plus LF, and stderr is empty.
+Expected result: exit status 0, stdout is exactly `1.0.0` plus LF, and stderr is empty.
 
 <!-- docs-verify:example encode -->
 
@@ -123,7 +123,7 @@ go run ./cmd/cueson completion bash > quickstart/cueson.bash
 
 Expected result: exit status 0 and one deterministic UTF-8 LF Bash completion definition on stdout, redirected here to the scratch file. Cueson does not modify a shell profile.
 
-The complete command, option, alias, stream, exit-status, overwrite, and strict-mode behavior is in the [CLI contract](docs/cli.md). The [compatibility contract](docs/compatibility.md) defines the intended v1 stability boundary, platform targets, and the distinction between the published foundation, current source, and future stable release.
+The complete command, option, alias, stream, exit-status, overwrite, and strict-mode behavior is in the [CLI contract](docs/cli.md). The [compatibility contract](docs/compatibility.md) defines the stable v1 boundary, platform targets, and the distinction between the published foundation, current candidate source, and future v1 publication.
 
 ## Development
 

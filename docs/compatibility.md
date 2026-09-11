@@ -1,6 +1,6 @@
 # Cueson Compatibility Contract
 
-**Status:** v1-bound contract frozen in v0.1.0 development source; v1.0.0 is not yet published
+**Status:** v1.0.0 stable release candidate; v1 is not yet published
 
 This document defines which Cueson surfaces receive a public compatibility promise, how format capability states are interpreted, and which release and platform claims are currently valid.
 
@@ -17,16 +17,16 @@ Go packages remain under `internal/` and carry no public source-compatibility or
 
 The published v0.0.0 release is an immutable envelope-only foundation. Its executable, schema, archive set, and versioned schema copy remain unchanged and do not contain native SubRip or WebVTT ingest, rendering, conversion, validation, inspection, or completion.
 
-Current development source uses executable and schema version v0.1.0. It implements the complete intended v1 command set and native SubRip and WebVTT workflows, but its format capability status remains `experimental` until the separately reviewed v1 candidate changes the release identity and capability declarations together.
+Current candidate source uses executable and schema version 1.0.0. It implements the complete stable v1 command set and native SubRip and WebVTT workflows, and both format capability declarations are `stable`. This maturity claim applies to the reviewed candidate contract; the only published binary release remains v0.0.0 until the separately authorized v1 publication transaction completes.
 
-At v1.0.0, incompatible changes to either public interface require a new major version. Compatible additions may use a minor version, and compatible corrections may use a patch version. Before v1.0.0, a documented breaking schema or CLI change requires at least a development minor-version change. Official Cueson executable and schema versions remain equal; a third-party producer's own version is independent from the Cue JSON schema version it targets.
+Starting with v1.0.0, incompatible changes to either public interface require a new major version. Compatible additions may use a minor version, and compatible corrections may use a patch version. Official Cueson executable and schema versions remain equal; a third-party producer's own version is independent from the Cue JSON schema version it targets.
 
-No mutable `latest` schema identity is part of the contract. Every released schema copy is immutable. The v0.1.0 canonical schema is available from the repository and embedded executable; its `cueson.io` URI remains an identifier until production hosting is separately authorized.
+No mutable `latest` schema identity is part of the contract. Every released schema copy is immutable. The v1.0.0 canonical and immutable candidate schemas are available from the repository and embedded executable; their `cueson.io` URI remains an identifier until production hosting is separately authorized.
 
 ## Format capability states
 
 - `envelope_only`: the release can preserve and exactly restore a valid source envelope but does not claim native semantic ingest or model-driven rendering.
-- `experimental`: the executable implements the documented native behavior, but the stable release gate has not yet been completed.
+- `experimental`: the executable implements documented native behavior whose compatibility contract has not completed its stable release gate.
 - `stable`: the format has passed the applicable v1 acceptance and release gates for that software/schema version.
 
 Capability booleans are independent facts. Schema recognition does not imply an installed codec, model-driven rendering does not imply exact restoration, and exact restoration does not imply native parsing. Consumers must use `format_support` rather than infer capability from a format key or file extension.
@@ -45,6 +45,6 @@ Core CLI, schema, parsing, rendering, conversion, validation, inspection, and co
 
 ## Installation and release boundary
 
-Users who need the published foundation can download v0.0.0 from GitHub and verify it with the published checksum manifest. Users evaluating the v1-bound workflows must currently build or run v0.1.0 from source with Go 1.25.0 or newer.
+Users who need a published binary can download v0.0.0 from GitHub and verify it with the published checksum manifest. Users evaluating the stable v1 candidate must currently build or run version 1.0.0 from source with Go 1.25.0 or newer.
 
-A v1.0.0 binary, immutable v1 schema, release notes, tag, GitHub Release, public schema endpoint, and production documentation site do not exist yet. Contract hardening does not authorize those actions. Candidate preparation, publication, milestone closure, schema hosting, and any production `cueson.io` change remain distinct steps under the [release process](release-process.md).
+The v1.0.0 candidate executable, immutable schema, and release notes exist as reviewed repository records. A v1 tag, GitHub Release, public schema endpoint, and production documentation site do not exist yet. Merge, publication, milestone closure, schema hosting, and any production `cueson.io` change remain distinct steps under the [release process](release-process.md).

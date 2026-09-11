@@ -2965,6 +2965,8 @@ The checklist below is the foundation closeout ledger. Checked items are backed 
 
 The v1 release MUST NOT ship until all of the following are true:
 
+This gate requires schema identity across reviewed repository and candidate artifacts, not advance activation of the public `cueson.io` endpoint. Public schema hosting and its remote byte check remain a separately authorized post-v1 production gate. The release-candidate verification item refers to issue #37; issue #38 owns later publication and independent public-download verification.
+
 - [ ] every documented SRT grammar feature has parser fixtures;
 - [ ] every documented SRT grammar feature has renderer fixtures where applicable;
 - [ ] every documented WebVTT structure has parser fixtures;
@@ -2985,7 +2987,7 @@ The v1 release MUST NOT ship until all of the following are true:
 - [ ] the common cue model exposes subtitle text through `payload.raw_text`, `payload.plain_text`, and `payload.lines` for SRT and WebVTT;
 - [ ] text consumers do not need to decode `data_base64` to access cue text;
 - [ ] `format_support` truthfully reports support maturity and capability state;
-- [ ] public v1.0.0 schema matches the repository artifact exactly;
+- [ ] canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte;
 - [ ] SRT-to-WebVTT conversion passes the compatibility matrix;
 - [ ] WebVTT-to-SRT conversion reports every known unrepresentable semantic;
 - [ ] `--strict` blocks lossy conversion;
@@ -3002,7 +3004,7 @@ The v1 release MUST NOT ship until all of the following are true:
 - [ ] security and dependency scans are green;
 - [ ] fuzz regression corpus is green;
 - [ ] release notes contain highlights only and end with the tagged changelog link;
-- [ ] release verification issue is complete;
+- [ ] v1 release-candidate verification issue is complete;
 - [ ] no pre-v1 or v1 release step has mutated production `cueson.io` Cloudflare configuration.
 
 ## References

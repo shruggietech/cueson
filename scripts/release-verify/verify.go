@@ -35,13 +35,14 @@ var (
 )
 
 type Config struct {
-	DistDir     string
-	RepoDir     string
-	Version     string
-	Commit      string
-	ExecuteHost bool
-	Development bool
-	Forbidden   []string
+	DistDir      string
+	RepoDir      string
+	Version      string
+	Commit       string
+	EvidencePath string
+	ExecuteHost  bool
+	Development  bool
+	Forbidden    []string
 }
 
 type Target struct {
@@ -57,8 +58,11 @@ type Target struct {
 type ReleaseEvidence struct {
 	Version             string   `json:"version"`
 	Development         bool     `json:"development,omitempty"`
+	IntendedTag         string   `json:"intended_tag"`
 	SourceRevision      string   `json:"source_revision"`
 	ReleaseSchemaSHA256 string   `json:"release_schema_sha256"`
+	LicenseSHA256       string   `json:"license_sha256"`
+	NoticeSHA256        string   `json:"notice_sha256"`
 	ArchiveCount        int      `json:"archive_count"`
 	SBOMCount           int      `json:"sbom_count"`
 	ChecksumCount       int      `json:"checksum_count"`
@@ -71,6 +75,11 @@ type archiveMember struct {
 	name string
 	mode os.FileMode
 	data []byte
+}
+
+type repositoryFile struct {
+	data   []byte
+	sha256 string
 }
 
 type artifactRecord struct {
@@ -145,6 +154,14 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	if err != nil {
 		return evidence, err
 	}
+	license, err := loadRepositoryFile(repoDir, "LICENSE")
+	if err != nil {
+		return evidence, fmt.Errorf("read repository LICENSE: %w", err)
+	}
+	notice, err := loadRepositoryFile(repoDir, "NOTICE")
+	if err != nil {
+		return evidence, fmt.Errorf("read repository NOTICE: %w", err)
+	}
 
 	forbidden := deriveForbidden(repoDir, config.Forbidden)
 	metadataRaw, err := readAndScan(filepath.Join(distDir, "metadata.json"), forbidden)
@@ -204,7 +221,7 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 		if err != nil {
 			return evidence, fmt.Errorf("inspect %s: %w", target.Archive, err)
 		}
-		binaryBytes, err := verifyMembers(*target, members, canonicalSchema, config.Version)
+		binaryBytes, err := verifyMembers(*target, members, canonicalSchema, license.data, notice.data, config.Version)
 		if err != nil {
 			return evidence, fmt.Errorf("inspect %s: %w", target.Archive, err)
 		}
@@ -238,10 +255,20 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	}
 
 	return ReleaseEvidence{
-		Version: config.Version, Development: config.Development, SourceRevision: config.Commit, ReleaseSchemaSHA256: releaseSchemaDigest,
+		Version: config.Version, Development: config.Development, IntendedTag: "v" + config.Version,
+		SourceRevision: config.Commit, ReleaseSchemaSHA256: releaseSchemaDigest, LicenseSHA256: license.sha256, NoticeSHA256: notice.sha256,
 		ArchiveCount: len(targets), SBOMCount: len(targets), ChecksumCount: len(checksums),
 		HostExecuted: hostExecuted, Targets: targets, Published: false,
 	}, nil
+}
+
+func loadRepositoryFile(repoDir, name string) (repositoryFile, error) {
+	data, err := readRegularFile(filepath.Join(repoDir, name))
+	if err != nil {
+		return repositoryFile{}, err
+	}
+	digest := sha256.Sum256(data)
+	return repositoryFile{data: data, sha256: hex.EncodeToString(digest[:])}, nil
 }
 
 func loadDevelopmentSchema(repoDir, version string) ([]byte, string, error) {
@@ -357,12 +384,12 @@ func readArchive(name string, data []byte) (map[string]archiveMember, error) {
 		if err != nil {
 			return nil, err
 		}
-		members[header.Name] = archiveMember{name: header.Name, mode: os.FileMode(header.Mode), data: contents}
+		members[header.Name] = archiveMember{name: header.Name, mode: header.FileInfo().Mode(), data: contents}
 	}
 	return members, nil
 }
 
-func verifyMembers(target Target, members map[string]archiveMember, canonicalSchema []byte, version string) ([]byte, error) {
+func verifyMembers(target Target, members map[string]archiveMember, canonicalSchema, license, notice []byte, version string) ([]byte, error) {
 	expected := map[string]bool{target.Binary: true, "cueson.schema.json": true, "LICENSE": true, "NOTICE": true}
 	if len(members) != len(expected) {
 		return nil, fmt.Errorf("archive has %d members, want %d", len(members), len(expected))
@@ -379,6 +406,19 @@ func verifyMembers(target Target, members map[string]archiveMember, canonicalSch
 	}
 	if !bytes.Equal(members["cueson.schema.json"].data, canonicalSchema) {
 		return nil, fmt.Errorf("packaged schema differs from canonical schema")
+	}
+	legalFiles := []struct {
+		name string
+		want []byte
+	}{{"LICENSE", license}, {"NOTICE", notice}}
+	for _, legalFile := range legalFiles {
+		member := members[legalFile.name]
+		if !bytes.Equal(member.data, legalFile.want) {
+			return nil, fmt.Errorf("packaged %s differs from repository %s", legalFile.name, legalFile.name)
+		}
+		if member.mode != 0o644 {
+			return nil, fmt.Errorf("packaged %s mode is %s, want -rw-r--r--", legalFile.name, member.mode)
+		}
 	}
 	if target.GOOS != "windows" && members[target.Binary].mode&0o111 == 0 {
 		return nil, fmt.Errorf("binary member is not executable")
@@ -636,8 +676,12 @@ func verifySchemaIdentity(data []byte, version string) error {
 	if err := json.Unmarshal(data, &schema); err != nil {
 		return err
 	}
-	if !strings.HasSuffix(schema.ID, "/v"+version+"/cueson.schema.json") {
-		return fmt.Errorf("schema id %q does not identify v%s", schema.ID, version)
+	wantID := "https://cueson.io/schema/v" + version + "/cueson.schema.json"
+	if schema.ID != wantID {
+		return fmt.Errorf("schema id %q, want %q", schema.ID, wantID)
+	}
+	if got := schema.Properties["$schema"].Const; got != wantID {
+		return fmt.Errorf("root instance $schema const %q, want %q", got, wantID)
 	}
 	if got := schema.Properties["schema_version"].Const; got != version {
 		return fmt.Errorf("schema_version const %q, want %q", got, version)

@@ -2,9 +2,9 @@
 
 ## Supported versions
 
-The published v0.0.0 release is an immutable envelope-only foundation. Current security hardening occurs on the v0.1.0 development line while the first stable v1.0.0 release remains pending. A release's publication does not extend its documented capability boundary or imply that the unreleased v1 contract is already supported.
+The published v0.0.0 release is an immutable envelope-only foundation. Current security hardening occurs on the v1.0.0 stable candidate line while tag and GitHub Release publication remain pending. Candidate status does not make v1 a published release, and publication never extends a release beyond its documented capability boundary.
 
-Security corrections are applied to the current development line and assessed for any affected published release. Supported-version declarations will accompany stable releases and do not authorize rewriting an immutable release artifact or schema.
+Security corrections are applied to the current candidate line and assessed for any affected published release. Supported-version declarations accompany published stable releases and do not authorize rewriting an immutable release artifact or schema.
 
 ## Reporting a vulnerability
 

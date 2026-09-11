@@ -21,14 +21,14 @@ const testCommit = "0123456789abcdef0123456789abcdef01234567"
 
 func TestExpectedTargets(t *testing.T) {
 	t.Parallel()
-	targets := expectedTargets("0.0.0")
+	targets := expectedTargets("1.0.0")
 	if len(targets) != 6 {
 		t.Fatalf("target count = %d, want 6", len(targets))
 	}
 	want := []string{
-		"cueson_0.0.0_linux_amd64.tar.gz", "cueson_0.0.0_linux_arm64.tar.gz",
-		"cueson_0.0.0_darwin_amd64.tar.gz", "cueson_0.0.0_darwin_arm64.tar.gz",
-		"cueson_0.0.0_windows_amd64.zip", "cueson_0.0.0_windows_arm64.zip",
+		"cueson_1.0.0_linux_amd64.tar.gz", "cueson_1.0.0_linux_arm64.tar.gz",
+		"cueson_1.0.0_darwin_amd64.tar.gz", "cueson_1.0.0_darwin_arm64.tar.gz",
+		"cueson_1.0.0_windows_amd64.zip", "cueson_1.0.0_windows_arm64.zip",
 	}
 	for index := range want {
 		if targets[index].Archive != want[index] {
@@ -85,7 +85,7 @@ func TestVerifyMembers(t *testing.T) {
 		"LICENSE":            {name: "LICENSE", mode: 0o644, data: []byte("license")},
 		"NOTICE":             {name: "NOTICE", mode: 0o644, data: []byte("notice")},
 	}
-	if _, err := verifyMembers(target, valid, schema, "0.0.0"); err != nil {
+	if _, err := verifyMembers(target, valid, schema, []byte("license"), []byte("notice"), "0.0.0"); err != nil {
 		t.Fatalf("valid members: %v", err)
 	}
 	tests := []struct {
@@ -96,6 +96,21 @@ func TestVerifyMembers(t *testing.T) {
 		{"extra", func(items map[string]archiveMember) { items["README"] = archiveMember{} }},
 		{"schema drift", func(items map[string]archiveMember) {
 			items["cueson.schema.json"] = archiveMember{data: []byte("drift")}
+		}},
+		{"license drift", func(items map[string]archiveMember) {
+			items["LICENSE"] = archiveMember{mode: 0o644, data: []byte("drift")}
+		}},
+		{"notice drift", func(items map[string]archiveMember) {
+			items["NOTICE"] = archiveMember{mode: 0o644, data: []byte("drift")}
+		}},
+		{"license executable", func(items map[string]archiveMember) {
+			items["LICENSE"] = archiveMember{mode: 0o755, data: []byte("license")}
+		}},
+		{"notice executable", func(items map[string]archiveMember) {
+			items["NOTICE"] = archiveMember{mode: 0o755, data: []byte("notice")}
+		}},
+		{"license special mode", func(items map[string]archiveMember) {
+			items["LICENSE"] = archiveMember{mode: os.ModeSetuid | 0o644, data: []byte("license")}
 		}},
 		{"not executable", func(items map[string]archiveMember) {
 			items["cueson"] = archiveMember{mode: 0o644, data: valid["cueson"].data}
@@ -113,7 +128,7 @@ func TestVerifyMembers(t *testing.T) {
 	for _, test := range tests {
 		items := cloneMembers(valid)
 		test.mutate(items)
-		if _, err := verifyMembers(target, items, schema, "0.0.0"); err == nil {
+		if _, err := verifyMembers(target, items, schema, []byte("license"), []byte("notice"), "0.0.0"); err == nil {
 			t.Errorf("%s accepted", test.name)
 		}
 	}
@@ -349,7 +364,7 @@ func TestScanForbiddenRecognizesEscapedAndStructuralPaths(t *testing.T) {
 
 func TestVerifySchemaIdentity(t *testing.T) {
 	t.Parallel()
-	valid := []byte(`{"$id":"https://cueson.io/schema/v0.0.0/cueson.schema.json","properties":{"schema_version":{"const":"0.0.0"}}}`)
+	valid := []byte(`{"$id":"https://cueson.io/schema/v0.0.0/cueson.schema.json","properties":{"$schema":{"const":"https://cueson.io/schema/v0.0.0/cueson.schema.json"},"schema_version":{"const":"0.0.0"}}}`)
 	if err := verifySchemaIdentity(valid, "0.0.0"); err != nil {
 		t.Fatal(err)
 	}
@@ -359,6 +374,14 @@ func TestVerifySchemaIdentity(t *testing.T) {
 	wrongSuffix := []byte(`{"$id":"https://cueson.io/schema/v0.0.0/cueson.schema.json?draft=1","properties":{"schema_version":{"const":"0.0.0"}}}`)
 	if err := verifySchemaIdentity(wrongSuffix, "0.0.0"); err == nil {
 		t.Fatal("accepted schema identity with content after the release path")
+	}
+	wrongAuthority := []byte(`{"$id":"https://example.test/schema/v0.0.0/cueson.schema.json","properties":{"$schema":{"const":"https://example.test/schema/v0.0.0/cueson.schema.json"},"schema_version":{"const":"0.0.0"}}}`)
+	if err := verifySchemaIdentity(wrongAuthority, "0.0.0"); err == nil {
+		t.Fatal("accepted schema identity from the wrong authority")
+	}
+	wrongInstanceSchema := []byte(`{"$id":"https://cueson.io/schema/v0.0.0/cueson.schema.json","properties":{"$schema":{"const":"https://example.test/schema/v0.0.0/cueson.schema.json"},"schema_version":{"const":"0.0.0"}}}`)
+	if err := verifySchemaIdentity(wrongInstanceSchema, "0.0.0"); err == nil {
+		t.Fatal("accepted a mismatched root instance $schema const")
 	}
 	if err := verifySchemaIdentity(append([]byte{0xef, 0xbb, 0xbf}, valid...), "0.0.0"); err == nil {
 		t.Fatal("accepted UTF-8 BOM")
@@ -370,7 +393,7 @@ func TestVerifySchemaIdentity(t *testing.T) {
 
 func TestLoadRepositorySchemasRequiresExactVersionedCopy(t *testing.T) {
 	t.Parallel()
-	valid := []byte(`{"$id":"https://cueson.io/schema/v0.0.0/cueson.schema.json","properties":{"schema_version":{"const":"0.0.0"}}}` + "\n")
+	valid := []byte(`{"$id":"https://cueson.io/schema/v0.0.0/cueson.schema.json","properties":{"$schema":{"const":"https://cueson.io/schema/v0.0.0/cueson.schema.json"},"schema_version":{"const":"0.0.0"}}}` + "\n")
 	wantDigest := sha256.Sum256(valid)
 
 	t.Run("valid", func(t *testing.T) {
@@ -409,7 +432,7 @@ func TestLoadRepositorySchemasRequiresExactVersionedCopy(t *testing.T) {
 	})
 
 	t.Run("release version mismatch", func(t *testing.T) {
-		wrong := []byte(`{"$id":"https://cueson.io/schema/v0.0.1/cueson.schema.json","properties":{"schema_version":{"const":"0.0.1"}}}` + "\n")
+		wrong := []byte(`{"$id":"https://cueson.io/schema/v0.0.1/cueson.schema.json","properties":{"$schema":{"const":"https://cueson.io/schema/v0.0.1/cueson.schema.json"},"schema_version":{"const":"0.0.1"}}}` + "\n")
 		repository := makeSchemaRepository(t, valid, wrong)
 		if _, _, err := loadRepositorySchemas(repository, "0.0.0"); err == nil || !strings.Contains(err.Error(), "versioned release schema") {
 			t.Fatalf("error = %v", err)
@@ -426,7 +449,7 @@ func TestLoadRepositorySchemasRequiresExactVersionedCopy(t *testing.T) {
 
 func TestLoadDevelopmentSchemaUsesCanonicalWithoutReleaseCopy(t *testing.T) {
 	t.Parallel()
-	valid := []byte(`{"$id":"https://cueson.io/schema/v0.1.0/cueson.schema.json","properties":{"schema_version":{"const":"0.1.0"}}}` + "\n")
+	valid := []byte(`{"$id":"https://cueson.io/schema/v0.1.0/cueson.schema.json","properties":{"$schema":{"const":"https://cueson.io/schema/v0.1.0/cueson.schema.json"},"schema_version":{"const":"0.1.0"}}}` + "\n")
 	wantDigest := sha256.Sum256(valid)
 	repository := makeSchemaRepository(t, valid, nil)
 
@@ -475,7 +498,11 @@ func TestWriteEvidenceIsExclusiveAndDeterministic(t *testing.T) {
 	directory := t.TempDir()
 	firstPath := filepath.Join(directory, "first.json")
 	secondPath := filepath.Join(directory, "second.json")
-	evidence := ReleaseEvidence{Version: "0.0.0", SourceRevision: testCommit, ReleaseSchemaSHA256: strings.Repeat("a", 64), ArchiveCount: 6, SBOMCount: 6, ChecksumCount: 6}
+	evidence := ReleaseEvidence{
+		Version: "1.0.0", IntendedTag: "v1.0.0", SourceRevision: testCommit,
+		ReleaseSchemaSHA256: strings.Repeat("a", 64), LicenseSHA256: strings.Repeat("b", 64), NoticeSHA256: strings.Repeat("c", 64),
+		ArchiveCount: 6, SBOMCount: 6, ChecksumCount: 6,
+	}
 	if err := writeEvidence(firstPath, evidence); err != nil {
 		t.Fatal(err)
 	}
@@ -499,8 +526,45 @@ func TestWriteEvidenceIsExclusiveAndDeterministic(t *testing.T) {
 	if !bytes.Contains(first, []byte(`"release_schema_sha256": "`+strings.Repeat("a", 64)+`"`)) {
 		t.Fatal("evidence omits release schema digest")
 	}
+	for _, field := range []string{`"intended_tag": "v1.0.0"`, `"license_sha256": "` + strings.Repeat("b", 64) + `"`, `"notice_sha256": "` + strings.Repeat("c", 64) + `"`} {
+		if !bytes.Contains(first, []byte(field)) {
+			t.Fatalf("evidence omits %s", field)
+		}
+	}
 	if !bytes.Contains(first, []byte(`"published": false`)) {
 		t.Fatal("evidence omits non-publication state")
+	}
+}
+
+func TestEvidenceOutputPath(t *testing.T) {
+	t.Parallel()
+	dist := t.TempDir()
+	if got, want := evidenceOutputPath(Config{DistDir: dist}), filepath.Join(dist, evidenceFilename); got != want {
+		t.Fatalf("default evidence path = %q, want %q", got, want)
+	}
+	custom := filepath.Join(t.TempDir(), "native-smoke.json")
+	if got := evidenceOutputPath(Config{DistDir: dist, EvidencePath: custom}); got != custom {
+		t.Fatalf("custom evidence path = %q, want %q", got, custom)
+	}
+}
+
+func TestLoadRepositoryFile(t *testing.T) {
+	t.Parallel()
+	repository := t.TempDir()
+	want := []byte("governed material\n")
+	if err := os.WriteFile(filepath.Join(repository, "LICENSE"), want, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	file, err := loadRepositoryFile(repository, "LICENSE")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(file.data, want) {
+		t.Fatal("loaded repository material differs")
+	}
+	digest := sha256.Sum256(want)
+	if file.sha256 != fmt.Sprintf("%x", digest) {
+		t.Fatalf("digest = %q, want %x", file.sha256, digest)
 	}
 }
 
