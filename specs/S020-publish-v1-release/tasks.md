@@ -83,8 +83,8 @@
 - [x] T027 [US3] Run all quickstart verification including formatter, documentation, product, policy, release, workflow, race, vet, vulnerability, brand-integrity, whitespace, encoding, mojibake, and tagged-file-immutability checks
 - [x] T028 [US3] Run Spec Kit convergence against `specs/S020-publish-v1-release/` and append and execute required remediation tasks until convergence is clean
 - [x] T029 [US3] Obtain explicit branch push and official pull-request publication authority if it has not already been granted
-- [ ] T030 [US3] Push `codex/S020-publish-v1-release`, publish the formatted official pull request with `Closes #38`, and verify the rendered GitHub body
-- [ ] T031 [US3] Move issue #38 to Stage `PR review`, retain Slice `S020`, and verify default Status remains empty in `cueson Delivery`
+- [x] T030 [US3] Push `codex/S020-publish-v1-release`, publish the formatted official pull request with `Closes #38`, and verify the rendered GitHub body
+- [x] T031 [US3] Move issue #38 to Stage `PR review`, retain Slice `S020`, and verify default Status remains empty in `cueson Delivery`
 - [ ] T032 [US3] Monitor every current-head CI, CodeQL, release-proof, pull-request policy, Codex, security, and review result; address every round-one finding and resolve threads only after remediation
 - [ ] T033 [US3] Request exactly one `@codex review` second round only if round one reports findings or a repository-documented condition requires it, then address that round without requesting a third
 - [ ] T034 [US3] Re-run convergence and the complete local verification suite after remediation, push the final descendant head, and wait for every hosted gate to return green
