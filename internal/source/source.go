@@ -16,8 +16,15 @@ import (
 	"github.com/shruggietech/cueson/internal/model"
 )
 
-// MaxCaptureBytes is the maximum source asset size accepted by native ingest.
-const MaxCaptureBytes int64 = 64 << 20
+const (
+	// MaxCaptureBytes is the maximum source asset size accepted by native ingest.
+	MaxCaptureBytes int64 = 64 << 20
+	// MaxCueJSONBytes bounds the expanded Cue JSON representation of an accepted
+	// source. The envelope base64 and structured views can make a document much
+	// larger than its source asset, so this limit must remain above the maximum
+	// output produced from MaxCaptureBytes of accepted native input.
+	MaxCueJSONBytes int64 = 16 * MaxCaptureBytes
+)
 
 // MetadataMode controls timestamp restoration policy.
 type MetadataMode uint8
@@ -84,6 +91,13 @@ func newCapturePrecondition(err error) error {
 // or retain source-envelope metadata.
 func ReadFileContext(ctx context.Context, path string) ([]byte, error) {
 	return readFileContextWithLimit(ctx, path, MaxCaptureBytes)
+}
+
+// ReadCueJSONContext reads one Cue JSON document through the regular-file,
+// no-follow, change-detecting boundary while allowing bounded envelope and
+// structured-model expansion from a maximum-size accepted source.
+func ReadCueJSONContext(ctx context.Context, path string) ([]byte, error) {
+	return readFileContextWithLimit(ctx, path, MaxCueJSONBytes)
 }
 
 func readFileContextWithLimit(ctx context.Context, path string, maxBytes int64) ([]byte, error) {

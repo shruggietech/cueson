@@ -134,6 +134,61 @@ func TestAnnotationIdentityExamplesAreCurrent(t *testing.T) {
 	}
 }
 
+func TestAnnotationExamplesPreserveNativeFidelity(t *testing.T) {
+	t.Parallel()
+
+	artifact := annotationArtifact(t)
+	for index, raw := range artifact["examples"].([]any) {
+		example := raw.(map[string]any)
+		for cueIndex, rawCue := range example["cues"].([]any) {
+			cue := rawCue.(map[string]any)
+			payload := cue["payload"].(map[string]any)
+			lines := payload["lines"].([]any)
+			textLines := make([]string, len(lines))
+			for lineIndex, line := range lines {
+				textLines[lineIndex] = line.(string)
+			}
+			if got, want := strings.Join(textLines, "\n"), payload["raw_text"]; got != want {
+				t.Errorf("root example %d cue %d payload lines join to %q, want raw_text %q", index, cueIndex, got, want)
+			}
+		}
+	}
+
+	regionExamples := schemaNodeAt(t, artifact, "$/$defs/webvtt_region_data")["examples"].([]any)
+	for index, raw := range regionExamples {
+		region := raw.(map[string]any)
+		rawSettings := strings.Fields(region["settings_raw"].(string))
+		occurrences := region["setting_occurrences"].([]any)
+		if len(occurrences) != len(rawSettings) {
+			t.Errorf("REGION example %d has %d raw settings and %d occurrences", index, len(rawSettings), len(occurrences))
+			continue
+		}
+		effective := make(map[string]string)
+		for occurrenceIndex, rawOccurrence := range occurrences {
+			occurrence := rawOccurrence.(map[string]any)
+			if occurrence["raw"] != rawSettings[occurrenceIndex] {
+				t.Errorf("REGION example %d occurrence %d raw = %v, want %q", index, occurrenceIndex, occurrence["raw"], rawSettings[occurrenceIndex])
+			}
+			name, value, found := strings.Cut(rawSettings[occurrenceIndex], ":")
+			if !found || occurrence["name"] != name || occurrence["value"] != value {
+				t.Errorf("REGION example %d occurrence %d does not parse %q faithfully", index, occurrenceIndex, rawSettings[occurrenceIndex])
+			}
+			if occurrence["recognized"] == true && occurrence["valid"] == true {
+				effective[name] = value
+			}
+		}
+		settings := region["settings"].(map[string]any)
+		if len(settings) != len(effective) {
+			t.Errorf("REGION example %d has %d effective settings and %d valid recognized occurrences", index, len(settings), len(effective))
+		}
+		for name, value := range effective {
+			if settings[name] != value {
+				t.Errorf("REGION example %d effective setting %q = %v, want %q", index, name, settings[name], value)
+			}
+		}
+	}
+}
+
 func TestAnnotationsDoNotChangeNormativeSchema(t *testing.T) {
 	t.Parallel()
 

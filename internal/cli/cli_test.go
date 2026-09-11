@@ -28,7 +28,7 @@ func TestCueJSONCommandsRejectBoundedPathPreconditionsWithoutOutputOrPathLeak(t 
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := file.Truncate(source.MaxCaptureBytes + 1); err != nil {
+	if err := file.Truncate(source.MaxCueJSONBytes + 1); err != nil {
 		_ = file.Close()
 		t.Fatal(err)
 	}

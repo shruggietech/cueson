@@ -171,3 +171,23 @@ func TestParseRejectsOccurrenceAndDiagnosticAmplification(t *testing.T) {
 		t.Fatalf("diagnostic limit error = %v", err)
 	}
 }
+
+func TestParseEnforcesOccurrenceLimitOnUnrecognizedBlocks(t *testing.T) {
+	t.Parallel()
+
+	inputWithBlockLines := func(count int) string {
+		return "WEBVTT\n\n" + strings.Repeat("unknown\n", count) + "\n00:00.000 --> 00:01.000\nx\n"
+	}
+
+	result, err := Parse(inputWithBlockLines(model.MaxItemOccurrences))
+	if err != nil {
+		t.Fatalf("Parse() rejected an unrecognized block at the limit: %v", err)
+	}
+	if len(result.DocumentData.Blocks) != 1 || len(result.DocumentData.Blocks[0].RawLines) != model.MaxItemOccurrences {
+		t.Fatalf("unrecognized block at the limit = %#v", result.DocumentData.Blocks)
+	}
+
+	if _, err := Parse(inputWithBlockLines(model.MaxItemOccurrences + 1)); err == nil || !strings.Contains(err.Error(), "webvtt_occurrence_limit_exceeded") {
+		t.Fatalf("unrecognized block limit error = %v", err)
+	}
+}

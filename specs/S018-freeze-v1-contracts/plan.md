@@ -22,7 +22,7 @@ Close issues #35, #36, and #41 as one v1 contract-freeze slice. Add common bound
 
 **Project Type**: Single command-line product with internal domain packages and standalone repository-verifier modules
 
-**Performance Goals**: Reject inputs above the existing 64 MiB ceiling before unbounded allocation; cap adversarial document collections, per-item occurrences, diagnostics, and loss observations at explicit deterministic limits; run every required fuzz surface at a fixed bounded work count in hosted CI; keep ordinary valid subtitle workflows within existing test latency
+**Performance Goals**: Reject native inputs above 64 MiB and Cue JSON restore or render inputs above 1 GiB before unbounded allocation; cap adversarial document collections, per-item occurrences, diagnostics, and loss observations at explicit deterministic limits; run every required fuzz surface at a fixed bounded work count in hosted CI; keep ordinary valid subtitle workflows within existing test latency
 
 **Constraints**: Preserve original bytes and unknown content; never silently truncate; never expose caller paths or machine identity; do not mutate the immutable v0.0.0 schema; keep schema annotations non-normative; no public Go API; no network requirement for product or mandatory verification; no tag, release, public schema, production-domain, or merge action
 

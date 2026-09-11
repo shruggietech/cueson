@@ -54,7 +54,7 @@ cueson encode --pretty --output quickstart/document.cueson.json testdata/fixture
 cueson [global options] restore [options] INPUT.cueson.json
 ```
 
-`restore` validates the source envelope and recreates its exact asset bytes without invoking a codec or rendering the structured model.
+`restore` validates the source envelope and recreates its exact asset bytes without invoking a codec or rendering the structured model. Cue JSON input is bounded at 1 GiB so base64 and structured views expanded from a maximum-size accepted native source remain restorable.
 
 - `-o`, `--output` `PATH`: restore a single asset to a separately validated literal path.
 - `--output-dir` `DIR`: restore all assets beneath an existing directory using their safe stored basenames.

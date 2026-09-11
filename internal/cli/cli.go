@@ -205,7 +205,7 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 }
 
 func runRestore(ctx context.Context, options restoreOptions, stderr io.Writer, diagnostics diagnosticWriter) int {
-	payload, err := source.ReadFileContext(ctx, options.input)
+	payload, err := source.ReadCueJSONContext(ctx, options.input)
 	if err != nil {
 		if source.IsCapturePrecondition(err) {
 			diagnostics.write(diagnosticError, "restore: input does not satisfy path or size requirements")

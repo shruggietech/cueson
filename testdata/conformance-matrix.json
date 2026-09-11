@@ -10,7 +10,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "subrip/encoding-line-endings"},
             {"kind": "render_test", "reference": "internal/codec/subrip:TestEncodingAndLineEndingFixturesPreserveExactCapture"},
-            {"kind": "fuzz_target", "reference": "internal/codec:FuzzFormatSelection"}
+            {"kind": "fuzz_target", "reference": "internal/codec:FuzzFormatSelection"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Supported SubRip encoding recognition is an acceptance contract; unsupported decoder labels are exercised by focused tests rather than a governed source fixture."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Source decoding and format detection occur before conversion."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "Content detection and decoding have no platform-specific behavior."}
           ]
         },
         {
@@ -19,7 +22,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "subrip/grammar-variants"},
             {"kind": "render_test", "reference": "internal/codec/subrip:TestGovernedSubRipFixtures"},
-            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"}
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Sequence and separator variants are deliberately tolerated rather than rejected as malformed."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Source sequence numbering and separator recovery are not represented in converted output."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "SubRip sequence parsing has no platform-specific behavior."}
           ]
         },
         {
@@ -28,8 +34,11 @@
           "evidence": [
             {"kind": "malformed_fixture", "reference": "subrip/reversed-time"},
             {"kind": "malformed_fixture", "reference": "subrip/incomplete-coordinates"},
+            {"kind": "accepted_fixture", "reference": "subrip/grammar-variants"},
             {"kind": "render_test", "reference": "internal/codec/subrip:TestParseTimecodeLineRejectsMalformedValues"},
-            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParseTimecodeLine"}
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParseTimecodeLine"},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Invalid timing and coordinate syntax is rejected before a document can be converted."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "SubRip timing grammar has no platform-specific behavior."}
           ]
         },
         {
@@ -38,7 +47,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "subrip/grammar-variants"},
             {"kind": "render_test", "reference": "internal/codec/subrip:TestPlainTextRemovesOnlyDocumentedTags"},
-            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzPlainText"}
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzPlainText"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Unsupported or malformed SubRip payload markup remains literal source content instead of making the file malformed."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "This row covers native payload derivation; cross-format markup projection is covered by the dedicated conversion row."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "Payload and speaker derivation have no platform-specific behavior."}
           ]
         },
         {
@@ -46,8 +58,11 @@
           "description": "Every accepted source remains byte-identical through the source envelope and exact restore.",
           "evidence": [
             {"kind": "accepted_fixture", "reference": "source-envelope/basic-lf"},
+            {"kind": "malformed_fixture", "reference": "source-envelope/hash-mismatch"},
             {"kind": "render_test", "reference": "internal/conformance:TestAcceptedSourceEnvelopeConformance"},
-            {"kind": "platform_test", "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"}
+            {"kind": "platform_test", "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Exact source restoration uses the source envelope and is distinct from model-driven conversion."},
+            {"kind": "inapplicable", "reference": "fuzz_target", "reason": "This row's exact byte-identity guarantee is proved by deterministic restoration cycles rather than a row-specific fuzz target."}
           ]
         },
         {
@@ -56,7 +71,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "subrip/grammar-variants"},
             {"kind": "render_test", "reference": "internal/codec/subrip:TestRenderCanonicalSubRip"},
-            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"}
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Canonical rendering is defined for valid model input; malformed Cue JSON rejection is a model boundary outside this format row."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "This row covers same-format canonical rendering, not cross-format projection."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "Canonical SubRip rendering has no platform-specific behavior."}
           ]
         },
         {
@@ -64,8 +82,11 @@
           "description": "SubRip to WebVTT conversion is deterministic, complete in loss reporting, and strict when lossy.",
           "evidence": [
             {"kind": "accepted_fixture", "reference": "conversion/srt-loss-free"},
+            {"kind": "malformed_fixture", "reference": "conversion/srt-zero-duration"},
             {"kind": "conversion_test", "reference": "internal/convert:TestSubRipCompatibilityMatrixAccountsForEveryLossyFixtureSemantic"},
-            {"kind": "fuzz_target", "reference": "internal/convert:FuzzSubRipConversionCycle"}
+            {"kind": "fuzz_target", "reference": "internal/convert:FuzzSubRipConversionCycle"},
+            {"kind": "inapplicable", "reference": "render_test", "reason": "Target rendering and parser validation are asserted inside the conversion evidence; this row makes no independent same-format renderer claim."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "SubRip-to-WebVTT conversion has no platform-specific behavior."}
           ]
         },
         {
@@ -74,7 +95,10 @@
           "evidence": [
             {"kind": "malformed_fixture", "reference": "subrip/reversed-time"},
             {"kind": "render_test", "reference": "internal/codec/subrip:TestParseRejectsOccurrenceAndDiagnosticAmplification"},
-            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"}
+            {"kind": "fuzz_target", "reference": "internal/codec/subrip:FuzzParse"},
+            {"kind": "inapplicable", "reference": "accepted_fixture", "reason": "This row specifies rejection beyond hostile parser limits; accepted grammar boundaries are covered by the other SubRip rows."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Hostile native syntax is rejected before conversion."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "Parser complexity ceilings have no platform-specific behavior."}
           ]
         }
       ]
@@ -87,8 +111,11 @@
           "description": "The boundary-valid WebVTT signature and UTF-8-only decoding rules are enforced.",
           "evidence": [
             {"kind": "malformed_fixture", "reference": "webvtt/invalid-utf8"},
+            {"kind": "accepted_fixture", "reference": "webvtt/minimal"},
             {"kind": "render_test", "reference": "internal/codec/webvtt:TestDetectAndDecodeUTF8Boundary"},
-            {"kind": "fuzz_target", "reference": "internal/codec:FuzzFormatSelection"}
+            {"kind": "fuzz_target", "reference": "internal/codec:FuzzFormatSelection"},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Signature and UTF-8 validation occur before conversion."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "WebVTT signature and UTF-8 validation have no platform-specific behavior."}
           ]
         },
         {
@@ -97,7 +124,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "webvtt/complete"},
             {"kind": "render_test", "reference": "internal/codec/webvtt:TestParsePreservesHeaderBlocksCueOrderAndRawFields"},
-            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseWebVTT"}
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseWebVTT"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Recognized header and block ordering is an acceptance and preservation contract; malformed block cases are diagnosed or covered by focused parser tests."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "This row covers native block preservation; block omission during conversion is covered by the dedicated conversion row."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "WebVTT header and block ordering have no platform-specific behavior."}
           ]
         },
         {
@@ -105,8 +135,11 @@
           "description": "Identifiers remain native observations and timing grammar rejects invalid intervals.",
           "evidence": [
             {"kind": "malformed_fixture", "reference": "webvtt/invalid-timing"},
+            {"kind": "accepted_fixture", "reference": "webvtt/complete"},
             {"kind": "render_test", "reference": "internal/codec/webvtt:TestParseTimingLineRequiresConformingDelimiterAndIncreasingRange"},
-            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseTimestamp"}
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseTimestamp"},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Invalid WebVTT timing is rejected before a document can be converted."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "WebVTT identifier and timing grammar has no platform-specific behavior."}
           ]
         },
         {
@@ -115,7 +148,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "webvtt/tolerated"},
             {"kind": "render_test", "reference": "internal/codec/webvtt:TestCueSettingsRetainOccurrencesAndLastValidValue"},
-            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzSettingsAndMarkup"}
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzSettingsAndMarkup"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Invalid or duplicate settings are retained and diagnosed rather than making the WebVTT source malformed."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "This row covers native setting retention; setting loss during conversion is covered by the dedicated conversion row."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "Cue and region setting semantics have no platform-specific behavior."}
           ]
         },
         {
@@ -124,7 +160,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "webvtt/complete"},
             {"kind": "render_test", "reference": "internal/codec/webvtt:TestPayloadScannerDerivesMarkupEntitiesSpeakerAndInlineTiming"},
-            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzSettingsAndMarkup"}
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzSettingsAndMarkup"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Unsupported WebVTT payload constructs remain native source observations or diagnostics rather than making the document malformed."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "This row covers native payload derivation; cross-format markup loss is covered by the dedicated conversion row."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "Markup, entity, and token derivation have no platform-specific behavior."}
           ]
         },
         {
@@ -132,8 +171,11 @@
           "description": "Every accepted WebVTT fixture restores to its exact captured bytes on supported hosts.",
           "evidence": [
             {"kind": "accepted_fixture", "reference": "webvtt/bom-crlf"},
+            {"kind": "malformed_fixture", "reference": "source-envelope/hash-mismatch"},
             {"kind": "render_test", "reference": "internal/cli:TestEveryAcceptedWebVTTFixtureEncodesAndRestoresExactly"},
-            {"kind": "platform_test", "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"}
+            {"kind": "platform_test", "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Exact source restoration uses the source envelope and is distinct from model-driven conversion."},
+            {"kind": "inapplicable", "reference": "fuzz_target", "reason": "This row's exact byte-identity guarantee is proved by deterministic restoration cycles rather than a row-specific fuzz target."}
           ]
         },
         {
@@ -142,7 +184,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "webvtt/complete"},
             {"kind": "render_test", "reference": "internal/codec/webvtt:TestRenderCanonicalOrderAndParserCycle"},
-            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzRenderParseCycle"}
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzRenderParseCycle"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Canonical rendering is defined for valid model input; malformed Cue JSON rejection is a model boundary outside this format row."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "This row covers same-format canonical rendering, not cross-format projection."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "Canonical WebVTT rendering has no platform-specific behavior."}
           ]
         },
         {
@@ -151,7 +196,10 @@
           "evidence": [
             {"kind": "accepted_fixture", "reference": "conversion/webvtt-loss-free"},
             {"kind": "conversion_test", "reference": "internal/convert:TestWebVTTCompatibilityMatrixAccountsForDocumentBlockCueAndPayloadLosses"},
-            {"kind": "fuzz_target", "reference": "internal/convert:FuzzWebVTTConversionCycle"}
+            {"kind": "fuzz_target", "reference": "internal/convert:FuzzWebVTTConversionCycle"},
+            {"kind": "inapplicable", "reference": "malformed_fixture", "reason": "Malformed WebVTT is rejected before conversion; no governed malformed fixture reaches the compatibility matrix."},
+            {"kind": "inapplicable", "reference": "render_test", "reason": "Target rendering and parser validation are asserted inside the conversion evidence; this row makes no independent same-format renderer claim."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "WebVTT-to-SubRip conversion has no platform-specific behavior."}
           ]
         },
         {
@@ -160,7 +208,10 @@
           "evidence": [
             {"kind": "malformed_fixture", "reference": "webvtt/empty-payload"},
             {"kind": "render_test", "reference": "internal/codec/webvtt:TestParseRejectsOccurrenceAndDiagnosticAmplification"},
-            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseWebVTT"}
+            {"kind": "fuzz_target", "reference": "internal/codec/webvtt:FuzzParseWebVTT"},
+            {"kind": "inapplicable", "reference": "accepted_fixture", "reason": "This row specifies rejection beyond hostile parser limits; accepted grammar boundaries are covered by the other WebVTT rows."},
+            {"kind": "inapplicable", "reference": "conversion_test", "reason": "Hostile native syntax is rejected before conversion."},
+            {"kind": "inapplicable", "reference": "platform_test", "reason": "Parser complexity ceilings have no platform-specific behavior."}
           ]
         }
       ]

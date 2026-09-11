@@ -38,6 +38,15 @@ type matrixEvidence struct {
 
 var matrixIDPattern = regexp.MustCompile(`^(srt|vtt)-[a-z0-9]+(?:-[a-z0-9]+)*$`)
 
+var requiredMatrixEvidenceKinds = []string{
+	"accepted_fixture",
+	"malformed_fixture",
+	"render_test",
+	"conversion_test",
+	"fuzz_target",
+	"platform_test",
+}
+
 func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 	t.Parallel()
 
@@ -75,10 +84,19 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 			if strings.TrimSpace(row.Description) == "" || len(row.Evidence) == 0 {
 				t.Errorf("row %q has no description or evidence", row.RowID)
 			}
+			rowKinds := make(map[string]bool)
+			inapplicableKinds := make(map[string]bool)
+			evidenceKeys := make(map[string]bool)
 			for _, evidence := range row.Evidence {
-				seenKinds[evidence.Kind] = true
+				key := evidence.Kind + "\x00" + evidence.Reference
+				if evidenceKeys[key] {
+					t.Errorf("row %q duplicates %s evidence %q", row.RowID, evidence.Kind, evidence.Reference)
+				}
+				evidenceKeys[key] = true
 				switch evidence.Kind {
 				case "accepted_fixture", "malformed_fixture":
+					rowKinds[evidence.Kind] = true
+					seenKinds[evidence.Kind] = true
 					fixture, exists := manifest.FixtureByID(evidence.Reference)
 					if !exists {
 						t.Errorf("row %q references missing fixture %q", row.RowID, evidence.Reference)
@@ -92,15 +110,27 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 						t.Errorf("row %q fixture %q result = %q, want %q", row.RowID, evidence.Reference, fixture.Expectation.Result, want)
 					}
 				case "render_test", "conversion_test", "fuzz_target", "platform_test":
+					rowKinds[evidence.Kind] = true
+					seenKinds[evidence.Kind] = true
 					if !repositoryFunctionExists(t, repositoryRoot, evidence.Reference) {
 						t.Errorf("row %q references missing function %q", row.RowID, evidence.Reference)
 					}
 				case "inapplicable":
-					if strings.TrimSpace(evidence.Reference) == "" || strings.TrimSpace(evidence.Reason) == "" {
+					if !isRequiredMatrixEvidenceKind(evidence.Reference) || strings.TrimSpace(evidence.Reason) == "" {
 						t.Errorf("row %q has incomplete inapplicability evidence", row.RowID)
+						continue
 					}
+					inapplicableKinds[evidence.Reference] = true
 				default:
 					t.Errorf("row %q has unknown evidence kind %q", row.RowID, evidence.Kind)
+				}
+			}
+			for _, kind := range requiredMatrixEvidenceKinds {
+				switch {
+				case rowKinds[kind] && inapplicableKinds[kind]:
+					t.Errorf("row %q marks %s both evidenced and inapplicable", row.RowID, kind)
+				case !rowKinds[kind] && !inapplicableKinds[kind]:
+					t.Errorf("row %q omits %s evidence without an inapplicability reason", row.RowID, kind)
 				}
 			}
 		}
@@ -110,6 +140,15 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 			t.Errorf("matrix has no %s evidence", kind)
 		}
 	}
+}
+
+func isRequiredMatrixEvidenceKind(kind string) bool {
+	for _, required := range requiredMatrixEvidenceKinds {
+		if kind == required {
+			return true
+		}
+	}
+	return false
 }
 
 func loadConformanceMatrix(t *testing.T, path string) conformanceMatrix {

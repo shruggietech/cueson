@@ -167,7 +167,7 @@ func runRender(ctx context.Context, options renderOptions, stdout io.Writer, std
 		diagnostics.write(diagnosticError, "operation canceled")
 		return ExitRuntimeFailure
 	}
-	payload, err := source.ReadFileContext(ctx, options.input)
+	payload, err := source.ReadCueJSONContext(ctx, options.input)
 	if err != nil {
 		if source.IsCapturePrecondition(err) {
 			diagnostics.write(diagnosticError, "render: input does not satisfy path or size requirements")

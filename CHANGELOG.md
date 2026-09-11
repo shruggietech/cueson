@@ -22,13 +22,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
-- Prevented restore and render from bypassing the shared regular-file, no-follow, cancellation-aware 64 MiB input boundary, and rejected collection amplification instead of truncating source truth.
+- Prevented restore and render from bypassing the shared regular-file, no-follow, cancellation-aware input boundary, allowed their Cue JSON inputs to expand to 1 GiB so maximum accepted native sources remain restorable, and rejected collection amplification instead of truncating source truth.
 - Made shared schema, encode, and render file publication transactional across short writes, failed writes, new destinations, and forced replacements so a failed operation does not leave partial or lost output.
 - Preserved WebVTT raw NUL and setting whitespace independently from semantic text, hardened model-driven rendering against unsafe or inconsistent settings, mismatched block headers, and empty payloads, regenerated edited REGION settings, enforced BOM-specific UTF-8 aliases, and diagnosed malformed empty voice or language annotations without losing their source syntax.
 
 ### Decisions
 
-- 2026-09-11: Freeze v1 input safety at 64 MiB per file, 65,536 document items, 1,024 repeated values per item, and 8,192 diagnostics or conversion losses; reject over-limit input before expensive processing and never silently truncate preserved source content.
+- 2026-09-11: Freeze v1 input safety at 64 MiB per native file and 1 GiB per Cue JSON restore or render input, with 65,536 document items, 1,024 repeated values per item, and 8,192 diagnostics or conversion losses; reject over-limit input before expensive processing and never silently truncate preserved source content.
 - 2026-09-11: Advance development schema and software identity together to 0.1.0 because native capability constraints change canonical schema bytes; keep the released v0.0.0 identity immutable.
 - 2026-09-11: Reject reversed SubRip timing instead of silently swapping endpoints, and retain speaker prefixes in raw and plain payload views while exposing speaker identity only as a derived observation.
 - 2026-09-11: Keep WebVTT source bytes authoritative while representing cues and non-cue blocks in one contiguous source order, retain ordered raw setting occurrences beside effective values, and derive plain text, speakers, and inline timing without replacing native payload syntax.

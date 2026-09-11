@@ -117,6 +117,9 @@ func Parse(input string) (Result, error) {
 				end++
 			}
 			rawLines := lineTexts(lexicalLines[position:end])
+			if len(rawLines) > model.MaxItemOccurrences {
+				return Result{}, &ParseError{Code: "webvtt_occurrence_limit_exceeded", Line: lines[position].number, Text: fmt.Sprintf("block contains more than %d physical lines", model.MaxItemOccurrences)}
+			}
 			result.DocumentData.Blocks = append(result.DocumentData.Blocks, model.WebVTTBlock{Type: "unrecognized", SourceOrder: sourceOrder, Raw: strings.Join(rawLines, "\n"), RawLines: rawLines})
 			result.Diagnostics = append(result.Diagnostics, blockDiagnostic("webvtt_block_unrecognized", fmt.Sprintf("unrecognized WebVTT block beginning at line %d was preserved", lines[position].number), sourceOrder))
 			position = end

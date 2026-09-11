@@ -87,7 +87,7 @@
             "raw_text": "<i>Hello, world.</i>",
             "plain_text": "Hello, world.",
             "lines": [
-              "Hello, world."
+              "<i>Hello, world.</i>"
             ]
           },
           "speakers": [],
@@ -1873,6 +1873,13 @@
               "raw": "id:fred",
               "name": "id",
               "value": "fred",
+              "recognized": true,
+              "valid": true
+            },
+            {
+              "raw": "width:40%",
+              "name": "width",
+              "value": "40%",
               "recognized": true,
               "valid": true
             }
