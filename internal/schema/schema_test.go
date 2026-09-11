@@ -15,14 +15,21 @@ func TestCanonicalSchemaAndRepresentative(t *testing.T) {
 	if _, err := Compiled(); err != nil {
 		t.Fatalf("Compiled() error = %v", err)
 	}
-	if err := Validate(Representative()); err != nil {
-		t.Fatalf("Validate(Representative()) error = %v", err)
+	document, err := Decode(Representative())
+	if err != nil {
+		t.Fatalf("Decode(Representative()) error = %v", err)
 	}
-	if got, want := ID(), "https://cueson.io/schema/v0.1.0/cueson.schema.json"; got != want {
+	if got, want := ID(), "https://cueson.io/schema/v1.0.0/cueson.schema.json"; got != want {
 		t.Errorf("ID() = %q, want %q", got, want)
 	}
-	if got, want := Version(), "0.1.0"; got != want {
+	if got, want := Version(), "1.0.0"; got != want {
 		t.Errorf("Version() = %q, want %q", got, want)
+	}
+	if document.Schema != ID() || document.SchemaVersion != Version() {
+		t.Errorf("representative identity = (%q, %q), want (%q, %q)", document.Schema, document.SchemaVersion, ID(), Version())
+	}
+	if got, want := document.FormatSupport.Status, "stable"; got != want {
+		t.Errorf("representative format_support.status = %q, want %q", got, want)
 	}
 	if bytes.HasPrefix(Bytes(), []byte{0xef, 0xbb, 0xbf}) {
 		t.Error("Bytes() has UTF-8 BOM")
@@ -51,6 +58,9 @@ func TestValidateRejectsStructuralViolations(t *testing.T) {
 		want   string
 	}{
 		{name: "schema version", mutate: func(doc map[string]any) { doc["schema_version"] = "0.0.0" }, want: "schema_version"},
+		{name: "subrip experimental capability", mutate: func(doc map[string]any) {
+			doc["format_support"].(map[string]any)["status"] = "experimental"
+		}, want: "format_support"},
 		{name: "subrip envelope capability", mutate: func(doc map[string]any) {
 			doc["format_support"] = envelopeOnlySupport()
 		}, want: "format_support"},
@@ -308,7 +318,7 @@ func representativeWebVTTMap(t *testing.T) map[string]any {
 	t.Helper()
 	doc := representativeMap(t)
 	doc["format"] = "webvtt"
-	doc["format_support"] = map[string]any{"status": "experimental", "ingest_supported": true, "render_supported": true, "restore_supported": true, "ocr_required_for_semantic_output": false}
+	doc["format_support"] = map[string]any{"status": "stable", "ingest_supported": true, "render_supported": true, "restore_supported": true, "ocr_required_for_semantic_output": false}
 	firstAsset(doc)["file_name"] = "captions.vtt"
 	firstAsset(doc)["media_type"] = "text/vtt"
 	doc["format_data"] = map[string]any{"webvtt": map[string]any{

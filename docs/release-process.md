@@ -1,8 +1,8 @@
 # Release process
 
-**Current state:** v0.0.0 publicly released and independently verified
+**Current state:** v0.0.0 publicly released and independently verified; v1.0.0 stable release candidate prepared without publication
 
-This document defines the protected release lifecycle around Cueson's repository-owned candidate proof and authorized public releases. It does not provide an executable publishing path or grant release authority by itself. The runnable, non-publishing artifact checks and v0.0.0 publication evidence are recorded in [release verification](release-verification.md).
+This document defines the protected release lifecycle around Cueson's repository-owned candidate proof and authorized public releases. It does not provide an executable publishing path or grant release authority by itself. The runnable, non-publishing v1 candidate checks and historical v0.0.0 publication evidence are recorded in [release verification](release-verification.md).
 
 ## Authority split
 
@@ -16,7 +16,7 @@ The repository has a buildable `0.0.0` executable, an embedded `0.0.0` Cue JSON 
 
 The immutable annotated tag [`v0.0.0`](https://github.com/shruggietech/cueson/tree/v0.0.0) peels to `b294a6952c8bd041d852c502f5d7206c0b58edd6`. The [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) is public, final, and contains exactly six archives, six target-bound SPDX JSON SBOMs, and one checksum manifest copied byte for byte from accepted default-branch proof run [34543376814](https://github.com/shruggietech/cueson/actions/runs/34543376814).
 
-The release does not publish the canonical schema endpoint, add a signature or attestation, activate production `cueson.io`, implement native subtitle codecs, or close milestone v0.0.0. Those remain distinct governed outcomes. GitHub Actions artifacts from later snapshot runs remain review evidence rather than release assets unless another release is explicitly authorized.
+The release did not publish the canonical schema endpoint, add a signature or attestation, activate production `cueson.io`, implement native subtitle codecs, or itself close milestone v0.0.0. The milestone was closed only through later authorized reconciliation. GitHub Actions artifacts from later candidate runs remain review evidence rather than release assets unless another release is explicitly authorized.
 
 ## Candidate readiness
 
@@ -44,7 +44,16 @@ For v0.0.0, S012 prepared the publication state without weakening the existing n
 5. The default-branch `release-evidence.json` recorded the full source revision, version, `release_schema_sha256`, target inventory, archive and SBOM digests, counts, compatible-host execution result, and `published: false`.
 6. S013 froze the complete decision package, received exact tag and release authority, published only the authorized state, and verified the public result independently.
 
-The checked-in GoReleaser configuration remains snapshot-only and has publication disabled. A release slice must not repurpose that reviewed configuration into a hidden publication mechanism. For v1.0.0, candidate versioning, immutable-schema admission, dated changelog and concise release-note preparation, and exact candidate proof belong to the later release-candidate slice; S018 contract hardening does not perform those actions.
+The checked-in GoReleaser configuration remains snapshot-only and has publication disabled. A release slice must not repurpose that reviewed configuration into a hidden publication mechanism. S018 froze the v1 behavior without changing development identity. S019 promotes software, schema, and format maturity to the 1.0.0 stable candidate, admits the immutable v1 schema, finalizes the dated changelog and concise release notes, and proves the exact non-publishing candidate. Issue #38 retains tag and GitHub Release publication.
+
+## v1.0.0 candidate preparation lifecycle
+
+1. S018 froze the intended v1 CLI, schema, SubRip, WebVTT, conversion, security, conformance, and documentation contracts at development identity 0.1.0.
+2. S019 promotes the reviewed executable and schema identity to 1.0.0, changes only the completed SubRip and WebVTT format declarations to `stable`, and admits a byte-identical immutable repository schema.
+3. The accumulated detailed history moves into a dated 1.0.0 changelog section, while concise candidate release notes retain the exact tagged changelog suffix and make no publication claim.
+4. One six-target candidate bundle is built from the exact source revision, structurally verified, and executed on available native Linux, Windows, and macOS runners without publishing.
+5. Pull-request evidence proves the reviewed head only. After a separately authorized squash merge, the `main` push proof must bind the resulting commit before issue #38 can request tag or release authority.
+6. Public schema hosting, signatures, attestations, milestone closure, and production changes remain outside both S019 and the later GitHub Release transaction unless separately specified and authorized.
 
 ## Pull-request and default-branch candidate binding
 
@@ -89,7 +98,7 @@ The release must use the verified artifacts associated with the approved source 
 
 The versioned repository schema, the schema embedded in every official binary, and the schema distributed in every release archive must be byte-identical. Their schema identity and version must match the release version.
 
-After release, `schema/releases/v0.0.0/cueson.schema.json` is immutable. A correction that changes contract bytes requires a new software and schema version; it must not overwrite the released copy or move the existing tag to conceal the change.
+After release, `schema/releases/v0.0.0/cueson.schema.json` is immutable. The reviewed `schema/releases/v1.0.0/cueson.schema.json` candidate is also treated as immutable once admitted and must match the canonical, embedded, emitted, and packaged candidate schema byte-for-byte. A correction that changes candidate contract bytes before publication requires explicit re-admission and complete candidate proof; a correction after publication requires a new software and schema version. Neither path may overwrite an already released copy or move an existing tag to conceal the change.
 
 The canonical `https://cueson.io/schema/v0.0.0/cueson.schema.json` value is an identifier before public-domain activation. Consumers may use the embedded, repository, or release-artifact copy. Publishing that URL is intentionally deferred until the separately specified post-v1 production phase.
 
@@ -111,7 +120,9 @@ If any comparison fails, stop dependent actions, retain the evidence, and ask th
 
 ## Milestone lifecycle
 
-The v0.0.0 milestone remains open after S013 publication verification because milestone closure is a separate lifecycle action that was not included in the operator's release authority. It can be closed only through a separately authorized reconciliation.
+S013 publication verification deliberately left the v0.0.0 milestone open because publication authority did not include milestone closure. A later separately authorized reconciliation closed it after the public release and repository record were verified.
+
+The v1.0.0 milestone remains open throughout S019 candidate preparation and issue #38 publication. It may close only after the v1 release and independent post-publication verification succeed and the operator separately authorizes lifecycle reconciliation.
 
 For a future abandoned release, its milestone may be retired or its remaining commitments moved only through an explicit recorded decision. Repository status must continue to reflect the actual publication outcome.
 

@@ -32,6 +32,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	flags.StringVar(&config.RepoDir, "repo", "", "repository root")
 	flags.StringVar(&config.Version, "version", "", "expected release version")
 	flags.StringVar(&config.Commit, "commit", "", "expected full source revision")
+	flags.StringVar(&config.EvidencePath, "evidence", "", "distinct output path for accepted release evidence")
 	flags.BoolVar(&config.ExecuteHost, "execute-host", false, "execute the compatible packaged binary")
 	flags.BoolVar(&config.Development, "development", false, "verify the evolving canonical schema without requiring an immutable release copy")
 	flags.Var(&forbidden, "forbid", "additional local identifier to reject (repeatable)")
@@ -53,7 +54,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "release verification: %v\n", err)
 		return 1
 	}
-	path := filepath.Join(config.DistDir, evidenceFilename)
+	path := evidenceOutputPath(config)
 	if err := writeEvidence(path, evidence); err != nil {
 		fmt.Fprintf(stderr, "release verification: write evidence: %v\n", err)
 		return 1
@@ -67,6 +68,13 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	return 0
 }
 
+func evidenceOutputPath(config Config) string {
+	if config.EvidencePath != "" {
+		return config.EvidencePath
+	}
+	return filepath.Join(config.DistDir, evidenceFilename)
+}
+
 func writeEvidence(path string, evidence ReleaseEvidence) error {
 	data, err := json.MarshalIndent(evidence, "", "  ")
 	if err != nil {
@@ -76,7 +84,7 @@ func writeEvidence(path string, evidence ReleaseEvidence) error {
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
 	if err != nil {
 		if errors.Is(err, os.ErrExist) {
-			return fmt.Errorf("%s already exists; verify a clean snapshot", evidenceFilename)
+			return fmt.Errorf("%s already exists; choose a distinct evidence output path", path)
 		}
 		return err
 	}

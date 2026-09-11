@@ -280,9 +280,9 @@ func validateCapability(format string, support FormatSupport) error {
 	var want FormatSupport
 	switch format {
 	case "subrip":
-		want = FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+		want = FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
 	case "webvtt":
-		want = FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+		want = FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
 	default:
 		return fmt.Errorf("format %q is not recognized", format)
 	}

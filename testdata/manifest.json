@@ -3,12 +3,12 @@
   "fixtures": [
     {
       "id": "source-envelope/basic-lf",
-      "purpose": "Prove an accepted LF SubRip source envelope retains exact source bytes and portable model expectations without claiming native grammar support.",
+      "purpose": "Prove an accepted LF SubRip source envelope retains exact source bytes and stable native model expectations.",
       "class": "accepted",
       "origin": {
         "kind": "synthetic",
         "source": "Cueson S005 fixture foundation",
-        "recipe": "Write the documented three-line ASCII sample with LF line endings and construct the v0.0.0 envelope through the canonical schema contract."
+        "recipe": "Write the documented three-line ASCII sample with LF line endings and construct the v1.0.0 envelope through the canonical schema contract."
       },
       "redistribution": {
         "status": "approved",
@@ -36,8 +36,8 @@
           "role": "expected_model",
           "path": "fixtures/source-envelope/basic-lf/expected/model.json",
           "media_type": "application/json",
-          "size_bytes": 2818,
-          "sha256": "8e7d6ad70c7f18cdd9c89c1b6b749ae007a57351ec8e586e17a666dd8f84d2d7",
+          "size_bytes": 2812,
+          "sha256": "1197b02c24cb6a50bc1cecf0223983f4c825614d0da70cdee329cbbfe1963b5d",
           "byte_contract": {
             "encoding": "utf-8",
             "bom": "absent",
@@ -144,7 +144,7 @@
       "class": "malformed",
       "origin": {
         "kind": "derived",
-        "source": "Cueson v0.1.0 representative contract example",
+        "source": "Cueson v1.0.0 representative contract example",
         "recipe": "Minify the representative and change document.cue_count from 1 to 2 while leaving one cue and stats.cue_count at 1."
       },
       "redistribution": {
@@ -159,8 +159,8 @@
           "role": "malformed_input",
           "path": "malformed/source-envelope/semantic-count/input/document.cueson.json",
           "media_type": "application/json",
-          "size_bytes": 1938,
-          "sha256": "94659a88bcf9bc6bdde8cef61ea0edcce8307267bc3a2281f35073c0cfe8d0ef",
+          "size_bytes": 1932,
+          "sha256": "22c5a1b75d155deb6eeb8c4663a9e0532c71385102cc048279b56a771288a6b2",
           "byte_contract": {
             "encoding": "utf-8",
             "bom": "absent",
@@ -181,7 +181,7 @@
       "class": "malformed",
       "origin": {
         "kind": "derived",
-        "source": "Cueson v0.1.0 representative contract example",
+        "source": "Cueson v1.0.0 representative contract example",
         "recipe": "Minify the representative and replace the source asset SHA-256 with 64 zeroes while retaining the original base64 bytes."
       },
       "redistribution": {
@@ -196,8 +196,8 @@
           "role": "malformed_input",
           "path": "malformed/source-envelope/hash-mismatch/input/document.cueson.json",
           "media_type": "application/json",
-          "size_bytes": 1938,
-          "sha256": "01792ae0d682435d9b66f8b539794129461b1276b1586b12cb34f6df9e759f13",
+          "size_bytes": 1932,
+          "sha256": "603b078498af243f820dc6ce99b202e9c7ba31556b6d20a98b8a741df359c917",
           "byte_contract": {
             "encoding": "utf-8",
             "bom": "absent",

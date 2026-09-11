@@ -1,8 +1,8 @@
 # Cueson CLI Contract
 
-**Status:** Complete v1-bound command contract implemented by v0.1.0 development source, with a published v0.0.0 envelope-only baseline
+**Status:** Complete v1.0.0 stable release-candidate command contract, with a published v0.0.0 envelope-only baseline
 
-This document is the maintained CLI authority. The public command names and behavior described here are intended to become stable at v1.0.0, but no v1 binary has been published. The exact generated help under `internal/cli/testdata/help/` and executable documentation tests are checked against this reference.
+This document is the maintained CLI authority. The public command names and behavior described here form the stable v1.0.0 candidate contract, but no v1 tag, binary release, or GitHub Release has been published. The exact generated help under `internal/cli/testdata/help/` and executable documentation tests are checked against this reference.
 
 ## Invocation, streams, and status
 
@@ -174,7 +174,7 @@ cueson schema --output quickstart/cueson.schema.json
 cueson [global options] version
 ```
 
-`version` accepts no local options or operands. Current development source writes exactly `0.1.0` plus LF to stdout and uses stderr only for errors. The published v0.0.0 binary continues to write `0.0.0`.
+`version` accepts no local options or operands. Current candidate source writes exactly `1.0.0` plus LF to stdout and uses stderr only for errors. The published v0.0.0 binary continues to write `0.0.0`.
 
 ```text
 cueson version
@@ -197,4 +197,4 @@ cueson completion powershell
 
 ## Compatibility and release boundary
 
-The command names, options, aliases, streams, and exit-code classes above form the intended v1 CLI compatibility surface. Go packages remain under `internal/` and are not public APIs. Current source and schema identity remains `0.1.0`; S018 does not create a v1 binary, immutable v1 schema, tag, release, public schema endpoint, or production deployment. See the [compatibility contract](compatibility.md) and [release process](release-process.md).
+The command names, options, aliases, streams, and exit-code classes above form the stable v1 CLI compatibility surface. Go packages remain under `internal/` and are not public APIs. Current source and schema identity is `1.0.0`, and the immutable v1 schema candidate is reviewed with that identity. Candidate preparation does not create a tag, publish a GitHub Release, serve the public schema endpoint, or deploy production state. See the [compatibility contract](compatibility.md) and [release process](release-process.md).

@@ -24,6 +24,7 @@ var requiredDocuments = []string{
 	"SECURITY.md",
 	"AGENTS.md",
 	"CHANGELOG.md",
+	"docs/Cueson-Project-Specification-v0.0.0.md",
 	"docs/architecture.md",
 	"docs/brand.md",
 	"docs/schema.md",
@@ -35,6 +36,7 @@ var requiredDocuments = []string{
 	"docs/project-management.md",
 	"docs/release-process.md",
 	"docs/releases/v0.0.0.md",
+	"docs/releases/v1.0.0.md",
 }
 
 var (
@@ -66,16 +68,35 @@ var requiredExampleIDs = []string{
 }
 
 var requiredReferenceMarkers = map[string][]string{
-	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "non-normative"},
-	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v0.1.0", "v1.0.0", "Windows", "macOS", "Linux", "production"},
+	"CHANGELOG.md":          {"[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD", "[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0"},
+	"README.md":             {"v1.0.0 stable release candidate", "v0.0.0", "not yet published"},
+	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "non-normative", "stable release candidate"},
+	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v1.0.0", "Windows", "macOS", "Linux", "production", "stable release candidate"},
+	"docs/Cueson-Project-Specification-v0.0.0.md": {"canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte", "v1 release-candidate verification issue is complete"},
+	"docs/releases/v1.0.0.md":                     {"# Cueson v1.0.0", "stable Cue JSON", "unsigned and unattested"},
 }
 
 var staleClaims = map[string][]string{
-	"CONTRIBUTING.md":         {"Cueson is an unreleased v0.0.0 foundation candidate", "native SubRip/WebVTT ingest, model-driven rendering, and conversion are not implemented"},
-	"SECURITY.md":             {"before the first public release"},
-	"testdata/README.md":      {"This corpus foundation does not implement or claim native SRT or WebVTT parsing, rendering, conversion"},
-	"docs/formats/srt.md":     {"native decoder is unavailable"},
-	"docs/release-process.md": {"The detailed candidate history is complete under the dated `[0.0.0]` section", "Documentation describes shipped commands and `envelope_only` format support"},
+	"README.md":                                   {"v0.1.0 development", "native capabilities remain `experimental`", "A v1.0.0 binary, immutable v1 schema"},
+	"CONTRIBUTING.md":                             {"Cueson is an unreleased v0.0.0 foundation candidate", "native SubRip/WebVTT ingest, model-driven rendering, and conversion are not implemented", "v0.1.0 development"},
+	"SECURITY.md":                                 {"before the first public release", "v0.1.0 development"},
+	"testdata/README.md":                          {"This corpus foundation does not implement or claim native SRT or WebVTT parsing, rendering, conversion"},
+	"docs/architecture.md":                        {"v0.1.0 development architecture", "continue to declare `experimental` capability at version 0.1.0"},
+	"docs/cli.md":                                 {"implemented by v0.1.0 development source", "Current development source writes exactly `0.1.0`", "Current source and schema identity remains `0.1.0`"},
+	"docs/compatibility.md":                       {"frozen in v0.1.0 development source", "Current development source uses executable and schema version v0.1.0", "Users evaluating the v1-bound workflows must currently build or run v0.1.0"},
+	"docs/conversion.md":                          {"v0.1.0 development `experimental`"},
+	"docs/formats/srt.md":                         {"native decoder is unavailable", "v0.1.0 development `experimental`", "Stable SubRip support | Unavailable"},
+	"docs/formats/webvtt.md":                      {"v0.1.0 `experimental`", "Stable WebVTT support | Unavailable"},
+	"docs/schema.md":                              {"development identity 0.1.0", "development schema artifact's `$id`", "does not create an immutable v1.0.0 schema"},
+	"docs/release-process.md":                     {"The detailed candidate history is complete under the dated `[0.0.0]` section", "Documentation describes shipped commands and `envelope_only` format support", "candidate versioning, immutable-schema admission, dated changelog and concise release-note preparation"},
+	"docs/release-verification.md":                {"v0.1.0 development snapshots verified without publication", "cueson_0.1.0_", "-version 0.1.0", "-development -execute-host"},
+	"docs/cueson-media-format-guide.html":         {"Current v0.0.0 boundary:", "first planned stable targets for v1.0.0"},
+	"docs/Cueson-Project-Specification-v0.0.0.md": {"public v1.0.0 schema matches the repository artifact exactly", "release verification issue is complete"},
+	"docs/releases/v1.0.0.md":                     {"is now published", "public GitHub Release", "Download Cueson v1.0.0", "published at"},
+}
+
+var requiredSuffixes = map[string]string{
+	"docs/releases/v1.0.0.md": "Full changelog: https://github.com/shruggietech/cueson/blob/v1.0.0/CHANGELOG.md\n",
 }
 
 type violation struct {
@@ -170,6 +191,8 @@ func verifyRepository(repo string) (verificationResult, error) {
 	result.violations = append(result.violations, registrationViolations...)
 	result.violations = append(result.violations, verifyReferenceMarkers(root)...)
 	result.violations = append(result.violations, verifyStaleClaims(root)...)
+	result.violations = append(result.violations, verifyRequiredSuffixes(root)...)
+	result.violations = append(result.violations, verifyCandidateChangelog(root)...)
 	rows, matrixViolations := verifyFormatMatrix(root)
 	result.formatRows = rows
 	result.violations = append(result.violations, matrixViolations...)
@@ -184,6 +207,32 @@ func verifyRepository(repo string) (verificationResult, error) {
 		return a.message < b.message
 	})
 	return result, nil
+}
+
+func verifyCandidateChangelog(root string) []violation {
+	content, err := readDocument(root, "CHANGELOG.md")
+	if err != nil {
+		return nil
+	}
+	const transition = "## [Unreleased]\n\n## [1.0.0] - 2026-09-11"
+	if !strings.Contains(content, transition) {
+		return []violation{{path: "CHANGELOG.md", message: "Unreleased must be fresh and empty immediately before the dated 1.0.0 section"}}
+	}
+	return nil
+}
+
+func verifyRequiredSuffixes(root string) []violation {
+	var violations []violation
+	for name, suffix := range requiredSuffixes {
+		content, err := readDocument(root, name)
+		if err != nil {
+			continue
+		}
+		if !strings.HasSuffix(content, suffix) {
+			violations = append(violations, violation{path: name, message: "required final suffix is missing: " + strings.TrimSuffix(suffix, "\n")})
+		}
+	}
+	return violations
 }
 
 func verifyRegisteredExamples(root string) (int, []violation) {

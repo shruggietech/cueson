@@ -1,23 +1,23 @@
 # WebVTT format contract
 
-**Current status:** v0.1.0 `experimental`
+**Current status:** v1.0.0 stable release candidate
 
-**Stable target:** v1.0.0
+**Published release status:** v0.0.0 `envelope_only`
 
-This page defines the native WebVTT (`.vtt`) capability implemented in current development source. The [Cue JSON schema](../schema.md), [CLI contract](../cli.md), and [architecture of record](../architecture.md) remain authoritative for shared behavior.
+This page defines the stable native WebVTT (`.vtt`) capability implemented in current candidate source. The [Cue JSON schema](../schema.md), [CLI contract](../cli.md), and [architecture of record](../architecture.md) remain authoritative for shared behavior.
 
 ## Current capability
 
-| Capability | Development state | Boundary |
+| Capability | Candidate state | Boundary |
 |---|---|---|
 | Cue JSON schema representation | Available | Valid documents use `format: "webvtt"` and WebVTT-native `format_data`. |
-| Raw detection and UTF-8 decoding | Experimental | A boundary-valid `WEBVTT` signature is detected after an optional UTF-8 BOM; other encodings are rejected. |
-| Semantic ingest | Experimental | The native parser derives common cues while retaining signature, header, block, cue, setting, markup, and timing structure. |
-| Model-driven rendering | Experimental | `cueson render --to vtt` writes deterministic LF WebVTT from validated structured data. |
+| Raw detection and UTF-8 decoding | Stable | A boundary-valid `WEBVTT` signature is detected after an optional UTF-8 BOM; other encodings are rejected. |
+| Semantic ingest | Stable | The native parser derives common cues while retaining signature, header, block, cue, setting, markup, and timing structure. |
+| Model-driven rendering | Stable | `cueson render --to vtt` writes deterministic LF WebVTT from validated structured data. |
 | Exact source restoration | Available | `cueson restore` verifies and recreates source-envelope bytes without invoking the WebVTT codec. |
-| Cross-format conversion | Experimental | `cueson convert INPUT --to srt` projects common cue semantics and reports every known incompatible WebVTT feature. |
-| Validation and inspection | Experimental | `cueson validate` checks native grammar without producing Cue JSON; `cueson inspect` reports privacy-bounded structural facts. |
-| Stable WebVTT support | Unavailable | Stable support remains a v1.0.0 acceptance gate. |
+| Cross-format conversion | Stable | `cueson convert INPUT --to srt` projects common cue semantics and reports every known incompatible WebVTT feature. |
+| Validation and inspection | Stable | `cueson validate` checks native grammar without producing Cue JSON; `cueson inspect` reports privacy-bounded structural facts. |
+| Stable WebVTT support | Candidate | The v1.0.0 contract is stable in candidate source but is not yet published. |
 
 ## Detection, Unicode, and source authority
 
@@ -63,7 +63,7 @@ WebVTT-to-SubRip conversion preserves cue order, integer-millisecond timing, ove
 
 ## Explicit exclusions
 
-Current development source does not provide stable v1 support declarations, schema publication to `cueson.io`, or any claim that rendered or converted output is byte-identical to the captured source. Validation, privacy-bounded inspection, and static shell completion are available but do not change those stability or publication boundaries.
+Current candidate source provides stable v1 WebVTT support without claiming schema publication to `cueson.io` or that rendered or converted output is byte-identical to the captured source. Validation, privacy-bounded inspection, and static shell completion are available; v1 tag and GitHub Release publication remain separate.
 
 ## Conformance evidence index
 

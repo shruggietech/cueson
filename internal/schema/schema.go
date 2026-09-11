@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	schemaID      = "https://cueson.io/schema/v0.1.0/cueson.schema.json"
-	schemaVersion = "0.1.0"
+	schemaID      = "https://cueson.io/schema/v1.0.0/cueson.schema.json"
+	schemaVersion = "1.0.0"
 )
 
 var (
@@ -32,7 +32,7 @@ var (
 	compiledError error
 )
 
-// ID returns the current canonical development schema identifier.
+// ID returns the current canonical schema identifier.
 func ID() string {
 	return schemaID
 }

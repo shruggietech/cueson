@@ -1,25 +1,25 @@
 # SubRip format contract
 
-**Current source status:** v0.1.0 development `experimental`
+**Current source status:** v1.0.0 stable release candidate
 
 **Published release status:** v0.0.0 `envelope_only`
 
-**Stable target:** v1.0.0
+**Published release status:** v0.0.0 `envelope_only`
 
-Current source implements native SubRip detection, decoding, semantic ingest, exact source restoration, and deterministic model-driven rendering. This contract defines accepted grammar and tolerated variants; it does not claim that the published v0.0.0 executable contains the codec or that v1 stability gates are complete.
+Current candidate source implements stable native SubRip detection, decoding, semantic ingest, exact source restoration, deterministic model-driven rendering, conversion, validation, and inspection. This contract defines accepted grammar and tolerated variants; it does not claim that the published v0.0.0 executable contains the codec or that a v1 release has been published.
 
 ## Capability matrix
 
 | Capability | Current source | Boundary |
 |---|---|---|
 | Cue JSON representation | Available | Canonical `format: "subrip"` with common and native fields. |
-| Raw `.srt` detection and decoding | Experimental | Content evidence outranks extension evidence. |
-| Semantic ingest | Experimental | `cueson encode` derives cues while retaining exact bytes. |
+| Raw `.srt` detection and decoding | Stable | Content evidence outranks extension evidence. |
+| Semantic ingest | Stable | `cueson encode` derives cues while retaining exact bytes. |
 | Exact restoration | Available | `cueson restore` verifies and recreates the source envelope without the codec. |
-| Model-driven rendering | Experimental | `cueson render --to srt` emits canonical SubRip from structured fields. |
-| Cross-format conversion | Experimental | `cueson convert INPUT --to vtt` projects common cue semantics and reports every known incompatible SubRip feature. |
-| Validation and inspection | Experimental | `cueson validate` checks native grammar without producing Cue JSON; `cueson inspect` reports privacy-bounded structural facts. |
-| Stable SubRip support | Unavailable | Stable support remains a v1.0.0 gate. |
+| Model-driven rendering | Stable | `cueson render --to srt` emits canonical SubRip from structured fields. |
+| Cross-format conversion | Stable | `cueson convert INPUT --to vtt` projects common cue semantics and reports every known incompatible SubRip feature. |
+| Validation and inspection | Stable | `cueson validate` checks native grammar without producing Cue JSON; `cueson inspect` reports privacy-bounded structural facts. |
+| Stable SubRip support | Candidate | The v1.0.0 contract is stable in candidate source but is not yet published. |
 
 ## Source and decoding
 
@@ -71,7 +71,7 @@ SubRip-to-WebVTT conversion preserves cue order, integer-millisecond timing, ove
 
 ## Fixture and stability boundary
 
-The manifest-governed `testdata/fixtures/subrip/`, `testdata/malformed/subrip/`, `testdata/fuzz/`, and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. Stable support still requires completion of the broader v1 milestone.
+The manifest-governed `testdata/fixtures/subrip/`, `testdata/malformed/subrip/`, `testdata/fuzz/`, and conversion corpus covers canonical and tolerated timing, sequences, coordinates, tags, speakers, encodings, BOMs, line endings, malformed input, golden rendering, exact restoration, loss-free and lossy conversion, strict rejection, and fuzz seeds. That evidence supports the stable candidate declaration; tag and release publication remain separate.
 
 ## Conformance evidence index
 

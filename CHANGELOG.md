@@ -6,13 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-11
+
 ### Changed
 
+- Promoted the frozen executable and Cue JSON contract from development identity 0.1.0 to the non-published 1.0.0 stable release candidate, including stable SubRip and WebVTT capability declarations.
+- Corrected the working specification's circular v1 gate so candidate readiness proves canonical, immutable repository, embedded, emitted, and packaged schema byte identity while production schema hosting remains a separately authorized post-release outcome.
 - Reconciled repository release status and verification records after publishing the immutable v0.0.0 tag and the exact thirteen-asset GitHub Release from accepted default-branch evidence.
 - Advanced the evolving executable and canonical Cue JSON contract to development version 0.1.0 while preserving every published v0.0.0 schema and release artifact unchanged.
 
 ### Added
 
+- Added the immutable v1.0.0 schema candidate, concise publication-ready release notes, exact schema and legal-file evidence, and native Linux, Windows, and macOS packaged-binary smoke proof without adding publication authority.
 - Added bounded Cue JSON acquisition, deterministic in-memory complexity ceilings, a machine-readable conformance matrix, governed hostile and fuzz regressions, an opt-in external corpus verifier, complete schema annotations, and executable CLI documentation as the frozen v1 release-readiness contract.
 - Added bounded native SubRip detection and text decoding, complete documented cue parsing, exact source-envelope preservation, deterministic model-driven SubRip rendering, and public `encode` and `render` commands.
 - Added bounded native WebVTT detection and UTF-8 decoding, source-ordered cue and block parsing, setting and markup fidelity, deterministic diagnostics, exact source-envelope preservation, model-driven rendering, governed fixtures, and CLI workflows.
@@ -28,6 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Decisions
 
+- 2026-09-11: Promote the reviewed v1-bound software, schema, and SubRip/WebVTT support maturity together to the 1.0.0 stable release candidate while leaving tag creation, GitHub Release publication, milestone closure, public schema hosting, and production changes separately authorized.
+- 2026-09-11: Replace the contradictory pre-release public-schema gate with byte identity across canonical, immutable repository, embedded, emitted, and packaged v1 schema copies; require public `cueson.io` byte verification only after separately authorized post-v1 hosting exists.
 - 2026-09-11: Freeze v1 input safety at 64 MiB per native file and 1 GiB per Cue JSON restore or render input, with 65,536 document items, 1,024 repeated values per item, and 8,192 diagnostics or conversion losses; reject over-limit input before expensive processing and never silently truncate preserved source content.
 - 2026-09-11: Advance development schema and software identity together to 0.1.0 because native capability constraints change canonical schema bytes; keep the released v0.0.0 identity immutable.
 - 2026-09-11: Reject reversed SubRip timing instead of silently swapping endpoints, and retain speaker prefixes in raw and plain payload views while exposing speaker identity only as a derived observation.
@@ -94,5 +101,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-10: Treat the operator-designated ShruggieTech 1.0.0 ZIP as the sole S011 acquisition authority, retain its archive and every safe payload file byte for byte, and preserve bundled terms without a redundant separate legal-review gate.
 - 2026-09-10: Treat pull-request release proof as review evidence and bind the proposed publication target only after the S012 squash-merge commit passes its own non-publishing proof on `main`.
 
-[Unreleased]: https://github.com/shruggietech/cueson/compare/v0.0.0...HEAD
+[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0
 [0.0.0]: https://github.com/shruggietech/cueson/releases/tag/v0.0.0

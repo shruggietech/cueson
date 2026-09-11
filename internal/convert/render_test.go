@@ -22,6 +22,9 @@ func TestProjectDocumentCreatesOnlyTargetNativeState(t *testing.T) {
 	if target.FormatData.SubRip != nil || target.FormatData.WebVTT == nil || len(target.FormatData.WebVTT.Blocks) != 0 {
 		t.Fatalf("target document data = %#v", target.FormatData)
 	}
+	if target.FormatSupport.Status != "stable" || !target.FormatSupport.IngestSupported || !target.FormatSupport.RenderSupported || !target.FormatSupport.RestoreSupported {
+		t.Fatalf("target format support = %#v", target.FormatSupport)
+	}
 	if target.Cues[0].FormatData.SubRip != nil || target.Cues[0].FormatData.WebVTT == nil || target.Cues[0].SourceIdentifier != nil {
 		t.Fatalf("target cue = %#v", target.Cues[0])
 	}
@@ -39,6 +42,9 @@ func TestRenderProjectedAlwaysProducesCanonicalParserValidText(t *testing.T) {
 	target, err := projectDocument(source, "subrip", analysis.Translations)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if target.FormatSupport.Status != "stable" || !target.FormatSupport.IngestSupported || !target.FormatSupport.RenderSupported || !target.FormatSupport.RestoreSupported {
+		t.Fatalf("target format support = %#v", target.FormatSupport)
 	}
 	bytes, diagnostics, err := renderProjected(context.Background(), target, "subrip")
 	if err != nil || len(diagnostics) != 0 {

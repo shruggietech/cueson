@@ -106,7 +106,7 @@ func conversionTestDocument(t *testing.T, input, format string) model.Document {
 		t.Fatal(err)
 	}
 	document.Format = format
-	document.FormatSupport = model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+	document.FormatSupport = model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
 	document.Metadata = model.Metadata{}
 	document.Diagnostics = []model.Diagnostic{}
 	if format == "subrip" {

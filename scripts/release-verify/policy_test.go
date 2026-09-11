@@ -16,7 +16,7 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 	workflow := readPolicyFile(t, filepath.Join(repository, ".github", "workflows", "release-proof.yml"))
 
 	for _, required := range []string{
-		`version_template: "0.1.0"`, "release:", "disable: true", "CGO_ENABLED=0",
+		`version_template: "1.0.0"`, "release:", "disable: true", "CGO_ENABLED=0",
 		"github.com/shruggietech/cueson/internal/version.releaseOverride=cueson-release-version:{{ .Version }}",
 		"cueson_{{ .Version }}_checksums.txt", "artifacts: binary", "spdx-json=$document",
 	} {
@@ -29,27 +29,34 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 			t.Errorf(".goreleaser.yaml contains publishing surface %q", forbidden)
 		}
 	}
-	const developmentSchemaSource = "- src: internal/schema/cueson.schema.json"
-	if count := strings.Count(config, developmentSchemaSource); count != 1 {
-		t.Errorf(".goreleaser.yaml contains %d canonical development-schema sources, want 1", count)
+	const immutableSchemaSource = "- src: schema/releases/v1.0.0/cueson.schema.json"
+	if count := strings.Count(config, immutableSchemaSource); count != 1 {
+		t.Errorf(".goreleaser.yaml contains %d immutable v1 schema sources, want 1", count)
 	}
-	if strings.Contains(config, "- src: schema/releases/v0.0.0/cueson.schema.json") {
-		t.Error("development snapshot still packages the immutable v0.0.0 release schema")
+	if strings.Contains(config, "- src: internal/schema/cueson.schema.json") || strings.Contains(config, "- src: schema/releases/v0.0.0/cueson.schema.json") {
+		t.Error("candidate packages a non-v1 schema source")
 	}
 
 	for _, required := range []string{
 		"pull_request:", "workflow_dispatch:", "contents: read", "persist-credentials: false",
 		"SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}",
-		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-0.1.0-development-proof-${{ env.SOURCE_COMMIT }}",
+		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-1.0.0-candidate-${{ env.SOURCE_COMMIT }}",
 		"github.com/goreleaser/goreleaser/v2@v2.18.1", "github.com/anchore/syft/cmd/syft@v1.51.1",
-		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "-version 0.1.0", "-development", "retention-days: 3",
+		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "-version 1.0.0", "-execute-host", "-evidence", "retention-days: 3",
+		"needs: release-proof", "actions/download-artifact@", "ubuntu-24.04", "windows-2025", "macos-15-intel",
 	} {
 		if !strings.Contains(workflow, required) {
 			t.Errorf("release-proof.yml missing %q", required)
 		}
 	}
-	if count := strings.Count(workflow, "${{ env.SOURCE_COMMIT }}"); count != 2 {
-		t.Errorf("release-proof.yml contains %d SOURCE_COMMIT consumers, want checkout and artifact name", count)
+	if strings.Contains(workflow, "-development") {
+		t.Error("release-proof.yml still enables development verification")
+	}
+	if count := strings.Count(workflow, "goreleaser release --snapshot --clean --skip=publish"); count != 1 {
+		t.Errorf("release-proof.yml builds %d candidate bundles, want exactly 1", count)
+	}
+	if count := strings.Count(workflow, "name: cueson-1.0.0-candidate-${{ env.SOURCE_COMMIT }}"); count != 2 {
+		t.Errorf("release-proof.yml names the accepted bundle %d times, want one upload and one download", count)
 	}
 	pushPattern := regexp.MustCompile(`(?m)^  push:\n((?: {4,}.*\n)*)`)
 	pushMatch := pushPattern.FindStringSubmatch(workflow)
@@ -94,9 +101,19 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 func TestReleaseEvidenceContractBindsExactTargetTuples(t *testing.T) {
 	t.Parallel()
 	repository := filepath.Clean(filepath.Join("..", ".."))
-	data := []byte(readPolicyFile(t, filepath.Join(repository, "specs", "S012-prepare-v0-release", "contracts", "release-evidence.schema.json")))
+	data := []byte(readPolicyFile(t, filepath.Join(repository, "specs", "S019-prepare-v1-release-candidate", "contracts", "release-evidence.schema.json")))
 	var schema struct {
+		Required   []string `json:"required"`
 		Properties struct {
+			Version struct {
+				Const string `json:"const"`
+			} `json:"version"`
+			IntendedTag struct {
+				Const string `json:"const"`
+			} `json:"intended_tag"`
+			Published struct {
+				Const bool `json:"const"`
+			} `json:"published"`
 			Targets struct {
 				PrefixItems []struct {
 					Ref string `json:"$ref"`
@@ -115,15 +132,23 @@ func TestReleaseEvidenceContractBindsExactTargetTuples(t *testing.T) {
 	if err := json.Unmarshal(data, &schema); err != nil {
 		t.Fatal(err)
 	}
+	if schema.Properties.Version.Const != "1.0.0" || schema.Properties.IntendedTag.Const != "v1.0.0" || schema.Properties.Published.Const {
+		t.Fatalf("release evidence contract does not bind the v1 non-publishing identity")
+	}
+	for _, required := range []string{"version", "intended_tag", "source_revision", "release_schema_sha256", "license_sha256", "notice_sha256", "archive_count", "sbom_count", "checksum_count", "host_executed", "targets", "published"} {
+		if !containsString(schema.Required, required) {
+			t.Errorf("release evidence contract does not require %q", required)
+		}
+	}
 	want := []struct {
 		name, goos, goarch, archive, binary, sbom string
 	}{
-		{"linux_amd64", "linux", "amd64", "cueson_0.0.0_linux_amd64.tar.gz", "cueson", "cueson_0.0.0_linux_amd64.tar.gz.sbom.json"},
-		{"linux_arm64", "linux", "arm64", "cueson_0.0.0_linux_arm64.tar.gz", "cueson", "cueson_0.0.0_linux_arm64.tar.gz.sbom.json"},
-		{"darwin_amd64", "darwin", "amd64", "cueson_0.0.0_darwin_amd64.tar.gz", "cueson", "cueson_0.0.0_darwin_amd64.tar.gz.sbom.json"},
-		{"darwin_arm64", "darwin", "arm64", "cueson_0.0.0_darwin_arm64.tar.gz", "cueson", "cueson_0.0.0_darwin_arm64.tar.gz.sbom.json"},
-		{"windows_amd64", "windows", "amd64", "cueson_0.0.0_windows_amd64.zip", "cueson.exe", "cueson_0.0.0_windows_amd64.zip.sbom.json"},
-		{"windows_arm64", "windows", "arm64", "cueson_0.0.0_windows_arm64.zip", "cueson.exe", "cueson_0.0.0_windows_arm64.zip.sbom.json"},
+		{"linux_amd64", "linux", "amd64", "cueson_1.0.0_linux_amd64.tar.gz", "cueson", "cueson_1.0.0_linux_amd64.tar.gz.sbom.json"},
+		{"linux_arm64", "linux", "arm64", "cueson_1.0.0_linux_arm64.tar.gz", "cueson", "cueson_1.0.0_linux_arm64.tar.gz.sbom.json"},
+		{"darwin_amd64", "darwin", "amd64", "cueson_1.0.0_darwin_amd64.tar.gz", "cueson", "cueson_1.0.0_darwin_amd64.tar.gz.sbom.json"},
+		{"darwin_arm64", "darwin", "arm64", "cueson_1.0.0_darwin_arm64.tar.gz", "cueson", "cueson_1.0.0_darwin_arm64.tar.gz.sbom.json"},
+		{"windows_amd64", "windows", "amd64", "cueson_1.0.0_windows_amd64.zip", "cueson.exe", "cueson_1.0.0_windows_amd64.zip.sbom.json"},
+		{"windows_arm64", "windows", "arm64", "cueson_1.0.0_windows_arm64.zip", "cueson.exe", "cueson_1.0.0_windows_arm64.zip.sbom.json"},
 	}
 	if schema.Properties.Targets.Items {
 		t.Fatal("release evidence contract permits target items after prefixItems")
@@ -149,13 +174,45 @@ func TestReleaseEvidenceContractBindsExactTargetTuples(t *testing.T) {
 	}
 }
 
+func TestRepositoryCandidateSchemaAndLegalIdentity(t *testing.T) {
+	t.Parallel()
+	repository := filepath.Clean(filepath.Join("..", ".."))
+	canonical, schemaDigest, err := loadRepositorySchemas(repository, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(canonical) == 0 || !regexp.MustCompile(`^[0-9a-f]{64}$`).MatchString(schemaDigest) {
+		t.Fatalf("invalid canonical schema identity: bytes=%d digest=%q", len(canonical), schemaDigest)
+	}
+	for _, name := range []string{"LICENSE", "NOTICE"} {
+		file, err := loadRepositoryFile(repository, name)
+		if err != nil {
+			t.Fatalf("load %s: %v", name, err)
+		}
+		if len(file.data) == 0 || !regexp.MustCompile(`^[0-9a-f]{64}$`).MatchString(file.sha256) {
+			t.Errorf("invalid %s identity: bytes=%d digest=%q", name, len(file.data), file.sha256)
+		}
+	}
+}
+
+func containsString(values []string, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
+}
+
 func TestReleaseNotesFinalSuffix(t *testing.T) {
 	t.Parallel()
 	repository := filepath.Clean(filepath.Join("..", ".."))
-	releaseNotes := readPolicyFile(t, filepath.Join(repository, "docs", "releases", "v0.0.0.md"))
-	const want = "Full changelog: https://github.com/shruggietech/cueson/blob/v0.0.0/CHANGELOG.md\n"
-	if !strings.HasSuffix(releaseNotes, want) {
-		t.Errorf("docs/releases/v0.0.0.md must end with exact suffix %q", want)
+	for _, version := range []string{"0.0.0", "1.0.0"} {
+		releaseNotes := readPolicyFile(t, filepath.Join(repository, "docs", "releases", "v"+version+".md"))
+		want := "Full changelog: https://github.com/shruggietech/cueson/blob/v" + version + "/CHANGELOG.md\n"
+		if !strings.HasSuffix(releaseNotes, want) {
+			t.Errorf("docs/releases/v%s.md must end with exact suffix %q", version, want)
+		}
 	}
 }
 

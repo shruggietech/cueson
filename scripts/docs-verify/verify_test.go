@@ -15,7 +15,7 @@ func TestRunCLI(t *testing.T) {
 	if code := runCLI([]string{"-repo", repo}, &stdout, &stderr); code != 0 {
 		t.Fatalf("runCLI() = %d, stderr = %q", code, stderr.String())
 	}
-	if got := stdout.String(); !strings.Contains(got, "checked 17 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
+	if got := stdout.String(); !strings.Contains(got, "checked 19 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
 		t.Fatalf("unexpected success output: %q", got)
 	}
 
@@ -89,15 +89,64 @@ func TestFormatMatrixRowsMustAppearInMatchingGuide(t *testing.T) {
 }
 
 func TestReleaseNotesAreRequired(t *testing.T) {
-	repo := newRepository(t)
-	if err := os.Remove(filepath.Join(repo, filepath.FromSlash("docs/releases/v0.0.0.md"))); err != nil {
-		t.Fatal(err)
+	for _, name := range []string{"docs/releases/v0.0.0.md", "docs/releases/v1.0.0.md"} {
+		t.Run(name, func(t *testing.T) {
+			repo := newRepository(t)
+			if err := os.Remove(filepath.Join(repo, filepath.FromSlash(name))); err != nil {
+				t.Fatal(err)
+			}
+			result, err := verifyRepository(repo)
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertViolation(t, result.violations, name+": required document is missing")
+		})
 	}
+}
+
+func TestV1ReleaseNotesRequireExactTaggedChangelogSuffix(t *testing.T) {
+	repo := newRepository(t)
+	writeFile(t, repo, "docs/releases/v1.0.0.md", "# Cueson v1.0.0\n\nstable Cue JSON; unsigned and unattested\n\nFull changelog: https://github.com/shruggietech/cueson/blob/main/CHANGELOG.md\n")
 	result, err := verifyRepository(repo)
 	if err != nil {
 		t.Fatal(err)
 	}
-	assertViolation(t, result.violations, "docs/releases/v0.0.0.md: required document is missing")
+	assertViolation(t, result.violations, "docs/releases/v1.0.0.md: required final suffix is missing: Full changelog: https://github.com/shruggietech/cueson/blob/v1.0.0/CHANGELOG.md")
+}
+
+func TestV1ReleaseNotesRejectPrematurePublicationClaim(t *testing.T) {
+	repo := newRepository(t)
+	notes := strings.Replace(readFileForVerifierTest(t, repo, "docs/releases/v1.0.0.md"), "Full changelog:", "Cueson v1.0.0 is now published.\n\nFull changelog:", 1)
+	writeFile(t, repo, "docs/releases/v1.0.0.md", notes)
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "docs/releases/v1.0.0.md: stale capability or release claim remains: is now published")
+}
+
+func TestV1ChangelogRequiresFreshEmptyUnreleasedSection(t *testing.T) {
+	repo := newRepository(t)
+	changelog := strings.Replace(readFileForVerifierTest(t, repo, "CHANGELOG.md"), "## [Unreleased]\n\n## [1.0.0]", "## [Unreleased]\n\n### Added\n\n- Later work.\n\n## [1.0.0]", 1)
+	writeFile(t, repo, "CHANGELOG.md", changelog)
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "CHANGELOG.md: Unreleased must be fresh and empty immediately before the dated 1.0.0 section")
+}
+
+func TestCurrentV1CandidateAndWorkingSpecificationMarkers(t *testing.T) {
+	repo := newRepository(t)
+	writeFile(t, repo, "README.md", readFileForVerifierTest(t, repo, "README.md")+"v0.1.0 development\n")
+	writeFile(t, repo, "docs/Cueson-Project-Specification-v0.0.0.md", "# Working specification\n\n- [ ] public v1.0.0 schema matches the repository artifact exactly;\n- [ ] release verification issue is complete;\n")
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "README.md: stale capability or release claim remains: v0.1.0 development")
+	assertViolation(t, result.violations, "docs/Cueson-Project-Specification-v0.0.0.md: required contract marker is missing: canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte")
+	assertViolation(t, result.violations, "docs/Cueson-Project-Specification-v0.0.0.md: stale capability or release claim remains: public v1.0.0 schema matches the repository artifact exactly")
 }
 
 func TestReleaseNotesLocalReference(t *testing.T) {
@@ -299,7 +348,12 @@ func newRepository(t *testing.T) string {
 	}
 	writeFile(t, repo, "README.md", readme.String())
 	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative\n")
-	writeFile(t, repo, "docs/compatibility.md", "# Compatibility\n\nCLI Cue JSON Schema internal/ v0.0.0 v0.1.0 v1.0.0 Windows macOS Linux production\n")
+	writeFile(t, repo, "CHANGELOG.md", "# Changelog\n\n## [Unreleased]\n\n## [1.0.0] - 2026-09-11\n\n[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD\n[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0\n")
+	writeFile(t, repo, "README.md", readme.String()+"\nv1.0.0 stable release candidate; v0.0.0 is published; v1 is not yet published.\n")
+	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative stable release candidate\n")
+	writeFile(t, repo, "docs/compatibility.md", "# Compatibility\n\nCLI Cue JSON Schema internal/ v0.0.0 v1.0.0 Windows macOS Linux production stable release candidate\n")
+	writeFile(t, repo, "docs/Cueson-Project-Specification-v0.0.0.md", "# Working specification\n\ncanonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte\n\nv1 release-candidate verification issue is complete\n")
+	writeFile(t, repo, "docs/releases/v1.0.0.md", "# Cueson v1.0.0\n\nstable Cue JSON; unsigned and unattested\n\nFull changelog: https://github.com/shruggietech/cueson/blob/v1.0.0/CHANGELOG.md\n")
 	writeFile(t, repo, "docs/formats/srt.md", "# SRT\n\n`srt-example`\n")
 	writeFile(t, repo, "docs/formats/webvtt.md", "# WebVTT\n\n`vtt-example`\n")
 	writeFile(t, repo, "testdata/conformance-matrix.json", `{"formats":[{"format":"srt","rows":[{"row_id":"srt-example"}]},{"format":"vtt","rows":[{"row_id":"vtt-example"}]}]}`)

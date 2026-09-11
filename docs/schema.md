@@ -1,32 +1,32 @@
 # Cue JSON Schema Baseline
 
-**Status:** v1 contract candidate at development identity 0.1.0, with an immutable published v0.0.0 baseline
+**Status:** v1.0.0 stable release candidate, with an immutable published v0.0.0 baseline
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document defines the current development schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32), and conversion behavior added by issue [#33](https://github.com/shruggietech/cueson/issues/33). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable and now includes machine-readable annotations for schema-aware consumers.
+This document defines the current stable candidate schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32), conversion behavior added by issue [#33](https://github.com/shruggietech/cueson/issues/33), and contract hardening completed by issues [#35](https://github.com/shruggietech/cueson/issues/35), [#36](https://github.com/shruggietech/cueson/issues/36), and [#41](https://github.com/shruggietech/cueson/issues/41). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable and includes machine-readable annotations for schema-aware consumers.
 
 ## Dialect, identity, and version
 
 The schema artifact uses JSON Schema Draft 2020-12. Three similar-looking fields have distinct meanings:
 
 - The schema artifact's `$schema` keyword identifies the Draft 2020-12 metaschema.
-- The development schema artifact's `$id` is `https://cueson.io/schema/v0.1.0/cueson.schema.json`.
-- A current-source Cue JSON instance uses the same canonical Cueson URI in `$schema` and uses `schema_version` value `0.1.0`.
+- The stable candidate schema artifact's `$id` is `https://cueson.io/schema/v1.0.0/cueson.schema.json`.
+- A current-source Cue JSON instance uses the same canonical Cueson URI in `$schema` and uses `schema_version` value `1.0.0`.
 
-The canonical Cueson URI remains an identifier until `cueson.io` separately serves public schema files. Current development consumers resolve 0.1.0 through the repository or executable embedding. Published v0.0.0 consumers use the immutable [v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0). Cueson never emits a mutable `latest` alias.
+The canonical Cueson URI remains an identifier until `cueson.io` separately serves public schema files. Candidate consumers resolve 1.0.0 through the canonical repository schema, the [immutable v1 schema candidate](../schema/releases/v1.0.0/cueson.schema.json), or executable embedding. Published v0.0.0 consumers use the immutable [v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0). Cueson never emits a mutable `latest` alias.
 
 Users can discover the embedded contract version with `cueson schema --version` and emit the exact embedded schema with `cueson schema` or `cueson schema --output PATH`. A Cue JSON instance identifies its target contract through `$schema` and `schema_version`; consumers must evaluate both against an exact supported version rather than infer compatibility from the producer software version.
 
-The v0.0.0 schema is released and immutable at [`schema/releases/v0.0.0/cueson.schema.json`](https://github.com/shruggietech/cueson/blob/v0.0.0/schema/releases/v0.0.0/cueson.schema.json), with SHA-256 `d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975`. The evolving canonical source has advanced to 0.1.0 and does not alter that released file, tag, or archive. Production publication remains separately governed by the [release process](release-process.md).
+The v0.0.0 schema is released and immutable at [`schema/releases/v0.0.0/cueson.schema.json`](https://github.com/shruggietech/cueson/blob/v0.0.0/schema/releases/v0.0.0/cueson.schema.json), with SHA-256 `d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975`. The canonical source and byte-identical immutable v1 candidate have advanced to 1.0.0 without altering that released file, tag, or archive. GitHub Release and production schema publication remain separately governed by the [release process](release-process.md).
 
-Before v1.0.0, a documented breaking contract change requires a minor-version increase and patch releases remain non-breaking. Additive compatible changes may occur in a minor release. At and after v1.0.0, breaking changes require a major-version increase. Official software and schema versions remain equal; a third-party producer version is independent from the schema version it targets.
+Starting with v1.0.0, breaking changes require a major-version increase. Additive compatible changes may occur in a minor release, and compatible corrections may occur in a patch release. Official software and schema versions remain equal; a third-party producer version is independent from the schema version it targets.
 
-S018 freezes the implemented CLI and Cue JSON behavior as the v1 contract candidate while deliberately retaining development identity 0.1.0. It does not create an immutable v1.0.0 schema, tag, release, hosted schema, or production alias. The later release-candidate transaction owns the coordinated software and schema version transition after this contract passes review.
+S018 froze the implemented CLI and Cue JSON behavior, and S019 promotes that reviewed contract to candidate identity 1.0.0 with a byte-identical immutable repository copy. The stable release candidate does not create a tag, publish a GitHub Release, host the schema, or add a production alias.
 
 ## Machine-readable annotations
 
-The canonical development schema gives every Cueson-owned root property and every consumer-facing property reachable through `$defs` a specific `description`. Public object, union, and constrained-scalar definitions have titles suitable for generated reference documentation. Examples cover every root semantic area, enumeration, format-native structure, and non-obvious constrained value such as identifiers, versions, safe basenames, digests, base64 payloads, timestamps, timings, and diagnostics.
+The canonical schema gives every Cueson-owned root property and every consumer-facing property reachable through `$defs` a specific `description`. Public object, union, and constrained-scalar definitions have titles suitable for generated reference documentation. Examples cover every root semantic area, enumeration, format-native structure, and non-obvious constrained value such as identifiers, versions, safe basenames, digests, base64 payloads, timestamps, timings, and diagnostics.
 
 `title`, `description`, and `examples` are non-normative JSON Schema annotations. They explain the contract but never broaden an `enum`, relax a pattern, satisfy a missing required property, override a conditional branch, replace model semantics, or weaken source-integrity checks. Validation keywords, the semantic model, and source-envelope integrity remain authoritative when an annotation is incomplete or a consumer does not process annotations.
 
@@ -38,7 +38,7 @@ Schema-aware tooling should present a property's own description together with t
 
 Cueson-owned property names and enum values use lowercase `snake_case`. Standards-defined JSON Schema keywords such as `$schema`, `$id`, `$defs`, `oneOf`, and `additionalProperties` retain their standard spellings.
 
-The current development root contract contains these semantic areas:
+The stable v1 root contract contains these semantic areas:
 
 ```text
 $schema
@@ -68,17 +68,17 @@ webvtt
 
 File extensions and CLI tokens `srt` and `vtt` are aliases that normalize to canonical keys and never appear as schema format values.
 
-These keys and their format-native shapes identify format families. Capability fields separately declare whether the matching executable can ingest, render, or restore them. Stable SRT and WebVTT support remains a v1.0.0 gate.
+These keys and their format-native shapes identify format families. Capability fields separately declare whether the matching executable can ingest, render, or restore them. SubRip and WebVTT have completed the stable v1.0.0 candidate gate.
 
 ## Official format capability
 
 `format_support` declares the official capabilities of the Cueson release associated with the document contract. It does not describe the capabilities of arbitrary third-party producer software.
 
-Current development SubRip uses:
+The stable v1 SubRip contract uses:
 
 ```json
 {
-  "status": "experimental",
+  "status": "stable",
   "ingest_supported": true,
   "render_supported": true,
   "restore_supported": true,
@@ -86,7 +86,7 @@ Current development SubRip uses:
 }
 ```
 
-Current development WebVTT uses the same `experimental` capability values. Experimental means current source can ingest and render the documented native contract while stable support remains gated on v1 completion.
+The stable v1 WebVTT contract uses the same capability values with status `stable`. Stable describes the reviewed candidate behavior and compatibility promise; it does not claim that v1 has already been tagged or published.
 
 Schema recognition, structural validity, native ingest, model-driven render, exact restoration, and OCR dependency are separate facts. Implementations and documentation must not infer one from another.
 
@@ -155,6 +155,6 @@ Schema implementation distinguishes:
 
 Schema validation does not infer codec availability. Native codec presence remains an executable capability concern described by [the architecture](architecture.md) and [CLI contract](cli.md). Maintained documentation paths and local heading links are checked offline by the repository's standalone documentation verifier; that check does not publish the schema or validate external network availability.
 
-Cross-format conversion loss reports and private target projections are runtime-only values. They are not Cue JSON properties, do not change schema version 0.1.0, and never replace the validated source document or its exact source envelope.
+Cross-format conversion loss reports and private target projections are runtime-only values. They are not Cue JSON properties, do not change schema version 1.0.0, and never replace the validated source document or its exact source envelope.
 
 The versioned `inspect --json` report is likewise a separate CLI output contract rather than Cue JSON. It reports only bounded structural facts, excludes source bytes and content-bearing identifiers, and represents target-dependent conversion loss as not evaluated when no target was requested.

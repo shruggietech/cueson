@@ -13,7 +13,7 @@ func projectDocument(source model.Document, targetFormat string, translations []
 	}
 	target := model.Document{
 		Schema: source.Schema, SchemaVersion: source.SchemaVersion, Format: targetFormat,
-		FormatSupport: model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+		FormatSupport: model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
 		Producer:      source.Producer, Source: cloneSourceEnvelope(source.Source), Metadata: model.Metadata{},
 		Cues: make([]model.Cue, len(source.Cues)), Diagnostics: []model.Diagnostic{},
 	}

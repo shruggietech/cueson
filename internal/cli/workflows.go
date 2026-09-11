@@ -318,7 +318,7 @@ func newSubRipDocument(asset model.SourceAsset, parsed subrip.Result) model.Docu
 	span := maximum - minimum
 	document := model.Document{
 		Schema: schema.ID(), SchemaVersion: schema.Version(), Format: string(codec.FormatSubRip),
-		FormatSupport: model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+		FormatSupport: model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
 		Producer:      model.Producer{Name: "cueson", Version: version.String()},
 		Source:        model.SourceEnvelope{PrimaryAssetID: asset.ID, Assets: []model.SourceAsset{asset}},
 		Metadata:      model.Metadata{},
@@ -348,7 +348,7 @@ func newWebVTTDocument(asset model.SourceAsset, parsed webvtt.Result) model.Docu
 	span := maximum - minimum
 	document := model.Document{
 		Schema: schema.ID(), SchemaVersion: schema.Version(), Format: string(codec.FormatWebVTT),
-		FormatSupport: model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+		FormatSupport: model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
 		Producer:      model.Producer{Name: "cueson", Version: version.String()},
 		Source:        model.SourceEnvelope{PrimaryAssetID: asset.ID, Assets: []model.SourceAsset{asset}},
 		Metadata:      model.Metadata{},

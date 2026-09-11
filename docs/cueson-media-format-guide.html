@@ -408,7 +408,7 @@
         <span class="eyebrow">The real reason Cueson exists</span>
         <h1>Make media content <span class="accent">directly readable to AI.</span></h1>
         <p class="lede">A huge amount of what people say, read, watch, and archive is trapped behind subtitle formats that machines cannot treat as ordinary text. Some are simple text files. Some are dense XML. Some are old binary broadcast records. Some are literally pictures of words. Cueson is designed to turn that fractured universe into one predictable Cue JSON surface where the words, timing, speakers, provenance, layout, and other useful context are directly visible.</p>
-        <p class="hero-note"><strong>Current v0.0.0 boundary:</strong> Cueson validates Cue JSON, exposes its embedded schema, and restores exact source bytes from a valid source envelope. Native SRT or WebVTT ingest, model-driven rendering, conversion, OCR, and every other format capability illustrated below are roadmap intent, not current support.</p>
+        <p class="hero-note"><strong>Current v1.0.0 candidate boundary:</strong> Cueson provides stable Cue JSON, SubRip, and WebVTT encode, restore, render, conversion, validation, inspection, and completion workflows in the reviewed release candidate. The candidate is not yet published; OCR, other format families, public schema hosting, and production activation remain future work.</p>
 
         <div class="pipeline" aria-label="How Cueson unlocks media for AI">
           <div class="pipeline-box">
@@ -418,7 +418,7 @@
           <div class="pipeline-arrow" aria-hidden="true">→</div>
           <div class="pipeline-box cueson">
             <strong>Cueson</strong>
-            <span>Planned: parse, preserve, normalize, and when needed derive plaintext through OCR while retaining the original source.</span>
+            <span>Parse, preserve, and normalize supported text formats today; add derived plaintext through OCR for future bitmap formats while retaining the original source.</span>
           </div>
           <div class="pipeline-arrow" aria-hidden="true">→</div>
           <div class="pipeline-box ai">
@@ -430,7 +430,7 @@
         <div class="why-grid">
           <article class="why-card">
             <h3>One reasoning surface</h3>
-            <p>The target model gives AI the same predictable cue structure whether the source began as SRT text, broadcast XML, a legacy binary file, or a Blu-ray subtitle image.</p>
+            <p>The stable v1 model gives AI one predictable cue structure for SRT and WebVTT today and provides the extension boundary needed for future broadcast, binary, and bitmap formats.</p>
           </article>
           <article class="why-card">
             <h3>No information hostage</h3>
@@ -438,7 +438,7 @@
           </article>
           <article class="why-card">
             <h3>No downstream format maze</h3>
-            <p>As native codecs are delivered, content represented as Cue JSON can let downstream tools speak the same language instead of maintaining a growing pile of one-off parsers and conversion steps.</p>
+            <p>Current SRT and WebVTT codecs already let downstream tools use Cue JSON instead of separate parsers, and future codecs can join that same contract without creating another downstream format maze.</p>
           </article>
         </div>
       </div>
@@ -450,7 +450,7 @@
           <div>
             <span class="eyebrow">Target format map</span>
             <h2>The subtitle universe Cueson is designed to open up</h2>
-            <p>SRT and WebVTT are the first planned stable targets for v1.0.0. The other families show why the common Cue JSON model matters long term, especially when the original content is binary or image-based rather than plain text.</p>
+            <p>SRT and WebVTT are the stable format contracts in the v1.0.0 release candidate. The other families remain future directions and show why the common Cue JSON model matters long term, especially when the original content is binary or image-based rather than plain text.</p>
           </div>
           <div class="legend" aria-label="Format legend">
             <span class="badge status-v1">v1</span>
