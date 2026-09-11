@@ -252,11 +252,11 @@ func runInspect(ctx context.Context, options inspectOptions, stdout, stderr io.W
 	captured, err := source.CaptureContext(ctx, options.input, source.CaptureOptions{})
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
-			diagnostics.write(diagnosticError, fmt.Sprintf("input %q does not exist", options.input))
+			diagnostics.write(diagnosticError, "inspect: input does not exist")
 			writeUsage(stderr, usage)
 			return ExitInvocation
 		}
-		diagnostics.write(diagnosticError, fmt.Sprintf("inspect: capture input: %v", err))
+		diagnostics.write(diagnosticError, "inspect: input acquisition failed")
 		return ExitRuntimeFailure
 	}
 
@@ -268,12 +268,12 @@ func runInspect(ctx context.Context, options inspectOptions, stdout, stderr io.W
 			writeUsage(stderr, usage)
 			return ExitInvocation
 		}
-		diagnostics.write(diagnosticError, fmt.Sprintf("inspect: %v", err))
+		diagnostics.write(diagnosticError, "inspect: input validation failed")
 		return ExitRuntimeFailure
 	}
 	report, err := buildInspectionReport(input)
 	if err != nil {
-		diagnostics.write(diagnosticError, fmt.Sprintf("inspect: build report: %v", err))
+		diagnostics.write(diagnosticError, "inspect: report construction failed")
 		return ExitRuntimeFailure
 	}
 	for _, observation := range input.diagnostics {
@@ -291,10 +291,22 @@ func runInspect(ctx context.Context, options inspectOptions, stdout, stderr io.W
 		payload, err = renderHumanInspection(report)
 	}
 	if err != nil {
-		diagnostics.write(diagnosticError, fmt.Sprintf("inspect: render report: %v", err))
+		diagnostics.write(diagnosticError, "inspect: report rendering failed")
 		return ExitRuntimeFailure
 	}
-	return writeStdout(stdout, diagnostics, payload)
+	return writeInspectionStdout(stdout, diagnostics, payload)
+}
+
+func writeInspectionStdout(stdout io.Writer, diagnostics diagnosticWriter, payload []byte) int {
+	written, err := stdout.Write(payload)
+	if err == nil && written != len(payload) {
+		err = io.ErrShortWrite
+	}
+	if err != nil {
+		diagnostics.write(diagnosticError, "inspect: stdout write failed")
+		return ExitRuntimeFailure
+	}
+	return ExitSuccess
 }
 
 func buildInspectionReport(input validatedInput) (inspectionReport, error) {

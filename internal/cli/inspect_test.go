@@ -341,9 +341,59 @@ func TestRunInspectStdoutFailureIsRuntimeFailure(t *testing.T) {
 	var stderr bytes.Buffer
 	diagnostics := newDiagnosticWriter(&stderr, globalOptions{})
 	status := runInspect(context.Background(), inspectOptions{input: path, format: "auto", json: true}, inspectErrorWriter{}, &stderr, diagnostics, noHelp)
-	if status != ExitRuntimeFailure || !strings.Contains(stderr.String(), "write stdout") {
+	if status != ExitRuntimeFailure || !strings.Contains(stderr.String(), "inspect: stdout write failed") || strings.Contains(stderr.String(), os.ErrPermission.Error()) {
 		t.Fatalf("runInspect() = %d, stderr = %q", status, stderr.String())
 	}
+}
+
+func TestRunInspectSanitizesFailureDiagnostics(t *testing.T) {
+	t.Parallel()
+
+	t.Run("source integrity", func(t *testing.T) {
+		t.Parallel()
+		input := inspectTestWebVTTInput(t)
+		privateAssetID := "PRIVATE-ASSET-ID"
+		privateHash := strings.Repeat("a", 64)
+		input.document.Source.Assets[0].ID = privateAssetID
+		input.document.Source.PrimaryAssetID = privateAssetID
+		input.document.Source.Assets[0].Hashes.SHA256 = privateHash
+		payload, err := marshalDocument(input.document, false)
+		if err != nil {
+			t.Fatal(err)
+		}
+		path := filepath.Join(t.TempDir(), "PRIVATE-CALLER-PATH.cueson.json")
+		if err := os.WriteFile(path, payload, 0o644); err != nil {
+			t.Fatal(err)
+		}
+
+		var stdout bytes.Buffer
+		var stderr bytes.Buffer
+		diagnostics := newDiagnosticWriter(&stderr, globalOptions{})
+		status := runInspect(context.Background(), inspectOptions{input: path, format: "auto", json: true}, &stdout, &stderr, diagnostics, noHelp)
+		if status != ExitRuntimeFailure || stdout.Len() != 0 || !strings.Contains(stderr.String(), "inspect: input validation failed") {
+			t.Fatalf("runInspect() = %d, stdout = %q, stderr = %q", status, stdout.String(), stderr.String())
+		}
+		for _, prohibited := range []string{privateAssetID, privateHash, path, filepath.Base(path), "SHA-256"} {
+			if strings.Contains(stderr.String(), prohibited) {
+				t.Fatalf("inspection failure leaked %q in stderr %q", prohibited, stderr.String())
+			}
+		}
+	})
+
+	t.Run("missing caller path", func(t *testing.T) {
+		t.Parallel()
+		path := filepath.Join(t.TempDir(), "PRIVATE-MISSING-PATH.srt")
+		var stdout bytes.Buffer
+		var stderr bytes.Buffer
+		diagnostics := newDiagnosticWriter(&stderr, globalOptions{})
+		status := runInspect(context.Background(), inspectOptions{input: path, format: "auto", json: true}, &stdout, &stderr, diagnostics, inspectHelp)
+		if status != ExitInvocation || stdout.Len() != 0 || !strings.Contains(stderr.String(), "inspect: input does not exist") {
+			t.Fatalf("runInspect() = %d, stdout = %q, stderr = %q", status, stdout.String(), stderr.String())
+		}
+		if strings.Contains(stderr.String(), path) || strings.Contains(stderr.String(), filepath.Base(path)) {
+			t.Fatalf("missing-input diagnostic leaked caller path in stderr %q", stderr.String())
+		}
+	})
 }
 
 type inspectErrorWriter struct{}
