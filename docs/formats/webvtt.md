@@ -15,7 +15,7 @@ This page defines the native WebVTT (`.vtt`) capability implemented in current d
 | Semantic ingest | Experimental | The native parser derives common cues while retaining signature, header, block, cue, setting, markup, and timing structure. |
 | Model-driven rendering | Experimental | `cueson render --to vtt` writes deterministic LF WebVTT from validated structured data. |
 | Exact source restoration | Available | `cueson restore` verifies and recreates source-envelope bytes without invoking the WebVTT codec. |
-| Cross-format conversion | Unavailable | WebVTT-to-SubRip and SubRip-to-WebVTT conversion remain owned by issue #33. |
+| Cross-format conversion | Experimental | `cueson convert INPUT --to srt` projects common cue semantics and reports every known incompatible WebVTT feature. |
 | Stable WebVTT support | Unavailable | Stable support remains a v1.0.0 acceptance gate. |
 
 ## Detection, Unicode, and source authority
@@ -56,6 +56,10 @@ Diagnostics are deterministic and preserve parser encounter order. They distingu
 
 The governed corpus under `testdata/fixtures/webvtt`, `testdata/malformed/webvtt`, and `testdata/fuzz/webvtt` covers accepted signatures, line endings, headers, native block kinds, identifiers, timestamps, settings, markup, entities, inline timestamps, whitespace, adjacency, rolling captions, recovery, fatal input, and bounded fuzz seeds. Accepted fixtures separately prove exact source restoration and model-driven parser-renderer cycles.
 
+## Conversion to SubRip
+
+WebVTT-to-SubRip conversion preserves cue order, integer-millisecond timing, overlap, multiline payloads, and shared `b`, `i`, and `u` emphasis. The signature description and header metadata, every non-cue body block, native cue identifiers and settings, placement, voice, class, language, ruby, inline timestamps, token timing, and other target-incompatible structure are omitted or degraded with deterministic runtime loss observations. `--strict` rejects any known loss before SubRip is rendered or published.
+
 ## Explicit exclusions
 
-Current development source does not provide cross-format conversion, a public `validate` or `inspect` command, shell completion, stable v1 support declarations, schema publication to `cueson.io`, or any claim that rendered output is byte-identical to the captured source.
+Current development source does not provide a public `validate` or `inspect` command, shell completion, stable v1 support declarations, schema publication to `cueson.io`, or any claim that rendered or converted output is byte-identical to the captured source.

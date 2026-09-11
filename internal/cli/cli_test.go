@@ -3,8 +3,10 @@ package cli
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -89,11 +91,362 @@ func TestRunRootHelp(t *testing.T) {
 		if !strings.Contains(stdout, "\n  restore") {
 			t.Errorf("Run(%q) help does not expose restore command:\n%s", args, stdout)
 		}
-		for _, deferred := range []string{"encode", "render", "convert", "validate", "inspect", "completion"} {
+		for _, implemented := range []string{"encode", "render", "convert"} {
+			if !strings.Contains(stdout, "\n  "+implemented) {
+				t.Errorf("Run(%q) help does not expose implemented command %q:\n%s", args, implemented, stdout)
+			}
+		}
+		for _, deferred := range []string{"validate", "inspect", "completion"} {
 			if strings.Contains(stdout, "\n  "+deferred) {
 				t.Errorf("Run(%q) help exposes deferred command %q:\n%s", args, deferred, stdout)
 			}
 		}
+	}
+}
+
+func TestParseConvertInvocationAndAliases(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name       string
+		args       []string
+		wantFrom   string
+		wantTarget string
+	}{
+		{name: "defaults", args: []string{"convert", "captions.srt", "--to", "vtt"}, wantFrom: "auto", wantTarget: "webvtt"},
+		{name: "canonical Cue JSON", args: []string{"convert", "--from", "cueson", "document.json", "--to=subrip"}, wantFrom: "cueson", wantTarget: "subrip"},
+		{name: "JSON alias", args: []string{"convert", "--from=json", "document.json", "--to", "srt"}, wantFrom: "cueson", wantTarget: "subrip"},
+		{name: "Cue JSON alias", args: []string{"convert", "--from", "cue-json", "document.json", "--to", "webvtt"}, wantFrom: "cueson", wantTarget: "webvtt"},
+		{name: "SubRip alias", args: []string{"convert", "--from=subrip", "captions.txt", "--to", "vtt"}, wantFrom: "subrip", wantTarget: "webvtt"},
+		{name: "WebVTT alias", args: []string{"convert", "--from", "webvtt", "captions.txt", "--to=srt"}, wantFrom: "webvtt", wantTarget: "subrip"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			parsed, err := parseInvocation(tt.args)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if parsed.command != "convert" || parsed.convert.input == "" || parsed.convert.from != tt.wantFrom || parsed.convert.target != tt.wantTarget {
+				t.Fatalf("convert invocation = %#v, want from=%q target=%q", parsed.convert, tt.wantFrom, tt.wantTarget)
+			}
+		})
+	}
+
+	parsed, err := parseInvocation([]string{"--quiet", "convert", "--encoding", "utf-8", "--output", "out.vtt", "--force", "--strict", "--no-speaker-detection", "in.srt", "--to", "vtt", "--silent", "--no-color"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parsed.convert.encoding != "utf-8" || parsed.convert.output != "out.vtt" || !parsed.convert.outputSet || !parsed.convert.force || !parsed.convert.strict || !parsed.convert.noSpeakerDetection || !parsed.options.quiet || !parsed.options.silent || !parsed.options.noColor {
+		t.Fatalf("convert options = %#v, globals = %#v", parsed.convert, parsed.options)
+	}
+}
+
+func TestRunConvertHelpAndInvalidInvocation(t *testing.T) {
+	t.Parallel()
+
+	for _, args := range [][]string{{"convert", "--help"}, {"convert", "-h"}} {
+		status, stdout, stderr := runForTest(context.Background(), args)
+		if status != ExitSuccess || stderr != "" {
+			t.Fatalf("Run(%q) = (%d, %q, %q)", args, status, stdout, stderr)
+		}
+		for _, want := range []string{"cueson [global options] convert", "--from", "--to", "--encoding", "--output", "--force", "--strict", "--no-speaker-detection"} {
+			if !strings.Contains(stdout, want) {
+				t.Errorf("Run(%q) help lacks %q:\n%s", args, want, stdout)
+			}
+		}
+	}
+
+	tests := []struct {
+		args []string
+		want string
+	}{
+		{args: []string{"convert"}, want: "requires one INPUT"},
+		{args: []string{"convert", "in.srt"}, want: "requires --to"},
+		{args: []string{"convert", "in.srt", "--to", "unknown"}, want: "--to must be srt or vtt"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--from", "unknown"}, want: "--from must be auto, cueson, srt, or vtt"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--from", "cueson", "--encoding", "utf-8"}, want: "--encoding cannot be used with Cue JSON"},
+		{args: []string{"convert", "in.vtt", "--to", "srt", "--from", "vtt", "--encoding", "windows-1252"}, want: "WebVTT requires UTF-8"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--encoding", "unknown"}, want: "encoding \"unknown\" is not supported"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--force"}, want: "--force requires a filesystem output"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--output", "-", "--force"}, want: "--force requires a filesystem output"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--output", "a", "--output", "b"}, want: "--output may be specified only once"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--to", "srt"}, want: "--to may be specified only once"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--from", "srt", "--from", "srt"}, want: "--from may be specified only once"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--encoding", "utf-8", "--encoding", "utf-8"}, want: "--encoding may be specified only once"},
+		{args: []string{"convert", "a", "b", "--to", "vtt"}, want: "no additional arguments"},
+		{args: []string{"convert", "--bogus", "in.srt", "--to", "vtt"}, want: "unknown option"},
+	}
+	for _, tt := range tests {
+		status, stdout, stderr := runForTest(context.Background(), tt.args)
+		if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, tt.want) || !strings.Contains(stderr, "cueson [global options] convert") {
+			t.Errorf("Run(%q) = (%d, %q, %q), want invocation error containing %q", tt.args, status, stdout, stderr, tt.want)
+		}
+	}
+}
+
+func TestConvertNativeAndCueJSONInputsHaveParity(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	sourceBytes := []byte("1\n00:00:01,000 --> 00:00:02,500\n<i>Hello</i> world\n")
+	if err := os.WriteFile(sourcePath, sourceBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	status, direct, stderr := runForTest(context.Background(), []string{"convert", sourcePath, "--to", "vtt"})
+	if status != ExitSuccess || stderr != "" || !strings.HasPrefix(direct, "WEBVTT\n") {
+		t.Fatalf("direct conversion = (%d, %q, %q)", status, direct, stderr)
+	}
+
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", sourcePath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("encode = (%d, %q, %q)", status, encoded, stderr)
+	}
+	misleadingJSONPath := filepath.Join(directory, "document.vtt")
+	if err := os.WriteFile(misleadingJSONPath, []byte(encoded), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, fromJSON, stderr := runForTest(context.Background(), []string{"convert", misleadingJSONPath, "--to", "webvtt"})
+	if status != ExitSuccess || stderr != "" || fromJSON != direct {
+		t.Fatalf("Cue JSON conversion = (%d, %q, %q), want direct bytes %q", status, fromJSON, stderr, direct)
+	}
+
+	renderedPath := filepath.Join(directory, "converted.vtt")
+	status, stdout, stderr := runForTest(context.Background(), []string{"convert", "--from", "cueson", "--to", "vtt", "--output", renderedPath, misleadingJSONPath})
+	if status != ExitSuccess || stdout != "" || stderr != "" {
+		t.Fatalf("file conversion = (%d, %q, %q)", status, stdout, stderr)
+	}
+	before := readFileForCLI(t, renderedPath)
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", "--from", "cueson", "--to", "vtt", "--output", renderedPath, misleadingJSONPath})
+	if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, "already exists") || !bytes.Equal(readFileForCLI(t, renderedPath), before) {
+		t.Fatalf("refused conversion replacement = (%d, %q, %q)", status, stdout, stderr)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", "--from", "cueson", "--to", "vtt", "--output", renderedPath, "--force", misleadingJSONPath})
+	if status != ExitSuccess || stdout != "" || stderr != "" || !bytes.Equal(readFileForCLI(t, renderedPath), before) {
+		t.Fatalf("forced conversion replacement = (%d, %q, %q)", status, stdout, stderr)
+	}
+	status, reencoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", renderedPath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("target re-encode = (%d, %q, %q)", status, reencoded, stderr)
+	}
+	if document, err := schema.Decode([]byte(reencoded)); err != nil || document.Format != "webvtt" {
+		t.Fatalf("target re-encoded document format = %q, error = %v", document.Format, err)
+	}
+}
+
+func TestConvertWebVTTSourceToSubRip(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.vtt")
+	if err := os.WriteFile(sourcePath, []byte("WEBVTT\n\n00:00.500 --> 00:02.000\n<b>Hello</b> world\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, output, stderr := runForTest(context.Background(), []string{"convert", "--from", "webvtt", sourcePath, "--to", "subrip", "--output=-"})
+	if status != ExitSuccess || stderr != "" || !strings.Contains(output, "00:00:00,500 --> 00:00:02,000") || !strings.Contains(output, "<b>Hello</b> world") {
+		t.Fatalf("WebVTT to SubRip = (%d, %q, %q)", status, output, stderr)
+	}
+	convertedPath := filepath.Join(directory, "converted.srt")
+	if err := os.WriteFile(convertedPath, []byte(output), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", convertedPath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatalf("target re-encode = (%d, %q, %q)", status, encoded, stderr)
+	}
+	if document, err := schema.Decode([]byte(encoded)); err != nil || document.Format != "subrip" || document.Cues[0].Payload.PlainText != "Hello world" {
+		t.Fatalf("target re-encoded document = %#v, error = %v", document, err)
+	}
+}
+
+func TestConvertCueJSONClassificationAndIntegrityFailures(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	nativeBytes := []byte("1\n00:00:00,000 --> 00:00:01,000\nHello\n")
+	jsonNamedNative := filepath.Join(directory, "captions.json")
+	if err := os.WriteFile(jsonNamedNative, nativeBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"convert", jsonNamedNative, "--to", "vtt"})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "Cue JSON") {
+		t.Fatalf("JSON-named native auto classification = (%d, %q, %q)", status, stdout, stderr)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", "--from", "srt", jsonNamedNative, "--to", "vtt"})
+	if status != ExitSuccess || stdout == "" || stderr != "" {
+		t.Fatalf("explicit native classification = (%d, %q, %q)", status, stdout, stderr)
+	}
+	jsonLookingNative := filepath.Join(directory, "captions.srt")
+	if err := os.WriteFile(jsonLookingNative, []byte("{not JSON or subtitles}"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", jsonLookingNative, "--to", "vtt"})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "Cue JSON") {
+		t.Fatalf("JSON-looking native auto classification = (%d, %q, %q)", status, stdout, stderr)
+	}
+	bomJSONPath := filepath.Join(directory, "document.txt")
+	bomJSON := append([]byte{0xef, 0xbb, 0xbf}, []byte("{not valid Cue JSON}")...)
+	if err := os.WriteFile(bomJSONPath, bomJSON, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", bomJSONPath, "--to", "vtt"})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "Cue JSON") {
+		t.Fatalf("BOM JSON-looking classification = (%d, %q, %q)", status, stdout, stderr)
+	}
+
+	sourcePath := filepath.Join(directory, "source.srt")
+	if err := os.WriteFile(sourcePath, nativeBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, encoded, stderr := runForTest(context.Background(), []string{"encode", "--stdout", sourcePath})
+	if status != ExitSuccess || stderr != "" {
+		t.Fatal(stderr)
+	}
+	document, err := schema.Decode([]byte(encoded))
+	if err != nil {
+		t.Fatal(err)
+	}
+	document.Source.Assets[0].Hashes.SHA256 = strings.Repeat("0", 64)
+	corrupt, err := marshalDocument(document, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	corruptPath := filepath.Join(directory, "corrupt.cueson.json")
+	if err := os.WriteFile(corruptPath, corrupt, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	output := filepath.Join(directory, "must-not-exist.vtt")
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", corruptPath, "--to", "vtt", "--output", output})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "SHA-256") {
+		t.Fatalf("integrity failure = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if _, statErr := os.Lstat(output); !errors.Is(statErr, fs.ErrNotExist) {
+		t.Fatalf("integrity failure left output: %v", statErr)
+	}
+}
+
+func TestConvertLossWarningsFiltersAndStrictOutputSafety(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "coordinates.srt")
+	input := []byte("1\n00:00:00,000 --> 00:00:01,000 X1:10 X2:20 Y1:30 Y2:40\nHello\n")
+	if err := os.WriteFile(sourcePath, input, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	status, converted, stderr := runForTest(context.Background(), []string{"convert", sourcePath, "--to", "vtt"})
+	if status != ExitSuccess || converted == "" || !strings.Contains(strings.ToLower(stderr), "coordinate") || strings.Contains(stderr, directory) {
+		t.Fatalf("permissive loss = (%d, %q, %q)", status, converted, stderr)
+	}
+	status, quietOutput, quietDiagnostics := runForTest(context.Background(), []string{"--quiet", "convert", sourcePath, "--to", "vtt"})
+	if status != ExitSuccess || quietOutput != converted || quietDiagnostics != stderr {
+		t.Fatalf("quiet loss = (%d, %q, %q), want warnings retained", status, quietOutput, quietDiagnostics)
+	}
+	status, silentOutput, silentDiagnostics := runForTest(context.Background(), []string{"--silent", "convert", sourcePath, "--to", "vtt"})
+	if status != ExitSuccess || silentOutput != converted || silentDiagnostics != "" {
+		t.Fatalf("silent loss = (%d, %q, %q)", status, silentOutput, silentDiagnostics)
+	}
+
+	newOutput := filepath.Join(directory, "strict-new.vtt")
+	status, stdout, stderr := runForTest(context.Background(), []string{"convert", sourcePath, "--to", "vtt", "--strict", "--output", newOutput})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(strings.ToLower(stderr), "strict") {
+		t.Fatalf("strict new output = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if _, statErr := os.Lstat(newOutput); !errors.Is(statErr, fs.ErrNotExist) {
+		t.Fatalf("strict conversion left new output: %v", statErr)
+	}
+	existingOutput := filepath.Join(directory, "strict-existing.vtt")
+	before := []byte("preserve me")
+	if err := os.WriteFile(existingOutput, before, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", sourcePath, "--to", "vtt", "--strict", "--output", existingOutput, "--force"})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(strings.ToLower(stderr), "strict") {
+		t.Fatalf("strict forced output = (%d, %q, %q)", status, stdout, stderr)
+	}
+	if got := readFileForCLI(t, existingOutput); !bytes.Equal(got, before) {
+		t.Fatalf("strict conversion changed destination: %q", got)
+	}
+}
+
+func TestConvertOrdersSourceDiagnosticsBeforeLossesAndRejectsBadDestinations(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.srt")
+	input := []byte("00:00:00,000 --> 00:00:01,000 X1:10 X2:20 Y1:30 Y2:40\nHello\n")
+	if err := os.WriteFile(sourcePath, input, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"convert", sourcePath, "--to", "vtt"})
+	sourceIndex := strings.Index(stderr, "subrip_sequence_missing")
+	lossIndex := strings.Index(stderr, "conversion_subrip_coordinates_omitted")
+	if status != ExitSuccess || stdout == "" || sourceIndex < 0 || lossIndex <= sourceIndex {
+		t.Fatalf("ordered diagnostics = (%d, %q, %q), indexes = (%d, %d)", status, stdout, stderr, sourceIndex, lossIndex)
+	}
+
+	missingParent := filepath.Join(directory, "missing", "captions.vtt")
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", sourcePath, "--to", "vtt", "--output", missingParent})
+	if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, "does not exist") || !strings.Contains(stderr, "cueson [global options] convert") {
+		t.Fatalf("missing output parent = (%d, %q, %q)", status, stdout, stderr)
+	}
+	directoryOutput := filepath.Join(directory, "destination")
+	if err := os.Mkdir(directoryOutput, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", sourcePath, "--to", "vtt", "--output", directoryOutput, "--force"})
+	if status != ExitInvocation || stdout != "" || !strings.Contains(stderr, "not a regular file") {
+		t.Fatalf("directory output = (%d, %q, %q)", status, stdout, stderr)
+	}
+}
+
+func TestConvertLossyFixtureWarningsMatchCanonicalGoldens(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		target string
+		want   string
+	}{
+		{name: "SubRip to WebVTT", input: "../../testdata/fixtures/conversion/srt-lossy/source/input.srt", target: "vtt", want: "186060b924cc054b5b4192c4688f3434a5c5a28b1dceb6566c82ac449fd12494"},
+		{name: "WebVTT to SubRip", input: "../../testdata/fixtures/conversion/webvtt-lossy/source/input.vtt", target: "srt", want: "dc930384b305233f2ebd27fac948ed146cd6eba8a50aea9df79b00255a8b27ad"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			status, stdout, stderr := runForTest(context.Background(), []string{"convert", test.input, "--to", test.target})
+			if status != ExitSuccess || stdout == "" {
+				t.Fatalf("conversion = (%d, %q, %q)", status, stdout, stderr)
+			}
+			got := fmt.Sprintf("%x", sha256.Sum256([]byte(stderr)))
+			if got != test.want {
+				t.Fatalf("canonical warning SHA-256 = %s, want %s; warnings = %q", got, test.want, stderr)
+			}
+		})
+	}
+}
+
+func TestConvertSameFormatEncodingAndStdoutFailures(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	sourcePath := filepath.Join(directory, "captions.vtt")
+	if err := os.WriteFile(sourcePath, []byte("WEBVTT\n\n00:00.000 --> 00:01.000\nHello\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	status, stdout, stderr := runForTest(context.Background(), []string{"convert", sourcePath, "--to", "vtt"})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "render") {
+		t.Fatalf("same-format conversion = (%d, %q, %q)", status, stdout, stderr)
+	}
+	status, stdout, stderr = runForTest(context.Background(), []string{"convert", sourcePath, "--to", "srt", "--encoding", "windows-1252"})
+	if status != ExitRuntimeFailure || stdout != "" || !strings.Contains(stderr, "WebVTT requires UTF-8") {
+		t.Fatalf("auto WebVTT encoding failure = (%d, %q, %q)", status, stdout, stderr)
+	}
+
+	var diagnostics bytes.Buffer
+	status = Run(context.Background(), []string{"convert", sourcePath, "--to", "srt"}, strings.NewReader(""), errorWriter{err: errors.New("output unavailable")}, &diagnostics)
+	if status != ExitRuntimeFailure || !strings.Contains(diagnostics.String(), "write stdout: output unavailable") {
+		t.Fatalf("stdout failure = (%d, %q)", status, diagnostics.String())
 	}
 }
 

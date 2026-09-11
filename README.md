@@ -19,7 +19,7 @@
 
 **A lossless, structured interchange layer for subtitle and caption content.**<br>**Initial stable-release targets:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v0.1.0 development (experimental native SubRip and WebVTT)
 
-Cueson encodes SubRip and WebVTT subtitle files into a canonical, versioned JSON representation called Cue JSON and renders the structured model back to deterministic native syntax. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration. Cross-format conversion remains planned.
+Cueson encodes SubRip and WebVTT subtitle files into a canonical, versioned JSON representation called Cue JSON, renders the structured model back to deterministic native syntax, and converts between those formats with explicit loss reporting. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration.
 
 The repository contains the development `cueson` executable and canonical Draft 2020-12 Cue JSON `0.1.0` schema. The separate [official v0.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its byte-identical [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain the published foundation. Current source adds bounded native SubRip and WebVTT detection, decoding, semantic ingest, deterministic rendering, and codec-independent exact restoration.
 
@@ -50,7 +50,7 @@ cueson schema
 cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
 
-Current development source adds experimental SubRip and WebVTT encode and render workflows:
+Current development source adds experimental SubRip and WebVTT encode, render, and conversion workflows:
 
 ```text
 go run ./cmd/cueson --help
@@ -58,10 +58,12 @@ go run ./cmd/cueson encode --pretty captions.srt
 go run ./cmd/cueson render captions.srt.cueson.json --to srt --output rendered.srt
 go run ./cmd/cueson encode --pretty captions.vtt
 go run ./cmd/cueson render captions.vtt.cueson.json --to vtt --output rendered.vtt
+go run ./cmd/cueson convert captions.srt --to vtt --output captions.vtt
+go run ./cmd/cueson convert captions.vtt.cueson.json --to srt --strict --output captions.srt
 go run ./cmd/cueson restore --no-metadata --output restored.srt document.cueson.json
 ```
 
-`encode` writes Cue JSON to `INPUT.cueson.json` by default and retains the exact source bytes. SubRip supports explicit encoding selection for ambiguous legacy files; WebVTT accepts UTF-8 only, with an optional UTF-8 BOM. `render --to srt` and `render --to vtt` serialize the structured model as canonical LF syntax and remain intentionally distinct from exact `restore`. Cross-format conversion is not yet implemented.
+`encode` writes Cue JSON to `INPUT.cueson.json` by default and retains the exact source bytes. SubRip supports explicit encoding selection for ambiguous legacy files; WebVTT accepts UTF-8 only, with an optional UTF-8 BOM. `render --to srt` and `render --to vtt` serialize the structured model as canonical LF syntax and remain intentionally distinct from exact `restore`. `convert` accepts Cue JSON or native subtitle input, writes the requested native format to stdout by default, reports every known omission or degradation on stderr, and rejects any known loss before publication when `--strict` is selected.
 
 The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Seventeen GitHub Actions-owned CI and CodeQL checks are required. The two pull-request policy statuses remain visible but are not required checks while the GitHub Actions-authored second-round comment path lacks complete activation proof. Native codec behavior is exercised by the schema-and-conformance, native-test, race-detection, static-analysis, and vulnerability gates.
 

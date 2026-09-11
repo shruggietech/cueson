@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -8,11 +9,13 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/shruggietech/cueson/internal/codec"
 	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/codec/webvtt"
+	"github.com/shruggietech/cueson/internal/convert"
 	"github.com/shruggietech/cueson/internal/model"
 	"github.com/shruggietech/cueson/internal/schema"
 	"github.com/shruggietech/cueson/internal/source"
@@ -31,31 +34,11 @@ func runEncode(ctx context.Context, options encodeOptions, stdout io.Writer, std
 		return ExitRuntimeFailure
 	}
 
-	registry, err := workflowRegistry(options.encoding)
+	document, err := decodeCapturedSource(ctx, captured, options.format, options.encoding, options.noSpeakerDetection)
 	if err != nil {
 		diagnostics.write(diagnosticError, fmt.Sprintf("encode: %v", err))
 		return ExitRuntimeFailure
 	}
-	selection, err := registry.Select(captured.Bytes, captured.Asset.FileName, options.format)
-	if err != nil {
-		diagnostics.write(diagnosticError, fmt.Sprintf("encode: %v", err))
-		return ExitRuntimeFailure
-	}
-	captured.Asset.MediaType = mediaTypeForFormat(selection.Format)
-	decoder, err := registry.RequireDecoder(selection.Format)
-	if err != nil {
-		diagnostics.write(diagnosticError, fmt.Sprintf("encode: %v", err))
-		return ExitRuntimeFailure
-	}
-	document, err := decoder(ctx, captured, codec.DecodeOptions{Encoding: options.encoding, DisableSpeakerDetection: options.noSpeakerDetection})
-	if err != nil {
-		diagnostics.write(diagnosticError, fmt.Sprintf("encode: %v", err))
-		return ExitRuntimeFailure
-	}
-	combined := make([]model.Diagnostic, 0, len(selection.Diagnostics)+len(document.Diagnostics))
-	combined = append(combined, selection.Diagnostics...)
-	document.Diagnostics = append(combined, document.Diagnostics...)
-	updateDiagnosticStats(&document)
 	if err := document.Validate(); err != nil {
 		diagnostics.write(diagnosticError, fmt.Sprintf("encode model: %v", err))
 		return ExitRuntimeFailure
@@ -69,11 +52,7 @@ func runEncode(ctx context.Context, options encodeOptions, stdout io.Writer, std
 		diagnostics.write(diagnosticError, fmt.Sprintf("encode schema: %v", err))
 		return ExitRuntimeFailure
 	}
-	for _, observation := range document.Diagnostics {
-		if observation.Severity == "warning" {
-			diagnostics.write(diagnosticWarning, observation.Code+": "+observation.Message)
-		}
-	}
+	writeModelWarnings(diagnostics, document.Diagnostics)
 	if options.stdout || (options.outputSet && options.output == "-") {
 		return writeStdout(stdout, diagnostics, payload)
 	}
@@ -82,6 +61,171 @@ func runEncode(ctx context.Context, options encodeOptions, stdout io.Writer, std
 		destination = options.input + ".cueson.json"
 	}
 	return handleWorkflowFileResult("encode", encodeHelp, writeSchemaFile(destination, payload, options.force), stderr, diagnostics)
+}
+
+func decodeCapturedSource(ctx context.Context, captured source.Captured, requested, encoding string, disableSpeakerDetection bool) (model.Document, error) {
+	registry, err := workflowRegistry(encoding)
+	if err != nil {
+		return model.Document{}, err
+	}
+	selection, err := registry.Select(captured.Bytes, captured.Asset.FileName, requested)
+	if err != nil {
+		return model.Document{}, err
+	}
+	captured.Asset.MediaType = mediaTypeForFormat(selection.Format)
+	decoder, err := registry.RequireDecoder(selection.Format)
+	if err != nil {
+		return model.Document{}, err
+	}
+	document, err := decoder(ctx, captured, codec.DecodeOptions{Encoding: encoding, DisableSpeakerDetection: disableSpeakerDetection})
+	if err != nil {
+		return model.Document{}, err
+	}
+	combined := make([]model.Diagnostic, 0, len(selection.Diagnostics)+len(document.Diagnostics))
+	combined = append(combined, selection.Diagnostics...)
+	document.Diagnostics = append(combined, document.Diagnostics...)
+	updateDiagnosticStats(&document)
+	return document, nil
+}
+
+func loadConversionDocument(ctx context.Context, captured source.Captured, options convertOptions) (model.Document, error) {
+	if options.from == "cueson" {
+		return decodeConversionCueJSON(ctx, captured.Bytes, options.encoding)
+	}
+	if options.from != "auto" {
+		document, err := decodeCapturedSource(ctx, captured, options.from, options.encoding, options.noSpeakerDetection)
+		if err != nil {
+			return model.Document{}, err
+		}
+		if err := document.Validate(); err != nil {
+			return model.Document{}, fmt.Errorf("validate source model: %w", err)
+		}
+		return document, nil
+	}
+
+	document, cueJSONErr := schema.Decode(captured.Bytes)
+	if cueJSONErr == nil {
+		if options.encoding != "" {
+			return model.Document{}, fmt.Errorf("--encoding cannot be used with automatically detected Cue JSON input")
+		}
+		if err := schema.CheckLockstep(version.String()); err != nil {
+			return model.Document{}, fmt.Errorf("schema version lockstep: %w", err)
+		}
+		if err := source.ValidateIntegrity(ctx, document); err != nil {
+			return model.Document{}, fmt.Errorf("validate Cue JSON source integrity: %w", err)
+		}
+		return document, nil
+	}
+	if cueJSONCandidate(captured.Bytes, captured.Asset.FileName) {
+		return model.Document{}, fmt.Errorf("decode Cue JSON input: %w", cueJSONErr)
+	}
+	document, err := decodeCapturedSource(ctx, captured, "auto", options.encoding, options.noSpeakerDetection)
+	if err != nil {
+		return model.Document{}, err
+	}
+	if err := document.Validate(); err != nil {
+		return model.Document{}, fmt.Errorf("validate source model: %w", err)
+	}
+	return document, nil
+}
+
+func decodeConversionCueJSON(ctx context.Context, payload []byte, encoding string) (model.Document, error) {
+	if encoding != "" {
+		return model.Document{}, fmt.Errorf("--encoding cannot be used with Cue JSON input")
+	}
+	if err := schema.CheckLockstep(version.String()); err != nil {
+		return model.Document{}, fmt.Errorf("schema version lockstep: %w", err)
+	}
+	document, err := schema.Decode(payload)
+	if err != nil {
+		return model.Document{}, fmt.Errorf("decode Cue JSON input: %w", err)
+	}
+	if err := source.ValidateIntegrity(ctx, document); err != nil {
+		return model.Document{}, fmt.Errorf("validate Cue JSON source integrity: %w", err)
+	}
+	return document, nil
+}
+
+func cueJSONCandidate(payload []byte, fileName string) bool {
+	trimmed := bytes.TrimSpace(payload)
+	trimmed = bytes.TrimPrefix(trimmed, []byte{0xef, 0xbb, 0xbf})
+	trimmed = bytes.TrimSpace(trimmed)
+	return (len(trimmed) > 0 && (trimmed[0] == '{' || trimmed[0] == '[')) || strings.EqualFold(filepath.Ext(fileName), ".json")
+}
+
+func runConvert(ctx context.Context, options convertOptions, stdout io.Writer, stderr io.Writer, diagnostics diagnosticWriter) int {
+	if err := inspectConversionOutput(options); err != nil {
+		var precondition *outputPreconditionError
+		if errors.As(err, &precondition) {
+			diagnostics.write(diagnosticError, precondition.Error())
+			writeUsage(stderr, convertHelp)
+			return ExitInvocation
+		}
+		diagnostics.write(diagnosticError, fmt.Sprintf("convert: inspect output: %v", err))
+		return ExitRuntimeFailure
+	}
+
+	captured, err := source.CaptureContext(ctx, options.input, source.CaptureOptions{})
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			diagnostics.write(diagnosticError, fmt.Sprintf("input %q does not exist", options.input))
+			writeUsage(stderr, convertHelp)
+			return ExitInvocation
+		}
+		diagnostics.write(diagnosticError, fmt.Sprintf("convert: capture input: %v", err))
+		return ExitRuntimeFailure
+	}
+	document, err := loadConversionDocument(ctx, captured, options)
+	if err != nil {
+		diagnostics.write(diagnosticError, fmt.Sprintf("convert: %v", err))
+		return ExitRuntimeFailure
+	}
+
+	writeModelWarnings(diagnostics, document.Diagnostics)
+	result, err := convert.Convert(ctx, document, options.target, convert.Options{Strict: options.strict})
+	writeConversionWarnings(diagnostics, result.LossReport)
+	if err != nil {
+		diagnostics.write(diagnosticError, fmt.Sprintf("convert: %v", err))
+		return ExitRuntimeFailure
+	}
+	writeModelWarnings(diagnostics, result.Diagnostics)
+
+	if !options.outputSet || options.output == "-" {
+		return writeStdout(stdout, diagnostics, result.Bytes)
+	}
+	return handleWorkflowFileResult("convert", convertHelp, writeSchemaFile(options.output, result.Bytes, options.force), stderr, diagnostics)
+}
+
+func inspectConversionOutput(options convertOptions) error {
+	if !options.outputSet || options.output == "-" {
+		return nil
+	}
+	parent := filepath.Dir(options.output)
+	directory, err := os.Stat(parent)
+	switch {
+	case errors.Is(err, fs.ErrNotExist):
+		return &outputPreconditionError{message: fmt.Sprintf("output directory %q does not exist", parent)}
+	case err != nil:
+		return err
+	case !directory.IsDir():
+		return &outputPreconditionError{message: fmt.Sprintf("output directory %q is not a directory", parent)}
+	}
+	_, err = inspectOutputDestination(options.output, options.force)
+	return err
+}
+
+func writeModelWarnings(diagnostics diagnosticWriter, observations []model.Diagnostic) {
+	for _, observation := range observations {
+		if observation.Severity == "warning" {
+			diagnostics.write(diagnosticWarning, observation.Code+": "+observation.Message)
+		}
+	}
+}
+
+func writeConversionWarnings(diagnostics diagnosticWriter, report convert.Report) {
+	for _, loss := range report.Losses {
+		diagnostics.write(diagnosticWarning, loss.Code+": "+loss.Message)
+	}
 }
 
 func runRender(ctx context.Context, options renderOptions, stdout io.Writer, stderr io.Writer, diagnostics diagnosticWriter) int {
@@ -124,11 +268,7 @@ func runRender(ctx context.Context, options renderOptions, stdout io.Writer, std
 		diagnostics.write(diagnosticError, fmt.Sprintf("render: %v", err))
 		return ExitRuntimeFailure
 	}
-	for _, observation := range result.Diagnostics {
-		if observation.Severity == "warning" {
-			diagnostics.write(diagnosticWarning, observation.Code+": "+observation.Message)
-		}
-	}
+	writeModelWarnings(diagnostics, result.Diagnostics)
 	if !options.outputSet || options.output == "-" {
 		return writeStdout(stdout, diagnostics, result.Bytes)
 	}
@@ -158,12 +298,12 @@ func workflowRegistry(encoding string) (*codec.Registry, error) {
 		if document.Format != string(codec.FormatSubRip) {
 			return codec.RenderResult{}, fmt.Errorf("document format %q cannot be rendered as SubRip", document.Format)
 		}
-		losses := subRipRenderLosses(document)
-		if options.Strict && len(losses) > 0 {
-			return codec.RenderResult{}, fmt.Errorf("strict SubRip render blocked %d non-representable structured field set(s); first: %s", len(losses), losses[0].Message)
+		observations := convert.SubRipRenderDiagnostics(document)
+		if options.Strict && len(observations) > 0 {
+			return codec.RenderResult{}, fmt.Errorf("strict SubRip render blocked %d non-representable structured field set(s); first: %s", len(observations), observations[0].Message)
 		}
-		bytes, err := subrip.Render(document.Cues)
-		return codec.RenderResult{Bytes: bytes, Diagnostics: losses}, err
+		bytes, renderErr := subrip.Render(document.Cues)
+		return codec.RenderResult{Bytes: bytes, Diagnostics: observations}, renderErr
 	}
 	decodeWebVTT := func(ctx context.Context, captured source.Captured, options codec.DecodeOptions) (model.Document, error) {
 		if err := ctx.Err(); err != nil {
@@ -225,38 +365,6 @@ func mediaTypeForFormat(format codec.Format) *string {
 		return nil
 	}
 	return &mediaType
-}
-
-func subRipRenderLosses(document model.Document) []model.Diagnostic {
-	diagnostics := make([]model.Diagnostic, 0)
-	if document.Metadata.Title != nil || document.Metadata.Language != nil || document.Metadata.Kind != nil || document.Metadata.Description != nil {
-		diagnostics = append(diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_metadata_unrepresented", Message: "document metadata has no canonical SubRip representation"})
-	}
-	for index := range document.Cues {
-		cue := &document.Cues[index]
-		order, id := cue.SourceOrder, cue.ID
-		if subrip.PayloadHasAmbiguousBoundary(cue.Payload.RawText) {
-			diagnostics = append(diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_payload_ambiguous", Message: "payload raw_text contains content that canonical SubRip reparses as a cue boundary", SourceOrder: &order, CueID: &id})
-		}
-		fields := make([]string, 0, 4)
-		if len(cue.Speakers) > 0 {
-			fields = append(fields, "speaker observations")
-		}
-		if len(cue.Tokens) > 0 {
-			fields = append(fields, "token timing")
-		}
-		if len(cue.OCRObservations) > 0 {
-			fields = append(fields, "OCR observations")
-		}
-		if cue.Placement != nil {
-			fields = append(fields, "common placement")
-		}
-		if len(fields) == 0 {
-			continue
-		}
-		diagnostics = append(diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_fields_unrepresented", Message: strings.Join(fields, ", ") + " are not represented by canonical SubRip output", SourceOrder: &order, CueID: &id})
-	}
-	return diagnostics
 }
 
 func newSubRipDocument(asset model.SourceAsset, parsed subrip.Result) model.Document {
