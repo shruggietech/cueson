@@ -1,0 +1,65 @@
+#compdef cueson
+
+_cueson() {
+  local command='' previous='' word
+  local -i options_active=1 index
+  local -a candidates
+  if (( CURRENT > 1 )); then previous=$words[CURRENT-1]; fi
+  for (( index=2; index<CURRENT; index++ )); do
+    word=$words[index]
+    if [[ $word == '--' ]]; then options_active=0; continue; fi
+    if [[ -z $command ]]; then
+      case $word in
+        encode) command='encode' ;;
+        restore) command='restore' ;;
+        render) command='render' ;;
+        convert) command='convert' ;;
+        validate) command='validate' ;;
+        inspect) command='inspect' ;;
+        schema) command='schema' ;;
+        version) command='version' ;;
+        completion) command='completion' ;;
+      esac
+    fi
+  done
+  if (( ! options_active )); then return 0; fi
+
+  case "$command:$previous" in
+    encode:--format) candidates=( 'auto' 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
+    encode:--encoding) candidates=( 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1' ); compadd -Q -- $candidates; return 0 ;;
+    render:--to) candidates=( 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
+    convert:--to) candidates=( 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
+    convert:--from) candidates=( 'auto' 'cueson' 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
+    convert:--encoding) candidates=( 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1' ); compadd -Q -- $candidates; return 0 ;;
+    validate:--format) candidates=( 'auto' 'cueson' 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
+    validate:--encoding) candidates=( 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1' ); compadd -Q -- $candidates; return 0 ;;
+    inspect:--format) candidates=( 'auto' 'cueson' 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
+    inspect:--encoding) candidates=( 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1' ); compadd -Q -- $candidates; return 0 ;;
+  esac
+  if [[ $command == 'encode' && $words[CURRENT] == '--format='* ]]; then candidates=( '--format=auto' '--format=srt' '--format=vtt' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'encode' && $words[CURRENT] == '--encoding='* ]]; then candidates=( '--encoding=utf-8' '--encoding=utf-8-bom' '--encoding=utf-16le' '--encoding=utf-16be' '--encoding=windows-1252' '--encoding=iso-8859-1' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'render' && $words[CURRENT] == '--to='* ]]; then candidates=( '--to=srt' '--to=vtt' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'convert' && $words[CURRENT] == '--to='* ]]; then candidates=( '--to=srt' '--to=vtt' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'convert' && $words[CURRENT] == '--from='* ]]; then candidates=( '--from=auto' '--from=cueson' '--from=srt' '--from=vtt' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'convert' && $words[CURRENT] == '--encoding='* ]]; then candidates=( '--encoding=utf-8' '--encoding=utf-8-bom' '--encoding=utf-16le' '--encoding=utf-16be' '--encoding=windows-1252' '--encoding=iso-8859-1' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'validate' && $words[CURRENT] == '--format='* ]]; then candidates=( '--format=auto' '--format=cueson' '--format=srt' '--format=vtt' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'validate' && $words[CURRENT] == '--encoding='* ]]; then candidates=( '--encoding=utf-8' '--encoding=utf-8-bom' '--encoding=utf-16le' '--encoding=utf-16be' '--encoding=windows-1252' '--encoding=iso-8859-1' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'inspect' && $words[CURRENT] == '--format='* ]]; then candidates=( '--format=auto' '--format=cueson' '--format=srt' '--format=vtt' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'inspect' && $words[CURRENT] == '--encoding='* ]]; then candidates=( '--encoding=utf-8' '--encoding=utf-8-bom' '--encoding=utf-16le' '--encoding=utf-16be' '--encoding=windows-1252' '--encoding=iso-8859-1' ); compadd -Q -- $candidates; return 0; fi
+  case $command in
+    '') candidates=( 'encode' 'restore' 'render' 'convert' 'validate' 'inspect' 'schema' 'version' 'completion' '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' ) ;;
+    encode) candidates=( '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '-o' '--output' '-f' '--force' '--format' '--encoding' '--pretty' '--stdout' '--no-speaker-detection' ) ;;
+    restore) candidates=( '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '-o' '--output' '--output-dir' '-f' '--force' '--strict-metadata' '--no-metadata' ) ;;
+    render) candidates=( '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--to' '-o' '--output' '-f' '--force' '--strict' ) ;;
+    convert) candidates=( '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--to' '--from' '--encoding' '-o' '--output' '-f' '--force' '--strict' '--no-speaker-detection' ) ;;
+    validate) candidates=( '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--format' '--encoding' ) ;;
+    inspect) candidates=( '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--format' '--encoding' '--json' ) ;;
+    schema) candidates=( '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--version' '-o' '--output' '-f' '--force' ) ;;
+    version) candidates=( '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' ) ;;
+    completion) candidates=( 'bash' 'zsh' 'fish' 'powershell' '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' ) ;;
+    *) candidates=() ;;
+  esac
+  compadd -Q -- $candidates
+}
+
+compdef _cueson cueson

@@ -1,0 +1,34 @@
+Render validated Cue JSON from its structured model in its matching native subtitle format.
+
+Usage:
+  cueson [global options] render [options] INPUT.cueson.json --to FORMAT
+
+Options:
+  --to FORMAT        Select srt or vtt.
+  -o, --output PATH  Write native output to PATH instead of stdout.
+  -f, --force        Replace an existing regular output file.
+  --strict           Reject known non-representable model content.
+
+Global options:
+  -q, --quiet  Suppress informational and success diagnostics.
+  --silent     Suppress every non-error diagnostic.
+  --no-color   Disable diagnostic color.
+  -h, --help   Show help.
+  --           End option processing; following paths and operands remain literal.
+
+Notes:
+  Format aliases: subrip for srt; webvtt for vtt.
+  --output - selects stdout. --force requires a filesystem output.
+
+Streams:
+  stdout  Canonical native bytes unless a filesystem output is selected.
+  stderr  Ordered warnings and errors allowed by the global diagnostic filters.
+
+Exit codes:
+  0  Command or explicit help completed successfully; warnings may be present.
+  1  An accepted operation failed during processing, cancellation, or runtime I/O.
+  2  Command syntax, an operand, an option, or a pre-execution requirement was invalid.
+
+Examples:
+  cueson render captions.srt.cueson.json --to srt
+  cueson render captions.vtt.cueson.json --to vtt --output captions.vtt

@@ -1,0 +1,39 @@
+Encode a SubRip or WebVTT source as Cue JSON while preserving its exact source bytes.
+
+Usage:
+  cueson [global options] encode [options] INPUT
+
+Options:
+  -o, --output PATH       Write Cue JSON to PATH (default INPUT.cueson.json).
+  -f, --force             Replace an existing regular output file.
+  --format FORMAT         Select auto, srt, or vtt (default auto).
+  --encoding NAME         Select the source text encoding.
+  --pretty                Indent Cue JSON output.
+  --stdout                Write Cue JSON to stdout.
+  --no-speaker-detection  Disable derived Name: speaker observations.
+
+Global options:
+  -q, --quiet  Suppress informational and success diagnostics.
+  --silent     Suppress every non-error diagnostic.
+  --no-color   Disable diagnostic color.
+  -h, --help   Show help.
+  --           End option processing; following paths and operands remain literal.
+
+Notes:
+  Format aliases: subrip for srt; webvtt for vtt.
+  Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le; utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.
+  WebVTT accepts UTF-8 only.
+  --output - is equivalent to --stdout. --force requires a filesystem output.
+
+Streams:
+  stdout  Cue JSON only when --stdout or --output - is selected; otherwise empty.
+  stderr  Ordered warnings and errors allowed by the global diagnostic filters.
+
+Exit codes:
+  0  Command or explicit help completed successfully; warnings may be present.
+  1  An accepted operation failed during processing, cancellation, or runtime I/O.
+  2  Command syntax, an operand, an option, or a pre-execution requirement was invalid.
+
+Examples:
+  cueson encode --pretty captions.srt
+  cueson encode --format vtt --stdout captions.vtt

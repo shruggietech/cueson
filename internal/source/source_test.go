@@ -111,3 +111,32 @@ func TestCaptureContextHonorsCancellation(t *testing.T) {
 		t.Fatalf("CaptureContext() error = %v, want context cancellation", err)
 	}
 }
+
+func TestCaptureContextClassifiesDeterministicPreconditions(t *testing.T) {
+	t.Parallel()
+
+	directory := t.TempDir()
+	oversized := filepath.Join(directory, "oversized.srt")
+	file, err := os.OpenFile(oversized, os.O_CREATE|os.O_WRONLY, 0o600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Truncate(MaxCaptureBytes + 1); err != nil {
+		_ = file.Close()
+		t.Fatal(err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, path := range []string{
+		filepath.Join(directory, "missing.srt"),
+		directory,
+		oversized,
+		filepath.Join(directory, "PRIVATE:BAD.srt"),
+	} {
+		if _, err := CaptureContext(context.Background(), path, CaptureOptions{}); !IsCapturePrecondition(err) {
+			t.Errorf("CaptureContext(%q) error = %v, want capture precondition", path, err)
+		}
+	}
+}

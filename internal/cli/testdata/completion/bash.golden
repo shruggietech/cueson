@@ -1,0 +1,121 @@
+# Bash completion for cueson.
+_cueson_filter_candidates() {
+  local prefix="$1" candidate
+  shift
+  COMPREPLY=()
+  for candidate in "$@"; do
+    case "$candidate" in "$prefix"*) COMPREPLY[${#COMPREPLY[@]}]="$candidate" ;; esac
+  done
+}
+
+_cueson_completion() {
+  local current="${COMP_WORDS[COMP_CWORD]}" previous="" command="" word candidate
+  local options_active=1 index
+  if (( COMP_CWORD > 0 )); then previous="${COMP_WORDS[COMP_CWORD-1]}"; fi
+  for (( index=1; index<COMP_CWORD; index++ )); do
+    word="${COMP_WORDS[index]}"
+    if [[ "$word" == "--" ]]; then options_active=0; continue; fi
+    if [[ -z "$command" ]]; then
+      case "$word" in
+        encode) command="encode" ;;
+        restore) command="restore" ;;
+        render) command="render" ;;
+        convert) command="convert" ;;
+        validate) command="validate" ;;
+        inspect) command="inspect" ;;
+        schema) command="schema" ;;
+        version) command="version" ;;
+        completion) command="completion" ;;
+      esac
+    fi
+  done
+  if (( ! options_active )); then COMPREPLY=(); return; fi
+
+  case "$command:$previous" in
+    encode:--format) _cueson_filter_candidates "$current" 'auto' 'srt' 'vtt'; return ;;
+    encode:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
+    render:--to) _cueson_filter_candidates "$current" 'srt' 'vtt'; return ;;
+    convert:--to) _cueson_filter_candidates "$current" 'srt' 'vtt'; return ;;
+    convert:--from) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt'; return ;;
+    convert:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
+    validate:--format) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt'; return ;;
+    validate:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
+    inspect:--format) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt'; return ;;
+    inspect:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
+  esac
+  if [[ "$command" == 'encode' && "$current" == '--format='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'auto' 'srt' 'vtt'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--format='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'encode' && "$current" == '--encoding='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--encoding='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'render' && "$current" == '--to='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'srt' 'vtt'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--to='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'convert' && "$current" == '--to='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'srt' 'vtt'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--to='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'convert' && "$current" == '--from='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--from='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'convert' && "$current" == '--encoding='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--encoding='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'validate' && "$current" == '--format='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--format='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'validate' && "$current" == '--encoding='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--encoding='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'inspect' && "$current" == '--format='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--format='"${COMPREPLY[index]}"; done
+    return
+  fi
+  if [[ "$command" == 'inspect' && "$current" == '--encoding='* ]]; then
+    local value_prefix="${current#*=}"
+    _cueson_filter_candidates "$value_prefix" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'
+    for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--encoding='"${COMPREPLY[index]}"; done
+    return
+  fi
+  case "$command" in
+    "") _cueson_filter_candidates "$current" 'encode' 'restore' 'render' 'convert' 'validate' 'inspect' 'schema' 'version' 'completion' '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' ;;
+    encode) _cueson_filter_candidates "$current" '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '-o' '--output' '-f' '--force' '--format' '--encoding' '--pretty' '--stdout' '--no-speaker-detection' ;;
+    restore) _cueson_filter_candidates "$current" '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '-o' '--output' '--output-dir' '-f' '--force' '--strict-metadata' '--no-metadata' ;;
+    render) _cueson_filter_candidates "$current" '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--to' '-o' '--output' '-f' '--force' '--strict' ;;
+    convert) _cueson_filter_candidates "$current" '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--to' '--from' '--encoding' '-o' '--output' '-f' '--force' '--strict' '--no-speaker-detection' ;;
+    validate) _cueson_filter_candidates "$current" '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--format' '--encoding' ;;
+    inspect) _cueson_filter_candidates "$current" '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--format' '--encoding' '--json' ;;
+    schema) _cueson_filter_candidates "$current" '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' '--version' '-o' '--output' '-f' '--force' ;;
+    version) _cueson_filter_candidates "$current" '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' ;;
+    completion) _cueson_filter_candidates "$current" 'bash' 'zsh' 'fish' 'powershell' '-q' '--quiet' '--silent' '--no-color' '-h' '--help' '--' ;;
+    *) COMPREPLY=() ;;
+  esac
+}
+
+complete -F _cueson_completion cueson

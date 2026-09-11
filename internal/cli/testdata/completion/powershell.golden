@@ -1,0 +1,71 @@
+# PowerShell completion for cueson.
+Register-ArgumentCompleter -Native -CommandName cueson -ScriptBlock {
+  param($wordToComplete, $commandAst, $cursorPosition)
+  $tokens = @()
+  foreach ($element in $commandAst.CommandElements) {
+    if ($element -is [System.Management.Automation.Language.StringConstantExpressionAst]) { $tokens += $element.Value } else { $tokens += $element.Extent.Text }
+  }
+  $command = ''
+  $optionsActive = $true
+  $limit = $tokens.Count
+  if ($wordToComplete.Length -gt 0 -and $tokens.Count -gt 1 -and $tokens[$tokens.Count - 1] -ceq $wordToComplete) { $limit-- }
+  for ($index = 1; $index -lt $limit; $index++) {
+    $token = $tokens[$index]
+    if ($token -ceq '--') { $optionsActive = $false; continue }
+    if ($command.Length -eq 0) {
+      switch -CaseSensitive ($token) {
+        'encode' { $command = 'encode'; break }
+        'restore' { $command = 'restore'; break }
+        'render' { $command = 'render'; break }
+        'convert' { $command = 'convert'; break }
+        'validate' { $command = 'validate'; break }
+        'inspect' { $command = 'inspect'; break }
+        'schema' { $command = 'schema'; break }
+        'version' { $command = 'version'; break }
+        'completion' { $command = 'completion'; break }
+      }
+    }
+  }
+  if (-not $optionsActive) { return }
+  $previous = if ($limit -gt 1) { $tokens[$limit - 1] } else { '' }
+  $candidates = @()
+  if ($command -ceq 'encode' -and $previous -ceq '--format') { $candidates = @('auto', 'srt', 'vtt') }
+  if ($command -ceq 'encode' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=srt', '--format=vtt') }
+  if ($command -ceq 'encode' -and $previous -ceq '--encoding') { $candidates = @('utf-8', 'utf-8-bom', 'utf-16le', 'utf-16be', 'windows-1252', 'iso-8859-1') }
+  if ($command -ceq 'encode' -and $wordToComplete.StartsWith('--encoding=', [System.StringComparison]::Ordinal)) { $candidates = @('--encoding=utf-8', '--encoding=utf-8-bom', '--encoding=utf-16le', '--encoding=utf-16be', '--encoding=windows-1252', '--encoding=iso-8859-1') }
+  if ($command -ceq 'render' -and $previous -ceq '--to') { $candidates = @('srt', 'vtt') }
+  if ($command -ceq 'render' -and $wordToComplete.StartsWith('--to=', [System.StringComparison]::Ordinal)) { $candidates = @('--to=srt', '--to=vtt') }
+  if ($command -ceq 'convert' -and $previous -ceq '--to') { $candidates = @('srt', 'vtt') }
+  if ($command -ceq 'convert' -and $wordToComplete.StartsWith('--to=', [System.StringComparison]::Ordinal)) { $candidates = @('--to=srt', '--to=vtt') }
+  if ($command -ceq 'convert' -and $previous -ceq '--from') { $candidates = @('auto', 'cueson', 'srt', 'vtt') }
+  if ($command -ceq 'convert' -and $wordToComplete.StartsWith('--from=', [System.StringComparison]::Ordinal)) { $candidates = @('--from=auto', '--from=cueson', '--from=srt', '--from=vtt') }
+  if ($command -ceq 'convert' -and $previous -ceq '--encoding') { $candidates = @('utf-8', 'utf-8-bom', 'utf-16le', 'utf-16be', 'windows-1252', 'iso-8859-1') }
+  if ($command -ceq 'convert' -and $wordToComplete.StartsWith('--encoding=', [System.StringComparison]::Ordinal)) { $candidates = @('--encoding=utf-8', '--encoding=utf-8-bom', '--encoding=utf-16le', '--encoding=utf-16be', '--encoding=windows-1252', '--encoding=iso-8859-1') }
+  if ($command -ceq 'validate' -and $previous -ceq '--format') { $candidates = @('auto', 'cueson', 'srt', 'vtt') }
+  if ($command -ceq 'validate' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=cueson', '--format=srt', '--format=vtt') }
+  if ($command -ceq 'validate' -and $previous -ceq '--encoding') { $candidates = @('utf-8', 'utf-8-bom', 'utf-16le', 'utf-16be', 'windows-1252', 'iso-8859-1') }
+  if ($command -ceq 'validate' -and $wordToComplete.StartsWith('--encoding=', [System.StringComparison]::Ordinal)) { $candidates = @('--encoding=utf-8', '--encoding=utf-8-bom', '--encoding=utf-16le', '--encoding=utf-16be', '--encoding=windows-1252', '--encoding=iso-8859-1') }
+  if ($command -ceq 'inspect' -and $previous -ceq '--format') { $candidates = @('auto', 'cueson', 'srt', 'vtt') }
+  if ($command -ceq 'inspect' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=cueson', '--format=srt', '--format=vtt') }
+  if ($command -ceq 'inspect' -and $previous -ceq '--encoding') { $candidates = @('utf-8', 'utf-8-bom', 'utf-16le', 'utf-16be', 'windows-1252', 'iso-8859-1') }
+  if ($command -ceq 'inspect' -and $wordToComplete.StartsWith('--encoding=', [System.StringComparison]::Ordinal)) { $candidates = @('--encoding=utf-8', '--encoding=utf-8-bom', '--encoding=utf-16le', '--encoding=utf-16be', '--encoding=windows-1252', '--encoding=iso-8859-1') }
+  if ($candidates.Count -eq 0) {
+    switch -CaseSensitive ($command) {
+      '' { $candidates = @('encode', 'restore', 'render', 'convert', 'validate', 'inspect', 'schema', 'version', 'completion', '-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--') }
+      'encode' { $candidates = @('-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--', '-o', '--output', '-f', '--force', '--format', '--encoding', '--pretty', '--stdout', '--no-speaker-detection') }
+      'restore' { $candidates = @('-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--', '-o', '--output', '--output-dir', '-f', '--force', '--strict-metadata', '--no-metadata') }
+      'render' { $candidates = @('-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--', '--to', '-o', '--output', '-f', '--force', '--strict') }
+      'convert' { $candidates = @('-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--', '--to', '--from', '--encoding', '-o', '--output', '-f', '--force', '--strict', '--no-speaker-detection') }
+      'validate' { $candidates = @('-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--', '--format', '--encoding') }
+      'inspect' { $candidates = @('-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--', '--format', '--encoding', '--json') }
+      'schema' { $candidates = @('-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--', '--version', '-o', '--output', '-f', '--force') }
+      'version' { $candidates = @('-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--') }
+      'completion' { $candidates = @('bash', 'zsh', 'fish', 'powershell', '-q', '--quiet', '--silent', '--no-color', '-h', '--help', '--') }
+    }
+  }
+  foreach ($candidate in $candidates) {
+    if ($candidate.StartsWith($wordToComplete, [System.StringComparison]::Ordinal)) {
+      [System.Management.Automation.CompletionResult]::new($candidate, $candidate, 'ParameterValue', $candidate)
+    }
+  }
+}

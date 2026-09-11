@@ -1,0 +1,39 @@
+Cueson command-line interface.
+
+Usage:
+  cueson [global options] <command>
+
+Commands:
+  encode      Encode a subtitle source as Cue JSON.
+  restore     Restore exact source-envelope bytes.
+  render      Render Cue JSON from its structured model.
+  convert     Convert SubRip and WebVTT through the common model.
+  validate    Validate Cue JSON or a native subtitle without output.
+  inspect     Inspect safe structural facts about an input.
+  schema      Print or save the embedded Cue JSON schema.
+  version     Print the Cueson executable version.
+  completion  Generate static shell completion.
+
+Global options:
+  -q, --quiet  Suppress informational and success diagnostics.
+  --silent     Suppress every non-error diagnostic.
+  --no-color   Disable diagnostic color.
+  -h, --help   Show help.
+  --           End option processing; following paths and operands remain literal.
+
+Streams:
+  stdout  Payload data and explicit help only; never diagnostics or decoration.
+  stderr  Diagnostics, warnings, errors, and error-associated short usage.
+  Quiet and silent never suppress an explicitly requested stdout payload.
+
+Exit codes:
+  0  Command or explicit help completed successfully; warnings may be present.
+  1  An accepted operation failed during processing, cancellation, or runtime I/O.
+  2  Command syntax, an operand, an option, or a pre-execution requirement was invalid.
+
+Examples:
+  cueson --help
+  cueson validate captions.srt
+  cueson inspect --json document.cueson.json
+  cueson convert captions.vtt --to srt
+  cueson completion bash

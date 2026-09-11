@@ -1,0 +1,34 @@
+Inspect validated Cue JSON, SubRip, or WebVTT as a privacy-bounded structural report.
+
+Usage:
+  cueson [global options] inspect [options] INPUT
+
+Options:
+  --format FORMAT  Select auto, cueson, srt, or vtt (default auto).
+  --encoding NAME  Select the native source text encoding.
+  --json           Write the compact inspection report version 1 as JSON.
+
+Global options:
+  -q, --quiet  Suppress informational and success diagnostics.
+  --silent     Suppress every non-error diagnostic.
+  --no-color   Disable diagnostic color.
+  -h, --help   Show help.
+  --           End option processing; following paths and operands remain literal.
+
+Notes:
+  Format aliases: json and cue-json for cueson; subrip for srt; webvtt for vtt.
+  Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le; utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.
+  Cue JSON prohibits --encoding. WebVTT accepts UTF-8 only.
+
+Streams:
+  stdout  One human report, or one compact JSON object with --json.
+  stderr  Ordered source warnings and errors allowed by the global filters.
+
+Exit codes:
+  0  Command or explicit help completed successfully; warnings may be present.
+  1  An accepted operation failed during processing, cancellation, or runtime I/O.
+  2  Command syntax, an operand, an option, or a pre-execution requirement was invalid.
+
+Examples:
+  cueson inspect document.cueson.json
+  cueson inspect --json captions.vtt

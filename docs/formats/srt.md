@@ -18,6 +18,7 @@ Current source implements native SubRip detection, decoding, semantic ingest, ex
 | Exact restoration | Available | `cueson restore` verifies and recreates the source envelope without the codec. |
 | Model-driven rendering | Experimental | `cueson render --to srt` emits canonical SubRip from structured fields. |
 | Cross-format conversion | Experimental | `cueson convert INPUT --to vtt` projects common cue semantics and reports every known incompatible SubRip feature. |
+| Validation and inspection | Experimental | `cueson validate` checks native grammar without producing Cue JSON; `cueson inspect` reports privacy-bounded structural facts. |
 | Stable SubRip support | Unavailable | Stable support remains a v1.0.0 gate. |
 
 ## Source and decoding
