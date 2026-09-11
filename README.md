@@ -21,7 +21,7 @@
 
 Cueson encodes SubRip and WebVTT subtitle files into a canonical, versioned JSON representation called Cue JSON, renders the structured model back to deterministic native syntax, and converts between those formats with explicit loss reporting. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration.
 
-The [official v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) contains the stable `cueson` executable, its canonical Draft 2020-12 Cue JSON schema, and a byte-identical [immutable v1 schema](schema/releases/v1.0.0/cueson.schema.json). It provides bounded native SubRip and WebVTT detection, decoding, semantic ingest, deterministic rendering, cross-format conversion, validation, inspection, shell completion, and codec-independent exact restoration. The earlier [v0.0.0 envelope-only release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain available as historical foundations.
+The [official v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) contains the stable `cueson` executable, its canonical Draft 2020-12 Cue JSON schema, and a byte-identical [immutable v1 schema](schema/releases/v1.0.0/cueson.schema.json). It provides bounded native SubRip and WebVTT detection, decoding, semantic ingest, deterministic rendering, cross-format conversion, validation, inspection, shell completion, and codec-independent exact restoration. The earlier [v0.0.0 envelope-only release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain available as historical foundations. The public product and documentation home is [cueson.io](https://cueson.io).
 
 ## Capability direction
 
@@ -41,7 +41,7 @@ The v1.0.0 history, immutable schema, and concise [release notes](docs/releases/
 
 Download the archive for your platform from the [v1.0.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) and verify it with `cueson_1.0.0_checksums.txt`. Six pure-Go archives cover Windows, macOS, and Linux on amd64 and arm64, and each archive has a matching SPDX JSON SBOM.
 
-Developers building from source require Go 1.25.0 or newer. Clone the repository, then use `go run ./cmd/cueson`, `go build ./cmd/cueson`, or `go install ./cmd/cueson`. The published release remains pure Go with `CGO_ENABLED=0`. The canonical `cueson.io` schema endpoint and production documentation site remain separately governed and are not required to use the schema embedded in each executable and archive.
+Developers building from source require Go 1.25.0 or newer. Clone the repository, then use `go run ./cmd/cueson`, `go build ./cmd/cueson`, or `go install ./cmd/cueson`. The published release remains pure Go with `CGO_ENABLED=0`. Versioned public schemas resolve at `https://cueson.io/schema/vVERSION/cueson.schema.json`; the schema embedded in each executable and archive remains available without network access.
 
 ## Executable quick start
 

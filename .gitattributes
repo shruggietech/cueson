@@ -43,3 +43,8 @@ brand/** -text -eol -whitespace
 docs/assets/brand/** -text -eol -whitespace
 docs/assets/favicons/** -text -eol -whitespace
 docs/assets/fonts/** -text -eol -whitespace
+
+# Generated public-site byte copies retain source identity if force-added for inspection.
+site/public/assets/** -text -eol -whitespace
+site/public/schema/** -text -eol -whitespace
+site/public/guides/** -text -eol -whitespace

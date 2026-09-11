@@ -1,0 +1,54 @@
+{
+  "generator_version": 1,
+  "origin": "https://cueson.io",
+  "documents": [
+    { "source": "README.md", "slug": [], "title": "Cueson documentation", "description": "Install Cueson, understand Cue JSON, and find the complete maintained documentation.", "order": 0, "start_heading": "Capability direction" },
+    { "source": "docs/architecture.md", "slug": ["architecture"], "title": "Architecture", "description": "Architecture of record for Cueson packages, contracts, fidelity, security, and delivery.", "order": 10 },
+    { "source": "docs/cli.md", "slug": ["cli"], "title": "CLI reference", "description": "Complete command, option, stream, exit-code, and workflow contract for the Cueson CLI.", "order": 20 },
+    { "source": "docs/schema.md", "slug": ["schema"], "title": "Cue JSON Schema", "description": "Stable Cue JSON v1 schema semantics, compatibility, source envelope, and validation rules.", "order": 30 },
+    { "source": "docs/formats/srt.md", "slug": ["formats", "subrip"], "title": "SubRip", "description": "Supported SubRip grammar, encodings, diagnostics, restoration, rendering, and conversion behavior.", "order": 40 },
+    { "source": "docs/formats/webvtt.md", "slug": ["formats", "webvtt"], "title": "WebVTT", "description": "Supported WebVTT blocks, cues, settings, markup, diagnostics, restoration, rendering, and conversion behavior.", "order": 50 },
+    { "source": "docs/conversion.md", "slug": ["conversion"], "title": "Conversion", "description": "Bidirectional SubRip and WebVTT conversion with explicit loss reporting and strict mode.", "order": 60 },
+    { "source": "docs/compatibility.md", "slug": ["compatibility"], "title": "Compatibility", "description": "Stable v1 CLI, schema, format, platform, fidelity, and release compatibility promises.", "order": 70 },
+    { "source": "docs/brand.md", "slug": ["brand"], "title": "Brand", "description": "Approved Cueson brand-kit provenance, identity, integrity, and consumer-use contract.", "order": 80 },
+    { "source": "SECURITY.md", "slug": ["security"], "title": "Security", "description": "Supported versions, vulnerability reporting, and Cueson security boundaries.", "order": 90 },
+    { "source": "CONTRIBUTING.md", "slug": ["contributing"], "title": "Contributing", "description": "How to build, test, document, and contribute changes to Cueson.", "order": 100 },
+    { "source": "CHANGELOG.md", "slug": ["changelog"], "title": "Changelog", "description": "Detailed Cueson release history and architecture decisions.", "order": 110 },
+    { "source": "docs/releases/v1.0.0.md", "slug": ["releases", "v1.0.0"], "title": "Cueson v1.0.0", "description": "Highlights and release links for the first stable Cueson release.", "order": 120 },
+    { "source": "docs/releases/v0.0.0.md", "slug": ["releases", "v0.0.0"], "title": "Cueson v0.0.0", "description": "Historical release notes for the envelope-only repository foundation.", "order": 130 },
+    { "source": "docs/release-process.md", "slug": ["release-process"], "title": "Release process", "description": "Versioning, artifact, authorization, publication, and verification rules.", "order": 140 },
+    { "source": "docs/release-verification.md", "slug": ["release-verification"], "title": "Release verification", "description": "Recorded evidence for published Cueson release artifacts and schemas.", "order": 150 },
+    { "source": "docs/project-management.md", "slug": ["project-management"], "title": "Project management", "description": "GitHub issue, Project, milestone, pull-request, and work-slice operating contract.", "order": 160 },
+    { "source": "docs/Cueson-Project-Specification-v0.0.0.md", "slug": ["project-specification"], "title": "Project specification", "description": "Working pre-release product architecture and roadmap for Cueson.", "order": 170 }
+  ],
+  "schemas": [
+    { "version": "0.0.0", "source": "schema/releases/v0.0.0/cueson.schema.json", "public": "schema/v0.0.0/cueson.schema.json", "sha256": "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975" },
+    { "version": "1.0.0", "source": "schema/releases/v1.0.0/cueson.schema.json", "public": "schema/v1.0.0/cueson.schema.json", "sha256": "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541" }
+  ],
+  "downloads": [
+    { "name": "Windows x86-64", "url": "https://github.com/shruggietech/cueson/releases/download/v1.0.0/cueson_1.0.0_windows_amd64.zip" },
+    { "name": "Windows Arm64", "url": "https://github.com/shruggietech/cueson/releases/download/v1.0.0/cueson_1.0.0_windows_arm64.zip" },
+    { "name": "macOS Intel", "url": "https://github.com/shruggietech/cueson/releases/download/v1.0.0/cueson_1.0.0_darwin_amd64.tar.gz" },
+    { "name": "macOS Apple silicon", "url": "https://github.com/shruggietech/cueson/releases/download/v1.0.0/cueson_1.0.0_darwin_arm64.tar.gz" },
+    { "name": "Linux x86-64", "url": "https://github.com/shruggietech/cueson/releases/download/v1.0.0/cueson_1.0.0_linux_amd64.tar.gz" },
+    { "name": "Linux Arm64", "url": "https://github.com/shruggietech/cueson/releases/download/v1.0.0/cueson_1.0.0_linux_arm64.tar.gz" },
+    { "name": "SHA-256 checksums", "url": "https://github.com/shruggietech/cueson/releases/download/v1.0.0/cueson_1.0.0_checksums.txt" }
+  ],
+  "brand_assets": [
+    { "source": "logos/svg/cueson-horizontal-color.svg", "public": "assets/logos/cueson-horizontal-color.svg", "purpose": "logo" },
+    { "source": "logos/svg/cueson-horizontal-light.svg", "public": "assets/logos/cueson-horizontal-light.svg", "purpose": "logo" },
+    { "source": "logos/png/cueson-social-preview-1280.png", "public": "assets/logos/cueson-social-preview-1280.png", "purpose": "social_preview" },
+    { "source": "icons/web/favicon.ico", "public": "assets/favicons/favicon.ico", "purpose": "favicon" },
+    { "source": "icons/web/favicon.svg", "public": "assets/favicons/favicon.svg", "purpose": "favicon" },
+    { "source": "icons/web/apple-touch-icon.png", "public": "assets/favicons/apple-touch-icon.png", "purpose": "favicon" },
+    { "source": "fonts/fonts.css", "public": "assets/fonts/fonts.css", "purpose": "font" },
+    { "source": "fonts/woff2/Geist-Regular.woff2", "public": "assets/fonts/woff2/Geist-Regular.woff2", "purpose": "font" },
+    { "source": "fonts/woff2/Geist-Medium.woff2", "public": "assets/fonts/woff2/Geist-Medium.woff2", "purpose": "font" },
+    { "source": "fonts/woff2/GeistMono-Regular.woff2", "public": "assets/fonts/woff2/GeistMono-Regular.woff2", "purpose": "font" },
+    { "source": "fonts/woff2/SpaceGrotesk-Medium.woff2", "public": "assets/fonts/woff2/SpaceGrotesk-Medium.woff2", "purpose": "font" },
+    { "source": "fonts/woff2/SpaceGrotesk-Bold.woff2", "public": "assets/fonts/woff2/SpaceGrotesk-Bold.woff2", "purpose": "font" }
+  ],
+  "direct_files": [
+    { "source": "docs/cueson-media-format-guide.html", "public": "guides/media-formats/index.html", "transform": "media_guide" }
+  ]
+}

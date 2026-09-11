@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+@font-face { font-family: "Space Grotesk"; src: url("/assets/fonts/woff2/SpaceGrotesk-Medium.woff2") format("woff2"); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: "Space Grotesk"; src: url("/assets/fonts/woff2/SpaceGrotesk-Bold.woff2") format("woff2"); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("/assets/fonts/woff2/Geist-Regular.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("/assets/fonts/woff2/Geist-Medium.woff2") format("woff2"); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("/assets/fonts/woff2/GeistMono-Regular.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
+
+:root {
+  --color-fd-background: #080a14;
+  --color-fd-foreground: #f4f6ff;
+  --color-fd-primary: #62beb2;
+  --color-fd-primary-foreground: #080a14;
+  --color-fd-muted: #181d33;
+  --color-fd-muted-foreground: #a7aec7;
+  --color-fd-accent: #222944;
+  --color-fd-accent-foreground: #f4f6ff;
+  --color-fd-border: #596181;
+  --font-sans: "Geist", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+html { background: #080a14; color: #f4f6ff; scroll-behavior: smooth; }
+body { margin: 0; overflow-x: hidden; font-family: "Geist", sans-serif; background: radial-gradient(circle at 70% 0%, rgba(98, 190, 178, 0.12), transparent 32rem), #080a14; }
+h1, h2, h3, .display { font-family: "Space Grotesk", sans-serif; letter-spacing: -0.03em; }
+code, pre { font-family: "Geist Mono", monospace; }
+a { text-underline-offset: 0.2em; }
+:focus-visible { outline: 2px solid #62beb2 !important; outline-offset: 3px; }
+.brand-lockup img { display: block; width: 150px; height: auto; }
+
+.site-header { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid rgba(89, 97, 129, 0.45); background: rgba(8, 10, 20, 0.88); backdrop-filter: blur(18px); }
+.site-nav { width: min(1160px, calc(100% - 2rem)); min-height: 4.5rem; margin: auto; display: flex; align-items: center; gap: 1.5rem; }
+.site-nav img { width: 164px; height: auto; }
+.site-links { margin-left: auto; display: flex; align-items: center; gap: 1.25rem; }
+.site-links a { color: #d8dcef; text-decoration: none; font-weight: 500; }
+.site-links a:hover { color: #62beb2; }
+.nav-download { border: 1px solid #62beb2; border-radius: 999px; padding: 0.55rem 0.9rem; }
+
+.hero { width: min(1160px, calc(100% - 2rem)); min-height: 43rem; margin: auto; padding: 7rem 0 5rem; display: grid; grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 4rem; }
+.hero > * { min-width: 0; }
+.eyebrow { color: #62beb2; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.78rem; font-weight: 700; }
+.hero h1 { max-width: 13ch; margin: 0.7rem 0 1.5rem; font-size: clamp(3rem, 7vw, 6.4rem); line-height: 0.93; }
+.hero-copy > p { max-width: 43rem; color: #c2c7dc; font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.65; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin: 2rem 0; }
+.button { display: inline-flex; align-items: center; justify-content: center; border: 1px solid #62beb2; border-radius: 0.5rem; padding: 0.85rem 1.1rem; color: #080a14; background: #62beb2; text-decoration: none; font-weight: 700; }
+.button.secondary { color: #f4f6ff; background: transparent; border-color: #596181; }
+.install { display: flex; align-items: center; width: 100%; max-width: 42rem; overflow-x: auto; border: 1px solid #596181; border-radius: 0.6rem; padding: 0.9rem 1rem; background: #101425; color: #d8dcef; font-size: 0.88rem; }
+.cue-card { position: relative; border: 1px solid #596181; border-radius: 1.25rem; padding: 1.5rem; background: linear-gradient(145deg, #101425, #181d33); box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35); }
+.cue-rail { width: 3px; min-height: 16rem; background: #62beb2; position: absolute; left: 2.4rem; top: 4rem; }
+.cue { position: relative; margin: 1rem 0 1rem 2.4rem; padding: 1rem; border-radius: 0.6rem; background: #080a14; }
+.cue::before { content: ""; position: absolute; left: -1.8rem; top: 1.35rem; width: 0.75rem; height: 0.75rem; border-radius: 50%; background: #62beb2; box-shadow: 0 0 0 5px rgba(98,190,178,.16); }
+.cue small { color: #8fb8b1; font-family: "Geist Mono", monospace; }
+.cue strong { display: block; margin-top: 0.4rem; }
+.section { width: min(1160px, calc(100% - 2rem)); margin: auto; padding: 5rem 0; }
+.section h2 { font-size: clamp(2rem, 4vw, 3.4rem); margin: 0 0 1rem; }
+.section-lead { max-width: 45rem; color: #a7aec7; font-size: 1.15rem; }
+.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; }
+.feature { border: 1px solid #444b68; border-radius: 0.8rem; background: #101425; padding: 1.4rem; }
+.feature h3 { margin: 0 0 0.5rem; color: #f4f6ff; }
+.feature p { color: #a7aec7; line-height: 1.6; }
+.download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 0.75rem; margin-top: 2rem; }
+.download-grid a { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border: 1px solid #444b68; border-radius: 0.6rem; padding: 1rem; color: #f4f6ff; background: #101425; text-decoration: none; }
+.download-grid a:hover { border-color: #62beb2; color: #62beb2; }
+.command-example { width: 100%; margin: 2rem 0 1rem; overflow-x: auto; border: 1px solid #596181; border-radius: 0.8rem; padding: 1.3rem; background: #101425; color: #f4f6ff; }
+.site-footer { border-top: 1px solid #353b56; margin-top: 4rem; }
+.site-footer-inner { width: min(1160px, calc(100% - 2rem)); margin: auto; padding: 2rem 0; color: #a7aec7; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; }
+.site-footer a { color: #8fb8b1; }
+.not-found { min-height: 70vh; display: grid; place-content: center; padding: 2rem; text-align: center; }
+
+@media (max-width: 800px) {
+  .hero { grid-template-columns: 1fr; padding-top: 4rem; gap: 2rem; }
+  .cue-card { max-width: 34rem; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .site-links a:not(.nav-download) { display: none; }
+  .hero h1 { font-size: clamp(3rem, 15vw, 5rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
