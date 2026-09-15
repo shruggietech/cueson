@@ -2391,6 +2391,14 @@ v1.0.0 requires:
 - complete format grammar documentation;
 - green fuzz, corpus, integrity, and cross-platform CI gates.
 
+## Post-v1 milestone plan
+
+S020 completed official v1.0.0 publication and independently verified its artifacts; the v1 epic and milestone are closed. S021 completed the separately authorized public documentation site and immutable v0.0.0/v1.0.0 schema hosting. S022 corrected independent IPv4/IPv6 production verification. These completed transitions are distinct from any future tag/release or production authority.
+
+The operator-approved [S023 development roadmap](roadmap.md) selects ASS/SSA as the next compatible v1.1.0 milestone, with one native epic and sixteen atomic outcomes through release and public schema/site verification. Future family section order below was never an implementation ranking; scripted formats are prioritized for shared section/style/event, native preservation and verification cohesion. XML timed-text, SAMI, legacy broadcast and bitmap/OCR remain subsequent milestones, and OCR remains required for complete bitmap semantics.
+
+The [future ASS/SSA contract](formats/ass-ssa.md) and [exact historical compatibility contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) define the next implementation gates. A new executable must preserve promised v1.0.0 input/CLI workflows by exact local historical schema and semantics, while new encode output identifies the new current contract and old exact-version consumers reject it. Any unavoidable established public break requires a major-version decision before implementation continues. S023 changes planning and contracts, not current runtime/schema/version, immutable artifacts or production.
+
 ## Schema-first future format declarations
 
 Cueson SHOULD allow the schema to define structures for future formats before the implementation claims native ingest support for those formats.

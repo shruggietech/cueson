@@ -21,7 +21,7 @@ The published v1.0.0 executable and schema implement the complete stable v1 comm
 
 Starting with v1.0.0, incompatible changes to either public interface require a new major version. Compatible additions may use a minor version, and compatible corrections may use a patch version. Official Cueson executable and schema versions remain equal; a third-party producer's own version is independent from the Cue JSON schema version it targets.
 
-No mutable `latest` schema identity is part of the contract. Every released schema copy is immutable. The v1.0.0 canonical and immutable schemas are available from the repository, release archives, and embedded executable; their `cueson.io` URI remains an identifier until production hosting is separately authorized.
+No mutable `latest` schema identity is part of the contract. Every released schema copy is immutable. The v1.0.0 canonical and immutable schemas are available from the repository, release archives, embedded executable, and byte-exact public `cueson.io` route. S021 completed separately authorized public hosting of both v0.0.0 and v1.0.0 immutable schemas.
 
 ## Format capability states
 
@@ -47,4 +47,12 @@ Core CLI, schema, parsing, rendering, conversion, validation, inspection, and co
 
 Users can download v1.0.0 from GitHub and verify the selected archive with the published `cueson_1.0.0_checksums.txt` manifest. Building or running from source requires Go 1.25.0 or newer.
 
-The v1.0.0 executable, immutable schema, release notes, annotated tag, and thirteen-asset GitHub Release are published and independently verified. Public schema hosting, the production documentation site, milestone closure, and any production `cueson.io` change remain distinct steps under the [release process](release-process.md).
+The v1.0.0 executable, immutable schema, release notes, annotated tag, and thirteen-asset GitHub Release are published and independently verified. Its epic and milestone are closed. S021 completed public schema hosting and the production documentation site; S022 corrected independent address-family verification. Future release and production changes remain distinct explicitly authorized steps under the [release process](release-process.md).
+
+## Planned minor-release evolution
+
+The [S023 roadmap](roadmap.md) targets a compatible v1.1.0 ASS/SSA addition. The [future version contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) requires the future executable to accept exact historical v1.0.0 documents using the released local schema and version-specific semantics, preserving their input identity, producer, source truth and promised CLI behavior. Current v1.0.0 and planned v1.1.0 reject v0.0.0 input identity; the historical v0.0.0 executable remains available for its own envelopes.
+
+New native encode output in the future release targets exact 1.1.0 identity, with current software/schema lockstep. Old exact-version consumers, including the released v1.0.0 executable, reject these new documents until they explicitly support the new contract. Historical input support on the new executable does not provide forward compatibility to old consumers. No historical-output selector or migration command is introduced by this planning slice. Any incompatible change to an established public guarantee blocks the minor target and requires a major-version decision; all compatibility claims must be proven by the documented command/version matrix and candidate evidence.
+
+The [ASS/SSA contract](formats/ass-ssa.md) is future, bounded and unimplemented. S023 changes no current runtime capabilities, executable/schema version or immutable bytes. Generic restoration, schema recognition, native interpretation and stable support remain separate facts.

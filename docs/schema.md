@@ -24,6 +24,12 @@ Starting with v1.0.0, breaking changes require a major-version increase. Additiv
 
 S018 froze the implemented CLI and Cue JSON behavior, S019 promoted that reviewed contract to identity 1.0.0 with a byte-identical immutable repository copy, S020 published and independently verified the exact tagged schema and release archives, and S021 publishes the immutable v0.0.0 and v1.0.0 schema bytes at their canonical versioned domain paths. No production alias exists.
 
+## Planned scripted-format schema evolution
+
+S023 ratifies the [next milestone roadmap](roadmap.md), [future ASS/SSA native contract](formats/ass-ssa.md), and [exact-version compatibility contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) through planning issues #52, #53 and #54. These documents define future schema/model acceptance, not new keys admitted by the current 1.0.0 artifact. The current canonical and released schemas remain unchanged with only `subrip` and `webvtt` native branches.
+
+Future issue [#55](https://github.com/shruggietech/cueson/issues/55) owns exact local historical 1.0.0 validation with version-specific semantics; [#56](https://github.com/shruggietech/cueson/issues/56) owns annotated `ass` and `ssa` current native branches under the approved development identity. Shape recognition must not imply installed codecs or stable support. Candidate issue [#65](https://github.com/shruggietech/cueson/issues/65) owns final 1.1.0 promotion, lockstep and immutable-copy proof. Released historical bytes stay immutable, unknown/mismatched identity rejects without network schema retrieval, and original input identity/provenance is not silently rewritten to pass current validation.
+
 ## Machine-readable annotations
 
 The canonical schema gives every Cueson-owned root property and every consumer-facing property reachable through `$defs` a specific `description`. Public object, union, and constrained-scalar definitions have titles suitable for generated reference documentation. Examples cover every root semantic area, enumeration, format-native structure, and non-obvious constrained value such as identifiers, versions, safe basenames, digests, base64 payloads, timestamps, timings, and diagnostics.
