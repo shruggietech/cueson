@@ -75,7 +75,7 @@ func inspectScriptedCaptureSource(source SourceEnvelope) (scriptedSourceCapture,
 			}
 			fields := map[string]string{}
 			for i, name := range declaration {
-				fields[nativeName(name)] = values[i]
+				fields[nativeFieldName(name, "event")] = values[i]
 			}
 			capture.eventFields[order] = fields
 		}

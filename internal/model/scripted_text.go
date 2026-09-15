@@ -273,7 +273,7 @@ func validateScriptedProjection(c *Cue, e ScriptedEvent, n *ScriptedCueData, wra
 	actor := ""
 	speakerField := ""
 	for _, field := range e.Fields {
-		if nativeName(field.FieldName) == "name" {
+		if nativeFieldName(field.FieldName, "event") == "name" {
 			actor = field.RawValue
 			speakerField = field.FieldName
 		}

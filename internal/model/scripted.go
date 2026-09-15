@@ -141,9 +141,50 @@ var scriptedTime = regexp.MustCompile(`^([0-9]+):([0-5][0-9]):([0-5][0-9])\.([0-
 var metadataIdentity = regexp.MustCompile(`(?i)(?:[a-z]:[\\/]|\\\\|file:|[a-z][a-z0-9+.-]*://|(?:^|[^\p{L}\p{N}_])(?:/|~[^\s/\\]*[/\\])|localhost|(?:host|machine|user)(?:name|id)\s*[:=])`)
 
 func containsScriptedMetadataIdentity(value string) bool {
+	// Outside a proven native content role, any separator is an ambiguous
+	// absolute or relative resource reference and must fail closed.
+	if strings.ContainsAny(value, `/\`) {
+		return true
+	}
 	// Every identity alternative needs one of these markers. Ordinary inert
 	// scalar values avoid the regexp engine without changing its grammar.
 	return strings.ContainsAny(value, `:/\~=lL`) && metadataIdentity.MatchString(value)
+}
+
+func scriptedExecutionEffect(value string) bool {
+	value = strings.TrimSpace(value)
+	first, _, _ := strings.Cut(value, " ")
+	if at := strings.IndexFunc(first, unicode.IsSpace); at >= 0 {
+		first = first[:at]
+	}
+	return strings.EqualFold(first, "code") || strings.Contains(strings.ToLower(value), "template") || strings.Contains(strings.ToLower(value), "!code")
+}
+
+func scriptedMalformedValuePrivacy(value string, order int) error {
+	if containsScriptedMetadataIdentity(value) {
+		return scriptedError("unsafe_source_metadata", order)
+	}
+	for _, token := range strings.FieldsFunc(value, func(r rune) bool { return unicode.IsSpace(r) || r == ',' || r == ';' }) {
+		if strings.EqualFold(token, "code") || strings.EqualFold(token, "command") || strings.Contains(strings.ToLower(token), "automation") || scriptedExecutionEffect(token) {
+			return scriptedError("unsafe_active_content", order)
+		}
+	}
+	if !isInertNativeScalar(strings.ReplaceAll(value, ",", "")) {
+		return scriptedError("unsafe_source_metadata", order)
+	}
+	return nil
+}
+
+func scriptedMalformedFieldPrivacy(field ScriptedField, order int, profile string) error {
+	n := nativeName(field.FieldName)
+	// A retained event can carry independently verifiable scalar timing, but
+	// uninterpretable content fields do not inherit Text/font/name exemptions.
+	if strings.HasSuffix(profile, "-event") && (n == "start" || n == "end") {
+		if _, err := scriptedMilliseconds(field.RawValue); err == nil {
+			return nil
+		}
+	}
+	return scriptedMalformedValuePrivacy(field.RawValue, order)
 }
 
 func isInertNativeScalar(value string) bool {
@@ -180,8 +221,11 @@ var scriptedFieldProfiles = func() map[string]map[string]bool {
 }()
 
 func nativeName(s string) string {
-	s = asciiLower(strings.Trim(s, " "))
-	if s == "actor" {
+	return asciiLower(strings.Trim(s, " "))
+}
+func nativeFieldName(s, profile string) string {
+	s = nativeName(s)
+	if s == "actor" && (profile == "event" || strings.HasSuffix(profile, "-event")) {
 		return "name"
 	}
 	return s
@@ -339,6 +383,11 @@ func validateScriptedDocument(doc Document) error {
 		if r.Kind == "format_declaration" && len(r.DeclarationFields) == 0 {
 			return scriptedError("invalid_declaration", r.SourceOrder)
 		}
+		for _, field := range r.DeclarationFields {
+			if containsScriptedMetadataIdentity(field.FieldName) {
+				return scriptedError("unsafe_source_metadata", r.SourceOrder)
+			}
+		}
 		if (r.Kind == "style") != (r.StyleID != nil) || (r.Kind == "event") != (r.EventID != nil) || (r.Kind == "attachment_header") != (r.AttachmentID != nil) {
 			return scriptedError("invalid_native_ownership", r.SourceOrder)
 		}
@@ -445,6 +494,11 @@ func validateScriptedDocument(doc Document) error {
 			return scriptedError("missing_native_diagnostic", r.SourceOrder)
 		}
 		for _, f := range s.Fields {
+			if !s.Valid {
+				if err = scriptedMalformedFieldPrivacy(f, r.SourceOrder, doc.Format+"-style"); err != nil {
+					return err
+				}
+			}
 			if s.Valid || f.TypedValue != nil {
 				err = validateScriptedScalar(f, doc.Format, r.SourceOrder, "style")
 			} else {
@@ -497,6 +551,11 @@ func validateScriptedDocument(doc Document) error {
 			return scriptedError("invalid_dialogue_ownership", r.SourceOrder)
 		}
 		for _, f := range e.Fields {
+			if !e.Valid {
+				if err = scriptedMalformedFieldPrivacy(f, r.SourceOrder, doc.Format+"-event"); err != nil {
+					return err
+				}
+			}
 			if e.Valid && r.RawLine != nil && (nativeName(f.FieldName) == "start" || nativeName(f.FieldName) == "end") && capture.eventFields[r.SourceOrder][nativeName(f.FieldName)] != f.RawValue {
 				return scriptedError("inconsistent_source_capture", r.SourceOrder)
 			}
@@ -514,6 +573,13 @@ func validateScriptedDocument(doc Document) error {
 				return scriptedError("invalid_native_timestamp", r.SourceOrder)
 			} else if f.TypedValue != nil && (f.TypedValue.Kind != "string" || f.TypedValue.String == nil || *f.TypedValue.String != f.RawValue || f.TypedValue.Boolean != nil || f.TypedValue.Integer != nil || f.TypedValue.Decimal != nil || f.TypedValue.Color != nil) {
 				return scriptedError("inconsistent_typed_value", r.SourceOrder)
+			}
+		}
+		if e.Valid && (e.EventType == "dialogue" || e.EventType == "comment") {
+			start, startErr := scriptedMilliseconds(fieldRaw(e.Fields, "start"))
+			end, endErr := scriptedMilliseconds(fieldRaw(e.Fields, "end"))
+			if startErr != nil || endErr != nil || end <= start {
+				return scriptedError("invalid_native_interval", r.SourceOrder)
 			}
 		}
 		events[e.EventID] = e
@@ -676,6 +742,10 @@ func validateScriptedFields(fields []ScriptedField, names []string, decl []Scrip
 		return scriptedError("invalid_native_fields", order)
 	}
 	required := map[string]bool{}
+	profile := "style"
+	if slices.Contains(names, "Text") {
+		profile = "event"
+	}
 	for _, n := range names {
 		required[nativeName(n)] = false
 	}
@@ -683,7 +753,7 @@ func validateScriptedFields(fields []ScriptedField, names []string, decl []Scrip
 		return scriptedError("invalid_native_fields", order)
 	}
 	for i, f := range fields {
-		n := nativeName(f.FieldName)
+		n := nativeFieldName(f.FieldName, profile)
 		if n == "" || !scriptedPhysical(f.FieldName) || strings.Contains(f.FieldName, ",") {
 			return scriptedError("invalid_native_fields", order)
 		}
@@ -728,7 +798,6 @@ func scriptedMilliseconds(s string) (int64, error) {
 	return h*3_600_000 + mm*60_000 + ss*1000 + cc*10, nil
 }
 func validateScriptedScalar(f ScriptedField, format string, order int, contexts ...string) error {
-	n := nativeName(f.FieldName)
 	profile := "scalar"
 	if len(contexts) > 0 {
 		profile = contexts[0]
@@ -736,6 +805,7 @@ func validateScriptedScalar(f ScriptedField, format string, order int, contexts 
 			profile = format + "-" + profile
 		}
 	}
+	n := nativeFieldName(f.FieldName, profile)
 	if err := scriptedContentFieldPrivacy(f.FieldName, f.RawValue, order, profile); err != nil {
 		return err
 	}
@@ -847,12 +917,15 @@ func validateRetainedScriptedField(f ScriptedField, order int, profile string) e
 }
 
 func scriptedContentFieldPrivacy(name, value string, order int, profile string) error {
-	n := nativeName(name)
+	if containsScriptedMetadataIdentity(name) {
+		return scriptedError("unsafe_source_metadata", order)
+	}
+	n := nativeFieldName(name, profile)
 	content := ((strings.HasSuffix(profile, "-event") && slices.Contains([]string{"text", "name", "style"}, n)) || (strings.HasSuffix(profile, "-style") && slices.Contains([]string{"fontname", "name"}, n)) || (profile == "scalar" && slices.Contains([]string{"text", "fontname", "name", "style"}, n))) && scriptedFieldProfiles[profile][n]
 	if !content && containsScriptedMetadataIdentity(value) {
 		return scriptedError("unsafe_source_metadata", order)
 	}
-	if strings.Contains(n, "automation") || strings.Contains(n, "script execution") || (n == "effect" && (strings.Contains(strings.ToLower(value), "template") || strings.Contains(strings.ToLower(value), "!code"))) {
+	if strings.Contains(n, "automation") || strings.Contains(n, "script execution") || (n == "effect" && scriptedExecutionEffect(value)) {
 		if strings.TrimSpace(value) != "" {
 			return scriptedError("unsafe_active_content", order)
 		}
@@ -939,7 +1012,10 @@ func scriptedRecordPrivacy(r ScriptedRecord, section string) error {
 		return scriptedError("unsafe_active_content", r.SourceOrder)
 	}
 	trimmed := strings.TrimSpace(raw)
-	if content && (trimmed == "" || strings.HasPrefix(trimmed, ";")) {
+	if strings.HasPrefix(trimmed, ";") {
+		return scriptedMalformedValuePrivacy(trimmed, r.SourceOrder)
+	}
+	if content && trimmed == "" {
 		return nil
 	}
 	if content && (r.Kind == "attachment_data" || (r.Kind == "style" && hasPrefix && strings.EqualFold(prefix, "Style")) || (r.Kind == "event" && hasPrefix && (strings.EqualFold(prefix, "Dialogue") || strings.EqualFold(prefix, "Comment"))) || (r.Kind == "format_declaration" && hasPrefix && strings.EqualFold(prefix, "Format"))) {
@@ -955,7 +1031,7 @@ func scriptedRecordPrivacy(r ScriptedRecord, section string) error {
 	if containsScriptedMetadataIdentity(raw) {
 		return scriptedError("unsafe_source_metadata", r.SourceOrder)
 	}
-	if trimmed == "" || strings.HasPrefix(trimmed, ";") {
+	if trimmed == "" {
 		return nil
 	}
 	if s == "script info" || s == "aegisub project garbage" {
@@ -1053,16 +1129,61 @@ func scriptedSourcePrivacy(source SourceEnvelope, format string) error {
 				}
 			}
 			if kind == "format_declaration" {
-				declaration = strings.Split(value, ",")
+				declaration = strings.SplitN(value, ",", MaxScriptedDeclarationFields+1)
 				if len(declaration) > MaxScriptedDeclarationFields {
 					return scriptedError("complexity_limit", order)
 				}
+				for _, name := range declaration {
+					if containsScriptedMetadataIdentity(name) {
+						return scriptedError("unsafe_source_metadata", order)
+					}
+				}
 			}
-			if (kind == "event" || kind == "style") && hasValue && len(declaration) > 0 && (strings.EqualFold(prefix, "Dialogue") || strings.EqualFold(prefix, "Comment") || strings.EqualFold(prefix, "Style")) {
-				values := strings.SplitN(value, ",", len(declaration))
-				if len(values) == len(declaration) {
+			recognized := (kind == "event" && (strings.EqualFold(prefix, "Dialogue") || strings.EqualFold(prefix, "Comment"))) || (kind == "style" && strings.EqualFold(prefix, "Style"))
+			if recognized && hasValue {
+				values, interpretable := scriptedSourceFields(value, declaration, format+"-"+kind)
+				if !interpretable {
+					if strings.EqualFold(prefix, "Dialogue") {
+						return scriptedError("malformed_native_record", order)
+					}
+					if err = scriptedMalformedValuePrivacy(value, order); err != nil {
+						return err
+					}
+				} else {
+					var start, end int64
 					for i, name := range declaration {
-						if err = scriptedContentFieldPrivacy(name, values[i], order, format+"-"+kind); err != nil {
+						field := ScriptedField{FieldName: name, RawValue: values[i]}
+						n := nativeName(name)
+						if kind == "event" && (n == "start" || n == "end") {
+							var milliseconds int64
+							milliseconds, err = scriptedMilliseconds(values[i])
+							if n == "start" {
+								start = milliseconds
+							} else {
+								end = milliseconds
+							}
+						} else {
+							err = validateScriptedScalar(field, format, order, kind)
+						}
+						if err != nil {
+							if strings.Contains(err.Error(), "unsafe_") {
+								return err
+							}
+							interpretable = false
+						}
+					}
+					if !interpretable {
+						if strings.EqualFold(prefix, "Dialogue") {
+							return scriptedError("malformed_native_record", order)
+						}
+						if err = scriptedMalformedValuePrivacy(value, order); err != nil {
+							return err
+						}
+					} else if kind == "event" && end <= start {
+						if strings.EqualFold(prefix, "Dialogue") {
+							return scriptedError("invalid_native_interval", order)
+						}
+						if err = scriptedMalformedValuePrivacy(value, order); err != nil {
 							return err
 						}
 					}
@@ -1078,6 +1199,41 @@ func scriptedSourcePrivacy(source SourceEnvelope, format string) error {
 		}
 	}
 	return nil
+}
+
+// scriptedSourceFields grants content roles only after the active declaration
+// and native framing are interpretable. Styles have no comma-bearing suffix.
+func scriptedSourceFields(value string, declaration []string, profile string) ([]string, bool) {
+	canonical := scriptedFieldProfiles[profile]
+	if len(declaration) < len(canonical) || len(declaration) > MaxScriptedDeclarationFields {
+		return nil, false
+	}
+	seen := map[string]bool{}
+	event := strings.HasSuffix(profile, "-event")
+	for i, name := range declaration {
+		n := nativeFieldName(name, profile)
+		if n == "" || !scriptedPhysical(name) {
+			return nil, false
+		}
+		if canonical[n] {
+			if seen[n] {
+				return nil, false
+			}
+			seen[n] = true
+		}
+		if event && n == "text" && i != len(declaration)-1 {
+			return nil, false
+		}
+	}
+	if len(seen) != len(canonical) {
+		return nil, false
+	}
+	count := len(declaration)
+	if !event {
+		count++
+	}
+	values := strings.SplitN(strings.TrimLeft(value, " "), ",", count)
+	return values, len(values) == len(declaration)
 }
 func validateScriptedAttachments(n *ScriptedDocumentData, records map[string]ScriptedRecord, ids map[string]bool, diagnosticIndex map[string]bool) error {
 	occupied := map[string]bool{}

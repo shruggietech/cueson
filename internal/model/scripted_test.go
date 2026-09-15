@@ -194,7 +194,7 @@ func TestScriptedUnknownFieldsAliasesAndContentRoles(t *testing.T) {
 	actor := "Actor"
 	d.Cues[0].FormatData.ASS.Projection.SpeakerFieldName = &actor
 	b, _ := base64.StdEncoding.DecodeString(d.Source.Assets[0].DataBase64)
-	b = append(b, []byte("; content-role discussion of C:\\examples\\captions.ass\n")...)
+	b = append(b, []byte("; inert Unicode discussion of 字幕 content\n")...)
 	setScriptedSourceBytes(&d, b)
 	if e := d.Validate(); e != nil {
 		t.Fatalf("unknown/reordered native fields, Actor alias, inert content comment: %v", e)
@@ -214,6 +214,19 @@ func TestScriptedNonDialogueOffsetsAndProjectionCannotBeForged(t *testing.T) {
 				d.Document = DocumentSummary{}
 				d.Stats = Stats{}
 				if !valid {
+					// Uninterpretable content cannot claim escape-bearing Text roles.
+					// Keep this independent offset regression inside the inert profile.
+					event.Text = "Hello world"
+					for i := range event.Fields {
+						if nativeName(event.Fields[i].FieldName) == "text" {
+							event.Fields[i].RawValue = event.Text
+						}
+					}
+					facts, err := ProjectScriptedText(event.Text, 0, 1000, 2000)
+					if err != nil {
+						t.Fatal(err)
+					}
+					event.Spans, event.Tags, event.Karaoke = facts.Spans, facts.Tags, facts.Karaoke
 					order := 7
 					d.Diagnostics = []Diagnostic{{Severity: "warning", Code: "malformed_native_record", Message: "Malformed non-dialogue retained.", SourceOrder: &order}}
 					d.Stats.DiagnosticCount = 1

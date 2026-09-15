@@ -22,7 +22,7 @@ attachment_id/header_record_id/data_start_record_id/data_record_count/type/safe 
 
 ## Safety and scale
 
-Metadata context is determined by the closed accepted profile, not producer flags. Unsafe known/unknown filesystem/resource/identity/active or unclassifiable authoring metadata rejects original source and edited native views. Explicit dialogue, font-family and bounded embedded-content roles remain content.
+Metadata context is determined by the closed accepted profile, not producer flags. Unsafe known/unknown filesystem/resource/identity/active or unclassifiable authoring metadata rejects original source and edited native views. Explicit dialogue, font-family and bounded embedded-content roles remain content. Declaration/field names and semicolon comments do not inherit those exemptions; comments require conservative inert-content inspection, replacing the earlier development allowance for path-looking comments.
 
 Existing common collection limits plus ratified scripted physical/item/field/span/tag/line/depth/attachment limits apply before indexed reference traversal. No silent truncation or diagnostic leakage.
 

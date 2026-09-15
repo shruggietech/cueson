@@ -33,6 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-15: Stage S024 as exact `1.1.0-dev`, admit schema-only scripted models and nonempty zero-dialogue/null-bound summaries, and validate historical 1.0.0 with its frozen semantics. Final stable identity/immutable copy remain S028 work.
 - 2026-09-15: Replace current frozen-candidate packaging assumptions with explicit non-publishing development schema proof because canonical bytes now evolve; preserve historical evidence and separately authorized release/production boundaries.
 - 2026-09-15: Interpret alphabetic reset/font override suffixes conservatively through declared names, preserving ambiguous complete tag identities and raw Text; verify capture-only observations against original source positions independently of edited owners.
+- 2026-09-15: Validate declared record grammar before privacy exemptions, inspect retained malformed non-dialogue values conservatively, reject relative resource separators and code execution effects, and require positive native dialogue intervals independently of edited common timing.
+- 2026-09-15: Replace the development model's path-looking semicolon-comment exemption with conservative inert-comment inspection because comments can retain original resource provenance; field/declaration names also remain structural metadata without content exemptions.
 
 ### Fixed
 
