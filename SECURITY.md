@@ -6,6 +6,8 @@ The published v1.0.0 release is the current stable line and includes the documen
 
 Security corrections are applied to current development and assessed for every affected published release. Supported-version declarations accompany published stable releases and do not authorize rewriting an immutable release artifact or schema.
 
+The unpublished exact 1.1.0 candidate extends these boundaries to bounded ASS/SSA native workflows and all twelve conversion directions. Drawings, overrides and attachments are retained data, never external resource loading or execution. Stable candidate support does not claim a new published release or replace immutable historical resources.
+
 ## Reporting a vulnerability
 
 Do not open a public issue for a suspected vulnerability. Use the repository's enabled [GitHub private vulnerability reporting](https://github.com/shruggietech/cueson/security/advisories/new) and include affected inputs, observed behavior, impact, and a minimal reproduction when safe.

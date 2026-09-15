@@ -404,7 +404,7 @@ func newWebVTTDocument(asset model.SourceAsset, parsed webvtt.Result) model.Docu
 func newScriptedDocument(asset model.SourceAsset, format string, parsed scripted.ParseResult) model.Document {
 	document := model.Document{
 		Schema: schema.ID(), SchemaVersion: schema.Version(), Format: format,
-		FormatSupport: model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+		FormatSupport: model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
 		Producer:      model.Producer{Name: "cueson", Version: version.String()},
 		Source:        model.SourceEnvelope{PrimaryAssetID: asset.ID, Assets: []model.SourceAsset{asset}},
 		Metadata:      model.Metadata{}, Document: model.DocumentSummary{CueCount: len(parsed.Cues)},

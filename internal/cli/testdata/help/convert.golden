@@ -1,10 +1,10 @@
-Convert Cue JSON or native subtitle input to a distinct supported target format; ASS/SSA are experimental.
+Convert Cue JSON or native subtitle input to a distinct supported target format; ASS/SSA follow the bounded stable profile.
 
 Usage:
   cueson [global options] convert [options] INPUT --to FORMAT
 
 Options:
-  --to FORMAT             Select srt, vtt, ass, or ssa; ASS/SSA are experimental.
+  --to FORMAT             Select srt, vtt, ass, or ssa; ASS/SSA follow the bounded stable profile.
   --from FORMAT           Select auto, cueson, srt, vtt, ass, or ssa (default auto).
   --encoding NAME         Select the native source text encoding.
   -o, --output PATH       Write native output to PATH instead of stdout.

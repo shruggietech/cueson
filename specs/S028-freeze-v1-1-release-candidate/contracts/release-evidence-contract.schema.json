@@ -1,0 +1,375 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cueson.io/contracts/release-evidence/v1.1.0.schema.json",
+  "title": "Cueson v1.1.0 non-publishing release-candidate evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "intended_tag",
+    "source_revision",
+    "release_schema_sha256",
+    "license_sha256",
+    "notice_sha256",
+    "archive_count",
+    "sbom_count",
+    "checksum_count",
+    "host_executed",
+    "targets",
+    "published"
+  ],
+  "properties": {
+    "version": {
+      "const": "1.1.0"
+    },
+    "development": {
+      "const": false
+    },
+    "intended_tag": {
+      "const": "v1.1.0"
+    },
+    "source_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "release_schema_sha256": {
+      "const": "223b61cbcf6337167039268576b2c739564585fff10e6cc6076e47a03526a0f7"
+    },
+    "license_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "notice_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "archive_count": {
+      "const": 6
+    },
+    "sbom_count": {
+      "const": 6
+    },
+    "checksum_count": {
+      "const": 6
+    },
+    "host_executed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^(linux|darwin|windows)/(amd64|arm64)$"
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/linux_amd64"
+        },
+        {
+          "$ref": "#/$defs/linux_arm64"
+        },
+        {
+          "$ref": "#/$defs/darwin_amd64"
+        },
+        {
+          "$ref": "#/$defs/darwin_arm64"
+        },
+        {
+          "$ref": "#/$defs/windows_amd64"
+        },
+        {
+          "$ref": "#/$defs/windows_arm64"
+        }
+      ],
+      "items": false
+    },
+    "published": {
+      "const": false
+    },
+    "native_proof": {
+      "$ref": "#/$defs/native_proof"
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goos",
+        "goarch",
+        "archive",
+        "binary",
+        "sbom",
+        "archive_sha256",
+        "sbom_sha256"
+      ],
+      "properties": {
+        "goos": {
+          "enum": [
+            "linux",
+            "darwin",
+            "windows"
+          ]
+        },
+        "goarch": {
+          "enum": [
+            "amd64",
+            "arm64"
+          ]
+        },
+        "archive": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binary": {
+          "enum": [
+            "cueson",
+            "cueson.exe"
+          ]
+        },
+        "sbom": {
+          "type": "string",
+          "minLength": 1
+        },
+        "archive_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sbom_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "linux_amd64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "linux"
+            },
+            "goarch": {
+              "const": "amd64"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_linux_amd64.tar.gz"
+            },
+            "binary": {
+              "const": "cueson"
+            },
+            "sbom": {
+              "const": "cueson_1.1.0_linux_amd64.tar.gz.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "linux_arm64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "linux"
+            },
+            "goarch": {
+              "const": "arm64"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_linux_arm64.tar.gz"
+            },
+            "binary": {
+              "const": "cueson"
+            },
+            "sbom": {
+              "const": "cueson_1.1.0_linux_arm64.tar.gz.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "darwin_amd64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "darwin"
+            },
+            "goarch": {
+              "const": "amd64"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_darwin_amd64.tar.gz"
+            },
+            "binary": {
+              "const": "cueson"
+            },
+            "sbom": {
+              "const": "cueson_1.1.0_darwin_amd64.tar.gz.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "darwin_arm64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "darwin"
+            },
+            "goarch": {
+              "const": "arm64"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_darwin_arm64.tar.gz"
+            },
+            "binary": {
+              "const": "cueson"
+            },
+            "sbom": {
+              "const": "cueson_1.1.0_darwin_arm64.tar.gz.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "windows_amd64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "windows"
+            },
+            "goarch": {
+              "const": "amd64"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_windows_amd64.zip"
+            },
+            "binary": {
+              "const": "cueson.exe"
+            },
+            "sbom": {
+              "const": "cueson_1.1.0_windows_amd64.zip.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "windows_arm64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "windows"
+            },
+            "goarch": {
+              "const": "arm64"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_windows_arm64.zip"
+            },
+            "binary": {
+              "const": "cueson.exe"
+            },
+            "sbom": {
+              "const": "cueson_1.1.0_windows_arm64.zip.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "native_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "formats",
+        "historical_input_count",
+        "old_consumer_version",
+        "old_consumer_revision",
+        "old_consumer_archive",
+        "old_consumer_archive_sha256",
+        "old_consumer_refusal_count",
+        "old_consumer_identity_probe_count"
+      ],
+      "properties": {
+        "formats": {
+          "const": [
+            "srt",
+            "vtt",
+            "ass",
+            "ssa"
+          ]
+        },
+        "historical_input_count": {
+          "const": 2
+        },
+        "old_consumer_version": {
+          "const": "1.0.0"
+        },
+        "old_consumer_revision": {
+          "const": "2cad4c816340404289b4d1d87179a4071713bb46"
+        },
+        "old_consumer_archive": {
+          "enum": [
+            "cueson_1.0.0_linux_amd64.tar.gz",
+            "cueson_1.0.0_linux_arm64.tar.gz",
+            "cueson_1.0.0_darwin_amd64.tar.gz",
+            "cueson_1.0.0_darwin_arm64.tar.gz",
+            "cueson_1.0.0_windows_amd64.zip",
+            "cueson_1.0.0_windows_arm64.zip"
+          ]
+        },
+        "old_consumer_archive_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "old_consumer_refusal_count": {
+          "const": 32
+        },
+        "old_consumer_identity_probe_count": {
+          "const": 32
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "host_executed": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "host_executed"
+        ]
+      },
+      "then": {
+        "required": [
+          "native_proof"
+        ]
+      }
+    }
+  ]
+}

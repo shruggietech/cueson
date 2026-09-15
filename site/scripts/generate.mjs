@@ -200,8 +200,12 @@ async function collectExpected(repoRoot, siteRoot, sourceCommit) {
     if (!rootPages.includes(first)) rootPages.push(first);
   }
   expected.set("content/generated/meta.json", stableJson({ title: "Cueson", pages: rootPages }));
-  expected.set("content/generated/formats/meta.json", stableJson({ title: "Formats", pages: ["subrip", "webvtt"] }));
-  expected.set("content/generated/releases/meta.json", stableJson({ title: "Releases", pages: ["v1.0.0", "v0.0.0"] }));
+  for (const [group, title] of [["formats", "Formats"], ["releases", "Releases"]]) {
+    const pages = [...contentMap.documents].sort((a, b) => a.order - b.order)
+      .filter((document) => document.slug.length === 2 && document.slug[0] === group)
+      .map((document) => document.slug[1]);
+    expected.set(`content/generated/${group}/meta.json`, stableJson({ title, pages }));
+  }
 
   const brandManifestPath = path.join(repoRoot, "brand", "cueson", "1.0.0", "import-manifest.json");
   const brandManifest = JSON.parse((await readFile(brandManifestPath)).toString("utf8"));

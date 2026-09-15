@@ -16,7 +16,7 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 	workflow := readPolicyFile(t, filepath.Join(repository, ".github", "workflows", "release-proof.yml"))
 
 	for _, required := range []string{
-		`version_template: "1.1.0-dev"`, "release:", "disable: true", "CGO_ENABLED=0",
+		`version_template: "1.1.0"`, "release:", "disable: true", "CGO_ENABLED=0",
 		"github.com/shruggietech/cueson/internal/version.releaseOverride=cueson-release-version:{{ .Version }}",
 		"cueson_{{ .Version }}_checksums.txt", "artifacts: binary", "spdx-json=$document",
 	} {
@@ -29,33 +29,36 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 			t.Errorf(".goreleaser.yaml contains publishing surface %q", forbidden)
 		}
 	}
-	const developmentSchemaSource = "- src: internal/schema/cueson.schema.json"
-	if count := strings.Count(config, developmentSchemaSource); count != 1 {
-		t.Errorf(".goreleaser.yaml contains %d current development schema sources, want 1", count)
+	const stableSchemaSource = "- src: schema/releases/v1.1.0/cueson.schema.json"
+	if count := strings.Count(config, stableSchemaSource); count != 1 {
+		t.Errorf(".goreleaser.yaml contains %d immutable candidate schema sources, want 1", count)
 	}
-	if strings.Contains(config, "- src: schema/releases/") {
-		t.Error("development snapshot packages a historical release schema")
+	if strings.Contains(config, "- src: internal/schema/") {
+		t.Error("stable candidate packages the evolving schema instead of its immutable copy")
 	}
 
 	for _, required := range []string{
 		"pull_request:", "workflow_dispatch:", "contents: read", "persist-credentials: false",
 		"SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}",
-		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-1.1.0-dev-candidate-${{ env.SOURCE_COMMIT }}",
+		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-1.1.0-candidate-${{ env.SOURCE_COMMIT }}",
 		"github.com/goreleaser/goreleaser/v2@v2.18.1", "github.com/anchore/syft/cmd/syft@v1.51.1",
-		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "-version 1.1.0-dev -development", "-execute-host", "-evidence", "retention-days: 3",
+		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "-version 1.1.0", "-execute-host", "-evidence", "retention-days: 3",
 		"needs: release-proof", "actions/download-artifact@", "ubuntu-24.04", "windows-2025", "macos-15-intel",
 	} {
 		if !strings.Contains(workflow, required) {
 			t.Errorf("release-proof.yml missing %q", required)
 		}
 	}
-	if count := strings.Count(workflow, "-version 1.1.0-dev -development"); count != 2 {
-		t.Errorf("release-proof.yml has %d development verifications, want bundle and native proof", count)
+	if count := strings.Count(workflow, "-version 1.1.0"); count != 2 {
+		t.Errorf("release-proof.yml has %d stable verifications, want bundle and native proof", count)
+	}
+	if strings.Contains(workflow, "-development") {
+		t.Error("stable proof uses development schema verification")
 	}
 	if count := strings.Count(workflow, "goreleaser release --snapshot --clean --skip=publish"); count != 1 {
 		t.Errorf("release-proof.yml builds %d candidate bundles, want exactly 1", count)
 	}
-	if count := strings.Count(workflow, "name: cueson-1.1.0-dev-candidate-${{ env.SOURCE_COMMIT }}"); count != 2 {
+	if count := strings.Count(workflow, "name: cueson-1.1.0-candidate-${{ env.SOURCE_COMMIT }}"); count != 2 {
 		t.Errorf("release-proof.yml names the accepted bundle %d times, want one upload and one download", count)
 	}
 	pushPattern := regexp.MustCompile(`(?m)^  push:\n((?: {4,}.*\n)*)`)
@@ -177,12 +180,15 @@ func TestReleaseEvidenceContractBindsExactTargetTuples(t *testing.T) {
 func TestRepositoryCandidateSchemaAndLegalIdentity(t *testing.T) {
 	t.Parallel()
 	repository := filepath.Clean(filepath.Join("..", ".."))
-	canonical, schemaDigest, err := loadDevelopmentSchema(repository, "1.1.0-dev")
+	canonical, schemaDigest, err := loadRepositorySchemas(repository, "1.1.0")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(canonical) == 0 || !regexp.MustCompile(`^[0-9a-f]{64}$`).MatchString(schemaDigest) {
 		t.Fatalf("invalid canonical schema identity: bytes=%d digest=%q", len(canonical), schemaDigest)
+	}
+	if schemaDigest != "223b61cbcf6337167039268576b2c739564585fff10e6cc6076e47a03526a0f7" {
+		t.Fatalf("reviewed stable schema digest changed: %s", schemaDigest)
 	}
 	for _, name := range []string{"LICENSE", "NOTICE"} {
 		file, err := loadRepositoryFile(repository, name)
@@ -207,12 +213,89 @@ func containsString(values []string, want string) bool {
 func TestReleaseNotesFinalSuffix(t *testing.T) {
 	t.Parallel()
 	repository := filepath.Clean(filepath.Join("..", ".."))
-	for _, version := range []string{"0.0.0", "1.0.0"} {
+	for _, version := range []string{"0.0.0", "1.0.0", "1.1.0"} {
 		releaseNotes := readPolicyFile(t, filepath.Join(repository, "docs", "releases", "v"+version+".md"))
 		want := "Full changelog: https://github.com/shruggietech/cueson/blob/v" + version + "/CHANGELOG.md\n"
 		if !strings.HasSuffix(releaseNotes, want) {
 			t.Errorf("docs/releases/v%s.md must end with exact suffix %q", version, want)
 		}
+	}
+}
+
+func TestStableReleaseEvidenceContract(t *testing.T) {
+	t.Parallel()
+	repository := filepath.Clean(filepath.Join("..", ".."))
+	data := readPolicyFile(t, filepath.Join(repository, "specs", "S028-freeze-v1-1-release-candidate", "contracts", "release-evidence-contract.schema.json"))
+	var schema struct {
+		Properties  map[string]json.RawMessage `json:"properties"`
+		Definitions map[string]struct {
+			Properties map[string]json.RawMessage `json:"properties"`
+			Required   []string                   `json:"required"`
+			AllOf      []struct {
+				Properties map[string]struct {
+					Const string `json:"const"`
+				} `json:"properties"`
+			} `json:"allOf"`
+		} `json:"$defs"`
+	}
+	if err := json.Unmarshal([]byte(data), &schema); err != nil {
+		t.Fatal(err)
+	}
+	for field, expected := range map[string]string{"version": "1.1.0", "intended_tag": "v1.1.0", "release_schema_sha256": "223b61cbcf6337167039268576b2c739564585fff10e6cc6076e47a03526a0f7"} {
+		var value struct {
+			Const string `json:"const"`
+		}
+		if err := json.Unmarshal(schema.Properties[field], &value); err != nil {
+			t.Fatal(err)
+		}
+		if value.Const != expected {
+			t.Fatalf("stable %s contract = %q", field, value.Const)
+		}
+	}
+	for _, target := range expectedTargets("1.1.0") {
+		definition := schema.Definitions[target.GOOS+"_"+target.GOARCH]
+		if len(definition.AllOf) != 2 {
+			t.Fatalf("missing exact target %s/%s", target.GOOS, target.GOARCH)
+		}
+		for field, want := range map[string]string{"goos": target.GOOS, "goarch": target.GOARCH, "archive": target.Archive, "binary": target.Binary, "sbom": target.SBOM} {
+			if definition.AllOf[1].Properties[field].Const != want {
+				t.Fatalf("target field %s is not bound", field)
+			}
+		}
+	}
+	var targets struct {
+		PrefixItems []struct {
+			Ref string `json:"$ref"`
+		} `json:"prefixItems"`
+		Items   bool `json:"items"`
+		Minimum int  `json:"minItems"`
+		Maximum int  `json:"maxItems"`
+	}
+	if err := json.Unmarshal(schema.Properties["targets"], &targets); err != nil {
+		t.Fatal(err)
+	}
+	if targets.Items || len(targets.PrefixItems) != 6 || targets.Minimum != 6 || targets.Maximum != 6 {
+		t.Fatal("stable evidence does not bind exactly six ordered target tuples")
+	}
+	for index, target := range expectedTargets("1.1.0") {
+		if targets.PrefixItems[index].Ref != "#/$defs/"+target.GOOS+"_"+target.GOARCH {
+			t.Fatal("stable evidence target order differs")
+		}
+	}
+	proof := schema.Definitions["native_proof"]
+	for _, field := range []string{"formats", "historical_input_count", "old_consumer_version", "old_consumer_revision", "old_consumer_archive", "old_consumer_archive_sha256", "old_consumer_refusal_count", "old_consumer_identity_probe_count"} {
+		if !containsString(proof.Required, field) {
+			t.Fatalf("native proof does not require %s", field)
+		}
+	}
+	var count struct {
+		Const int `json:"const"`
+	}
+	if err := json.Unmarshal(proof.Properties["old_consumer_refusal_count"], &count); err != nil {
+		t.Fatal(err)
+	}
+	if count.Const != 32 {
+		t.Fatal("native proof does not require all old-consumer safety probes")
 	}
 }
 

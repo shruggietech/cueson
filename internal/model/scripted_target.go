@@ -17,7 +17,7 @@ func ValidateScriptedTarget(source, target Document) error {
 	if source.Producer != target.Producer {
 		return fmt.Errorf("conversion_source_producer_changed")
 	}
-	if target.SchemaVersion != "1.1.0-dev" || target.Schema != "https://cueson.io/schema/v1.1.0-dev/cueson.schema.json" || (target.Format != "ass" && target.Format != "ssa") {
+	if target.SchemaVersion != "1.1.0" || target.Schema != "https://cueson.io/schema/v1.1.0/cueson.schema.json" || (target.Format != "ass" && target.Format != "ssa") {
 		return fmt.Errorf("invalid_scripted_target_identity")
 	}
 	return validateScriptedDocumentWithSourcePolicy(target, true)

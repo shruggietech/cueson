@@ -1537,7 +1537,7 @@
         },
         {
           "row_id": "scripted-complete-conversion",
-          "description": "Both scripted variants retain the native loss categories needed by future complete conversion; conversion is not delivered by S025.",
+          "description": "The complete twelve-direction four-format graph has deterministic native-owner losses, checked precision, strict refusal and fatal publication safety.",
           "evidence": [
             {
               "kind": "accepted_fixture",
@@ -1670,7 +1670,7 @@
         },
         {
           "row_id": "scripted-stable-gate",
-          "description": "Development native ingest/render evidence remains separate from conversion, full conformance hardening and immutable stable release proof.",
+          "description": "Stable bounded scripted capability, exact 1.1.0 canonical/immutable identity, native render/restoration and forced unsupported-identity refusal have executed proof; packaged candidate acceptance is independently source-bound.",
           "evidence": [
             {
               "kind": "accepted_fixture",
@@ -1705,14 +1705,12 @@
               "reference": "internal/conformance:TestScriptedNativePlatformWorkflowConformance"
             },
             {
-              "kind": "deferred",
-              "reference": "platform_test",
-              "reason": "Immutable stable capability and reviewed candidate platform proof remain owned by issues #64 and #65; current native workflow tests establish experimental development behavior only."
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedStableCandidateNativePlatformConformance"
             },
             {
-              "kind": "deferred",
-              "reference": "render_test",
-              "reason": "The stable capability freeze and reviewed candidate proof remain deferred to issues #64 and #65; current tests establish development behavior only."
+              "kind": "render_test",
+              "reference": "internal/conformance:TestScriptedStableCandidateRenderConformance"
             }
           ]
         }

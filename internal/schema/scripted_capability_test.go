@@ -26,7 +26,8 @@ func TestScriptedSchemaCapabilityAlternatives(t *testing.T) {
 			{model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, true},
 			{model.FormatSupport{Status: "experimental", IngestSupported: true, RestoreSupported: true}, false},
 			{model.FormatSupport{Status: "schema_only", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, false},
-			{model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, false},
+			{model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, true},
+			{model.FormatSupport{Status: "stable", IngestSupported: true, RestoreSupported: true}, false},
 			{model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true, OCRRequiredForSemanticOutput: true}, false},
 		} {
 			d.FormatSupport = test.support

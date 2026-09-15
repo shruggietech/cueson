@@ -69,7 +69,6 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 			}
 			rowKinds := make(map[string]bool)
 			inapplicableKinds := make(map[string]bool)
-			deferredKinds := make(map[string]bool)
 			evidenceKeys := make(map[string]bool)
 			for _, evidence := range row.Evidence {
 				key := evidence.Kind + "\x00" + evidence.Reference
@@ -106,21 +105,17 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 					}
 					inapplicableKinds[evidence.Reference] = true
 				case "deferred":
-					if !allowedStableMatrixDeferral(format.Format, row.RowID, evidence) {
-						t.Errorf("row %q has incomplete or misplaced deferred evidence", row.RowID)
-						continue
-					}
-					deferredKinds[evidence.Reference] = true
+					t.Errorf("stable matrix row %q has deferred evidence", row.RowID)
 				default:
 					t.Errorf("row %q has unknown evidence kind %q", row.RowID, evidence.Kind)
 				}
 			}
 			for _, kind := range requiredMatrixEvidenceKinds {
 				switch {
-				case (rowKinds[kind] && inapplicableKinds[kind]) || (deferredKinds[kind] && inapplicableKinds[kind]):
+				case rowKinds[kind] && inapplicableKinds[kind]:
 					t.Errorf("row %q marks applicable %s evidence inapplicable", row.RowID, kind)
-				case !rowKinds[kind] && !inapplicableKinds[kind] && !deferredKinds[kind]:
-					t.Errorf("row %q omits %s evidence without an inapplicability or deferral reason", row.RowID, kind)
+				case !rowKinds[kind] && !inapplicableKinds[kind]:
+					t.Errorf("row %q omits %s evidence without an inapplicability reason", row.RowID, kind)
 				}
 			}
 		}

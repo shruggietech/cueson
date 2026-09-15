@@ -258,7 +258,7 @@ type Stats struct {
 
 // Validate checks invariants that are intentionally clearer outside JSON Schema.
 func (document Document) Validate() error {
-	if document.SchemaVersion == "1.1.0-dev" && document.Schema == "https://cueson.io/schema/v1.1.0-dev/cueson.schema.json" && (document.Format == "ass" || document.Format == "ssa") {
+	if document.SchemaVersion == "1.1.0" && document.Schema == "https://cueson.io/schema/v1.1.0/cueson.schema.json" && (document.Format == "ass" || document.Format == "ssa") {
 		return validateScriptedDocument(document)
 	}
 	if document.FormatData.ASS != nil || document.FormatData.SSA != nil {

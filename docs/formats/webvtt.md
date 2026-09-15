@@ -6,6 +6,8 @@
 
 This page defines the stable native WebVTT (`.vtt`) capability published in Cueson v1.0.0. The [Cue JSON schema](../schema.md), [CLI contract](../cli.md), and [architecture of record](../architecture.md) remain authoritative for shared behavior.
 
+The unpublished 1.1.0 candidate retains this native contract and accepts exact historical 1.0.0 documents using their local released schema/semantics. New encode output always uses exact 1.1.0, which the published v1.0.0 executable rejects. Candidate conversion also supports bounded ASS/SSA targets with documented losses and strict refusal; published v1.0.0 remains limited to its original text-format graph.
+
 ## Current capability
 
 | Capability | v1.0.0 state | Boundary |

@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added the byte-identical immutable v1.1.0 candidate schema, frozen bounded ASS/SSA contract, authored Site preview/navigation, exact candidate evidence and matching packaged native workflow/old-consumer compatibility proof without publishing a release.
+
 - Added complete scripted validate/inspect help and four-shell vocabulary, optional privacy-safe native inspection counts, accepted-source restoration/native safety evidence, and filesystem-free structured/conversion hardening fuzz proof; ASS/SSA remain experimental.
 
 - Added all ten remaining conversions among SubRip, WebVTT, ASS, and SSA, with complete atomic scripted losses, deterministic native defaults, checked centisecond precision, target reparsing, and twelve-direction publication safety evidence; ASS/SSA remain experimental.
@@ -28,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Reconciled current repository documentation after independently downloading and verifying every public v1.0.0 archive, SPDX JSON SBOM, and checksum file against the accepted release evidence.
 
 ### Decisions
+
 
 - 2026-09-11: Treat root documentation, released schemas, and approved brand-kit files as authoritative inputs while keeping generated site content disposable and drift-checked.
 - 2026-09-11: Publish one Cloudflare Worker with Static Assets on the apex and `www`, permit production deployment only from an exact reviewed `main` revision, and retain independent DNS, TLS, redirect, route, revision, and byte-identity verification.
@@ -51,6 +54,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-15: Add scripted inspection counts without changing text report shape or existing command error classes; keep one catalogue as discovery/diagnostic vocabulary authority and retain source-value privacy.
 - 2026-09-15: Keep fuzz mutations in memory with exact source/model construction and accepted controls, preflight independent target capture allocation/declaration ceilings, and require genuine development native evidence while preserving later stable/release gates; extend fixed-work CI without new runtime dependencies.
 
+- 2026-09-15: Promote S028 current software/schema and official ASS/SSA capabilities together to exact 1.1.0 stable after development conformance, retaining precise schema-only/experimental input observations and exact immutable 1.0.0 historical validation. No unreleased development identity adapter or forward-compatibility promise is added.
+- 2026-09-15: Reuse stable canonical/immutable six-target candidate verification, strengthen same-bundle native package command/safety proof and execute digest/source-bound published v1.0.0 consumer refusal on fresh candidate output. Tag/release, production schemas/site and final merge remain separately authorized.
+- 2026-09-15: Freeze maintained/native/schema/CLI and generated preview contracts without activating v1.1.0 public downloads or schema routes; derive format navigation from the governed content map so authored ASS/SSA preview cannot disappear from navigation.
+
 ### Fixed
 
 - Reject malformed trailing conformance-matrix data and require real kind-correct test/fuzz references and the ratified scripted row set rather than accepting incomplete evidence.
@@ -59,6 +66,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Exempt the canonical original-filename disagreement diagnostic from strict scripted rendering; conforming ASS/SSA models encoded under SubRip/WebVTT extensions render identically in strict and permissive modes.
 - Bound signed and unsigned scripted colors before conversion, close native metadata path/context gaps, verify source capture observations and preserve unknown override names; align all active snapshot-verifier instructions with development mode.
 - Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.
+
+### Changed
+
+- Promoted the reviewed current candidate software/schema identity and official scripted native declarations from 1.1.0-dev to 1.1.0 stable within the ratified UTF-8 ASS v4+/SSA v4 profile; existing released schemas, fixtures and public inventory remain immutable.
 
 ## [1.0.0] - 2026-09-11
 

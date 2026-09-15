@@ -28,7 +28,7 @@ func TestScriptedInputCatalogueHelpAndCommandSpecificCompletionValues(t *testing
 			}
 		}
 		help, _ := fullHelpText(name)
-		if !strings.Contains(help, "ass, or ssa") || !strings.Contains(help, "experimental ASS/SSA") || !strings.Contains(help, "ASS/SSA accept UTF-8 only") {
+		if !strings.Contains(help, "ass, or ssa") || !strings.Contains(help, "bounded stable profile") || !strings.Contains(help, "ASS/SSA accept UTF-8 only") || strings.Contains(help, "experimental") {
 			t.Errorf("%s help omits scripted vocabulary/status/profile", name)
 		}
 		for _, shell := range completionShells {

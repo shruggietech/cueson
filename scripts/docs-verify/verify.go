@@ -33,10 +33,13 @@ var requiredDocuments = []string{
 	"docs/conversion.md",
 	"docs/formats/srt.md",
 	"docs/formats/webvtt.md",
+	"docs/formats/ass-ssa.md",
 	"docs/project-management.md",
 	"docs/release-process.md",
+	"docs/release-verification.md",
 	"docs/releases/v0.0.0.md",
 	"docs/releases/v1.0.0.md",
+	"docs/releases/v1.1.0.md",
 }
 
 var (
@@ -69,11 +72,16 @@ var requiredExampleIDs = []string{
 
 var requiredReferenceMarkers = map[string][]string{
 	"CHANGELOG.md":          {"[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD", "[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0"},
-	"README.md":             {"v1.0.0 released and independently verified", "v0.0.0", "v1.0.0 GitHub Release"},
+	"README.md":             {"v1.0.0 released and independently verified", "v0.0.0", "v1.0.0 GitHub Release", "1.1.0 stable candidate", "published v1.0.0 executable rejects new 1.1.0 output"},
 	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "non-normative", "stable schema released and independently verified"},
 	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v1.0.0", "Windows", "macOS", "Linux", "production", "stable release published and independently verified"},
 	"docs/Cueson-Project-Specification-v0.0.0.md": {"canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte", "v1 release-candidate verification issue is complete"},
 	"docs/releases/v1.0.0.md":                     {"# Cueson v1.0.0", "stable Cue JSON", "unsigned and unattested"},
+	"docs/releases/v1.1.0.md":                     {"# Cueson v1.1.0", "unpublished 1.1.0 stable candidate", "released v1.0.0 consumers reject", "unsigned and unattested", "public downloads remain v1.0.0"},
+	"docs/formats/ass-ssa.md":                     {"Frozen bounded stable profile", "unpublished 1.1.0 candidate", "All twelve distinct four-format directions", "UTF-8", "attachments", "karaoke", "drawings", "complexity_limit", "scripted-stable-gate"},
+	"docs/cli.md":                                 {"exact `1.1.0`", "complete `experimental`", "`schema_only`", "historical-output selector", "former development identities"},
+	"docs/release-verification.md":                {"-version 1.1.0 -commit", "same bundle", "Published old-consumer proof", "`published: false`"},
+	"docs/release-process.md":                     {"## v1.1.0 stable candidate preparation", "#66/#67", "fresh post-squash main evidence"},
 }
 
 var staleClaims = map[string][]string{
@@ -93,10 +101,13 @@ var staleClaims = map[string][]string{
 	"docs/cueson-media-format-guide.html":         {"Current v0.0.0 boundary:", "first planned stable targets for v1.0.0", "Current v1.0.0 candidate boundary:", "The candidate is not yet published", "v1.0.0 release candidate"},
 	"docs/Cueson-Project-Specification-v0.0.0.md": {"public v1.0.0 schema matches the repository artifact exactly", "release verification issue is complete"},
 	"docs/releases/v1.0.0.md":                     {"is now published", "public GitHub Release", "Download Cueson v1.0.0", "published at"},
+	"docs/formats/ass-ssa.md":                     {"Unavailable for scripted formats", "scripted conversion and the complete later CLI freeze remain deferred", "full CLI/hardening and stable release gates remain later outcomes"},
+	"docs/releases/v1.1.0.md":                     {"v1.1.0 is now published", "Download Cueson v1.1.0", "public v1.1.0 GitHub Release"},
 }
 
 var requiredSuffixes = map[string]string{
 	"docs/releases/v1.0.0.md": "Full changelog: https://github.com/shruggietech/cueson/blob/v1.0.0/CHANGELOG.md\n",
+	"docs/releases/v1.1.0.md": "Full changelog: https://github.com/shruggietech/cueson/blob/v1.1.0/CHANGELOG.md\n",
 }
 
 type violation struct {

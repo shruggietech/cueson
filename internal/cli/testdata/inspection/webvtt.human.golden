@@ -1,7 +1,7 @@
 Inspection report 1
 Input: native_subtitle (content), content_format=webvtt, extension_format=webvtt
 Format: webvtt
-Schema: https://cueson.io/schema/v1.1.0-dev/cueson.schema.json (version=1.1.0-dev compatible=true)
+Schema: https://cueson.io/schema/v1.1.0/cueson.schema.json (version=1.1.0 compatible=true)
 Declared capabilities: status=stable ingest_supported=true render_supported=true restore_supported=true ocr_required_for_semantic_output=false
 Installed capabilities: ingest=true render=true restore=true validate=true inspect=true
 Integrity: verified (1 asset, 116 bytes)

@@ -45,7 +45,7 @@ func TestScriptedNativeEndToEndAndSourceSeparation(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					if doc.Format != format || doc.FormatSupport.Status != "experimental" || !doc.FormatSupport.IngestSupported || !doc.FormatSupport.RenderSupported || doc.Source.Assets[0].Encoding == nil {
+					if doc.Format != format || doc.FormatSupport.Status != "stable" || !doc.FormatSupport.IngestSupported || !doc.FormatSupport.RenderSupported || doc.Source.Assets[0].Encoding == nil {
 						t.Fatalf("native contract = %#v", doc.FormatSupport)
 					}
 					if len(doc.Cues) != len(seed.Cues) || !reflect.DeepEqual(doc.Cues[0].Payload, seed.Cues[0].Payload) || !reflect.DeepEqual(doc.Cues[0].Speakers, seed.Cues[0].Speakers) {

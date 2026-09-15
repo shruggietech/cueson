@@ -65,7 +65,7 @@ func conversionFuzzDocument(raw []byte, format, encoding string) (model.Document
 		if err != nil {
 			return model.Document{}, false
 		}
-		d.FormatSupport.Status = "experimental"
+		d.FormatSupport.Status = "stable"
 		d.Source.Assets[0].Encoding = &parsed.Encoding
 		d.Cues, d.Diagnostics = parsed.Cues, parsed.Diagnostics
 		if format == "ass" {

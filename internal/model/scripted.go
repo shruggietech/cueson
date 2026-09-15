@@ -272,8 +272,9 @@ func validateScriptedDocumentWithSourcePolicy(doc Document, target bool) error {
 	}
 	recognized := FormatSupport{Status: "schema_only", RestoreSupported: true}
 	experimental := FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
-	if doc.FormatSupport != recognized && doc.FormatSupport != experimental {
-		return fmt.Errorf("format_support must declare schema_only recognition or experimental scripted native capabilities")
+	stable := FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+	if doc.FormatSupport != recognized && doc.FormatSupport != experimental && doc.FormatSupport != stable {
+		return fmt.Errorf("format_support must declare schema_only recognition or complete experimental/stable scripted native capabilities")
 	}
 	native := doc.FormatData.ASS
 	dialect := "v4.00+"

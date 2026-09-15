@@ -15,7 +15,7 @@ func TestRunCLI(t *testing.T) {
 	if code := runCLI([]string{"-repo", repo}, &stdout, &stderr); code != 0 {
 		t.Fatalf("runCLI() = %d, stderr = %q", code, stderr.String())
 	}
-	if got := stdout.String(); !strings.Contains(got, "checked 19 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
+	if got := stdout.String(); !strings.Contains(got, "checked 22 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
 		t.Fatalf("unexpected success output: %q", got)
 	}
 
@@ -103,7 +103,7 @@ func TestFormatMatrixRowsMustAppearInMatchingGuide(t *testing.T) {
 }
 
 func TestReleaseNotesAreRequired(t *testing.T) {
-	for _, name := range []string{"docs/releases/v0.0.0.md", "docs/releases/v1.0.0.md"} {
+	for _, name := range []string{"docs/releases/v0.0.0.md", "docs/releases/v1.0.0.md", "docs/releases/v1.1.0.md"} {
 		t.Run(name, func(t *testing.T) {
 			repo := newRepository(t)
 			if err := os.Remove(filepath.Join(repo, filepath.FromSlash(name))); err != nil {
@@ -137,6 +137,34 @@ func TestV1ReleaseNotesRejectPrematurePublicationClaim(t *testing.T) {
 		t.Fatal(err)
 	}
 	assertViolation(t, result.violations, "docs/releases/v1.0.0.md: stale capability or release claim remains: is now published")
+}
+
+func TestScriptedFreezeRejectsStaleCapabilityAndPrematureRelease(t *testing.T) {
+	repo := newRepository(t)
+	native := readFileForVerifierTest(t, repo, "docs/formats/ass-ssa.md")
+	writeFile(t, repo, "docs/formats/ass-ssa.md", native+"\nUnavailable for scripted formats.\n")
+	notes := readFileForVerifierTest(t, repo, "docs/releases/v1.1.0.md")
+	writeFile(t, repo, "docs/releases/v1.1.0.md", strings.Replace(notes, "Full changelog:", "Download Cueson v1.1.0.\n\nFull changelog:", 1))
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "docs/formats/ass-ssa.md: stale capability or release claim remains: Unavailable for scripted formats")
+	assertViolation(t, result.violations, "docs/releases/v1.1.0.md: stale capability or release claim remains: Download Cueson v1.1.0")
+}
+
+func TestCandidateRequiresExactHistoricalRefusalAndProspectiveNotes(t *testing.T) {
+	repo := newRepository(t)
+	readme := readFileForVerifierTest(t, repo, "README.md")
+	writeFile(t, repo, "README.md", strings.ReplaceAll(readme, "published v1.0.0 executable rejects new 1.1.0 output", "older consumers may accept new output"))
+	notes := readFileForVerifierTest(t, repo, "docs/releases/v1.1.0.md")
+	writeFile(t, repo, "docs/releases/v1.1.0.md", strings.ReplaceAll(notes, "blob/v1.1.0/CHANGELOG.md", "blob/main/CHANGELOG.md"))
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertViolation(t, result.violations, "README.md: required contract marker is missing: published v1.0.0 executable rejects new 1.1.0 output")
+	assertViolation(t, result.violations, "docs/releases/v1.1.0.md: required final suffix is missing: Full changelog: https://github.com/shruggietech/cueson/blob/v1.1.0/CHANGELOG.md")
 }
 
 func TestV1ChangelogRequiresUnreleasedBeforeReleaseSection(t *testing.T) {
@@ -372,6 +400,21 @@ func newRepository(t *testing.T) string {
 	writeFile(t, repo, "docs/formats/webvtt.md", "# WebVTT\n\n`vtt-example`\n")
 	writeFile(t, repo, "testdata/conformance-matrix.json", `{"formats":[{"format":"srt","rows":[{"row_id":"srt-example"}]},{"format":"vtt","rows":[{"row_id":"vtt-example"}]}]}`)
 	writeFile(t, repo, ".specify/memory/constitution.md", "# Constitution\n")
+	for name, markers := range requiredReferenceMarkers {
+		content := readFileForVerifierTest(t, repo, name)
+		for _, marker := range markers {
+			if !strings.Contains(content, marker) {
+				content += "\n" + marker + "\n"
+			}
+		}
+		writeFile(t, repo, name, content)
+	}
+	for name, suffix := range requiredSuffixes {
+		content := readFileForVerifierTest(t, repo, name)
+		if !strings.HasSuffix(content, suffix) {
+			writeFile(t, repo, name, content+"\n"+suffix)
+		}
+	}
 	return repo
 }
 
