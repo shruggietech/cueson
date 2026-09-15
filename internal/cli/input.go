@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/shruggietech/cueson/internal/codec"
+	"github.com/shruggietech/cueson/internal/codec/scripted"
 	"github.com/shruggietech/cueson/internal/model"
 	"github.com/shruggietech/cueson/internal/schema"
 	"github.com/shruggietech/cueson/internal/source"
@@ -175,6 +176,10 @@ func normalizeInputFormat(value string) (string, bool) {
 		return string(codec.FormatSubRip), true
 	case "vtt", "webvtt":
 		return string(codec.FormatWebVTT), true
+	case "ass":
+		return string(codec.FormatASS), true
+	case "ssa":
+		return string(codec.FormatSSA), true
 	default:
 		return "", false
 	}
@@ -192,6 +197,11 @@ func validateWebVTTInputEncoding(encoding string) error {
 }
 
 func cueJSONCandidate(payload []byte, fileName string) bool {
+	// Native scripts start with bracketed section headers. A closed native
+	// candidate must reach its guarded detector instead of the JSON array path.
+	if scripted.Detect(payload).Candidate {
+		return false
+	}
 	trimmed := bytes.TrimSpace(payload)
 	trimmed = bytes.TrimPrefix(trimmed, []byte{0xef, 0xbb, 0xbf})
 	trimmed = bytes.TrimSpace(trimmed)

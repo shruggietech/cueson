@@ -1,0 +1,22 @@
+[
+  {
+    "severity": "warning",
+    "code": "duplicate_script_type",
+    "source_order": 2
+  },
+  {
+    "severity": "warning",
+    "code": "duplicate_timer",
+    "source_order": 4
+  },
+  {
+    "severity": "warning",
+    "code": "unknown_native_record",
+    "source_order": 13
+  },
+  {
+    "severity": "warning",
+    "code": "unknown_native_section",
+    "source_order": 14
+  }
+]

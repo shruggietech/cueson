@@ -17,6 +17,9 @@ type Evidence struct {
 	Matched    bool
 	Confidence int
 	Reason     string
+	// Rejection marks recognized content outside an accepted closed profile.
+	// It must never be treated as absent evidence eligible for filename fallback.
+	Rejection error
 }
 
 // Selection records the chosen registration and the evidence used to choose it.
@@ -49,6 +52,18 @@ func (registry *Registry) Select(data []byte, fileName, requested string) (Selec
 		registration, exists := registry.Lookup(normalized)
 		if !exists {
 			return Selection{}, &UnknownFormatError{Selector: requested}
+		}
+		for _, guarded := range registry.registrations {
+			if !guarded.EnforceContentSelection || guarded.Detect == nil {
+				continue
+			}
+			evidence := guarded.Detect(data)
+			if evidence.Rejection != nil {
+				return Selection{}, evidence.Rejection
+			}
+			if evidence.Matched && evidence.Confidence > 0 && guarded.Format != registration.Format {
+				return Selection{}, fmt.Errorf("native content identifies format %q rather than requested format %q", guarded.Format, registration.Format)
+			}
 		}
 		return Selection{Format: registration.Format, Registration: registration, Explicit: true}, nil
 	}
@@ -91,6 +106,9 @@ func (registry *Registry) selectContent(data []byte) (int, *Format, error) {
 			continue
 		}
 		evidence := detector(data)
+		if evidence.Rejection != nil {
+			return -1, nil, evidence.Rejection
+		}
 		if !evidence.Matched || evidence.Confidence <= 0 {
 			continue
 		}

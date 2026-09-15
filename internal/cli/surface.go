@@ -43,12 +43,12 @@ var orderedCommandSurface = []cliCommandSpec{
 	{
 		Name:        "encode",
 		Summary:     "Encode a subtitle source as Cue JSON.",
-		Description: "Encode a SubRip or WebVTT source as Cue JSON while preserving its exact source bytes.",
+		Description: "Encode a SubRip, WebVTT, or experimental ASS/SSA source as Cue JSON while preserving its exact source bytes.",
 		Usage:       "cueson [global options] encode [options] INPUT",
 		Options: []cliOptionSpec{
 			{Spellings: []string{"-o", "--output"}, ValueName: "PATH", ValueKind: cliValuePath, Description: "Write Cue JSON to PATH (default INPUT.cueson.json)."},
 			{Spellings: []string{"-f", "--force"}, Description: "Replace an existing regular output file."},
-			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "srt", "vtt"}, Description: "Select auto, srt, or vtt (default auto)."},
+			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental."},
 			{Spellings: []string{"--encoding"}, ValueName: "NAME", ValueKind: cliValueEncoding, Values: canonicalEncodingValues(), Description: "Select the source text encoding."},
 			{Spellings: []string{"--pretty"}, Description: "Indent Cue JSON output."},
 			{Spellings: []string{"--stdout"}, Description: "Write Cue JSON to stdout."},
@@ -58,6 +58,7 @@ var orderedCommandSurface = []cliCommandSpec{
 			"Format aliases: subrip for srt; webvtt for vtt.",
 			"Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le; utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.",
 			"WebVTT accepts UTF-8 only.",
+			"ASS/SSA accept the bounded UTF-8 profile; native actor observations are retained with --no-speaker-detection.",
 			"--output - is equivalent to --stdout. --force requires a filesystem output.",
 		},
 		Streams: []string{
@@ -99,7 +100,7 @@ var orderedCommandSurface = []cliCommandSpec{
 		Description: "Render validated Cue JSON from its structured model in its matching native subtitle format.",
 		Usage:       "cueson [global options] render [options] INPUT.cueson.json --to FORMAT",
 		Options: []cliOptionSpec{
-			{Spellings: []string{"--to"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"srt", "vtt"}, Description: "Select srt or vtt."},
+			{Spellings: []string{"--to"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"srt", "vtt", "ass", "ssa"}, Description: "Select srt, vtt, ass, or ssa; ASS/SSA are experimental."},
 			{Spellings: []string{"-o", "--output"}, ValueName: "PATH", ValueKind: cliValuePath, Description: "Write native output to PATH instead of stdout."},
 			{Spellings: []string{"-f", "--force"}, Description: "Replace an existing regular output file."},
 			{Spellings: []string{"--strict"}, Description: "Reject known non-representable model content."},

@@ -316,6 +316,8 @@ func verifyFormatMatrix(root string) (int, []violation) {
 			document = "docs/formats/srt.md"
 		case "vtt":
 			document = "docs/formats/webvtt.md"
+		case "scripted":
+			document = "docs/formats/ass-ssa.md"
 		default:
 			violations = append(violations, violation{path: matrixName, message: "unsupported matrix format: " + format.Format})
 			continue

@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/shruggietech/cueson/internal/cli"
+	"github.com/shruggietech/cueson/internal/codec/scripted"
 	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/codec/webvtt"
 	"github.com/shruggietech/cueson/internal/model"
@@ -296,6 +297,18 @@ func TestMalformedRegressionsAreDeterministic(t *testing.T) {
 
 func rejectAtDeclaredBoundary(t *testing.T, fixture testutil.Fixture, input []byte, run int) (string, string) {
 	t.Helper()
+	if strings.HasPrefix(fixture.ID, "scripted/") {
+		format := strings.TrimPrefix(fixture.ID, "scripted/")[:3]
+		_, err := scripted.Parse(context.Background(), input, format)
+		if err == nil {
+			t.Fatal("scripted.Parse() accepted malformed fixture")
+		}
+		stage := "semantics"
+		if strings.Contains(err.Error(), "invalid_scripted_encoding") {
+			stage = "parse"
+		}
+		return stage, err.Error()
+	}
 	if fixture.ID == "conversion/srt-zero-duration" {
 		inputPath := filepath.Join(t.TempDir(), "zero-duration.srt")
 		if err := os.WriteFile(inputPath, input, 0o600); err != nil {

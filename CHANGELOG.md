@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added experimental bounded ASS v4+/SSA v4 UTF-8 detection, source-preserving ingest, native Actor/karaoke projections, owner-driven textual rendering, guarded CLI workflows, and provenance-governed paired acceptance/rejection corpus evidence.
 - Added exact local historical Cue JSON 1.0.0 validation and command compatibility, plus typed annotated ASS/SSA schema-only branches with ordered native content, checked references, readable Text projections and bounded privacy validation.
 - Added the S023 scripted-format milestone roadmap, native ASS/SSA preservation/rendering contract, exact historical v1 input compatibility matrix, and governed v1.1.0 epic with sixteen atomic release/public-hosting outcomes.
 
@@ -16,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Admit truthful experimental scripted capability observations alongside existing schema-only inputs under the evolving development schema, and extend the opt-in corpus verifier with scripted cycles and explicit preservation-only render refusals.
 - Advanced current executable/schema/new output to unreleased `1.1.0-dev` and restored explicit development snapshot proof using the current schema; preserved all published schema and release evidence bytes.
 - Reconciled maintained current-state prose with completed v1 milestone closure, S021 public schema/site hosting and S022 verification, preserving chronological delivery evidence.
 
@@ -35,9 +37,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-15: Interpret alphabetic reset/font override suffixes conservatively through declared names, preserving ambiguous complete tag identities and raw Text; verify capture-only observations against original source positions independently of edited owners.
 - 2026-09-15: Validate declared record grammar before privacy exemptions, inspect retained malformed non-dialogue values conservatively, reject relative resource separators and code execution effects, and require positive native dialogue intervals independently of edited common timing.
 - 2026-09-15: Replace the development model's path-looking semicolon-comment exemption with conservative inert-comment inspection because comments can retain original resource provenance; field/declaration names also remain structural metadata without content exemptions.
+- 2026-09-15: Install experimental ASS/SSA codecs independently of input capability observations; preserve historical schema-only models and released schema bytes while changing only the development capability alternatives.
+- 2026-09-15: Guard recognized scripted content against extension or explicit-selector escape, and distinguish bracketed native headers from actual JSON containers at the shared input boundary.
+- 2026-09-15: Serialize editable native owners with checked declaration insertion/restoration and exact centisecond precision, never captured raw rows; retain safely bounded malformed non-dialogue values conservatively for preservation only and refuse their rendering in every mode.
+- 2026-09-15: Track one shared scripted conformance matrix with executed native evidence and explicit deferred conversion, platform and stable-release gates; replace duplicate-record scans with encounter-order maps to avoid quadratic work within collection limits.
 
 ### Fixed
 
+- Exempt the canonical original-filename disagreement diagnostic from strict scripted rendering; conforming ASS/SSA models encoded under SubRip/WebVTT extensions render identically in strict and permissive modes.
 - Bound signed and unsigned scripted colors before conversion, close native metadata path/context gaps, verify source capture observations and preserve unknown override names; align all active snapshot-verifier instructions with development mode.
 - Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.
 

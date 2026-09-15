@@ -1,16 +1,18 @@
 # Cueson Architecture
 
-**Status:** v1.0.0 released architecture with S024 development additions
+**Status:** v1.0.0 released architecture with S024/S025 development additions
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
 This document is the architecture of record for the stable v1.0.0 release. The [project constitution](../.specify/memory/constitution.md) remains the highest repository authority. The [working project specification](Cueson-Project-Specification-v0.0.0.md) supplies broader context and roadmap detail when it does not conflict with ratified slices.
 
-## S024 development architecture
+## Current development architecture
 
 Current source stages executable and canonical schema identity `1.1.0-dev` together. The local schema registry selects an exact supported instance URI/version pair before structural and version-specific semantic validation; current discovery and new output continue using the development contract. Historical input keeps its producer and source truth, and all Cue JSON command paths complete integrity validation before output publication. Inspection reports the loaded identity.
 
-ASS/SSA share typed ordered scripted structures in `internal/model`, with separate matching dialect branches. Generic inspection, validation and restoration use these structures while nil codec registrations truthfully expose absent native ingest/render capabilities. The source package remains codec-independent. Scripted logical Text projection and privacy checks derive from retained native/source content, without executing attachments or external resources.
+On 2026-09-15, S024 added shared typed ordered ASS/SSA structures in `internal/model`, with separate matching dialect branches and `schema_only` declarations. S025 adds experimental native parser/renderers in `internal/codec/scripted` while retaining acceptance of those earlier schema-only observations. Content-first selection, strict UTF-8 decoding, declared-field ownership and bounded native projection are shared across both dialects. The source package remains codec-independent; exact restoration verifies preserved bytes separately from canonical native rendering. No attachment, effect or external resource is executed, loaded or fetched.
+
+Scripted rendering validates the complete model and source envelope, traverses retained physical order, and serializes recognized structured owners. Common dialogue timing supplies canonical centiseconds; capture-only native timestamps and raw lines remain unchanged observations. Constructed recognized owners may omit capture fields and declaration references; the renderer inserts the canonical declaration they require and restores a following captured owner's declaration when necessary. A complete bounded candidate is reparsed before output publication, so malformed preservation-only records, inconsistent projections, unsafe metadata and ambiguous framing cannot publish native output. Scripted conversion and stable support remain later gates.
 
 Development package proof uses the current schema and explicit development verification. This is a dated departure from frozen S019 candidate packaging because current canonical bytes now evolve under an unreleased identity. Released schemas and historical proof remain immutable; S028 owns final stable promotion and immutable-copy proof.
 
@@ -38,7 +40,7 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 
 Dependencies point inward toward stable, dependency-light contracts. `internal/model` does not depend on CLI, source, codecs, conversion, or OCR. Codec availability is the authority for native ingest and render capability; schema recognition alone is not.
 
-Current source implements `internal/codec` as a capability registry plus bounded detection/decoding and native SubRip and WebVTT parser/renderers. `internal/convert` owns target projection, compatibility analysis, deterministic runtime-only loss reports, and conversion rendering. `internal/ocr` remains reserved future ownership.
+Current source implements `internal/codec` as a capability registry plus bounded detection/decoding and native SubRip, WebVTT and experimental ASS/SSA parser/renderers. `internal/convert` owns the established SubRip/WebVTT target projection, compatibility analysis, deterministic runtime-only loss reports, and conversion rendering; scripted conversion remains deferred. `internal/ocr` remains reserved future ownership.
 
 Validation, inspection, and conversion share one CLI-owned validated-input path so Cue JSON precedence, native content-first selection, schema and semantic checks, source integrity, and codec availability cannot drift among commands. Inspection projects that result into a fixed privacy-bounded report rather than exposing the Cue model directly. Help and four static shell completion definitions derive their public vocabulary from one ordered CLI surface catalogue while semantic option conflicts remain in the explicit parser.
 
@@ -56,17 +58,17 @@ Before opening any output, restoration builds the complete destination plan and 
 
 ## Common model and native fidelity
 
-The common model exposes timing and semantic content without requiring consumers to decode source bytes or parse a subtitle grammar. Format-native data remains adjacent wherever normalization would otherwise lose information. Current SubRip and WebVTT encode workflows construct both views from one bounded exact source acquisition.
+The common model exposes timing and semantic content without requiring consumers to decode source bytes or parse a subtitle grammar. Format-native data remains adjacent wherever normalization would otherwise lose information. Current SubRip, WebVTT and experimental ASS/SSA encode workflows construct both views from one bounded exact source acquisition.
 
 Unknown, malformed, unsupported, or non-representable source information is preserved when practical and reported through deterministic diagnostics. Strict conversion refuses known loss. A successful operation never silently discards information covered by the active contract.
 
 The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages define their stable v1 native grammars, diagnostics, fixtures, ingest, rendering, and conversion contracts. Conversion validates source-envelope integrity, projects only model data into a private target representation, computes its complete loss report before rendering, and keeps that target representation and report outside Cue JSON. Strict conversion rejects every known loss before output publication.
 
-## Planned scripted-format extension
+## Scripted-format extension and remaining gates
 
 The [S023 roadmap](roadmap.md) groups future ASS/SSA schema compatibility, native fidelity, conversion, CLI integration and release/public hosting into coherent atomic outcomes. The [native contract](formats/ass-ssa.md) uses matching `format_data.ass`/`format_data.ssa` branches, one retained physical-record order, checked attachment record ranges and explicit editable ownership beside original source observations. This avoids duplicating attachment content and preserves the existing generic collection/input/diagnostic ceilings. No native implementation or pixel renderer is introduced by S023.
 
-The [future version contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) extends the existing shared validated-input boundary with exact local historical schema selection and version-specific semantics. Current output schema discovery/official lockstep remains separate from historical input support. Version constants alone are not compatibility proof, and unknown identities never authorize network retrieval. Current Go packages stay internal and existing runtime/source/schema behavior remains unchanged.
+The [S023 version contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md), ratified on 2026-09-15, specified exact local historical schema selection and version-specific semantics without implementing them in that planning slice. S024 implemented that boundary; S025 retains it while installing experimental scripted codecs. Current output schema discovery/official lockstep remains separate from historical input support. Version constants alone are not compatibility proof, and unknown identities never authorize network retrieval. Current Go packages stay internal; the published v1.0.0 runtime/source/schema contract remains unchanged.
 
 ## Version and schema relationship
 
@@ -108,7 +110,7 @@ Repository-authored fixture metadata and normalized JSON expectations remain UTF
 
 `internal/testutil` remains domain-neutral to avoid import cycles and incompatible format-specific assertion dialects. It compares semantic JSON, ordered diagnostics, exact bytes, integrity values, and explicit timestamp outcomes using fixture IDs and logical surface names. Cross-package tests under `internal/conformance` own projections from the Cueson model and source reports, prove exact restoration from the accepted seed, exercise parse, structure, semantics, and integrity rejection stages, and reject explicit native, slash, backslash, and JSON-escaped local identifiers.
 
-The embedded `internal/schema/testdata/representative.cueson.json` remains the canonical schema contract example owned by `internal/schema`; it is intentionally outside the root manifest rather than an undeclared corpus payload. Generic fuzz boundaries exercise complete Cue JSON decoding, canonical source-envelope base64 integrity, and safe basenames with callback guards and no restoration writes. Native SubRip and WebVTT packages add format-specific parsing, rendering, and parser-cycle fuzz boundaries. S006 supplies the hosted platform automation described below.
+The embedded `internal/schema/testdata/representative.cueson.json` remains the canonical schema contract example owned by `internal/schema`; it is intentionally outside the root manifest rather than an undeclared corpus payload. Generic fuzz boundaries exercise complete Cue JSON decoding, canonical source-envelope base64 integrity, and safe basenames with callback guards and no restoration writes. Native SubRip, WebVTT and scripted packages add format-specific parsing, rendering, and parser-cycle fuzz boundaries. S006 supplies the hosted platform automation described below; S025 extends its native codec checks without claiming the later full scripted conformance freeze.
 
 ## Hosted delivery automation
 

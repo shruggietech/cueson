@@ -29,12 +29,12 @@ Register-ArgumentCompleter -Native -CommandName cueson -ScriptBlock {
   if (-not $optionsActive) { return }
   $previous = if ($limit -gt 1) { $tokens[$limit - 1] } else { '' }
   $candidates = @()
-  if ($command -ceq 'encode' -and $previous -ceq '--format') { $candidates = @('auto', 'srt', 'vtt') }
-  if ($command -ceq 'encode' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=srt', '--format=vtt') }
+  if ($command -ceq 'encode' -and $previous -ceq '--format') { $candidates = @('auto', 'srt', 'vtt', 'ass', 'ssa') }
+  if ($command -ceq 'encode' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=srt', '--format=vtt', '--format=ass', '--format=ssa') }
   if ($command -ceq 'encode' -and $previous -ceq '--encoding') { $candidates = @('utf-8', 'utf-8-bom', 'utf-16le', 'utf-16be', 'windows-1252', 'iso-8859-1') }
   if ($command -ceq 'encode' -and $wordToComplete.StartsWith('--encoding=', [System.StringComparison]::Ordinal)) { $candidates = @('--encoding=utf-8', '--encoding=utf-8-bom', '--encoding=utf-16le', '--encoding=utf-16be', '--encoding=windows-1252', '--encoding=iso-8859-1') }
-  if ($command -ceq 'render' -and $previous -ceq '--to') { $candidates = @('srt', 'vtt') }
-  if ($command -ceq 'render' -and $wordToComplete.StartsWith('--to=', [System.StringComparison]::Ordinal)) { $candidates = @('--to=srt', '--to=vtt') }
+  if ($command -ceq 'render' -and $previous -ceq '--to') { $candidates = @('srt', 'vtt', 'ass', 'ssa') }
+  if ($command -ceq 'render' -and $wordToComplete.StartsWith('--to=', [System.StringComparison]::Ordinal)) { $candidates = @('--to=srt', '--to=vtt', '--to=ass', '--to=ssa') }
   if ($command -ceq 'convert' -and $previous -ceq '--to') { $candidates = @('srt', 'vtt') }
   if ($command -ceq 'convert' -and $wordToComplete.StartsWith('--to=', [System.StringComparison]::Ordinal)) { $candidates = @('--to=srt', '--to=vtt') }
   if ($command -ceq 'convert' -and $previous -ceq '--from') { $candidates = @('auto', 'cueson', 'srt', 'vtt') }

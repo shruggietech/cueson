@@ -266,9 +266,10 @@ func validateScriptedDocument(doc Document) error {
 	if err := validateCollectionLimits(doc); err != nil {
 		return err
 	}
-	want := FormatSupport{Status: "schema_only", RestoreSupported: true}
-	if doc.FormatSupport != want {
-		return fmt.Errorf("format_support must declare schema_only scripted recognition")
+	recognized := FormatSupport{Status: "schema_only", RestoreSupported: true}
+	experimental := FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+	if doc.FormatSupport != recognized && doc.FormatSupport != experimental {
+		return fmt.Errorf("format_support must declare schema_only recognition or experimental scripted native capabilities")
 	}
 	native := doc.FormatData.ASS
 	dialect := "v4.00+"
@@ -1007,7 +1008,7 @@ func scriptedRecordPrivacy(r ScriptedRecord, section string) error {
 		return nil
 	}
 	raw := *r.RawLine
-	prefix, _, hasPrefix := strings.Cut(strings.TrimSpace(raw), ":")
+	prefix, value, hasPrefix := strings.Cut(strings.TrimSpace(raw), ":")
 	if hasPrefix && (strings.EqualFold(prefix, "Command") || strings.Contains(strings.ToLower(prefix), "automation") || strings.Contains(strings.ToLower(prefix), "template")) {
 		return scriptedError("unsafe_active_content", r.SourceOrder)
 	}
@@ -1017,6 +1018,20 @@ func scriptedRecordPrivacy(r ScriptedRecord, section string) error {
 	}
 	if content && trimmed == "" {
 		return nil
+	}
+	if content && r.Kind == "malformed" && hasPrefix {
+		known := ((s == "events" || s == "v4 styles" || s == "v4+ styles") && strings.EqualFold(prefix, "Format")) ||
+			((s == "v4 styles" || s == "v4+ styles") && strings.EqualFold(prefix, "Style")) ||
+			(s == "events" && strings.EqualFold(prefix, "Comment"))
+		if known {
+			return scriptedMalformedValuePrivacy(value, r.SourceOrder)
+		}
+		if (s == "fonts" && strings.EqualFold(prefix, "fontname")) || (s == "graphics" && strings.EqualFold(prefix, "filename")) {
+			if !nativeSafeName(strings.TrimSpace(value)) {
+				return scriptedError("unsafe_source_metadata", r.SourceOrder)
+			}
+			return nil
+		}
 	}
 	if content && (r.Kind == "attachment_data" || (r.Kind == "style" && hasPrefix && strings.EqualFold(prefix, "Style")) || (r.Kind == "event" && hasPrefix && (strings.EqualFold(prefix, "Dialogue") || strings.EqualFold(prefix, "Comment"))) || (r.Kind == "format_declaration" && hasPrefix && strings.EqualFold(prefix, "Format"))) {
 		return nil

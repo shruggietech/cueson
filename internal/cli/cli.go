@@ -717,8 +717,8 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 		if parsed.encode.format == "" {
 			parsed.encode.format = "auto"
 		}
-		if parsed.encode.format != "auto" && parsed.encode.format != "srt" && parsed.encode.format != "vtt" && parsed.encode.format != "subrip" && parsed.encode.format != "webvtt" {
-			return parsed, encodeInvocationError("--format must be auto, srt, or vtt")
+		if parsed.encode.format != "auto" && parsed.encode.format != "srt" && parsed.encode.format != "vtt" && parsed.encode.format != "subrip" && parsed.encode.format != "webvtt" && parsed.encode.format != "ass" && parsed.encode.format != "ssa" {
+			return parsed, encodeInvocationError("--format must be auto, srt, vtt, ass, or ssa")
 		}
 		if (parsed.encode.format == "vtt" || parsed.encode.format == "webvtt") && parsed.encode.encoding != "" {
 			encoding, known := codec.NormalizeEncoding(parsed.encode.encoding)
@@ -742,7 +742,7 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 			return parsed, renderInvocationError("render requires --to FORMAT")
 		}
 		if parsed.render.target != "srt" && parsed.render.target != "subrip" && parsed.render.target != "vtt" && parsed.render.target != "webvtt" && parsed.render.target != "ass" && parsed.render.target != "ssa" {
-			return parsed, renderInvocationError("--to must be srt, vtt, ass, or ssa; ASS/SSA renderers are unavailable")
+			return parsed, renderInvocationError("--to must be srt, vtt, ass, or ssa")
 		}
 		if parsed.render.force && (!parsed.render.outputSet || parsed.render.output == "-") {
 			return parsed, renderInvocationError("--force requires a filesystem output")

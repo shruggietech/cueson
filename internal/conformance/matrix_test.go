@@ -36,7 +36,7 @@ type matrixEvidence struct {
 	Reason    string `json:"reason,omitempty"`
 }
 
-var matrixIDPattern = regexp.MustCompile(`^(srt|vtt)-[a-z0-9]+(?:-[a-z0-9]+)*$`)
+var matrixIDPattern = regexp.MustCompile(`^(srt|vtt|scripted)-[a-z0-9]+(?:-[a-z0-9]+)*$`)
 
 var requiredMatrixEvidenceKinds = []string{
 	"accepted_fixture",
@@ -54,11 +54,11 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 	repositoryRoot := filepath.Dir(testdataRoot)
 	matrix := loadConformanceMatrix(t, filepath.Join(testdataRoot, "conformance-matrix.json"))
 	manifest := verifiedManifest(t, testdataRoot)
-	if matrix.Version != 1 || len(matrix.Formats) != 2 {
+	if matrix.Version != 1 || len(matrix.Formats) != 3 {
 		t.Fatalf("matrix identity = version %d, formats %d", matrix.Version, len(matrix.Formats))
 	}
 
-	wantFormats := []string{"srt", "vtt"}
+	wantFormats := []string{"srt", "vtt", "scripted"}
 	rowIDs := make(map[string]struct{})
 	seenKinds := make(map[string]bool)
 	for formatIndex, format := range matrix.Formats {
@@ -68,6 +68,12 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 		documentName := format.Format + ".md"
 		if format.Format == "vtt" {
 			documentName = "webvtt.md"
+		}
+		if format.Format == "scripted" {
+			documentName = "ass-ssa.md"
+			if len(format.Rows) != 17 {
+				t.Errorf("scripted matrix has %d rows, want all 17 selected-profile rows", len(format.Rows))
+			}
 		}
 		document := readRepositoryFile(t, filepath.Join(repositoryRoot, "docs", "formats", documentName))
 		for _, row := range format.Rows {
@@ -86,6 +92,7 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 			}
 			rowKinds := make(map[string]bool)
 			inapplicableKinds := make(map[string]bool)
+			deferredKinds := make(map[string]bool)
 			evidenceKeys := make(map[string]bool)
 			for _, evidence := range row.Evidence {
 				key := evidence.Kind + "\x00" + evidence.Reference
@@ -121,16 +128,22 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 						continue
 					}
 					inapplicableKinds[evidence.Reference] = true
+				case "deferred":
+					if format.Format != "scripted" || !isRequiredMatrixEvidenceKind(evidence.Reference) || !strings.Contains(evidence.Reason, "#") || strings.TrimSpace(evidence.Reason) == "" {
+						t.Errorf("row %q has incomplete or misplaced deferred evidence", row.RowID)
+						continue
+					}
+					deferredKinds[evidence.Reference] = true
 				default:
 					t.Errorf("row %q has unknown evidence kind %q", row.RowID, evidence.Kind)
 				}
 			}
 			for _, kind := range requiredMatrixEvidenceKinds {
 				switch {
-				case rowKinds[kind] && inapplicableKinds[kind]:
-					t.Errorf("row %q marks %s both evidenced and inapplicable", row.RowID, kind)
-				case !rowKinds[kind] && !inapplicableKinds[kind]:
-					t.Errorf("row %q omits %s evidence without an inapplicability reason", row.RowID, kind)
+				case (rowKinds[kind] && inapplicableKinds[kind]) || (deferredKinds[kind] && inapplicableKinds[kind]):
+					t.Errorf("row %q marks applicable %s evidence inapplicable", row.RowID, kind)
+				case !rowKinds[kind] && !inapplicableKinds[kind] && !deferredKinds[kind]:
+					t.Errorf("row %q omits %s evidence without an inapplicability or deferral reason", row.RowID, kind)
 				}
 			}
 		}

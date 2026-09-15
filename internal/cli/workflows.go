@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/shruggietech/cueson/internal/codec"
+	"github.com/shruggietech/cueson/internal/codec/scripted"
 	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/codec/webvtt"
 	"github.com/shruggietech/cueson/internal/convert"
@@ -285,11 +286,45 @@ func workflowRegistry(encoding string) (*codec.Registry, error) {
 		}
 		return codec.Evidence{}
 	}
+	decodeScripted := func(format string) codec.Decoder {
+		return func(ctx context.Context, captured source.Captured, options codec.DecodeOptions) (model.Document, error) {
+			if options.Encoding != "" {
+				canonical, known := codec.NormalizeEncoding(options.Encoding)
+				if !known || canonical != codec.EncodingUTF8 && canonical != codec.EncodingUTF8BOM {
+					return model.Document{}, fmt.Errorf("scripted native sources require UTF-8")
+				}
+				if canonical == codec.EncodingUTF8BOM && (len(captured.Bytes) < 3 || captured.Bytes[0] != 0xef || captured.Bytes[1] != 0xbb || captured.Bytes[2] != 0xbf) {
+					return model.Document{}, fmt.Errorf("selected UTF-8 BOM encoding requires a matching BOM")
+				}
+			}
+			parsed, err := scripted.Parse(ctx, captured.Bytes, format)
+			if err != nil {
+				return model.Document{}, err
+			}
+			captured.Asset.Encoding = &parsed.Encoding
+			return newScriptedDocument(captured.Asset, format, parsed), nil
+		}
+	}
+	renderScripted := func(format string) codec.Renderer {
+		return func(ctx context.Context, document model.Document, options codec.RenderOptions) (codec.RenderResult, error) {
+			if document.Format != format {
+				return codec.RenderResult{}, fmt.Errorf("document format %q cannot be rendered as %q", document.Format, format)
+			}
+			result, err := scripted.Render(ctx, document, options.Strict)
+			return codec.RenderResult{Bytes: result.Bytes, Diagnostics: result.Diagnostics}, err
+		}
+	}
+	detectScripted := func(format string) codec.Detector {
+		return func(data []byte) codec.Evidence {
+			facts := scripted.Detect(data)
+			return codec.Evidence{Matched: facts.Format == format && facts.Err == nil, Confidence: 100, Reason: "scripted dialect and style sections", Rejection: facts.Err}
+		}
+	}
 	return codec.NewRegistry(
 		codec.Registration{Format: codec.FormatSubRip, Aliases: []string{"srt"}, Extensions: []string{"srt"}, Detect: detectSubRip, Decode: decodeSubRip, Render: renderSubRip},
 		codec.Registration{Format: codec.FormatWebVTT, Aliases: []string{"vtt"}, Extensions: []string{"vtt"}, Detect: detectWebVTT, Decode: decodeWebVTT, Render: renderWebVTT},
-		codec.Registration{Format: codec.FormatASS},
-		codec.Registration{Format: codec.FormatSSA},
+		codec.Registration{Format: codec.FormatASS, Extensions: []string{"ass"}, Detect: detectScripted("ass"), EnforceContentSelection: true, Decode: decodeScripted("ass"), Render: renderScripted("ass")},
+		codec.Registration{Format: codec.FormatSSA, Extensions: []string{"ssa"}, Detect: detectScripted("ssa"), EnforceContentSelection: true, Decode: decodeScripted("ssa"), Render: renderScripted("ssa")},
 	)
 }
 
@@ -300,6 +335,8 @@ func mediaTypeForFormat(format codec.Format) *string {
 		mediaType = "application/x-subrip"
 	case codec.FormatWebVTT:
 		mediaType = "text/vtt"
+	case codec.FormatASS, codec.FormatSSA:
+		mediaType = "text/x-ssa"
 	default:
 		return nil
 	}
@@ -359,6 +396,40 @@ func newWebVTTDocument(asset model.SourceAsset, parsed webvtt.Result) model.Docu
 		FormatData:    model.DocumentFormatData{WebVTT: &parsed.DocumentData},
 		Diagnostics:   parsed.Diagnostics,
 		Stats:         model.Stats{CueCount: len(parsed.Cues), HasWordLevelTiming: hasTokens, MediaSpanMilliseconds: int64Pointer(span)},
+	}
+	updateDiagnosticStats(&document)
+	return document
+}
+
+func newScriptedDocument(asset model.SourceAsset, format string, parsed scripted.ParseResult) model.Document {
+	document := model.Document{
+		Schema: schema.ID(), SchemaVersion: schema.Version(), Format: format,
+		FormatSupport: model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+		Producer:      model.Producer{Name: "cueson", Version: version.String()},
+		Source:        model.SourceEnvelope{PrimaryAssetID: asset.ID, Assets: []model.SourceAsset{asset}},
+		Metadata:      model.Metadata{}, Document: model.DocumentSummary{CueCount: len(parsed.Cues)},
+		Cues: parsed.Cues, Diagnostics: parsed.Diagnostics, Stats: model.Stats{CueCount: len(parsed.Cues)},
+	}
+	if format == "ass" {
+		document.FormatData.ASS = &parsed.Native
+	} else {
+		document.FormatData.SSA = &parsed.Native
+	}
+	if len(parsed.Cues) > 0 {
+		minimum, maximum := parsed.Cues[0].Timing.StartMilliseconds, parsed.Cues[0].Timing.EndMilliseconds
+		for _, cue := range parsed.Cues {
+			if cue.Timing.StartMilliseconds < minimum {
+				minimum = cue.Timing.StartMilliseconds
+			}
+			if cue.Timing.EndMilliseconds > maximum {
+				maximum = cue.Timing.EndMilliseconds
+			}
+			document.Document.HasWordLevelTiming = document.Document.HasWordLevelTiming || len(cue.Tokens) > 0
+		}
+		document.Document.MediaStartMilliseconds, document.Document.MediaEndMilliseconds = int64Pointer(minimum), int64Pointer(maximum)
+		document.Document.MediaSpanMilliseconds = int64Pointer(maximum - minimum)
+		document.Stats.MediaSpanMilliseconds = int64Pointer(maximum - minimum)
+		document.Stats.HasWordLevelTiming = document.Document.HasWordLevelTiming
 	}
 	updateDiagnosticStats(&document)
 	return document

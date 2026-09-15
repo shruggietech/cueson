@@ -28,9 +28,11 @@ S018 froze the implemented CLI and Cue JSON behavior, S019 promoted that reviewe
 
 ## Current development schema evolution
 
-S024 implements exact local historical 1.0.0 structure and version-specific semantics, and annotated current `ass` and `ssa` branches under `1.1.0-dev`. Historical source and producer observations remain intact. Unknown or mismatched identities reject without network retrieval. The current development URI is an exact local identity without a new production route or immutable release copy. Final 1.1.0 promotion remains owned by #65.
+S024 implemented exact local historical 1.0.0 structure and version-specific semantics, and annotated `ass` and `ssa` branches under `1.1.0-dev`, on 2026-09-15. S025 adds experimental native ingest/render declarations under that same unreleased development identity. Historical source and producer observations remain intact. Unknown or mismatched identities reject without network retrieval. The current development URI is an exact local identity without a new production route or immutable release copy. Final 1.1.0 promotion remains owned by #65.
 
-`schema_only` declares ingest false, render false, restore true and OCR false. Native codecs remain absent. Scripted documents retain ordered sections/records, declaration field occurrences, styles, dialogue and non-dialogue events, attachments and native Text. Common cue lines/plain text are deterministic readable projections; native Text remains authoritative. The model checks local references, lexical observations, projection provenance, metadata privacy and traversal bounds. Nonempty zero-dialogue scripted documents have empty cues and null media bounds; historical 1.0.0 minimum-cue rules remain unchanged. Constructed recognized records may omit capture-only declarations and lexical observations rather than invent source evidence. The [S024 model contract](../specs/S024-extend-versioned-schema-model/data-model.md) records detailed ownership and limits.
+Current scripted encode output declares `experimental`, with ingest true, render true, restore true and OCR false. Earlier `schema_only` declarations (ingest false, render false, restore true and OCR false) remain structurally and semantically accepted; loading them does not rewrite their observations. Installed codec availability controls whether the current executable can perform native operations. Scripted documents retain ordered sections/records, declaration field occurrences, styles, dialogue and non-dialogue events, attachments and native Text. Common cue lines/plain text are deterministic readable projections; native Text remains authoritative. The model checks local references, lexical observations, projection provenance, metadata privacy and traversal bounds. Nonempty zero-dialogue scripted documents have empty cues and null media bounds; historical 1.0.0 minimum-cue rules remain unchanged. Constructed recognized records may omit capture-only declarations and lexical observations rather than invent source evidence. The [S024 model contract](../specs/S024-extend-versioned-schema-model/data-model.md) records the original schema-only ownership baseline; the [current native contract](formats/ass-ssa.md) records S025 codec behavior.
+
+Safely bounded malformed non-dialogue records and malformed attachment content are preservation-only. They retain truthful original captures and deterministic diagnostics without fabricating an interpretable owner or empty attachment range. They remain valid for generic inspection and exact restoration where the accepted-source privacy rules permit retention, but rendering refuses them in all modes. Recognized records render from editable owners rather than `raw_line`; inserted declarations for constructed owners and restored declarations for following captured owners affect canonical output only.
 
 ### Historical planning authority
 
@@ -73,7 +75,7 @@ The exact JSON Schema defines required versus optional properties. The common cu
 
 ## Initial format keys
 
-The canonical schema and `format_data` keys are:
+The released v1.0.0 schema and `format_data` keys are:
 
 ```text
 subrip
@@ -83,6 +85,8 @@ webvtt
 File extensions and CLI tokens `srt` and `vtt` are aliases that normalize to canonical keys and never appear as schema format values.
 
 These keys and their format-native shapes identify format families. Capability fields separately declare whether the matching executable can ingest, render, or restore them. SubRip and WebVTT have completed the stable v1.0.0 release gate.
+
+Current unreleased `1.1.0-dev` also defines `ass` and `ssa`. These canonical keys and CLI tokens have experimental native ingest/render support; their presence does not imply scripted conversion or stable support.
 
 ## Official format capability
 
