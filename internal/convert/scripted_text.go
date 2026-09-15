@@ -15,6 +15,7 @@ type scriptedOwners struct {
 	styleNames   map[string][]int
 	recordOrders map[string]int
 	emphasis     map[int]scriptedEmphasis
+	represented  map[int]scriptedEmphasis
 }
 
 var scriptedWebVTTTextEscape = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")
@@ -27,7 +28,7 @@ func indexedScriptedOwners(document model.Document) (scriptedOwners, error) {
 	if native == nil {
 		return scriptedOwners{}, fmt.Errorf("missing_scripted_native")
 	}
-	owners := scriptedOwners{native: native, events: map[string]int{}, styles: map[string]int{}, styleNames: map[string][]int{}, recordOrders: map[string]int{}, emphasis: map[int]scriptedEmphasis{}}
+	owners := scriptedOwners{native: native, events: map[string]int{}, styles: map[string]int{}, styleNames: map[string][]int{}, recordOrders: map[string]int{}, emphasis: map[int]scriptedEmphasis{}, represented: map[int]scriptedEmphasis{}}
 	for index, event := range native.Events {
 		owners.events[event.EventID] = index
 	}
@@ -143,6 +144,16 @@ func translateIndexedScriptedPayload(document model.Document, cueIndex int, targ
 	writeRun := func(value string) {
 		if value == "" {
 			return
+		}
+		if strings.TrimSpace(value) != "" {
+			// Each style dimension needs a matching readable run, including false
+			// defaults. Resets without text and drawing spans cannot preserve it.
+			defaults := owners.emphasis[styleIndex]
+			matched := owners.represented[styleIndex]
+			matched.bold = matched.bold || state.bold == defaults.bold
+			matched.italic = matched.italic || state.italic == defaults.italic
+			matched.underline = matched.underline || state.underline == defaults.underline
+			owners.represented[styleIndex] = matched
 		}
 		if state != active {
 			closeActive()

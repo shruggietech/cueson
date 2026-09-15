@@ -54,7 +54,7 @@
 
 - [x] T022 Update truthful twelve-direction/default/precision/loss/scope documentation and dated architecture decisions in docs/conversion.md, docs/formats/ass-ssa.md, docs/cli.md, testdata/README.md, and CHANGELOG.md.
 - [x] T023 Run focused and full foreground CI-parity verification, convergence, schema integrity, encoding/whitespace checks, and record evidence in specs/S026-complete-scripted-conversion/verification.md.
-- [ ] T024 Commit and explicitly authorized push; publish formatted official PR closing #60/#61, verify body readback, and reconcile native Project Stage/Slice and unused Status in GitHub.
+- [x] T024 Commit and explicitly authorized push; publish formatted official PR closing #60/#61, verify body readback, and reconcile native Project Stage/Slice and unused Status in GitHub.
 - [ ] T025 Await all current-head CI and every external review; handle findings/resolve threads, request at most one second Codex review, and record final human merge handoff evidence on the official GitHub PR.
 
 ## Dependencies and parallel execution

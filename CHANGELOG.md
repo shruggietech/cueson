@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Account for each scripted style emphasis value cancelled before readable converted text, including neutral values, named resets, and use across cues; strict reports retain the complete atomic omission.
 - Exempt the canonical original-filename disagreement diagnostic from strict scripted rendering; conforming ASS/SSA models encoded under SubRip/WebVTT extensions render identically in strict and permissive modes.
 - Bound signed and unsigned scripted colors before conversion, close native metadata path/context gaps, verify source capture observations and preserve unknown override names; align all active snapshot-verifier instructions with development mode.
 - Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.

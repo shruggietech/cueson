@@ -39,32 +39,10 @@ func analyzeScriptedSource(ctx context.Context, document model.Document, targetF
 	appendNative := func(code string, path string, order int) error {
 		return appendOneLoss(&analysis.Losses, newLoss(document, targetFormat, code, KindOmitted, scriptedLossMessage(code), path, &order, nil, nil))
 	}
-	usedStyles := map[string]bool{}
 	malformedOrders := map[int]bool{}
 	for _, diagnostic := range document.Diagnostics {
 		if diagnostic.SourceOrder != nil && diagnostic.Code == "malformed_override" {
 			malformedOrders[*diagnostic.SourceOrder] = true
-		}
-	}
-	for _, cue := range document.Cues {
-		nativeCue := cue.FormatData.ASS
-		if document.Format == "ssa" {
-			nativeCue = cue.FormatData.SSA
-		}
-		if nativeCue != nil {
-			usedStyles[nativeCue.StyleID] = true
-		}
-	}
-	for _, event := range owners.native.Events {
-		if event.EventType != "dialogue" {
-			continue
-		}
-		for _, tag := range event.Tags {
-			if tag.Name == "r" && tag.Parameter != "" {
-				for _, index := range owners.styleNames[tag.Parameter] {
-					usedStyles[owners.native.Styles[index].StyleID] = true
-				}
-			}
 		}
 	}
 	for index, section := range owners.native.Sections {
@@ -106,15 +84,6 @@ func analyzeScriptedSource(ctx context.Context, document model.Document, targetF
 		}
 		if !style.Valid {
 			return matrixAnalysis{}, projectionFailure(document.Format, targetFormat, fmt.Sprintf("%s/styles/%d", base, index), fmt.Errorf("malformed_scripted_style"))
-		}
-		for fieldIndex, field := range style.Fields {
-			name := strings.ToLower(strings.TrimSpace(field.FieldName))
-			if usedStyles[style.StyleID] && (name == "bold" || name == "italic" || name == "underline") {
-				continue
-			}
-			if err := appendNative(LossCodeScriptedStyleFieldOmitted, fmt.Sprintf("%s/styles/%d/fields/%d", base, index, fieldIndex), owners.recordOrders[style.RecordID]); err != nil {
-				return matrixAnalysis{}, err
-			}
 		}
 	}
 	for index, event := range owners.native.Events {
@@ -174,6 +143,24 @@ func analyzeScriptedSource(ctx context.Context, document model.Document, targetF
 		}
 		if err := appendPayloadLosses(&analysis.Losses, document, targetFormat, cueIndex, &cue, translation); err != nil {
 			return matrixAnalysis{}, err
+		}
+	}
+	// The single translation pass has now recorded surviving dimensions across
+	// all cues and initial or reset styles. Canonical reports restore native
+	// source order after this deferred, bounded style-field accounting.
+	for index, style := range owners.native.Styles {
+		if err := ctx.Err(); err != nil {
+			return matrixAnalysis{}, err
+		}
+		matched := owners.represented[index]
+		for fieldIndex, field := range style.Fields {
+			name := strings.ToLower(strings.TrimSpace(field.FieldName))
+			if (name == "bold" && matched.bold) || (name == "italic" && matched.italic) || (name == "underline" && matched.underline) {
+				continue
+			}
+			if err := appendNative(LossCodeScriptedStyleFieldOmitted, fmt.Sprintf("%s/styles/%d/fields/%d", base, index, fieldIndex), owners.recordOrders[style.RecordID]); err != nil {
+				return matrixAnalysis{}, err
+			}
 		}
 	}
 	return analysis, nil

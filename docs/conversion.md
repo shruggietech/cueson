@@ -16,6 +16,8 @@ All twelve ordered distinct pairs among SubRip, WebVTT, ASS v4+, and SSA v4 are 
 
 Scripted sources preserve readable dialogue, integer-millisecond timing, and representable bold/italic/underline style and override emphasis when targeting text. Every omitted native metadata/style/event field, unsupported override, drawing span, attachment, and other retained native occurrence is accounted for independently. Source framing, ownership IDs, capture lexemes, and canonical declaration order are serialization choices rather than semantic losses. Unused styles still own observed presentation values and receive applicable field losses.
 
+A referenced or reset style represents each emphasis dimension only when that dimension actually matches readable translated text. An emphasis value overridden before every readable run receives a style-field omission loss, including a neutral value replaced by enabled emphasis; use elsewhere can preserve the same style observation.
+
 ## Stable loss vocabulary
 
 | Code | Direction | Meaning |
