@@ -28,8 +28,8 @@ _cueson() {
     encode:--format) candidates=( 'auto' 'srt' 'vtt' 'ass' 'ssa' ); compadd -Q -- $candidates; return 0 ;;
     encode:--encoding) candidates=( 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1' ); compadd -Q -- $candidates; return 0 ;;
     render:--to) candidates=( 'srt' 'vtt' 'ass' 'ssa' ); compadd -Q -- $candidates; return 0 ;;
-    convert:--to) candidates=( 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
-    convert:--from) candidates=( 'auto' 'cueson' 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
+    convert:--to) candidates=( 'srt' 'vtt' 'ass' 'ssa' ); compadd -Q -- $candidates; return 0 ;;
+    convert:--from) candidates=( 'auto' 'cueson' 'srt' 'vtt' 'ass' 'ssa' ); compadd -Q -- $candidates; return 0 ;;
     convert:--encoding) candidates=( 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1' ); compadd -Q -- $candidates; return 0 ;;
     validate:--format) candidates=( 'auto' 'cueson' 'srt' 'vtt' ); compadd -Q -- $candidates; return 0 ;;
     validate:--encoding) candidates=( 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1' ); compadd -Q -- $candidates; return 0 ;;
@@ -39,8 +39,8 @@ _cueson() {
   if [[ $command == 'encode' && $words[CURRENT] == '--format='* ]]; then candidates=( '--format=auto' '--format=srt' '--format=vtt' '--format=ass' '--format=ssa' ); compadd -Q -- $candidates; return 0; fi
   if [[ $command == 'encode' && $words[CURRENT] == '--encoding='* ]]; then candidates=( '--encoding=utf-8' '--encoding=utf-8-bom' '--encoding=utf-16le' '--encoding=utf-16be' '--encoding=windows-1252' '--encoding=iso-8859-1' ); compadd -Q -- $candidates; return 0; fi
   if [[ $command == 'render' && $words[CURRENT] == '--to='* ]]; then candidates=( '--to=srt' '--to=vtt' '--to=ass' '--to=ssa' ); compadd -Q -- $candidates; return 0; fi
-  if [[ $command == 'convert' && $words[CURRENT] == '--to='* ]]; then candidates=( '--to=srt' '--to=vtt' ); compadd -Q -- $candidates; return 0; fi
-  if [[ $command == 'convert' && $words[CURRENT] == '--from='* ]]; then candidates=( '--from=auto' '--from=cueson' '--from=srt' '--from=vtt' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'convert' && $words[CURRENT] == '--to='* ]]; then candidates=( '--to=srt' '--to=vtt' '--to=ass' '--to=ssa' ); compadd -Q -- $candidates; return 0; fi
+  if [[ $command == 'convert' && $words[CURRENT] == '--from='* ]]; then candidates=( '--from=auto' '--from=cueson' '--from=srt' '--from=vtt' '--from=ass' '--from=ssa' ); compadd -Q -- $candidates; return 0; fi
   if [[ $command == 'convert' && $words[CURRENT] == '--encoding='* ]]; then candidates=( '--encoding=utf-8' '--encoding=utf-8-bom' '--encoding=utf-16le' '--encoding=utf-16be' '--encoding=windows-1252' '--encoding=iso-8859-1' ); compadd -Q -- $candidates; return 0; fi
   if [[ $command == 'validate' && $words[CURRENT] == '--format='* ]]; then candidates=( '--format=auto' '--format=cueson' '--format=srt' '--format=vtt' ); compadd -Q -- $candidates; return 0; fi
   if [[ $command == 'validate' && $words[CURRENT] == '--encoding='* ]]; then candidates=( '--encoding=utf-8' '--encoding=utf-8-bom' '--encoding=utf-16le' '--encoding=utf-16be' '--encoding=windows-1252' '--encoding=iso-8859-1' ); compadd -Q -- $candidates; return 0; fi

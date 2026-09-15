@@ -61,6 +61,20 @@ const (
 	LossCodeWebVTTMarkupDegraded           = "conversion_webvtt_markup_degraded"
 	LossCodeWebVTTInlineTimingOmitted      = "conversion_webvtt_inline_timing_omitted"
 	LossCodeWebVTTEntityAmbiguous          = "conversion_webvtt_entity_ambiguous"
+	LossCodeScriptedMetadataOmitted        = "conversion_scripted_metadata_omitted"
+	LossCodeScriptedStyleFieldOmitted      = "conversion_scripted_style_field_omitted"
+	LossCodeScriptedEventFieldOmitted      = "conversion_scripted_event_field_omitted"
+	LossCodeScriptedRecordOmitted          = "conversion_scripted_record_omitted"
+	LossCodeScriptedSectionOmitted         = "conversion_scripted_section_omitted"
+	LossCodeScriptedAttachmentOmitted      = "conversion_scripted_attachment_omitted"
+	LossCodeScriptedOverrideOmitted        = "conversion_scripted_override_omitted"
+	LossCodeScriptedOverrideDegraded       = "conversion_scripted_override_degraded"
+	LossCodeScriptedOverrideCommentOmitted = "conversion_scripted_override_comment_omitted"
+	LossCodeScriptedDrawingOmitted         = "conversion_scripted_drawing_omitted"
+	LossCodeScriptedCentisecondQuantized   = "conversion_scripted_centisecond_quantized"
+	LossCodeScriptedVariantFieldOmitted    = "conversion_scripted_variant_field_omitted"
+	LossCodeScriptedVariantFieldDegraded   = "conversion_scripted_variant_field_degraded"
+	LossCodeSourceIdentifierOmitted        = "conversion_source_identifier_omitted"
 )
 
 type lossCodeSpec struct {
@@ -90,6 +104,20 @@ var knownLossCodes = map[string]lossCodeSpec{
 	LossCodeWebVTTMarkupDegraded:           {kind: KindDegraded, rank: 250},
 	LossCodeWebVTTInlineTimingOmitted:      {kind: KindOmitted, rank: 260},
 	LossCodeWebVTTEntityAmbiguous:          {kind: KindAmbiguous, rank: 270},
+	LossCodeScriptedMetadataOmitted:        {kind: KindOmitted, rank: 280},
+	LossCodeScriptedStyleFieldOmitted:      {kind: KindOmitted, rank: 290},
+	LossCodeScriptedEventFieldOmitted:      {kind: KindOmitted, rank: 300},
+	LossCodeScriptedRecordOmitted:          {kind: KindOmitted, rank: 310},
+	LossCodeScriptedSectionOmitted:         {kind: KindOmitted, rank: 320},
+	LossCodeScriptedAttachmentOmitted:      {kind: KindOmitted, rank: 330},
+	LossCodeScriptedOverrideOmitted:        {kind: KindOmitted, rank: 340},
+	LossCodeScriptedOverrideDegraded:       {kind: KindDegraded, rank: 350},
+	LossCodeScriptedOverrideCommentOmitted: {kind: KindOmitted, rank: 360},
+	LossCodeScriptedDrawingOmitted:         {kind: KindOmitted, rank: 370},
+	LossCodeScriptedCentisecondQuantized:   {kind: KindDegraded, rank: 380},
+	LossCodeScriptedVariantFieldOmitted:    {kind: KindOmitted, rank: 390},
+	LossCodeScriptedVariantFieldDegraded:   {kind: KindDegraded, rank: 400},
+	LossCodeSourceIdentifierOmitted:        {kind: KindOmitted, rank: 410},
 }
 
 // Attribute is one bounded deterministic context value. Context supplements a
@@ -175,6 +203,16 @@ func (report Report) Validate(document model.Document) error {
 		}
 	}
 
+	for _, native := range []*model.ScriptedDocumentData{document.FormatData.ASS, document.FormatData.SSA} {
+		if native != nil {
+			for _, section := range native.Sections {
+				orders[section.SourceOrder] = struct{}{}
+			}
+			for _, record := range native.Records {
+				orders[record.SourceOrder] = struct{}{}
+			}
+		}
+	}
 	identities := make(map[string]struct{}, len(report.Losses))
 	for index := range report.Losses {
 		loss := &report.Losses[index]
@@ -206,7 +244,7 @@ func (report Report) First() *Loss {
 	return &report.Losses[0]
 }
 
-// IsKnownLossCode reports whether code belongs to the stable S016 vocabulary.
+// IsKnownLossCode reports whether code belongs to the governed stable vocabulary.
 func IsKnownLossCode(code string) bool {
 	_, exists := knownLossCodes[code]
 	return exists
@@ -237,7 +275,7 @@ func (err *SameFormatError) Error() string {
 	return fmt.Sprintf("source and target format %q are the same; use render", err.Format)
 }
 
-// UnsupportedPairError identifies a source-target pair outside S016.
+// UnsupportedPairError identifies a source-target pair outside the supported graph.
 type UnsupportedPairError struct {
 	SourceFormat string
 	TargetFormat string
@@ -339,7 +377,7 @@ func validateLoss(loss Loss, documentFormat string, cues map[string]model.Cue, o
 }
 
 func supportedFormat(format string) bool {
-	return format == "subrip" || format == "webvtt"
+	return format == "subrip" || format == "webvtt" || format == "ass" || format == "ssa"
 }
 
 func validateSafeText(field, value string, maximum int) error {

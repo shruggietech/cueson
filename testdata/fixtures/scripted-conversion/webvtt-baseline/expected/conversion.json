@@ -1,0 +1,50 @@
+{
+  "source_format": "webvtt",
+  "targets": [
+    {
+      "target_format": "subrip",
+      "cues": [
+        {
+          "end_milliseconds": 2500,
+          "plain_text": "Hello\nworld",
+          "start_milliseconds": 1000,
+          "lines": [
+            "Hello",
+            "world"
+          ]
+        }
+      ],
+      "losses": []
+    },
+    {
+      "target_format": "ass",
+      "cues": [
+        {
+          "end_milliseconds": 2500,
+          "plain_text": "Hello\nworld",
+          "start_milliseconds": 1000,
+          "lines": [
+            "Hello",
+            "world"
+          ]
+        }
+      ],
+      "losses": []
+    },
+    {
+      "target_format": "ssa",
+      "cues": [
+        {
+          "end_milliseconds": 2500,
+          "plain_text": "Hello\nworld",
+          "start_milliseconds": 1000,
+          "lines": [
+            "Hello",
+            "world"
+          ]
+        }
+      ],
+      "losses": []
+    }
+  ]
+}

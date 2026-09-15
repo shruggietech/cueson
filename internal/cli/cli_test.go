@@ -194,8 +194,8 @@ func TestRunConvertHelpAndInvalidInvocation(t *testing.T) {
 	}{
 		{args: []string{"convert"}, want: "requires one INPUT"},
 		{args: []string{"convert", "in.srt"}, want: "requires --to"},
-		{args: []string{"convert", "in.srt", "--to", "unknown"}, want: "--to must be srt or vtt"},
-		{args: []string{"convert", "in.srt", "--to", "vtt", "--from", "unknown"}, want: "--from must be auto, cueson, srt, or vtt"},
+		{args: []string{"convert", "in.srt", "--to", "unknown"}, want: "--to must be srt, vtt, ass, or ssa"},
+		{args: []string{"convert", "in.srt", "--to", "vtt", "--from", "unknown"}, want: "--from must be auto, cueson, srt, vtt, ass, or ssa"},
 		{args: []string{"convert", "in.srt", "--to", "vtt", "--from", "cueson", "--encoding", "utf-8"}, want: "--encoding cannot be used with Cue JSON"},
 		{args: []string{"convert", "in.vtt", "--to", "srt", "--from", "vtt", "--encoding", "windows-1252"}, want: "WebVTT requires UTF-8"},
 		{args: []string{"convert", "in.srt", "--to", "vtt", "--encoding", "unknown"}, want: "encoding \"unknown\" is not supported"},

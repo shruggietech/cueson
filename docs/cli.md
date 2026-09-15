@@ -101,10 +101,10 @@ cueson render --to srt --output quickstart/rendered.srt quickstart/document.cues
 cueson [global options] convert [options] INPUT --to FORMAT
 ```
 
-`convert` accepts Cue JSON, SubRip, or WebVTT and serializes a private target projection in the requested native format. Cue JSON recognition has precedence; actual JSON containers or `.json`-named invalid content do not fall through to a native codec. A recognized bracketed ASS/SSA header reaches guarded native classification even with a conflicting filename, then reports unavailable scripted conversion before publication.
+`convert` accepts Cue JSON, SubRip, WebVTT, ASS, or SSA and serializes a private target projection in a distinct supported native format. All twelve distinct directions are implemented; ASS/SSA are experimental. Cue JSON recognition has precedence; actual JSON containers or `.json`-named invalid content do not fall through to a native codec. Recognized bracketed ASS/SSA content reaches guarded native classification even with a conflicting filename.
 
-- `--to` `FORMAT`: select `srt` or `vtt`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
-- `--from` `FORMAT`: select `auto`, `cueson`, `srt`, or `vtt`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--to` `FORMAT`: select `srt`, `vtt`, `ass`, or `ssa`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--from` `FORMAT`: select `auto`, `cueson`, `srt`, `vtt`, `ass`, or `ssa`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
 - `--encoding` `NAME`: for native input, select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.
 - `-o`, `--output` `PATH`: write native output to a filesystem path instead of stdout; `--output -` selects stdout.
 - `-f`, `--force`: replace an approved existing regular filesystem output.
@@ -112,6 +112,8 @@ cueson [global options] convert [options] INPUT --to FORMAT
 - `--no-speaker-detection`: disable derived speaker observations for native input.
 
 Normal conversion writes all representable target bytes and reports every known omission, degradation, or ambiguity on stderr. Loss records have a stable code, severity, kind, source and target format, portable JSON Pointer, and bounded occurrence context; they never enter Cue JSON or expose source bytes or local identity. Fatal target incompatibility fails in normal and strict modes. The complete mapping is maintained in the [conversion contract](conversion.md).
+
+ASS/SSA native sources accept UTF-8 only. Scripted targets use deterministic defaults and checked nearest-centisecond rounding (ties upward), report each changed endpoint, and reject collapsed intervals or unsafe literal controls. Drawing-only or unreadable scripted dialogue cannot become text output. Conversion preserves original source assets and uses an internal constructed-target boundary; it never emits fabricated target Cue JSON provenance.
 
 ```text
 cueson convert --strict --no-speaker-detection --to vtt --output quickstart/converted.vtt testdata/fixtures/conversion/srt-loss-free/source/input.srt

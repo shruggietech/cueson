@@ -62,7 +62,7 @@ func TestConvertLossFreeFixturesAndTargetParserCycles(t *testing.T) {
 func TestConvertStrictReturnsCompleteReportBeforeRendering(t *testing.T) {
 	document := conversionTestDocument(t, readTestFile(t, "../../testdata/fixtures/conversion/srt-lossy/source/input.srt"), "subrip")
 	called := false
-	renderer := func(context.Context, model.Document, string) ([]byte, []model.Diagnostic, error) {
+	renderer := func(context.Context, model.Document, model.Document, string) ([]byte, []model.Diagnostic, error) {
 		called = true
 		return []byte("unexpected"), nil, nil
 	}

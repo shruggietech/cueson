@@ -5066,6 +5066,524 @@
         "stage": "semantics",
         "diagnostic_contains": "complexity_limit"
       }
+    },
+    {
+      "id": "scripted-conversion/subrip-baseline",
+      "purpose": "Prove subrip-baseline target-native bytes, semantic timing/text, complete ordered atomic loss pointers, deterministic conversion and immutable source truth.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S026 complete scripted conversion",
+        "recipe": "Independently author canonical neutral scripted defaults and Hello/world at 1000..2500 milliseconds; native-losses cases replace dialogue with readable ABC plus explicit karaoke/drawing/position/comment controls and append inert native records/section/font. Prescribe target bytes and each ordered source loss pointer from the S026 contract."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "expected_ass_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/subrip-baseline/expected/bytes/output.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 525,
+          "sha256": "08b1d7af598e5758adc7dd267f32667a9e7b34adaeccb0728bec8fc512779736",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_ssa_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/subrip-baseline/expected/bytes/output.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 454,
+          "sha256": "27bf0d999e5524285bc4c3eb98559a0ab9f1f3b8d593fd447e7f2ec9888c6968",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_webvtt_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/subrip-baseline/expected/bytes/output.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 50,
+          "sha256": "3b7d47cbf8b65200a109a4fc1f4315d498c1ef336a6915f8621db063def0de8f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_conversion",
+          "role": "expected_model",
+          "path": "fixtures/scripted-conversion/subrip-baseline/expected/conversion.json",
+          "media_type": "application/json",
+          "size_bytes": 939,
+          "sha256": "7af28516a26698cc87a34b331415d662b90b4b14c7d81cecdfde310be251b7ab",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted-conversion/subrip-baseline/source/captions.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 44,
+          "sha256": "877420e98abf2c0183d5fd931f648ce1a01a450b659238ebc447c3442080afb6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted-conversion/webvtt-baseline",
+      "purpose": "Prove webvtt-baseline target-native bytes, semantic timing/text, complete ordered atomic loss pointers, deterministic conversion and immutable source truth.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S026 complete scripted conversion",
+        "recipe": "Independently author canonical neutral scripted defaults and Hello/world at 1000..2500 milliseconds; native-losses cases replace dialogue with readable ABC plus explicit karaoke/drawing/position/comment controls and append inert native records/section/font. Prescribe target bytes and each ordered source loss pointer from the S026 contract."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "expected_ass_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/webvtt-baseline/expected/bytes/output.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 525,
+          "sha256": "08b1d7af598e5758adc7dd267f32667a9e7b34adaeccb0728bec8fc512779736",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_subrip_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/webvtt-baseline/expected/bytes/output.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 44,
+          "sha256": "877420e98abf2c0183d5fd931f648ce1a01a450b659238ebc447c3442080afb6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_ssa_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/webvtt-baseline/expected/bytes/output.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 454,
+          "sha256": "27bf0d999e5524285bc4c3eb98559a0ab9f1f3b8d593fd447e7f2ec9888c6968",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_conversion",
+          "role": "expected_model",
+          "path": "fixtures/scripted-conversion/webvtt-baseline/expected/conversion.json",
+          "media_type": "application/json",
+          "size_bytes": 939,
+          "sha256": "bb24cbb5412b44349d3de9fe963f61910e454b68d86aa800a6f54978e7e65a59",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted-conversion/webvtt-baseline/source/captions.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 50,
+          "sha256": "3b7d47cbf8b65200a109a4fc1f4315d498c1ef336a6915f8621db063def0de8f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted-conversion/ass-baseline",
+      "purpose": "Prove ass-baseline target-native bytes, semantic timing/text, complete ordered atomic loss pointers, deterministic conversion and immutable source truth.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S026 complete scripted conversion",
+        "recipe": "Independently author canonical neutral scripted defaults and Hello/world at 1000..2500 milliseconds; native-losses cases replace dialogue with readable ABC plus explicit karaoke/drawing/position/comment controls and append inert native records/section/font. Prescribe target bytes and each ordered source loss pointer from the S026 contract."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "expected_subrip_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ass-baseline/expected/bytes/output.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 44,
+          "sha256": "877420e98abf2c0183d5fd931f648ce1a01a450b659238ebc447c3442080afb6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_ssa_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ass-baseline/expected/bytes/output.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 454,
+          "sha256": "27bf0d999e5524285bc4c3eb98559a0ab9f1f3b8d593fd447e7f2ec9888c6968",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_webvtt_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ass-baseline/expected/bytes/output.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 50,
+          "sha256": "3b7d47cbf8b65200a109a4fc1f4315d498c1ef336a6915f8621db063def0de8f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_conversion",
+          "role": "expected_model",
+          "path": "fixtures/scripted-conversion/ass-baseline/expected/conversion.json",
+          "media_type": "application/json",
+          "size_bytes": 9909,
+          "sha256": "fc7f99ef20e50375994577bee1e2eb4db10b06e22b4146a15e9dac2b5e418e8a",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted-conversion/ass-baseline/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 525,
+          "sha256": "08b1d7af598e5758adc7dd267f32667a9e7b34adaeccb0728bec8fc512779736",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted-conversion/ssa-baseline",
+      "purpose": "Prove ssa-baseline target-native bytes, semantic timing/text, complete ordered atomic loss pointers, deterministic conversion and immutable source truth.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S026 complete scripted conversion",
+        "recipe": "Independently author canonical neutral scripted defaults and Hello/world at 1000..2500 milliseconds; native-losses cases replace dialogue with readable ABC plus explicit karaoke/drawing/position/comment controls and append inert native records/section/font. Prescribe target bytes and each ordered source loss pointer from the S026 contract."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "expected_ass_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ssa-baseline/expected/bytes/output.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 525,
+          "sha256": "f3693d7dfa84a6c2311c2b31bc7f650f305bbc1942e5a74718acf10c825cdce1",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_subrip_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ssa-baseline/expected/bytes/output.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 44,
+          "sha256": "877420e98abf2c0183d5fd931f648ce1a01a450b659238ebc447c3442080afb6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_webvtt_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ssa-baseline/expected/bytes/output.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 50,
+          "sha256": "3b7d47cbf8b65200a109a4fc1f4315d498c1ef336a6915f8621db063def0de8f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_conversion",
+          "role": "expected_model",
+          "path": "fixtures/scripted-conversion/ssa-baseline/expected/conversion.json",
+          "media_type": "application/json",
+          "size_bytes": 7823,
+          "sha256": "d956e2a62164644d34ed2a353032e29366cfb7d4dcd2ccf2ee25c12b2788af98",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted-conversion/ssa-baseline/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 454,
+          "sha256": "27bf0d999e5524285bc4c3eb98559a0ab9f1f3b8d593fd447e7f2ec9888c6968",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted-conversion/ass-native-losses",
+      "purpose": "Prove ass-native-losses target-native bytes, semantic timing/text, complete ordered atomic loss pointers, deterministic conversion and immutable source truth.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S026 complete scripted conversion",
+        "recipe": "Independently author canonical neutral scripted defaults and Hello/world at 1000..2500 milliseconds; native-losses cases replace dialogue with readable ABC plus explicit karaoke/drawing/position/comment controls and append inert native records/section/font. Prescribe target bytes and each ordered source loss pointer from the S026 contract."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "expected_subrip_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ass-native-losses/expected/bytes/output.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 36,
+          "sha256": "3366dd47e8765f49743798b528f471025a1681d6f20bb43d060123d894045dea",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_webvtt_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ass-native-losses/expected/bytes/output.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 42,
+          "sha256": "5b7687b6958ca2362ba1c37228088cd0a4a9ed53a837b6c4a6bd14e1bf3c2c79",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_conversion",
+          "role": "expected_model",
+          "path": "fixtures/scripted-conversion/ass-native-losses/expected/conversion.json",
+          "media_type": "application/json",
+          "size_bytes": 11368,
+          "sha256": "2ee201378f0e69ce13fa3d7d5057e19868ca54c79f7717a4815193fdbf1b4f79",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted-conversion/ass-native-losses/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 686,
+          "sha256": "c33d6a601ca6f7b34b08ee5197d0ec49eac1d4684b1eefc57e6ccd7a3187dbf6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted-conversion/ssa-native-losses",
+      "purpose": "Prove ssa-native-losses target-native bytes, semantic timing/text, complete ordered atomic loss pointers, deterministic conversion and immutable source truth.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S026 complete scripted conversion",
+        "recipe": "Independently author canonical neutral scripted defaults and Hello/world at 1000..2500 milliseconds; native-losses cases replace dialogue with readable ABC plus explicit karaoke/drawing/position/comment controls and append inert native records/section/font. Prescribe target bytes and each ordered source loss pointer from the S026 contract."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "expected_subrip_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ssa-native-losses/expected/bytes/output.srt",
+          "media_type": "application/x-subrip",
+          "size_bytes": 36,
+          "sha256": "3366dd47e8765f49743798b528f471025a1681d6f20bb43d060123d894045dea",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_webvtt_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted-conversion/ssa-native-losses/expected/bytes/output.vtt",
+          "media_type": "text/vtt",
+          "size_bytes": 42,
+          "sha256": "5b7687b6958ca2362ba1c37228088cd0a4a9ed53a837b6c4a6bd14e1bf3c2c79",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_conversion",
+          "role": "expected_model",
+          "path": "fixtures/scripted-conversion/ssa-native-losses/expected/conversion.json",
+          "media_type": "application/json",
+          "size_bytes": 10262,
+          "sha256": "a83055192a99d8f5f37e08a2230fbd15303487b4e6d248e439e5d15f1e9efc0d",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted-conversion/ssa-native-losses/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 622,
+          "sha256": "5e3b067c77f19ceea7d31cedd8632564107310119703d3c2b52b0ef063774e1e",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
     }
   ]
 }

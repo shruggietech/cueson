@@ -13,7 +13,7 @@ import (
 	"github.com/shruggietech/cueson/internal/schema"
 )
 
-func TestScriptedGenericCommandsAndUnavailableConversion(t *testing.T) {
+func TestScriptedGenericCommandsAndStrictConversionRefusal(t *testing.T) {
 	t.Parallel()
 	for _, format := range []string{"ass", "ssa"} {
 		t.Run(format, func(t *testing.T) {
@@ -67,7 +67,7 @@ func TestScriptedGenericCommandsAndUnavailableConversion(t *testing.T) {
 				t.Fatal("scripted restore changed source bytes")
 			}
 			for _, args := range [][]string{
-				{"convert", input, "--to", "srt", "--output", output, "--force"},
+				{"convert", input, "--to", "srt", "--output", output, "--force", "--strict"},
 			} {
 				status, stdout, stderr := runForTest(context.Background(), args)
 				if status != ExitRuntimeFailure || stdout != "" || strings.Contains(stderr, directory) {
@@ -78,7 +78,7 @@ func TestScriptedGenericCommandsAndUnavailableConversion(t *testing.T) {
 					t.Fatal(err)
 				}
 				if !bytes.Equal(expected, after) {
-					t.Fatal("unavailable codec published output")
+					t.Fatal("strict lossy conversion published output")
 				}
 			}
 		})

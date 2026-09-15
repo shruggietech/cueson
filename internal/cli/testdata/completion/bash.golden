@@ -35,8 +35,8 @@ _cueson_completion() {
     encode:--format) _cueson_filter_candidates "$current" 'auto' 'srt' 'vtt' 'ass' 'ssa'; return ;;
     encode:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
     render:--to) _cueson_filter_candidates "$current" 'srt' 'vtt' 'ass' 'ssa'; return ;;
-    convert:--to) _cueson_filter_candidates "$current" 'srt' 'vtt'; return ;;
-    convert:--from) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt'; return ;;
+    convert:--to) _cueson_filter_candidates "$current" 'srt' 'vtt' 'ass' 'ssa'; return ;;
+    convert:--from) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt' 'ass' 'ssa'; return ;;
     convert:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
     validate:--format) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt'; return ;;
     validate:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
@@ -63,13 +63,13 @@ _cueson_completion() {
   fi
   if [[ "$command" == 'convert' && "$current" == '--to='* ]]; then
     local value_prefix="${current#*=}"
-    _cueson_filter_candidates "$value_prefix" 'srt' 'vtt'
+    _cueson_filter_candidates "$value_prefix" 'srt' 'vtt' 'ass' 'ssa'
     for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--to='"${COMPREPLY[index]}"; done
     return
   fi
   if [[ "$command" == 'convert' && "$current" == '--from='* ]]; then
     local value_prefix="${current#*=}"
-    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt'
+    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt' 'ass' 'ssa'
     for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--from='"${COMPREPLY[index]}"; done
     return
   fi

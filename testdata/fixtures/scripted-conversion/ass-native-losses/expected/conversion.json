@@ -1,0 +1,355 @@
+{
+  "targets": [
+    {
+      "losses": [
+        {
+          "path": "/format_data/ass/records/1/fields/0",
+          "code": "conversion_scripted_metadata_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/0",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/1",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/2",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/3",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/4",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/5",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/6",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/10",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/11",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/12",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/13",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/14",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/15",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/16",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/17",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/18",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/19",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/20",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/21",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/22",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/cues/0/tokens/0",
+          "code": "conversion_token_timing_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/0",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/3",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/4",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/5",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/6",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/7",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/8",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/tags/0",
+          "code": "conversion_scripted_override_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/tags/1",
+          "code": "conversion_scripted_override_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/tags/2",
+          "code": "conversion_scripted_override_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/tags/3",
+          "code": "conversion_scripted_override_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/spans/0",
+          "code": "conversion_scripted_override_comment_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/spans/3",
+          "code": "conversion_scripted_drawing_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/1",
+          "code": "conversion_scripted_record_omitted"
+        },
+        {
+          "path": "/format_data/ass/records/7",
+          "code": "conversion_scripted_record_omitted"
+        },
+        {
+          "path": "/format_data/ass/sections/3",
+          "code": "conversion_scripted_section_omitted"
+        },
+        {
+          "path": "/format_data/ass/records/8",
+          "code": "conversion_scripted_record_omitted"
+        },
+        {
+          "path": "/format_data/ass/attachments/0",
+          "code": "conversion_scripted_attachment_omitted"
+        }
+      ],
+      "cues": [
+        {
+          "end_milliseconds": 2500,
+          "plain_text": "ABC",
+          "lines": [
+            "ABC"
+          ],
+          "start_milliseconds": 1000
+        }
+      ],
+      "target_format": "subrip"
+    },
+    {
+      "losses": [
+        {
+          "path": "/format_data/ass/records/1/fields/0",
+          "code": "conversion_scripted_metadata_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/0",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/1",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/2",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/3",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/4",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/5",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/6",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/10",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/11",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/12",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/13",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/14",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/15",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/16",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/17",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/18",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/19",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/20",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/21",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/styles/0/fields/22",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/cues/0/tokens/0",
+          "code": "conversion_token_timing_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/0",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/3",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/4",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/5",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/6",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/7",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/fields/8",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/tags/0",
+          "code": "conversion_scripted_override_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/tags/1",
+          "code": "conversion_scripted_override_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/tags/2",
+          "code": "conversion_scripted_override_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/tags/3",
+          "code": "conversion_scripted_override_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/spans/0",
+          "code": "conversion_scripted_override_comment_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/0/spans/3",
+          "code": "conversion_scripted_drawing_omitted"
+        },
+        {
+          "path": "/format_data/ass/events/1",
+          "code": "conversion_scripted_record_omitted"
+        },
+        {
+          "path": "/format_data/ass/records/7",
+          "code": "conversion_scripted_record_omitted"
+        },
+        {
+          "path": "/format_data/ass/sections/3",
+          "code": "conversion_scripted_section_omitted"
+        },
+        {
+          "path": "/format_data/ass/records/8",
+          "code": "conversion_scripted_record_omitted"
+        },
+        {
+          "path": "/format_data/ass/attachments/0",
+          "code": "conversion_scripted_attachment_omitted"
+        }
+      ],
+      "cues": [
+        {
+          "end_milliseconds": 2500,
+          "plain_text": "ABC",
+          "lines": [
+            "ABC"
+          ],
+          "start_milliseconds": 1000
+        }
+      ],
+      "target_format": "webvtt"
+    }
+  ],
+  "source_format": "ass"
+}

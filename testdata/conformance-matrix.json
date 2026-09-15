@@ -757,9 +757,8 @@
               "reference": "internal/codec/scripted:FuzzParse"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedConversionCompleteLossConformance"
             },
             {
               "kind": "inapplicable",
@@ -801,9 +800,8 @@
               "reference": "internal/codec/scripted:TestRenderParsedDeclarationSpacingAndTransitions"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedConversionCompleteLossConformance"
             },
             {
               "kind": "inapplicable",
@@ -861,9 +859,8 @@
               "reference": "internal/model:TestScriptedActorAliasBelongsOnlyToEventName"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/convert:TestScriptedVariantsPreserveNativeOwnersAndAccountFields"
             },
             {
               "kind": "inapplicable",
@@ -925,9 +922,8 @@
               "reference": "internal/codec/scripted:FuzzParse"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedConversionCompleteLossConformance"
             },
             {
               "kind": "inapplicable",
@@ -1017,9 +1013,8 @@
               "reference": "internal/model:TestScriptedNativeDialogueIntervalIndependentOfCommonEdits"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedConversionPrecisionAndDefaultsConformance"
             },
             {
               "kind": "inapplicable",
@@ -1065,9 +1060,8 @@
               "reference": "internal/codec/scripted:FuzzParse"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/convert:TestScriptedOutboundBalancedEmphasisAndLiteralEscaping"
             },
             {
               "kind": "inapplicable",
@@ -1125,9 +1119,8 @@
               "reference": "internal/model:TestScriptedUnknownPrefixOverridesRemainExactAndDiagnosed"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/convert:TestScriptedOutboundCompleteAtomicNativeLosses"
             },
             {
               "kind": "inapplicable",
@@ -1173,9 +1166,8 @@
               "reference": "internal/codec/scripted:FuzzParse"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedConversionCompleteLossConformance"
             },
             {
               "kind": "inapplicable",
@@ -1221,9 +1213,8 @@
               "reference": "internal/codec/scripted:FuzzParse"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedConversionCompleteLossConformance"
             },
             {
               "kind": "inapplicable",
@@ -1357,9 +1348,8 @@
               "reference": "internal/model:TestScriptedAegisubExecutionEffectsRejectOriginalAndEditedValues"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedConversionSourceIntegrityPrivacyAndHistoricalConformance"
             },
             {
               "kind": "inapplicable",
@@ -1433,9 +1423,8 @@
               "reference": "internal/conformance:TestScriptedGovernedEditedOwnerRestoreIndependence"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/convert:TestScriptedTargetsBaselineDeterminismAndHistoricalInput"
             },
             {
               "kind": "inapplicable",
@@ -1505,9 +1494,8 @@
               "reference": "internal/conformance:TestScriptedGovernedEditedOwnerRestoreIndependence"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedTwelveDirectionConversionConformance"
             },
             {
               "kind": "platform_test",
@@ -1576,9 +1564,20 @@
               "reference": "internal/codec/scripted:FuzzParse"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedTwelveDirectionConversionConformance"
+            },
+            {
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedConversionCompleteLossConformance"
+            },
+            {
+              "kind": "accepted_fixture",
+              "reference": "scripted-conversion/ass-native-losses"
+            },
+            {
+              "kind": "accepted_fixture",
+              "reference": "scripted-conversion/ssa-native-losses"
             },
             {
               "kind": "inapplicable",
@@ -1628,9 +1627,8 @@
               "reference": "internal/codec/scripted:TestRenderPhysicalAndAggregateOutputBounds"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/convert:TestScriptedOutboundLossBoundAndCancellation"
             },
             {
               "kind": "deferred",
@@ -1668,9 +1666,8 @@
               "reference": "internal/codec/scripted:FuzzParse"
             },
             {
-              "kind": "deferred",
-              "reference": "conversion_test",
-              "reason": "Applicable complete conversion/loss assertions remain deferred to issues #60 and #61 (S026); retained fixtures are source evidence only, not passed conversion evidence."
+              "kind": "conversion_test",
+              "reference": "internal/conformance:TestScriptedTwelveDirectionConversionConformance"
             },
             {
               "kind": "deferred",

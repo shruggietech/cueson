@@ -150,6 +150,7 @@ jobs:
           go test ./internal/source -run='^$' -fuzz='^FuzzInspectEncoded$' -fuzztime=1000x -parallel=1
           go test ./internal/convert -run='^$' -fuzz='^FuzzSubRipConversionCycle$' -fuzztime=1000x -parallel=1
           go test ./internal/convert -run='^$' -fuzz='^FuzzWebVTTConversionCycle$' -fuzztime=1000x -parallel=1
+          go test ./internal/convert -run='^$' -fuzz='^FuzzScriptedConversionCycle$' -fuzztime=1000x -parallel=1
 
   static-analysis:
     name: Static analysis

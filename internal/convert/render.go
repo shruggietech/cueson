@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/shruggietech/cueson/internal/codec/scripted"
 	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/codec/webvtt"
 	"github.com/shruggietech/cueson/internal/model"
 )
 
-type targetRenderer func(context.Context, model.Document, string) ([]byte, []model.Diagnostic, error)
+type targetRenderer func(context.Context, model.Document, model.Document, string) ([]byte, []model.Diagnostic, error)
 
-func renderProjected(ctx context.Context, document model.Document, targetFormat string) ([]byte, []model.Diagnostic, error) {
+func renderProjected(ctx context.Context, sourceDocument, document model.Document, targetFormat string) ([]byte, []model.Diagnostic, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, nil, err
 	}
@@ -29,25 +30,33 @@ func renderProjected(ctx context.Context, document model.Document, targetFormat 
 		for _, diagnostic := range rendered.Diagnostics {
 			diagnostics = append(diagnostics, model.Diagnostic(diagnostic))
 		}
+	case "ass", "ssa":
+		var rendered scripted.RenderResult
+		rendered, err = scripted.RenderTarget(ctx, sourceDocument, document)
+		bytes, diagnostics = rendered.Bytes, rendered.Diagnostics
 	default:
 		return nil, nil, fmt.Errorf("unsupported target format %q", targetFormat)
 	}
 	if err != nil {
 		return nil, nil, err
 	}
-	if len(bytes) >= 3 && bytes[0] == 0xef && bytes[1] == 0xbb && bytes[2] == 0xbf || strings.ContainsRune(string(bytes), '\r') || !strings.HasSuffix(string(bytes), "\n") || strings.HasSuffix(string(bytes), "\n\n") {
+	if len(bytes) >= 3 && bytes[0] == 0xef && bytes[1] == 0xbb && bytes[2] == 0xbf || strings.ContainsRune(string(bytes), '\r') || !strings.HasSuffix(string(bytes), "\n") || ((targetFormat == "subrip" || targetFormat == "webvtt") && strings.HasSuffix(string(bytes), "\n\n")) {
 		return nil, nil, fmt.Errorf("target renderer returned noncanonical text")
 	}
-	if err := validateTargetParser(bytes, targetFormat); err != nil {
-		return nil, nil, fmt.Errorf("target parser rejected rendered output: %w", err)
-	}
-	if err := validateTargetSemantics(document, bytes, targetFormat); err != nil {
+	if err := validateTargetSemanticsContext(ctx, document, bytes, targetFormat); err != nil {
 		return nil, nil, fmt.Errorf("target parser changed projected semantics: %w", err)
 	}
 	return bytes, diagnostics, nil
 }
 
 func validateTargetParser(bytes []byte, targetFormat string) error {
+	return validateTargetParserContext(context.Background(), bytes, targetFormat)
+}
+
+func validateTargetParserContext(ctx context.Context, bytes []byte, targetFormat string) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	switch targetFormat {
 	case "subrip":
 		_, err := subrip.Parse(string(bytes), subrip.Options{})
@@ -55,12 +64,18 @@ func validateTargetParser(bytes []byte, targetFormat string) error {
 	case "webvtt":
 		_, err := webvtt.Parse(string(bytes))
 		return err
+	case "ass", "ssa":
+		_, err := scripted.Parse(ctx, bytes, targetFormat)
+		return err
 	default:
 		return fmt.Errorf("unsupported target format %q", targetFormat)
 	}
 }
 
-func validateTargetSemantics(document model.Document, bytes []byte, targetFormat string) error {
+func validateTargetSemanticsContext(ctx context.Context, document model.Document, bytes []byte, targetFormat string) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	var parsedCues []model.Cue
 	switch targetFormat {
 	case "subrip":
@@ -75,6 +90,12 @@ func validateTargetSemantics(document model.Document, bytes []byte, targetFormat
 			return err
 		}
 		parsedCues = parsed.Cues
+	case "ass", "ssa":
+		parsed, err := scripted.Parse(ctx, bytes, targetFormat)
+		if err != nil {
+			return err
+		}
+		parsedCues = parsed.Cues
 	default:
 		return fmt.Errorf("unsupported target format %q", targetFormat)
 	}
@@ -82,6 +103,9 @@ func validateTargetSemantics(document model.Document, bytes []byte, targetFormat
 		return fmt.Errorf("cue count changed from %d to %d", len(document.Cues), len(parsedCues))
 	}
 	for index := range parsedCues {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		want, got := document.Cues[index], parsedCues[index]
 		if got.Timing != want.Timing {
 			return fmt.Errorf("cue %d timing changed", index)

@@ -7,7 +7,7 @@ Commands:
   encode      Encode a subtitle source as Cue JSON.
   restore     Restore exact source-envelope bytes.
   render      Render Cue JSON from its structured model.
-  convert     Convert SubRip and WebVTT through the common model.
+  convert     Convert SubRip, WebVTT, ASS, and SSA through the model.
   validate    Validate Cue JSON or a native subtitle without output.
   inspect     Inspect safe structural facts about an input.
   schema      Print or save the embedded Cue JSON schema.

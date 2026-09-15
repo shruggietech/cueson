@@ -46,7 +46,7 @@ func TestRenderProjectedAlwaysProducesCanonicalParserValidText(t *testing.T) {
 	if target.FormatSupport.Status != "stable" || !target.FormatSupport.IngestSupported || !target.FormatSupport.RenderSupported || !target.FormatSupport.RestoreSupported {
 		t.Fatalf("target format support = %#v", target.FormatSupport)
 	}
-	bytes, diagnostics, err := renderProjected(context.Background(), target, "subrip")
+	bytes, diagnostics, err := renderProjected(context.Background(), source, target, "subrip")
 	if err != nil || len(diagnostics) != 0 {
 		t.Fatalf("render = %q, %#v, %v", bytes, diagnostics, err)
 	}

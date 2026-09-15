@@ -1,6 +1,7 @@
 package convert
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -13,9 +14,27 @@ var webVTTSettingNames = []string{"region", "vertical", "line", "position", "siz
 type matrixAnalysis struct {
 	Translations []payloadTranslation
 	Losses       []Loss
+	Target       *model.Document
 }
 
 func analyzeCompatibility(document model.Document, targetFormat string) (matrixAnalysis, error) {
+	return analyzeCompatibilityContext(context.Background(), document, targetFormat)
+}
+
+func analyzeCompatibilityContext(ctx context.Context, document model.Document, targetFormat string) (matrixAnalysis, error) {
+	if err := ctx.Err(); err != nil {
+		return matrixAnalysis{}, err
+	}
+	if document.Format == "ass" || document.Format == "ssa" {
+		if targetFormat == "ass" || targetFormat == "ssa" {
+			target, losses, err := projectScriptedVariant(ctx, document, targetFormat)
+			return matrixAnalysis{Target: &target, Losses: losses}, err
+		}
+		return analyzeScriptedSource(ctx, document, targetFormat)
+	}
+	if targetFormat == "ass" || targetFormat == "ssa" {
+		return analyzeTextToScripted(ctx, document, targetFormat)
+	}
 	analysis := matrixAnalysis{Translations: make([]payloadTranslation, len(document.Cues)), Losses: []Loss{}}
 	if err := appendMetadataLosses(&analysis.Losses, document, targetFormat); err != nil {
 		return matrixAnalysis{}, err
@@ -26,6 +45,9 @@ func analyzeCompatibility(document model.Document, targetFormat string) (matrixA
 			return matrixAnalysis{}, &UnsupportedPairError{SourceFormat: document.Format, TargetFormat: targetFormat}
 		}
 		for index, diagnostic := range document.Diagnostics {
+			if err := ctx.Err(); err != nil {
+				return matrixAnalysis{}, err
+			}
 			if diagnostic.Code != "subrip_block_unrecognized" {
 				continue
 			}
@@ -34,6 +56,9 @@ func analyzeCompatibility(document model.Document, targetFormat string) (matrixA
 			}
 		}
 		for index := range document.Cues {
+			if err := ctx.Err(); err != nil {
+				return matrixAnalysis{}, err
+			}
 			cue := &document.Cues[index]
 			if cue.Timing.EndMilliseconds == cue.Timing.StartMilliseconds {
 				return matrixAnalysis{}, projectionFailure(document.Format, targetFormat, fmt.Sprintf("/cues/%d/timing", index), fmt.Errorf("WebVTT requires positive cue duration"))
@@ -55,6 +80,9 @@ func analyzeCompatibility(document model.Document, targetFormat string) (matrixA
 			return matrixAnalysis{}, err
 		}
 		for index := range document.Cues {
+			if err := ctx.Err(); err != nil {
+				return matrixAnalysis{}, err
+			}
 			cue := &document.Cues[index]
 			translation, err := translateWebVTTPayload(cue.Payload.RawText, cue.Timing.StartMilliseconds, cue.Timing.EndMilliseconds)
 			if err != nil {
@@ -174,6 +202,11 @@ func appendWebVTTCueLosses(losses *[]Loss, document model.Document, targetFormat
 
 func appendCommonCueLosses(losses *[]Loss, document model.Document, targetFormat string, cueIndex int, cue *model.Cue, placementAccounted bool) error {
 	base := fmt.Sprintf("/cues/%d", cueIndex)
+	if cue.SourceIdentifier != nil && (document.Format == "ass" || document.Format == "ssa") {
+		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeSourceIdentifierOmitted, KindOmitted, "common source identifier is omitted from target output", base+"/source_identifier", nil)); err != nil {
+			return err
+		}
+	}
 	for index := range cue.Speakers {
 		if err := appendOneLoss(losses, cueLoss(document, targetFormat, *cue, LossCodeSpeakerObservationOmitted, KindOmitted, "speaker observation is omitted from target structure", fmt.Sprintf("%s/speakers/%d", base, index), []Attribute{{Name: "occurrence", Value: strconv.Itoa(index)}})); err != nil {
 			return err
