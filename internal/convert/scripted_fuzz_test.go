@@ -7,11 +7,9 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
-	"path/filepath"
 	"reflect"
 	"testing"
 
-	"github.com/shruggietech/cueson/internal/cli"
 	"github.com/shruggietech/cueson/internal/codec/scripted"
 	"github.com/shruggietech/cueson/internal/codec/subrip"
 	"github.com/shruggietech/cueson/internal/codec/webvtt"
@@ -94,20 +92,7 @@ func FuzzScriptedConversionCycle(f *testing.F) {
 
 func encodeConversionFuzzSource(t *testing.T, raw []byte, format string) (model.Document, bool) {
 	t.Helper()
-	input := filepath.Join(t.TempDir(), "input.bin")
-	if err := os.WriteFile(input, raw, 0600); err != nil {
-		t.Fatal(err)
-	}
-	var stdout, stderr bytes.Buffer
-	status := cli.Run(context.Background(), []string{"encode", input, "--format", format, "--stdout", "--no-speaker-detection"}, nil, &stdout, &stderr)
-	if status != cli.ExitSuccess {
-		return model.Document{}, false
-	}
-	document, err := schema.Decode(stdout.Bytes())
-	if err != nil {
-		t.Fatalf("accepted input did not decode: %v", err)
-	}
-	return document, true
+	return conversionFuzzDocument(raw, format, "")
 }
 
 func parseConversionFuzzTarget(t *testing.T, raw []byte, format string) {

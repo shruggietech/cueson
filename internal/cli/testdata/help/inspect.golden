@@ -1,10 +1,10 @@
-Inspect validated Cue JSON, SubRip, or WebVTT as a privacy-bounded structural report.
+Inspect validated Cue JSON, SubRip, WebVTT, or experimental ASS/SSA as a privacy-bounded structural report.
 
 Usage:
   cueson [global options] inspect [options] INPUT
 
 Options:
-  --format FORMAT  Select auto, cueson, srt, or vtt (default auto).
+  --format FORMAT  Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental.
   --encoding NAME  Select the native source text encoding.
   --json           Write the compact inspection report version 1 as JSON.
 
@@ -18,7 +18,7 @@ Global options:
 Notes:
   Format aliases: json and cue-json for cueson; subrip for srt; webvtt for vtt.
   Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le; utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.
-  Cue JSON prohibits --encoding. WebVTT accepts UTF-8 only.
+  Cue JSON prohibits --encoding. WebVTT and ASS/SSA accept UTF-8 only.
 
 Streams:
   stdout  One human report, or one compact JSON object with --json.

@@ -1,40 +1,17 @@
 package conformance_test
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
-	"unicode/utf8"
 
 	"github.com/shruggietech/cueson/internal/testutil"
 )
 
-type conformanceMatrix struct {
-	Version int            `json:"version"`
-	Formats []matrixFormat `json:"formats"`
-}
-
-type matrixFormat struct {
-	Format string      `json:"format"`
-	Rows   []matrixRow `json:"rows"`
-}
-
-type matrixRow struct {
-	RowID       string           `json:"row_id"`
-	Description string           `json:"description"`
-	Evidence    []matrixEvidence `json:"evidence"`
-}
-
-type matrixEvidence struct {
-	Kind      string `json:"kind"`
-	Reference string `json:"reference"`
-	Reason    string `json:"reason,omitempty"`
-}
+type conformanceMatrix = testutil.ConformanceMatrix
 
 var matrixIDPattern = regexp.MustCompile(`^(srt|vtt|scripted)-[a-z0-9]+(?:-[a-z0-9]+)*$`)
 
@@ -71,8 +48,8 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 		}
 		if format.Format == "scripted" {
 			documentName = "ass-ssa.md"
-			if len(format.Rows) != 17 {
-				t.Errorf("scripted matrix has %d rows, want all 17 selected-profile rows", len(format.Rows))
+			if err := validateScriptedMatrixRows(format.Rows); err != nil {
+				t.Error(err)
 			}
 		}
 		document := readRepositoryFile(t, filepath.Join(repositoryRoot, "docs", "formats", documentName))
@@ -119,7 +96,7 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 				case "render_test", "conversion_test", "fuzz_target", "platform_test":
 					rowKinds[evidence.Kind] = true
 					seenKinds[evidence.Kind] = true
-					if !repositoryFunctionExists(t, repositoryRoot, evidence.Reference) {
+					if !repositoryFunctionExists(t, repositoryRoot, evidence.Reference, evidence.Kind) {
 						t.Errorf("row %q references missing function %q", row.RowID, evidence.Reference)
 					}
 				case "inapplicable":
@@ -129,7 +106,7 @@ func TestConformanceMatrixResolvesDocumentationFixturesAndTests(t *testing.T) {
 					}
 					inapplicableKinds[evidence.Reference] = true
 				case "deferred":
-					if format.Format != "scripted" || !isRequiredMatrixEvidenceKind(evidence.Reference) || !strings.Contains(evidence.Reason, "#") || strings.TrimSpace(evidence.Reason) == "" {
+					if !allowedStableMatrixDeferral(format.Format, row.RowID, evidence) {
 						t.Errorf("row %q has incomplete or misplaced deferred evidence", row.RowID)
 						continue
 					}
@@ -167,18 +144,9 @@ func isRequiredMatrixEvidenceKind(kind string) bool {
 func loadConformanceMatrix(t *testing.T, path string) conformanceMatrix {
 	t.Helper()
 	data := []byte(readRepositoryFile(t, path))
-	if !utf8.Valid(data) || bytes.HasPrefix(data, []byte{0xef, 0xbb, 0xbf}) {
-		t.Fatal("conformance matrix must be UTF-8 without BOM")
-	}
-	var matrix conformanceMatrix
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&matrix); err != nil {
-		t.Fatalf("decode conformance matrix: %v", err)
-	}
-	var trailing any
-	if err := decoder.Decode(&trailing); err == nil {
-		t.Fatal("conformance matrix contains multiple JSON values")
+	matrix, err := testutil.DecodeConformanceMatrix(data)
+	if err != nil {
+		t.Fatal(err)
 	}
 	if err := testutil.CheckNoForbidden("conformance-matrix", "metadata", data); err != nil {
 		t.Fatal(err)
@@ -186,27 +154,13 @@ func loadConformanceMatrix(t *testing.T, path string) conformanceMatrix {
 	return matrix
 }
 
-func repositoryFunctionExists(t *testing.T, repositoryRoot, reference string) bool {
+func repositoryFunctionExists(t *testing.T, repositoryRoot, reference, kind string) bool {
 	t.Helper()
-	directory, name, found := strings.Cut(reference, ":")
-	if !found || directory == "" || !regexp.MustCompile(`^(Test|Fuzz)[A-Za-z0-9_]+$`).MatchString(name) {
-		return false
-	}
-	matches, err := filepath.Glob(filepath.Join(repositoryRoot, filepath.FromSlash(directory), "*_test.go"))
+	exists, err := testutil.EvidenceFunctionExists(repositoryRoot, reference, kind)
 	if err != nil {
-		t.Fatalf("resolve test reference %q: %v", reference, err)
+		t.Fatal(err)
 	}
-	needle := []byte("func " + name + "(")
-	for _, path := range matches {
-		data, err := os.ReadFile(path)
-		if err != nil {
-			t.Fatalf("read test reference %q: %v", reference, err)
-		}
-		if bytes.Contains(data, needle) {
-			return true
-		}
-	}
-	return false
+	return exists
 }
 
 func readRepositoryFile(t *testing.T, path string) string {

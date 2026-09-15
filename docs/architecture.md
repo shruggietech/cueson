@@ -48,6 +48,8 @@ Current source implements `internal/codec` as a capability registry plus bounded
 
 Validation, inspection, and conversion share one CLI-owned validated-input path so Cue JSON precedence, native content-first selection, schema and semantic checks, source integrity, and codec availability cannot drift among commands. Inspection projects that result into a fixed privacy-bounded report rather than exposing the Cue model directly. Help and four static shell completion definitions derive their public vocabulary from one ordered CLI surface catalogue while semantic option conflicts remain in the explicit parser.
 
+S027 completes validate/inspect scripted discovery vocabulary and adds an optional counts-only scripted native summary to inspection version 1. Existing text report fields and bytes retain their meaning; native section/record/style/event/tag/karaoke/attachment counts never disclose source values. Established incompatible-encoding exit classes remain command-owned, with common bounded UTF-8 capability recognition. Independent conversion-target capture inspection preflights its encoded allocation and bounded declaration splitting without changing public source grammar. Structured and conversion fuzz mutations stay in memory; genuine native workflow/restoration/safety tests close development hardening evidence while stable/candidate proof stays separately owned.
+
 ## Source authority and restoration
 
 Original source asset bytes are authoritative for exact restoration. Normalized cues, format-native parsed data, speaker observations, token timing, and OCR observations are derived or interpreted surfaces and never replace the source envelope.

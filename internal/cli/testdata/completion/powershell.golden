@@ -41,12 +41,12 @@ Register-ArgumentCompleter -Native -CommandName cueson -ScriptBlock {
   if ($command -ceq 'convert' -and $wordToComplete.StartsWith('--from=', [System.StringComparison]::Ordinal)) { $candidates = @('--from=auto', '--from=cueson', '--from=srt', '--from=vtt', '--from=ass', '--from=ssa') }
   if ($command -ceq 'convert' -and $previous -ceq '--encoding') { $candidates = @('utf-8', 'utf-8-bom', 'utf-16le', 'utf-16be', 'windows-1252', 'iso-8859-1') }
   if ($command -ceq 'convert' -and $wordToComplete.StartsWith('--encoding=', [System.StringComparison]::Ordinal)) { $candidates = @('--encoding=utf-8', '--encoding=utf-8-bom', '--encoding=utf-16le', '--encoding=utf-16be', '--encoding=windows-1252', '--encoding=iso-8859-1') }
-  if ($command -ceq 'validate' -and $previous -ceq '--format') { $candidates = @('auto', 'cueson', 'srt', 'vtt') }
-  if ($command -ceq 'validate' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=cueson', '--format=srt', '--format=vtt') }
+  if ($command -ceq 'validate' -and $previous -ceq '--format') { $candidates = @('auto', 'cueson', 'srt', 'vtt', 'ass', 'ssa') }
+  if ($command -ceq 'validate' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=cueson', '--format=srt', '--format=vtt', '--format=ass', '--format=ssa') }
   if ($command -ceq 'validate' -and $previous -ceq '--encoding') { $candidates = @('utf-8', 'utf-8-bom', 'utf-16le', 'utf-16be', 'windows-1252', 'iso-8859-1') }
   if ($command -ceq 'validate' -and $wordToComplete.StartsWith('--encoding=', [System.StringComparison]::Ordinal)) { $candidates = @('--encoding=utf-8', '--encoding=utf-8-bom', '--encoding=utf-16le', '--encoding=utf-16be', '--encoding=windows-1252', '--encoding=iso-8859-1') }
-  if ($command -ceq 'inspect' -and $previous -ceq '--format') { $candidates = @('auto', 'cueson', 'srt', 'vtt') }
-  if ($command -ceq 'inspect' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=cueson', '--format=srt', '--format=vtt') }
+  if ($command -ceq 'inspect' -and $previous -ceq '--format') { $candidates = @('auto', 'cueson', 'srt', 'vtt', 'ass', 'ssa') }
+  if ($command -ceq 'inspect' -and $wordToComplete.StartsWith('--format=', [System.StringComparison]::Ordinal)) { $candidates = @('--format=auto', '--format=cueson', '--format=srt', '--format=vtt', '--format=ass', '--format=ssa') }
   if ($command -ceq 'inspect' -and $previous -ceq '--encoding') { $candidates = @('utf-8', 'utf-8-bom', 'utf-16le', 'utf-16be', 'windows-1252', 'iso-8859-1') }
   if ($command -ceq 'inspect' -and $wordToComplete.StartsWith('--encoding=', [System.StringComparison]::Ordinal)) { $candidates = @('--encoding=utf-8', '--encoding=utf-8-bom', '--encoding=utf-16le', '--encoding=utf-16be', '--encoding=windows-1252', '--encoding=iso-8859-1') }
   if ($candidates.Count -eq 0) {

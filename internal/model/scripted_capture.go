@@ -25,6 +25,11 @@ func inspectScriptedCaptureSource(source SourceEnvelope) (scriptedSourceCapture,
 		if asset.ID != source.PrimaryAssetID {
 			continue
 		}
+		// This boundary also validates private conversion targets, which skip
+		// the source grammar's earlier size preflight.
+		if len(asset.DataBase64) > ((64<<20)+2)/3*4 {
+			return capture, fmt.Errorf("complexity_limit: original capture source")
+		}
 		if strings.ContainsAny(asset.DataBase64, "\r\n") {
 			return capture, fmt.Errorf("invalid scripted source integrity")
 		}
@@ -58,7 +63,7 @@ func inspectScriptedCaptureSource(source SourceEnvelope) (scriptedSourceCapture,
 				continue
 			}
 			if strings.EqualFold(prefix, "Format") {
-				declaration = strings.Split(value, ",")
+				declaration = strings.SplitN(value, ",", MaxScriptedDeclarationFields+1)
 				if len(declaration) > MaxScriptedDeclarationFields {
 					return capture, fmt.Errorf("complexity_limit: original declaration")
 				}

@@ -1,0 +1,9 @@
+# S027 CLI conformance contract
+
+- validate and inspect accept catalogue-approved auto/cueson/srt/vtt/ass/ssa and existing aliases, with shared validated-input precedence/schema/semantic/integrity/capability authority.
+- Root help, both commands' help, and Bash/Zsh/Fish/PowerShell completions expose the same approved vocabulary from surface.go. Invalid-token diagnostics derive allowed values from that catalogue.
+- Preserve report version 1 and all existing text report fields. Optional scripted aggregate metadata is absent for non-scripted documents. Scripted metadata counts retained owners rather than redefining WebVTT blocks/body_items.
+- The optional scripted object contains fifteen integer fields: section_count, record_count, format_declaration_count, style_count, invalid_style_count, event_count, dialogue_event_count, comment_event_count, invalid_event_count, attachment_count, override_tag_count, karaoke_span_count, unsupported_karaoke_span_count, unknown_record_count, and malformed_record_count. Totals count retained validated owners/occurrences, including non-dialogue content, without interpreting or disclosing their values. Document exact semantics in docs/cli.md alongside focused count assertions.
+- Summary metadata never includes raw source/native values, cue text, actor/style/resource names, filesystem identity, free-form diagnostic messages or original asset content.
+- Existing diagnostic/stdout failures, strict/overwrite policy and exit classes remain unchanged. Explicit incompatible scripted encoding convert preflight remains invocation failure; established encode/validate/inspect codec refusal remains runtime failure.
+- Old-document full command matrix and old help/completion/report fixtures pass, with only deliberately extended approved tokens changing discovery snapshots.

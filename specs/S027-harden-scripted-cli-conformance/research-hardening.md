@@ -1,0 +1,37 @@
+# S027 hardening research
+
+Assessment: 2026-09-15, read-only product audit against merged S026 (`7712408`). Issue #63 shares the S027 CLI and conformance verification narrative with #62. Existing source truth, editable model ownership, experimental capability observations, twelve conversion directions, and historical SubRip/WebVTT behavior remain controlling requirements.
+
+## Existing protections
+
+The scripted parser operates on acquired bytes and never discovers external resources. Physical input is limited to 64 MiB, 65,536 physical items, and 1 MiB per line. Declarations are limited to 128 fields, aggregate native fields and spans/tags to 1,000,000, diagnostics to 8,192, and attachment occurrences/decoded data to their existing ceilings. Parsing checks cancellation between physical lines and events. Model validation independently checks ordered native owners, cue/event/record/style/declaration references, captured physical evidence, semantic projection, typed/raw scalar agreement, source integrity, safe structural names, and contextual privacy roles.
+
+Rendering validates the model and immutable source envelope before emitting complete canonical bytes. The output writer enforces line, item, and 64 MiB output ceilings, and cancellation is checked between ordered items. Conversion validates the original document and complete envelope, constructs deterministic complete loss reports, prevents strict lossy publication, reparses generated targets, and preserves original source/model state. Existing boundary and review regressions already cover malformed framing, ownership forgery, source hash corruption, unsafe metadata, source capture mismatches, aggregate fields/spans, target ownership, collapsed/overflow intervals, and nil/pre-cancelled conversion contexts. S027 should retain this evidence rather than reproduce equivalent product logic.
+
+## Concrete remaining work
+
+### Filesystem-free conversion fuzz mutations
+
+`internal/convert/scripted_fuzz_test.go` currently calls `t.TempDir`, writes each mutation to `input.bin`, and invokes the CLI encoder before conversion. This crosses issue #63's explicitly filesystem-free fuzz boundary and spends mutation work on disk acquisition rather than parser/model/render invariants. Replace this test-only construction with the same direct codec and immutable source-envelope steps already used by the scripted render/parse fuzz helper. Keep static fixture seed reads at fuzz initialization; each mutation itself must remain in memory.
+
+The builder must parse SubRip, WebVTT, ASS, and SSA directly; decode text with the existing supported encoding authority; use a fixed safe basename and truthful unavailable timestamps; calculate SHA-256, byte length, and canonical base64 from the exact fuzz bytes; derive source encoding observations from the parser/decoder; preserve empty scripted documents; construct the matching native format branch and current schema/producer identity; and compute summaries/diagnostic statistics consistently. Refuse invalid documents without converting them. Disabling inferred speakers must retain native scripted actor observations and existing token semantics.
+
+Retain all twelve directions, deterministic repeated output and report comparison, complete strict/fatal no-payload policy, target reparsing, valid loss report references, and byte-identical input document comparison. Add focused builder regressions for accepted formats, byte-exact source reconstruction, source hash/size, truthful timestamps, malformed refusal, mixed line endings/BOM, and supported legacy text encoding. CLI acquisition behavior remains covered by existing CLI tests rather than removed from the product.
+
+### Adversarial structured-document fuzz
+
+The current scripted model fuzz target mutates text projection and verifies native scalar spans and token timing; it does not mutate document ownership graphs or envelopes. Add a bounded, filesystem-free structured scripted document target built from baseline fixture bytes loaded once during initialization. Each mutation should independently clone the baseline document, modify one known-invalid condition, and verify deterministic rejection without mutation of original state. Useful mutation classes are dangling or duplicated native owner references, invalid source-order ownership, forged raw capture observations, cue/native mismatch, unsafe structural/resource names and metadata, corrupted source size/hash/base64, inconsistent typed values, and invalid dialect/capability observations. Use fixed private path sentinels and ensure publication-facing conversion/render diagnostics do not contain them when exercised; raw model validation error text is not a public diagnostic contract.
+
+Keep meaningful control mutations that remain accepted, such as editable common cue content under the approved ownership contract, so the target cannot pass by rejecting every input. Run the new target in fixed-work CI alongside existing projection, detection, both native parsers, and render/reparse/conversion targets. Existing `FuzzStructuredConversion` and `FuzzValidateSafeBasename` are available but not currently included in the fixed-work CI list; include them when extending that list to cover the issue's explicit structured and safe-name boundaries.
+
+### Narrow independent source-capture guards
+
+Normal scripted `Document.Validate` already checks the primary encoded-source size in `scriptedSourcePrivacy` and uses bounded `SplitN` for original declarations. Independently, `inspectScriptedCaptureSource` decodes the complete primary base64 string before checking the 64 MiB decoded ceiling and uses unbounded `strings.Split` before enforcing the 128-field declaration ceiling. This helper is also reachable from the private conversion-target validation path that deliberately skips original scripted source grammar. Add equivalent encoded-length preflight and bounded `SplitN` inside this owning capture boundary, preserving its existing integrity and capture matching checks.
+
+This is defensive consistency at the independent capture boundary, not a claim of a demonstrated normal native-ingest exploit. Direct helper regressions should prove oversized encoded input and excess declarations reject at this boundary while baseline, exact declaration limits, ordered capture matching, and approved conversion-target behavior remain accepted. Avoid expanding public schema contracts or changing historical source-envelope semantics.
+
+## Verification and exclusions
+
+Run focused model/capture, all-format conversion fuzz, parser/render, and existing review regressions; then root tests, race/static/security checks, every scheduled fixed-work fuzz target, old immutable corpus verification, Windows/macOS/Linux CI, and all six existing pure-Go builds. The coordinating agent owns final integrated verification and truthful evidence updates in the conformance matrix. Portable grammar rows can remain explicitly inapplicable to platform-specific claims; deferred native hardening rows require executed native evidence. Stable capability, exact release identity, release publication, and production schema/site verification remain outcomes of #64 through #67.
+
+No broader cancellation API redesign or source capture refactor is justified by this audit. Existing bounded loops and entry cancellation checks should be retained, and any newly demonstrated missed cancellation boundary should receive a focused regression before a product change.

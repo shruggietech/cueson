@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added complete scripted validate/inspect help and four-shell vocabulary, optional privacy-safe native inspection counts, accepted-source restoration/native safety evidence, and filesystem-free structured/conversion hardening fuzz proof; ASS/SSA remain experimental.
+
 - Added all ten remaining conversions among SubRip, WebVTT, ASS, and SSA, with complete atomic scripted losses, deterministic native defaults, checked centisecond precision, target reparsing, and twelve-direction publication safety evidence; ASS/SSA remain experimental.
 - Added experimental bounded ASS v4+/SSA v4 UTF-8 detection, source-preserving ingest, native Actor/karaoke projections, owner-driven textual rendering, guarded CLI workflows, and provenance-governed paired acceptance/rejection corpus evidence.
 - Added exact local historical Cue JSON 1.0.0 validation and command compatibility, plus typed annotated ASS/SSA schema-only branches with ordered native content, checked references, readable Text projections and bounded privacy validation.
@@ -46,8 +48,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-15: Use checked nearest-centisecond rounding with ties upward and atomic endpoint losses; reject collapsed intervals, unsafe literal native control reinterpretation, and drawing-only text output instead of inventing timing or dialogue.
 - 2026-09-15: Preserve representable ASS/SSA owners with explicit alignment mapping and per-field accounting for Layer/Marked, color/alpha roles, and dialect-only observations; retain old conversion loss meanings and add governed fixed-work four-format conversion fuzzing.
 - 2026-09-15: Account explicitly for custom scripted source identifier annotations and nonzero ignored SSA color alpha observations during conversion; retain native SubRip sequence framing and existing WebVTT identifier policies.
+- 2026-09-15: Add scripted inspection counts without changing text report shape or existing command error classes; keep one catalogue as discovery/diagnostic vocabulary authority and retain source-value privacy.
+- 2026-09-15: Keep fuzz mutations in memory with exact source/model construction and accepted controls, preflight independent target capture allocation/declaration ceilings, and require genuine development native evidence while preserving later stable/release gates; extend fixed-work CI without new runtime dependencies.
 
 ### Fixed
+
+- Reject malformed trailing conformance-matrix data and require real kind-correct test/fuzz references and the ratified scripted row set rather than accepting incomplete evidence.
 
 - Account for each scripted style emphasis value cancelled before readable converted text, including neutral values, named resets, and use across cues; strict reports retain the complete atomic omission.
 - Exempt the canonical original-filename disagreement diagnostic from strict scripted rendering; conforming ASS/SSA models encoded under SubRip/WebVTT extensions render identically in strict and permissive modes.
