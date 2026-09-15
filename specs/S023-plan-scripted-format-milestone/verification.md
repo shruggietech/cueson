@@ -33,4 +33,6 @@ The final wording corrections affect planning and contract prose only. Existing 
 
 ## Delivery boundaries
 
+Round-one Codex review on PR #68 found two contract defects. Logical payload lines now derive explicit hard/soft-break semantics while native Text/raw_text remain exact; the acceptance matrix covers empty and consecutive/trailing breaks. Capture-only section headers, record lines, and timestamp lexemes are optional for constructed recognized occurrences, whose structured owners supply serialization without fabricated observations. Retained uninterpreted/attachment data still requires truthful captured content. Existing authored-text and documentation checks plus whitespace verification are rerun for this prose-only remediation before the authorized second review.
+
 This slice adds no runtime codec, version bump, immutable-schema change, release, or production deployment. The prepared commit and authorized official PR will close #52, #53, and #54 after human merge. Hosted CI and bot review results are recorded on that PR against its actual head; they are not claimed by this preparation record. Human merge and later release/production actions remain separate operator decisions.
