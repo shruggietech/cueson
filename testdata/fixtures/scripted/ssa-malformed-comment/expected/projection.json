@@ -1,0 +1,160 @@
+{
+  "format": "ssa",
+  "section_names": [
+    "Script Info",
+    "V4 Styles",
+    "Events"
+  ],
+  "record_count": 6,
+  "styles": [
+    {
+      "name": "Default",
+      "fields": [
+        {
+          "field_name": "Name",
+          "raw_value": "Default"
+        },
+        {
+          "field_name": "Fontname",
+          "raw_value": "Arial"
+        },
+        {
+          "field_name": "Fontsize",
+          "raw_value": "20"
+        },
+        {
+          "field_name": "PrimaryColour",
+          "raw_value": "16777215"
+        },
+        {
+          "field_name": "SecondaryColour",
+          "raw_value": "255"
+        },
+        {
+          "field_name": "TertiaryColour",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "BackColour",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "Bold",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "Italic",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "BorderStyle",
+          "raw_value": "1"
+        },
+        {
+          "field_name": "Outline",
+          "raw_value": "2"
+        },
+        {
+          "field_name": "Shadow",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "Alignment",
+          "raw_value": "2"
+        },
+        {
+          "field_name": "MarginL",
+          "raw_value": "10"
+        },
+        {
+          "field_name": "MarginR",
+          "raw_value": "10"
+        },
+        {
+          "field_name": "MarginV",
+          "raw_value": "10"
+        },
+        {
+          "field_name": "AlphaLevel",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "Encoding",
+          "raw_value": "1"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "event_type": "dialogue",
+      "fields": [
+        {
+          "field_name": "Marked",
+          "raw_value": "Marked=0"
+        },
+        {
+          "field_name": "Start",
+          "raw_value": "0:00:01.00"
+        },
+        {
+          "field_name": "End",
+          "raw_value": "0:00:03.00"
+        },
+        {
+          "field_name": "Style",
+          "raw_value": "Default"
+        },
+        {
+          "field_name": "Name",
+          "raw_value": "Narrator"
+        },
+        {
+          "field_name": "MarginL",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "MarginR",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "MarginV",
+          "raw_value": "0"
+        },
+        {
+          "field_name": "Effect",
+          "raw_value": ""
+        },
+        {
+          "field_name": "Text",
+          "raw_value": "Hello"
+        }
+      ]
+    },
+    {
+      "event_type": "comment",
+      "fields": []
+    }
+  ],
+  "attachment_names": [],
+  "cues": [
+    {
+      "start_milliseconds": 1000,
+      "end_milliseconds": 3000,
+      "raw_text": "Hello",
+      "plain_text": "Hello",
+      "lines": [
+        "Hello"
+      ],
+      "speakers": [
+        {
+          "name": "Narrator",
+          "origin": "native"
+        }
+      ],
+      "tokens": [],
+      "drawing_excluded": false
+    }
+  ],
+  "render_result": "rejected"
+}

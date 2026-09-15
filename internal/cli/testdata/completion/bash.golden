@@ -32,9 +32,9 @@ _cueson_completion() {
   if (( ! options_active )); then COMPREPLY=(); return; fi
 
   case "$command:$previous" in
-    encode:--format) _cueson_filter_candidates "$current" 'auto' 'srt' 'vtt'; return ;;
+    encode:--format) _cueson_filter_candidates "$current" 'auto' 'srt' 'vtt' 'ass' 'ssa'; return ;;
     encode:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
-    render:--to) _cueson_filter_candidates "$current" 'srt' 'vtt'; return ;;
+    render:--to) _cueson_filter_candidates "$current" 'srt' 'vtt' 'ass' 'ssa'; return ;;
     convert:--to) _cueson_filter_candidates "$current" 'srt' 'vtt'; return ;;
     convert:--from) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt'; return ;;
     convert:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
@@ -45,7 +45,7 @@ _cueson_completion() {
   esac
   if [[ "$command" == 'encode' && "$current" == '--format='* ]]; then
     local value_prefix="${current#*=}"
-    _cueson_filter_candidates "$value_prefix" 'auto' 'srt' 'vtt'
+    _cueson_filter_candidates "$value_prefix" 'auto' 'srt' 'vtt' 'ass' 'ssa'
     for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--format='"${COMPREPLY[index]}"; done
     return
   fi
@@ -57,7 +57,7 @@ _cueson_completion() {
   fi
   if [[ "$command" == 'render' && "$current" == '--to='* ]]; then
     local value_prefix="${current#*=}"
-    _cueson_filter_candidates "$value_prefix" 'srt' 'vtt'
+    _cueson_filter_candidates "$value_prefix" 'srt' 'vtt' 'ass' 'ssa'
     for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--to='"${COMPREPLY[index]}"; done
     return
   fi

@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	normativeSchemaSHA256  = "cdd77c73bf95a200309552e73ac9d3b6db1c1f366c222768ada666dd1c14593b"
+	normativeSchemaSHA256  = "e20bf44c06b456687dd1203f8f8d8699d4c27df288725f8e423618491e47771a"
 	v0ReleasedSchemaSHA256 = "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975"
 	v1ReleasedSchemaSHA256 = "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541"
 )

@@ -63,8 +63,11 @@ type Registration struct {
 	Aliases    []string
 	Extensions []string
 	Detect     Detector
-	Decode     Decoder
-	Render     Renderer
+	// EnforceContentSelection prevents an explicit selector from bypassing
+	// a closed native profile's content rejection or dialect identity.
+	EnforceContentSelection bool
+	Decode                  Decoder
+	Render                  Renderer
 }
 
 // Registry is an immutable deterministic collection of native format registrations.

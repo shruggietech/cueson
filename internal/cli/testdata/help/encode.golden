@@ -1,4 +1,4 @@
-Encode a SubRip or WebVTT source as Cue JSON while preserving its exact source bytes.
+Encode a SubRip, WebVTT, or experimental ASS/SSA source as Cue JSON while preserving its exact source bytes.
 
 Usage:
   cueson [global options] encode [options] INPUT
@@ -6,7 +6,7 @@ Usage:
 Options:
   -o, --output PATH       Write Cue JSON to PATH (default INPUT.cueson.json).
   -f, --force             Replace an existing regular output file.
-  --format FORMAT         Select auto, srt, or vtt (default auto).
+  --format FORMAT         Select auto, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental.
   --encoding NAME         Select the source text encoding.
   --pretty                Indent Cue JSON output.
   --stdout                Write Cue JSON to stdout.
@@ -23,6 +23,7 @@ Notes:
   Format aliases: subrip for srt; webvtt for vtt.
   Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le; utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.
   WebVTT accepts UTF-8 only.
+  ASS/SSA accept the bounded UTF-8 profile; native actor observations are retained with --no-speaker-detection.
   --output - is equivalent to --stdout. --force requires a filesystem output.
 
 Streams:

@@ -6,9 +6,9 @@ This document is the maintained CLI authority. The public command names and beha
 
 ## Current source additions
 
-Current S024 source reports `1.1.0-dev` from `version` and `schema --version`, and emits the exact current development schema. Existing native output uses that identity. Exact historical 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown or mismatched identities and corrupt source envelopes fail before publication.
+Current S025 source reports `1.1.0-dev` from `version` and `schema --version`, and emits the exact current development schema. Existing native output uses that identity. Exact historical 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown or mismatched identities and corrupt source envelopes fail before publication.
 
-ASS/SSA Cue JSON models are `schema_only`: generic validate, inspect and exact restore are available. Native codecs remain absent; `render --to ass` or `--to ssa` reports a recognized unavailable capability and publishes nothing. Full native help/completion/input coverage remains #62 after codec implementation. Published v1.0.0 behavior remains the historical contract described below.
+S025 adds experimental ASS/SSA detection, ingest and model-driven textual rendering. New native output declares `experimental` with ingest, render and restore available; existing `schema_only` input observations remain accepted independently of installed codec availability. Generic validate, inspect and exact restore accept both observations. Cross-format conversion, complete release-wide discovery coverage (#62), and stable declarations remain later gates. Published v1.0.0 behavior remains the historical contract described below.
 
 ## Invocation, streams, and status
 
@@ -36,17 +36,17 @@ The root help lists exactly nine commands: `encode`, `restore`, `render`, `conve
 cueson [global options] encode [options] INPUT
 ```
 
-`encode` captures one bounded regular SubRip or WebVTT input, derives common and native cue data, validates the resulting document, and preserves the exact source bytes in Cue JSON.
+`encode` captures one bounded regular SubRip, WebVTT, or experimental ASS/SSA input, derives common and native cue data, validates the resulting document, and preserves the exact source bytes in Cue JSON.
 
 - `-o`, `--output` `PATH`: write Cue JSON to `PATH`; without an output selection, the destination is `INPUT.cueson.json`. `--output -` selects stdout.
 - `-f`, `--force`: replace an approved existing regular filesystem output.
-- `--format` `FORMAT`: select `auto`, `srt`, or `vtt`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--format` `FORMAT`: select `auto`, `srt`, `vtt`, `ass`, or `ssa`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
 - `--encoding` `NAME`: select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.
 - `--pretty`: indent Cue JSON output.
 - `--stdout`: write Cue JSON to stdout; it is mutually exclusive with a filesystem output.
 - `--no-speaker-detection`: disable conservative derived `Name:` speaker observations.
 
-WebVTT accepts UTF-8 only, including BOM-specific UTF-8 selection when the input has the matching BOM. SubRip accepts automatic UTF-8, BOM-marked UTF-16, strongly evidenced BOM-less UTF-16, and explicitly selected legacy single-byte encodings. Input is limited to 64 MiB.
+WebVTT and ASS/SSA accept UTF-8 only, including BOM-specific UTF-8 selection when the input has the matching BOM. SubRip accepts automatic UTF-8, BOM-marked UTF-16, strongly evidenced BOM-less UTF-16, and explicitly selected legacy single-byte encodings. Input is limited to 64 MiB. ASS/SSA native Actor/Name speaker observations survive `--no-speaker-detection`; that option controls derived speaker detection. Malformed recognized scripted candidates reject before publication regardless of extension or an explicit incompatible selector.
 
 For a filesystem output, success exits 0 with empty stdout and only source warnings on stderr. The executable README scenario is:
 
@@ -84,7 +84,7 @@ cueson [global options] render [options] INPUT.cueson.json --to FORMAT
 
 `render` validates Cue JSON and serializes its structured cue model in the document's matching native format. It is intentionally distinct from exact restoration.
 
-- `--to` `FORMAT`: select `srt` or `vtt`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--to` `FORMAT`: select `srt`, `vtt`, `ass`, or `ssa`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`. ASS/SSA textual rendering is experimental.
 - `-o`, `--output` `PATH`: write native output to a filesystem path instead of stdout; `--output -` selects stdout.
 - `-f`, `--force`: replace an approved existing regular filesystem output.
 - `--strict`: reject known non-representable, ambiguous, or preserved nonconforming model content before publication.
@@ -101,7 +101,7 @@ cueson render --to srt --output quickstart/rendered.srt quickstart/document.cues
 cueson [global options] convert [options] INPUT --to FORMAT
 ```
 
-`convert` accepts Cue JSON, SubRip, or WebVTT and serializes a private target projection in the requested native format. Cue JSON recognition has precedence; JSON-looking or `.json`-named invalid content does not fall through to a native codec.
+`convert` accepts Cue JSON, SubRip, or WebVTT and serializes a private target projection in the requested native format. Cue JSON recognition has precedence; actual JSON containers or `.json`-named invalid content do not fall through to a native codec. A recognized bracketed ASS/SSA header reaches guarded native classification even with a conflicting filename, then reports unavailable scripted conversion before publication.
 
 - `--to` `FORMAT`: select `srt` or `vtt`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
 - `--from` `FORMAT`: select `auto`, `cueson`, `srt`, or `vtt`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.

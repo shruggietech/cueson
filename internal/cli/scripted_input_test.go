@@ -13,7 +13,7 @@ import (
 	"github.com/shruggietech/cueson/internal/schema"
 )
 
-func TestScriptedGenericCommandsAndUnavailableNativePublication(t *testing.T) {
+func TestScriptedGenericCommandsAndUnavailableConversion(t *testing.T) {
 	t.Parallel()
 	for _, format := range []string{"ass", "ssa"} {
 		t.Run(format, func(t *testing.T) {
@@ -46,7 +46,7 @@ func TestScriptedGenericCommandsAndUnavailableNativePublication(t *testing.T) {
 						t.Fatal(err)
 					}
 					capabilities := report.Capabilities
-					if report.Format != format || report.Schema.Version != "1.1.0-dev" || capabilities.Declared.Status != "schema_only" || capabilities.Installed.Ingest || capabilities.Installed.Render || !capabilities.Installed.Restore || !capabilities.Installed.Validate || !capabilities.Installed.Inspect {
+					if report.Format != format || report.Schema.Version != "1.1.0-dev" || capabilities.Declared.Status != "schema_only" || !capabilities.Installed.Ingest || !capabilities.Installed.Render || !capabilities.Installed.Restore || !capabilities.Installed.Validate || !capabilities.Installed.Inspect {
 						t.Fatalf("scripted report = %#v", report)
 					}
 				}
@@ -67,15 +67,11 @@ func TestScriptedGenericCommandsAndUnavailableNativePublication(t *testing.T) {
 				t.Fatal("scripted restore changed source bytes")
 			}
 			for _, args := range [][]string{
-				{"render", input, "--to", format, "--output", output, "--force"},
 				{"convert", input, "--to", "srt", "--output", output, "--force"},
 			} {
 				status, stdout, stderr := runForTest(context.Background(), args)
 				if status != ExitRuntimeFailure || stdout != "" || strings.Contains(stderr, directory) {
 					t.Fatalf("%v = (%d, %q, %q)", args, status, stdout, stderr)
-				}
-				if args[0] == "render" && !strings.Contains(stderr, "recognized but its native render capability is unavailable") {
-					t.Fatalf("untruthful capability diagnostic: %s", stderr)
 				}
 				after, err := os.ReadFile(output)
 				if err != nil {

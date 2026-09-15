@@ -1100,6 +1100,3972 @@
       "expectation": {
         "result": "accepted"
       }
+    },
+    {
+      "id": "scripted/ass-basic",
+      "purpose": "Exercise basic for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-basic/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 544,
+          "sha256": "7ea742144668a68d8a83ba9c8bb01baa2829b659692fd3414624021022ef9b82",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-basic/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3532,
+          "sha256": "6e5a09163a9c19269012e4a6b8d575a24b1df2622b72ed6b611a25f4c4dd3b3a",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-basic/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted/ass-basic/expected/bytes/rendered.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 544,
+          "sha256": "7ea742144668a68d8a83ba9c8bb01baa2829b659692fd3414624021022ef9b82",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-bom-crlf",
+      "purpose": "Exercise bom crlf for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; prepend UTF-8 BOM and write CRLF without final newline."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-bom-crlf/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 553,
+          "sha256": "f75094723f7776f0944b0d7fc66f60ae95997ef1c8be14a9a97bf07b126dab03",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "present",
+            "line_endings": "crlf",
+            "final_newline": "absent"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-bom-crlf/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3532,
+          "sha256": "6e5a09163a9c19269012e4a6b8d575a24b1df2622b72ed6b611a25f4c4dd3b3a",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-bom-crlf/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted/ass-bom-crlf/expected/bytes/rendered.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 544,
+          "sha256": "7ea742144668a68d8a83ba9c8bb01baa2829b659692fd3414624021022ef9b82",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-declared-fields",
+      "purpose": "Exercise declared fields for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-declared-fields/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 592,
+          "sha256": "f75ec5674685d8eae764afbe789ad87209399d1a96e8595fe495a4c8f62fb2c6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-declared-fields/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3829,
+          "sha256": "3e7b0f23afa2caa92f7b968d7cb478a23453c99df8e685c048f878b0a0d290b9",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-declared-fields/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-zero-dialogue",
+      "purpose": "Exercise zero dialogue for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-zero-dialogue/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 548,
+          "sha256": "c7fed872dd4751c2c4c871df8ebfa10cd7c8408585f2e41fc2c5952dcbca46ef",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-zero-dialogue/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3197,
+          "sha256": "7016bcb1d4e22e4024f59d650f237b17edfd2ae07b78d8b7caaca6f769a4f0fe",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-zero-dialogue/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-native-order",
+      "purpose": "Exercise native order for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-native-order/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 829,
+          "sha256": "8a8325505c799f7b9c6355305008b7246b157b2f9b1e1dc9b877baf96208f48f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-native-order/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 4482,
+          "sha256": "5bcfb44dc3eb96f6a92b64628f77b0ee430dd72624e5dc5ab3fc3ce30da1d4dd",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-native-order/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 380,
+          "sha256": "54c49c304757efb32c8e5a177a2498b80afdde935e6649371ca32a347ee1ff0c",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-empty-overlap-drawing",
+      "purpose": "Exercise empty overlap drawing for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-empty-overlap-drawing/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 662,
+          "sha256": "080aa44f2d9ed79699760e58a5b23ed52b7b50c1d2cb7496f7e57c38d5079cc2",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-empty-overlap-drawing/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 5783,
+          "sha256": "2ce5c65dd5d51388c0fdfd8382f8ff26c2034124fcc414b790439d81b55a6b83",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-empty-overlap-drawing/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 93,
+          "sha256": "fc5ce2f3d54ee1aa816f8ee5e4d9b65f41ae38bbd4599d06711ce70b663e9bc5",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-text-projection",
+      "purpose": "Exercise text projection for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-text-projection/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 768,
+          "sha256": "421964e997a683fc5a7d8199f3ccf1aa40a659554feeaf859dd3573ef8db339f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-text-projection/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 7094,
+          "sha256": "9ea790ae2f1687ea9e6eebef1031b7a159958ae9639c95f19c079a0baa7883d5",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-text-projection/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-karaoke-speaker",
+      "purpose": "Exercise karaoke speaker for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-karaoke-speaker/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 569,
+          "sha256": "fefaefce8a40b9e69ace9dc7d02d558ac5d5a56e4f9d2a8938e9a51a2444ca73",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-karaoke-speaker/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 4194,
+          "sha256": "e4e72d788945714985b51b9f76fcf2d7a356a4908f8f659d56c66cf0e437b8ce",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-karaoke-speaker/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-attachments",
+      "purpose": "Exercise attachments for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-attachments/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 619,
+          "sha256": "56da1127eb8659c36cd1ffef2d565520b541a083b91b0fafae51b4c33c656add",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-attachments/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3603,
+          "sha256": "b1a62c9bc8cba69318681f9eda899d33189297ac71aede3a90d5696291e61a58",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-attachments/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-malformed-attachment",
+      "purpose": "Exercise malformed attachment for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-malformed-attachment/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 577,
+          "sha256": "d91e9014f69b8c49b1a6bbf9a08e3740c920747c088f06d48b2020e54f23dac0",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-malformed-attachment/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3567,
+          "sha256": "0262bea40c45a10aa2094d677510ba4288ca226fb5f29e2c5ce1ba9d6c837b73",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-malformed-attachment/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 97,
+          "sha256": "59491b7448b398dd20c30635e6d980e611128ddc5311062d1704143ab48d7be1",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-content-roles",
+      "purpose": "Exercise content roles for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-content-roles/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 596,
+          "sha256": "e38afebf27b1dc1a8cc3dbbddb2a9dee533e4a86daa814fabd36983a0f64b8c9",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-content-roles/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3712,
+          "sha256": "85820e207ddb501bdb3b9451dbb6fc5f04b6bece8b03a8e87bb6881c082071fe",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-content-roles/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-diagnosed-text",
+      "purpose": "Exercise diagnosed text for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-diagnosed-text/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 746,
+          "sha256": "ed00b401e8e71c86819f305342738add7d0885590ad7235e0f565c81f9206c55",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-diagnosed-text/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 7006,
+          "sha256": "f2b1659e0c0a368c7d6dc8b1cac82a54e848d0ddadbb47a04560d448d9b3286e",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-diagnosed-text/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 384,
+          "sha256": "a17f38c6fa4772aa1544282dedff79f4e8c55ab90eb7a58c1e68fc435ceeeff6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-malformed-comment",
+      "purpose": "Exercise malformed comment for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-malformed-comment/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 558,
+          "sha256": "4f433c0b13a82922362d347f82ffa45cf628e7e87724a2feca3c8241532aeafb",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-malformed-comment/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3595,
+          "sha256": "3f3259991a3d035432c8a42b99f49beef253e2d809b38d63ac5e9489e0c88762",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-malformed-comment/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 100,
+          "sha256": "0a29fde4f3aa1d45362316032812152113dc7f5781a6527d6e0c8fafd55ef208",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-unused-invalid-style",
+      "purpose": "Exercise unused invalid style for ASS with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile ASS script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ass-unused-invalid-style/source/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 651,
+          "sha256": "e21d170d18c916be0dfbd98e62927021bde79bf750c213dfa0658093eebd9871",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ass-unused-invalid-style/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 5581,
+          "sha256": "81b1d1d22a6e95db1305429797f140b184bcb44f94578f6096a4267853196c32",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ass-unused-invalid-style/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 100,
+          "sha256": "906f21d607c3e83aa76b506ce2308a8ebeefe39310b6e7e4685089e4c1fe71ed",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ass-mixed-dialect",
+      "purpose": "Permanent ASS rejection for mixed dialect without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-mixed-dialect/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 556,
+          "sha256": "fdbca8c23de3d4005a96eb9594a22c1508835fe4fea68a17737bebf3d1a0319a",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_scripted_dialect"
+      }
+    },
+    {
+      "id": "scripted/ass-missing-script-type",
+      "purpose": "Permanent ASS rejection for missing script type without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-missing-script-type/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 525,
+          "sha256": "15e32174306584c43c0981235434d3609131c80928939aa99e6feb96241a8d56",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_scripted_dialect"
+      }
+    },
+    {
+      "id": "scripted/ass-conflicting-script-type",
+      "purpose": "Permanent ASS rejection for conflicting script type without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-conflicting-script-type/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 564,
+          "sha256": "595d19ae42f341a53d45e93bfd82b3a0a7ae782d8e36b2d360a52e8e1e2fff46",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_scripted_dialect"
+      }
+    },
+    {
+      "id": "scripted/ass-invalid-utf8",
+      "purpose": "Permanent ASS rejection for invalid utf8 without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-invalid-utf8/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 545,
+          "sha256": "8b978d1aff25d139f7129d56d566ae792071b1d135104aa6d69288c38700a866",
+          "byte_contract": {
+            "encoding": "invalid_utf8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "absent"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "invalid_scripted_encoding"
+      }
+    },
+    {
+      "id": "scripted/ass-nul",
+      "purpose": "Permanent ASS rejection for nul without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-nul/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 545,
+          "sha256": "99ffdd14431aca348dac8f8c647368cd38e736944959a58ce39822095a011f10",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "invalid_scripted_encoding"
+      }
+    },
+    {
+      "id": "scripted/ass-bare-cr",
+      "purpose": "Permanent ASS rejection for bare cr without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-bare-cr/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 544,
+          "sha256": "d7f3e99c2d455b02d2fca9572f4e94007aaddd02d6775354860c58e57bdaaf95",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "cr",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "invalid_scripted_encoding"
+      }
+    },
+    {
+      "id": "scripted/ass-missing-declaration",
+      "purpose": "Permanent ASS rejection for missing declaration without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-missing-declaration/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 464,
+          "sha256": "311bc6f878555d1d8523e3ab7158ab18dce61c23415a34baee6382a1ac3450f3",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "malformed_native_record"
+      }
+    },
+    {
+      "id": "scripted/ass-duplicate-field",
+      "purpose": "Permanent ASS rejection for duplicate field without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-duplicate-field/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 543,
+          "sha256": "98e81358313f1d6f4eb818d13db1530bfefb90f25b4fca80e18c4544a4e1000a",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "malformed_native_record"
+      }
+    },
+    {
+      "id": "scripted/ass-nonfinal-text",
+      "purpose": "Permanent ASS rejection for nonfinal text without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-nonfinal-text/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 544,
+          "sha256": "6643db870a5c43b1a9ddad970338a9833af7238bb4fbcbd00ede8618b1fc8fa3",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "malformed_native_record"
+      }
+    },
+    {
+      "id": "scripted/ass-malformed-dialogue",
+      "purpose": "Permanent ASS rejection for malformed dialogue without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-malformed-dialogue/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 495,
+          "sha256": "347fe33ac1ae299f959900d19154633e335383ab8dd97b85ee3072168e9031d7",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "malformed_native_record"
+      }
+    },
+    {
+      "id": "scripted/ass-invalid-interval",
+      "purpose": "Permanent ASS rejection for invalid interval without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-invalid-interval/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 544,
+          "sha256": "b60d212d1d4fd4d86666e069333f3121f25cba7539dca4eccdaa730dc434e5a4",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_native_interval"
+      }
+    },
+    {
+      "id": "scripted/ass-timestamp-overflow",
+      "purpose": "Permanent ASS rejection for timestamp overflow without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-timestamp-overflow/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 564,
+          "sha256": "f8370d8aabf1877e14fabeca336cb7888e797cc88ba22075b3c4b1c067b9b390",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_native_interval"
+      }
+    },
+    {
+      "id": "scripted/ass-timestamp-range",
+      "purpose": "Permanent ASS rejection for timestamp range without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-timestamp-range/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 544,
+          "sha256": "d5dcca74b71a58f75d04c4ed13ed9c7c02889b84b17ce2565cde3115fd12bc38",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_native_interval"
+      }
+    },
+    {
+      "id": "scripted/ass-non100-timer",
+      "purpose": "Permanent ASS rejection for non100 timer without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-non100-timer/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 554,
+          "sha256": "0e2fead5dad1cdeb2fed276a0f05d04ce3c5b2e0391bdf348acf5e93f4d531d0",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsupported_timer"
+      }
+    },
+    {
+      "id": "scripted/ass-conflicting-timer",
+      "purpose": "Permanent ASS rejection for conflicting timer without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-conflicting-timer/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 565,
+          "sha256": "2b8e80751418bfad2512da6a728cdee866b704dd1020d4c836cbdca56c37be99",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsupported_timer"
+      }
+    },
+    {
+      "id": "scripted/ass-unresolved-style",
+      "purpose": "Permanent ASS rejection for unresolved style without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-unresolved-style/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 544,
+          "sha256": "5eb5172de0e58a7cd75926a827f0ed0bab77e9ce95350b22e479f887a5dc38e8",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unresolved_style"
+      }
+    },
+    {
+      "id": "scripted/ass-ambiguous-style",
+      "purpose": "Permanent ASS rejection for ambiguous style without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-ambiguous-style/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 651,
+          "sha256": "2d4224465f41bae8f5e08f9459783b8c87586a337b5b4dad87dc4141706fb2b9",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unresolved_style"
+      }
+    },
+    {
+      "id": "scripted/ass-metadata-resource",
+      "purpose": "Permanent ASS rejection for metadata resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-metadata-resource/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 568,
+          "sha256": "dc5a2b6760884d339f116802b3825e27d0c06c8465beb2c866bfad1621235d3f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ass-authoring-resource",
+      "purpose": "Permanent ASS rejection for authoring resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-authoring-resource/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 603,
+          "sha256": "1ea6b2534a5e46e5b6196d5f7f1db228d4918b26e699fa54f74ca9ab5277f431",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ass-comment-resource",
+      "purpose": "Permanent ASS rejection for comment resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-comment-resource/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 570,
+          "sha256": "ca160743fa767d7f38b89c320317d7a6a38bb3dc315cd7d38aa7baaba265d15f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ass-malformed-comment-resource",
+      "purpose": "Permanent ASS rejection for malformed comment resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-malformed-comment-resource/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 570,
+          "sha256": "c87499437d7f403b3c59aa1e235efa73296f795477d59e3b8eed8defa16cccae",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ass-effect-code",
+      "purpose": "Permanent ASS rejection for effect code without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-effect-code/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 559,
+          "sha256": "c2a6e5d53e76cbe4534df3eef8b7be233a35ba9f11aae32e29afc85b1aeb4c34",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_active_content"
+      }
+    },
+    {
+      "id": "scripted/ass-structural-resource",
+      "purpose": "Permanent ASS rejection for structural resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-structural-resource/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 562,
+          "sha256": "f2353aa93db5fde41198ffad79e3a3737926768b23e85c96fc5623e43a727ceb",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ass-wrong-role-resource",
+      "purpose": "Permanent ASS rejection for wrong role resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-wrong-role-resource/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 571,
+          "sha256": "0431b587e5f6ef1bb2fa6eae759c87ab9edce7f1b02c8a16ee786ab898e9c336",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ass-style-actor-resource",
+      "purpose": "Permanent ASS rejection for style actor resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-style-actor-resource/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 554,
+          "sha256": "f5d4ce78e0cb8cd2138267252f81bf19329a1b9ae720674862a47c038a5f790e",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ass-malformed-style-resource",
+      "purpose": "Permanent ASS rejection for malformed style resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-malformed-style-resource/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 461,
+          "sha256": "a55dcfe4c088e667ca63a2ad303bca1d7ae0c9ef419628ae6fc2f2f85c75aeea",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ass-signed-color-overflow",
+      "purpose": "Permanent ASS rejection for signed color overflow without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-signed-color-overflow/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 545,
+          "sha256": "c626c02285db3e0e8bc24a684538bbf49044c7988272cdae7afce8c57b621967",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unresolved_style"
+      }
+    },
+    {
+      "id": "scripted/ass-drawing-state",
+      "purpose": "Permanent ASS rejection for drawing state without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-drawing-state/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 554,
+          "sha256": "1453f0e4e2ba391b6455723a1c9cdd9b9e99b00dfb725fcfcf3c7efa72ac3037",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "inconsistent_projection"
+      }
+    },
+    {
+      "id": "scripted/ass-declaration-ceiling",
+      "purpose": "Permanent ASS rejection for declaration ceiling without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ass-declaration-ceiling/input/captions.ass",
+          "media_type": "text/x-ass",
+          "size_bytes": 1624,
+          "sha256": "6cf831832fc17a9ccd19019a727ebaad2417eaecd69c74f284d3a1d03752e768",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "complexity_limit"
+      }
+    },
+    {
+      "id": "scripted/ssa-basic",
+      "purpose": "Exercise basic for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-basic/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 468,
+          "sha256": "6be5da931bd0204ff51e2bb46a7a050785c11855a72df9f4c2f7a1bbc4a441dc",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-basic/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3097,
+          "sha256": "f3a0017c483a15aae93db65ab7a60997e5605005bb71c490e515bf6731b77425",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-basic/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted/ssa-basic/expected/bytes/rendered.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 468,
+          "sha256": "6be5da931bd0204ff51e2bb46a7a050785c11855a72df9f4c2f7a1bbc4a441dc",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-bom-crlf",
+      "purpose": "Exercise bom crlf for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; prepend UTF-8 BOM and write CRLF without final newline."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-bom-crlf/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 477,
+          "sha256": "fbd86ad614457b8f8905019090b2815f12d614d946dd254cbf7859b28ad515ae",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "present",
+            "line_endings": "crlf",
+            "final_newline": "absent"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-bom-crlf/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3097,
+          "sha256": "f3a0017c483a15aae93db65ab7a60997e5605005bb71c490e515bf6731b77425",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-bom-crlf/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_bytes",
+          "role": "expected_bytes",
+          "path": "fixtures/scripted/ssa-bom-crlf/expected/bytes/rendered.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 468,
+          "sha256": "6be5da931bd0204ff51e2bb46a7a050785c11855a72df9f4c2f7a1bbc4a441dc",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-declared-fields",
+      "purpose": "Exercise declared fields for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-declared-fields/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 516,
+          "sha256": "2b7d2f2b1dc47a461ba7f82f8b67ee26f69799f65af87821c7052cd7ad31a4ae",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-declared-fields/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3394,
+          "sha256": "fb0de9a64a6a21581b689aa5c0853dc7c9dd165414fbaf064f266316ed28be88",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-declared-fields/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-zero-dialogue",
+      "purpose": "Exercise zero dialogue for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-zero-dialogue/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 472,
+          "sha256": "0005acad225d6559b50510231e4aaa87b95f8b96e7d9f9eacaa72defd699d982",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-zero-dialogue/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 2762,
+          "sha256": "5a1995033200325bf4cf32d8bbe1ba60c7c6ffb55843e9a2f7350ee2e5c0dd6a",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-zero-dialogue/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-native-order",
+      "purpose": "Exercise native order for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-native-order/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 760,
+          "sha256": "ab832d6ee07a996d6d2ddaf5635d1edd8f2f7f7f0b1699f2c5392b57e61a7327",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-native-order/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 4055,
+          "sha256": "6d04d4a7373f73af78c58fde56fcb2a39b1d4e23100c2aa3de58a40a5b4322fa",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-native-order/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 380,
+          "sha256": "54c49c304757efb32c8e5a177a2498b80afdde935e6649371ca32a347ee1ff0c",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-empty-overlap-drawing",
+      "purpose": "Exercise empty overlap drawing for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-empty-overlap-drawing/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 600,
+          "sha256": "72107877942b551d5d6d43db55c2db118f16fe57064e7ac7a56c41cd12233745",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-empty-overlap-drawing/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 5364,
+          "sha256": "b630c9e386ec3894ef384764a10782b9b132aeac13826c78d7962b41ede4775d",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-empty-overlap-drawing/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 93,
+          "sha256": "fc5ce2f3d54ee1aa816f8ee5e4d9b65f41ae38bbd4599d06711ce70b663e9bc5",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-text-projection",
+      "purpose": "Exercise text projection for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-text-projection/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 713,
+          "sha256": "7e28bb6faecb498e48e0d02df268154c330601ef1f7e632253b393a910b65d9e",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-text-projection/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 6683,
+          "sha256": "ed862221282eee647f311a29b7c018b50d1065fb1152fe19dd67308f052daf73",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-text-projection/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-karaoke-speaker",
+      "purpose": "Exercise karaoke speaker for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-karaoke-speaker/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 493,
+          "sha256": "2682b38fcd15f005c0f7de864173c715b9a192013320aa9d965d27904fd5811b",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-karaoke-speaker/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3759,
+          "sha256": "528d27c443b1628a7f56213d8ba9dbdc65e542942f96844b5a5babd0f96c99c4",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-karaoke-speaker/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-attachments",
+      "purpose": "Exercise attachments for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-attachments/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 543,
+          "sha256": "6e971b5e783359061bbb8208fb354a8781ecdc5dc3959f46f12a94eaf7268aff",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-attachments/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3168,
+          "sha256": "c0e79ea060ee2ea57a9df24843a5e1df3f34ebfa65bb55dfffc8a71dae0a3e51",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-attachments/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-malformed-attachment",
+      "purpose": "Exercise malformed attachment for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-malformed-attachment/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 501,
+          "sha256": "d36b0beb7be6312e2b52c2f0560fafba50f0e7dd7e01f89f79f186b5be93064b",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-malformed-attachment/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3132,
+          "sha256": "5ed5d213ebcd082ec8f8e8245e1fbad9db021fe1d286f5421b1f3bfed2840eff",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-malformed-attachment/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 97,
+          "sha256": "59491b7448b398dd20c30635e6d980e611128ddc5311062d1704143ab48d7be1",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-content-roles",
+      "purpose": "Exercise content roles for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-content-roles/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 520,
+          "sha256": "a74dd2e56929e59b4e6a79457321228792c29be9e1da863c8d3f4771ec12299e",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-content-roles/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3277,
+          "sha256": "91f7b57483c266812896d99e07e84a1d43ef2022e82ac17178310a310616d284",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-content-roles/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-diagnosed-text",
+      "purpose": "Exercise diagnosed text for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-diagnosed-text/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 691,
+          "sha256": "a90513b76f9eedffc6d6c06862044e445b0d4eaf5b9057f1fdbf389f38d1663e",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-diagnosed-text/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 6595,
+          "sha256": "29a95efce0c175b2010a0e717c1de6f0387ab31d7e41d80d77dad665afe3a568",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-diagnosed-text/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 384,
+          "sha256": "a17f38c6fa4772aa1544282dedff79f4e8c55ab90eb7a58c1e68fc435ceeeff6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-malformed-comment",
+      "purpose": "Exercise malformed comment for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-malformed-comment/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 482,
+          "sha256": "738dcf484ac3e445ec959aa81b3fc62d41f3e370d382c8a480a551320aae57bb",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-malformed-comment/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 3160,
+          "sha256": "34794b0098650598e1f9136fd0dc90a417bf40e9b1b972156403d02ee503e352",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-malformed-comment/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 100,
+          "sha256": "0a29fde4f3aa1d45362316032812152113dc7f5781a6527d6e0c8fafd55ef208",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-unused-invalid-style",
+      "purpose": "Exercise unused invalid style for SSA with original-byte restoration independent of native rendering.",
+      "class": "accepted",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Author the complete selected-profile SSA script and independently specify native field occurrences, common projection, speaker/token observations and ordered warnings; write documented LF physical lines with intentional trailing content."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "source",
+          "role": "source",
+          "path": "fixtures/scripted/ssa-unused-invalid-style/source/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 534,
+          "sha256": "62697c57a6a38e177af2b6641ce4414a8c473c0ed36e14144d59388d42e98b31",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_model",
+          "role": "expected_model",
+          "path": "fixtures/scripted/ssa-unused-invalid-style/expected/projection.json",
+          "media_type": "application/json",
+          "size_bytes": 4704,
+          "sha256": "5b458f3b646f3c49cce7d950a35e822c19113ca111b2342baa72532b8af042d6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        },
+        {
+          "id": "expected_diagnostics",
+          "role": "expected_diagnostics",
+          "path": "fixtures/scripted/ssa-unused-invalid-style/expected/diagnostics.json",
+          "media_type": "application/json",
+          "size_bytes": 100,
+          "sha256": "906f21d607c3e83aa76b506ce2308a8ebeefe39310b6e7e4685089e4c1fe71ed",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "accepted"
+      }
+    },
+    {
+      "id": "scripted/ssa-mixed-dialect",
+      "purpose": "Permanent SSA rejection for mixed dialect without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-mixed-dialect/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 481,
+          "sha256": "5d6300b1d181b8927805ec4878eca14c85af453d374f2165959ef0aa06f81f9d",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_scripted_dialect"
+      }
+    },
+    {
+      "id": "scripted/ssa-missing-script-type",
+      "purpose": "Permanent SSA rejection for missing script type without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-missing-script-type/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 450,
+          "sha256": "764cf557cd8f4cd2410fbf29fe28fcc7926fd5acfc39091c3cf06ddafddf3696",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_scripted_dialect"
+      }
+    },
+    {
+      "id": "scripted/ssa-conflicting-script-type",
+      "purpose": "Permanent SSA rejection for conflicting script type without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-conflicting-script-type/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 488,
+          "sha256": "4afb76157bfba4ba0f49e512a0d8a261d6d65a0ba8e7233f4502d887c40b26d8",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_scripted_dialect"
+      }
+    },
+    {
+      "id": "scripted/ssa-invalid-utf8",
+      "purpose": "Permanent SSA rejection for invalid utf8 without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-invalid-utf8/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 469,
+          "sha256": "5142a3e0942570195eaaad01815cbd126d3a929ae1d4d763aa47e00ed7d3ca56",
+          "byte_contract": {
+            "encoding": "invalid_utf8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "absent"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "invalid_scripted_encoding"
+      }
+    },
+    {
+      "id": "scripted/ssa-nul",
+      "purpose": "Permanent SSA rejection for nul without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-nul/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 469,
+          "sha256": "c79620d31201d6f72b295417e12c3080e4b0666fe4f7087b91115ccf16d0ad06",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "invalid_scripted_encoding"
+      }
+    },
+    {
+      "id": "scripted/ssa-bare-cr",
+      "purpose": "Permanent SSA rejection for bare cr without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-bare-cr/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 468,
+          "sha256": "613bcafe4da8a2b6cc1f5f56b2d10a921f58fd84e2640a69af77187fdb63500c",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "cr",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "parse",
+        "diagnostic_contains": "invalid_scripted_encoding"
+      }
+    },
+    {
+      "id": "scripted/ssa-missing-declaration",
+      "purpose": "Permanent SSA rejection for missing declaration without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-missing-declaration/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 387,
+          "sha256": "70e3324b6f3656713e8c929684dc1ce581d475ebcee40d18b54729ab3c9fb45a",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "malformed_native_record"
+      }
+    },
+    {
+      "id": "scripted/ssa-duplicate-field",
+      "purpose": "Permanent SSA rejection for duplicate field without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-duplicate-field/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 467,
+          "sha256": "cf895f076bc1574bdc5b4eda5d998bf295501341d8fc2a456ac9ed405941bcc1",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "malformed_native_record"
+      }
+    },
+    {
+      "id": "scripted/ssa-nonfinal-text",
+      "purpose": "Permanent SSA rejection for nonfinal text without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-nonfinal-text/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 468,
+          "sha256": "ff5441bfaf416ae87c9b5ad68d0e3e7a4fdce3c1ed1f99d7f24072fee363cef6",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "malformed_native_record"
+      }
+    },
+    {
+      "id": "scripted/ssa-malformed-dialogue",
+      "purpose": "Permanent SSA rejection for malformed dialogue without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-malformed-dialogue/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 412,
+          "sha256": "4389b1c13c3369fc6ec8942554887d65c2bde831d2040f0695111f1f12c287c5",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "malformed_native_record"
+      }
+    },
+    {
+      "id": "scripted/ssa-invalid-interval",
+      "purpose": "Permanent SSA rejection for invalid interval without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-invalid-interval/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 468,
+          "sha256": "33cffd319f16e8ec05fc206495718bb5e24afe05a4afa3652320bbe32229d3fa",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_native_interval"
+      }
+    },
+    {
+      "id": "scripted/ssa-timestamp-overflow",
+      "purpose": "Permanent SSA rejection for timestamp overflow without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-timestamp-overflow/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 488,
+          "sha256": "562342c7f330441f1447dc04fc56ce5a57f8e1de12b70ebc733e70f02b770562",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_native_interval"
+      }
+    },
+    {
+      "id": "scripted/ssa-timestamp-range",
+      "purpose": "Permanent SSA rejection for timestamp range without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-timestamp-range/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 468,
+          "sha256": "e235539e9ebb406f579392f19f004f760d90aa7bc01f0b835c35a0bd702ebbc1",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "invalid_native_interval"
+      }
+    },
+    {
+      "id": "scripted/ssa-non100-timer",
+      "purpose": "Permanent SSA rejection for non100 timer without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-non100-timer/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 478,
+          "sha256": "0370ce9fb9758093eda3a09a6a49d0d680dbd8eb0ced0df709bba5fc13e946e1",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsupported_timer"
+      }
+    },
+    {
+      "id": "scripted/ssa-conflicting-timer",
+      "purpose": "Permanent SSA rejection for conflicting timer without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-conflicting-timer/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 489,
+          "sha256": "54766127f5aa06624ed6a372db0489ba5cd7a378133cfd1a878091f776b301e3",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsupported_timer"
+      }
+    },
+    {
+      "id": "scripted/ssa-unresolved-style",
+      "purpose": "Permanent SSA rejection for unresolved style without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-unresolved-style/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 468,
+          "sha256": "8be9f0f724e1815ed5037727996551f7c65d7126ed106513c5d91de19ac29079",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unresolved_style"
+      }
+    },
+    {
+      "id": "scripted/ssa-ambiguous-style",
+      "purpose": "Permanent SSA rejection for ambiguous style without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-ambiguous-style/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 534,
+          "sha256": "11eac633beada595bbd13fb9b181342a142309ca3c278165bd12d373f2899442",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unresolved_style"
+      }
+    },
+    {
+      "id": "scripted/ssa-metadata-resource",
+      "purpose": "Permanent SSA rejection for metadata resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-metadata-resource/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 492,
+          "sha256": "8fa4f31987e849d27fc056ef6b222de50b79e4fae22a3990ba6a2bfe43bf48b8",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ssa-authoring-resource",
+      "purpose": "Permanent SSA rejection for authoring resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-authoring-resource/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 527,
+          "sha256": "57d463901d2671ef6679237b6d5e4ee909cb893f51ef8e1019f1788f869ac61b",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ssa-comment-resource",
+      "purpose": "Permanent SSA rejection for comment resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-comment-resource/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 494,
+          "sha256": "9b1253b58d66992ff37fdb19fa8be3f58e67da19abfe36f53f617aa0888795a5",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ssa-malformed-comment-resource",
+      "purpose": "Permanent SSA rejection for malformed comment resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-malformed-comment-resource/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 494,
+          "sha256": "8e3bf026c4da8aa0322d9c17bd162b9b8da23d0d0a4089ecbf897ffb103e8e7b",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ssa-effect-code",
+      "purpose": "Permanent SSA rejection for effect code without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-effect-code/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 483,
+          "sha256": "fb6c72eb1dfa58adcbf030991f0362fe9c111f84a18a16120a040ff2399126a5",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_active_content"
+      }
+    },
+    {
+      "id": "scripted/ssa-structural-resource",
+      "purpose": "Permanent SSA rejection for structural resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-structural-resource/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 486,
+          "sha256": "6df21247c653591954413bb5245c6bc4943b770747d5da5fe067cb57866ab2fc",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ssa-wrong-role-resource",
+      "purpose": "Permanent SSA rejection for wrong role resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-wrong-role-resource/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 495,
+          "sha256": "35641736c9c2ed270e39559ccdedacfbf47c5539764ea5c6fb2c66bdb57c4861",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ssa-style-actor-resource",
+      "purpose": "Permanent SSA rejection for style actor resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-style-actor-resource/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 478,
+          "sha256": "46636d40fe16436a0d251f19b581d86cea90b026553200e56801b17c740faf5f",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ssa-malformed-style-resource",
+      "purpose": "Permanent SSA rejection for malformed style resource without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-malformed-style-resource/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 426,
+          "sha256": "a816958db2b4a6c61e9d5acd03791be39bb18ffabc4b66d32bd957e4828ef8b7",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unsafe_source_metadata"
+      }
+    },
+    {
+      "id": "scripted/ssa-signed-color-overflow",
+      "purpose": "Permanent SSA rejection for signed color overflow without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-signed-color-overflow/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 471,
+          "sha256": "5a4da52573e4b614f2c56bfbf00517c5b77f67918bcadd6ec2d7b740564b5930",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "unresolved_style"
+      }
+    },
+    {
+      "id": "scripted/ssa-drawing-state",
+      "purpose": "Permanent SSA rejection for drawing state without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-drawing-state/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 478,
+          "sha256": "e900bb0e75e37f0a3b43edb349e1a8266ead112adaf38f05f92d005e546aa6fe",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "inconsistent_projection"
+      }
+    },
+    {
+      "id": "scripted/ssa-declaration-ceiling",
+      "purpose": "Permanent SSA rejection for declaration ceiling without partial output or diagnostic source leakage.",
+      "class": "malformed",
+      "origin": {
+        "kind": "synthetic",
+        "source": "Cueson S025 authored scripted fidelity corpus; docs/formats/ass-ssa.md selected profile and pinned primary references",
+        "recipe": "Derive the authored basic selected-profile script by the case-named single invalid grammar, timing, encoding, ownership or privacy mutation; unsafe references are invented test placeholders, not observed machine identity."
+      },
+      "redistribution": {
+        "status": "approved",
+        "license": "MIT",
+        "attribution": "Copyright ShruggieTech",
+        "notice_required": false
+      },
+      "artifacts": [
+        {
+          "id": "input",
+          "role": "malformed_input",
+          "path": "malformed/scripted/ssa-declaration-ceiling/input/captions.ssa",
+          "media_type": "text/x-ssa",
+          "size_bytes": 1548,
+          "sha256": "c22d07788da0a3c212b336bff79807d8e4039a621230d7d64f5cfc06a9b90174",
+          "byte_contract": {
+            "encoding": "utf-8",
+            "bom": "absent",
+            "line_endings": "lf",
+            "final_newline": "present"
+          }
+        }
+      ],
+      "expectation": {
+        "result": "rejected",
+        "stage": "semantics",
+        "diagnostic_contains": "complexity_limit"
+      }
     }
   ]
 }

@@ -1,0 +1,8 @@
+[Script Info]
+ScriptType: v4.00
+[V4 Styles]
+Format: Encoding, AlphaLevel, MarginV, MarginR, MarginL, Alignment, Shadow, Outline, BorderStyle, Italic, Bold, BackColour, TertiaryColour, SecondaryColour, PrimaryColour, Fontsize, Fontname, Name, Extra
+Style: 1,0,10,10,10,2,0,2,1,0,0,0,0,255,16777215,20,Arial,Default,kept
+[Events]
+Format: Effect, MarginV, MarginR, MarginL, Actor, Style, End, Start, Marked, Extra, Extra, Text
+Dialogue: ,0,0,0,Narrator,Default,0:00:03.00,0:00:01.00,Marked=0,kept,kept,Hello, commas,  

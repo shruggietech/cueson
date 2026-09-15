@@ -1,0 +1,8 @@
+[Script Info]
+ScriptType: v4.00+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,20,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,2,0,2,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Extra0, Extra1, Extra2, Extra3, Extra4, Extra5, Extra6, Extra7, Extra8, Extra9, Extra10, Extra11, Extra12, Extra13, Extra14, Extra15, Extra16, Extra17, Extra18, Extra19, Extra20, Extra21, Extra22, Extra23, Extra24, Extra25, Extra26, Extra27, Extra28, Extra29, Extra30, Extra31, Extra32, Extra33, Extra34, Extra35, Extra36, Extra37, Extra38, Extra39, Extra40, Extra41, Extra42, Extra43, Extra44, Extra45, Extra46, Extra47, Extra48, Extra49, Extra50, Extra51, Extra52, Extra53, Extra54, Extra55, Extra56, Extra57, Extra58, Extra59, Extra60, Extra61, Extra62, Extra63, Extra64, Extra65, Extra66, Extra67, Extra68, Extra69, Extra70, Extra71, Extra72, Extra73, Extra74, Extra75, Extra76, Extra77, Extra78, Extra79, Extra80, Extra81, Extra82, Extra83, Extra84, Extra85, Extra86, Extra87, Extra88, Extra89, Extra90, Extra91, Extra92, Extra93, Extra94, Extra95, Extra96, Extra97, Extra98, Extra99, Extra100, Extra101, Extra102, Extra103, Extra104, Extra105, Extra106, Extra107, Extra108, Extra109, Extra110, Extra111, Extra112, Extra113, Extra114, Extra115, Extra116, Extra117, Extra118, Text
+Dialogue: 0,0:00:01.00,0:00:03.00,Default,Narrator,0,0,0,,Hello

@@ -28,7 +28,7 @@ func main() {
 		}
 		return
 	}
-	fmt.Printf("verified files=%d accepted=%d rejected=%d unsupported=%d srt=%d vtt=%d\n", report.Files, report.Accepted, report.Rejected, report.Unsupported, report.Formats.SRT, report.Formats.VTT)
+	fmt.Printf("verified files=%d accepted=%d rejected=%d unsupported=%d render_rejected=%d srt=%d vtt=%d ass=%d ssa=%d\n", report.Files, report.Accepted, report.Rejected, report.Unsupported, report.RenderRejected, report.Formats.SRT, report.Formats.VTT, report.Formats.ASS, report.Formats.SSA)
 	for _, failure := range report.Failures {
 		fmt.Printf("%s: %s\n", failure.RelativeIdentity, failure.Result)
 	}

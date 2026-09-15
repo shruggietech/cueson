@@ -1458,7 +1458,7 @@
       ],
       "properties": {
         "status": {
-          "description": "Official support maturity; scripted shapes currently declare schema_only without native codecs.",
+          "description": "Official support maturity; scripted input observations may be schema_only, while implemented development native workflows are experimental until stable conformance passes.",
           "examples": [
             "envelope_only",
             "experimental",
@@ -6046,13 +6046,20 @@
       ]
     },
     "scripted_format_support": {
-      "title": "Schema-only scripted format capability",
-      "description": "Truthful current ASS/SSA shape recognition and generic restoration, with no installed native ingest/render codec or stable claim.",
+      "title": "Scripted format capability observation",
+      "description": "Truthful ASS/SSA schema-only recognition or experimental native workflows; stable support requires the later release-wide conformance gate.",
       "examples": [
         {
           "status": "schema_only",
           "ingest_supported": false,
           "render_supported": false,
+          "restore_supported": true,
+          "ocr_required_for_semantic_output": false
+        },
+        {
+          "status": "experimental",
+          "ingest_supported": true,
+          "render_supported": true,
           "restore_supported": true,
           "ocr_required_for_semantic_output": false
         }
@@ -6063,22 +6070,41 @@
         },
         {
           "properties": {
-            "status": {
-              "const": "schema_only"
-            },
-            "ingest_supported": {
-              "const": false
-            },
-            "render_supported": {
-              "const": false
-            },
             "restore_supported": {
               "const": true
             },
             "ocr_required_for_semantic_output": {
               "const": false
             }
-          }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "status": {
+                  "const": "schema_only"
+                },
+                "ingest_supported": {
+                  "const": false
+                },
+                "render_supported": {
+                  "const": false
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "experimental"
+                },
+                "ingest_supported": {
+                  "const": true
+                },
+                "render_supported": {
+                  "const": true
+                }
+              }
+            }
+          ]
         }
       ]
     }

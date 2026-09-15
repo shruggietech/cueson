@@ -138,6 +138,9 @@ jobs:
       - name: Run fixed-work fuzz conformance
         shell: bash
         run: |
+          go test ./internal/codec/scripted -run='^$' -fuzz='^FuzzParse$' -fuzztime=1000x -parallel=1
+          go test ./internal/codec/scripted -run='^$' -fuzz='^FuzzRenderParseCycle$' -fuzztime=1000x -parallel=1
+          go test ./internal/model -run='^$' -fuzz='^FuzzScriptedProjection$' -fuzztime=1000x -parallel=1
           go test ./internal/codec -run='^$' -fuzz='^FuzzFormatSelection$' -fuzztime=1000x -parallel=1
           go test ./internal/codec/subrip -run='^$' -fuzz='^FuzzParse$' -fuzztime=1000x -parallel=1
           go test ./internal/codec/subrip -run='^$' -fuzz='^FuzzParseTimecodeLine$' -fuzztime=1000x -parallel=1

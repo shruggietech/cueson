@@ -25,18 +25,18 @@ No mutable `latest` schema identity is part of the contract. Every released sche
 
 ## Current development compatibility
 
-S024 current source uses unreleased `1.1.0-dev` and accepts exact historical 1.0.0 input with the bundled released schema and preserved historical semantics. Validate, inspect, restore, matching native render and established conversion paths retain historical identity, producer and source truth. Missing, approximate, mismatched, unsupported and unpromoted final identities reject locally. Current schema discovery and new encode output use the development identity; released exact-version consumers reject new output until explicitly updated. No historical-output selector is added.
+S024 established unreleased `1.1.0-dev` source and exact historical 1.0.0 input on 2026-09-15, using the bundled released schema and preserved historical semantics. S025 retains that compatibility and adds experimental native ASS/SSA workflows. Validate, inspect, restore, matching native render and established conversion paths retain historical identity, producer and source truth. Missing, approximate, mismatched, unsupported and unpromoted final identities reject locally. Current schema discovery and new encode output use the development identity; released exact-version consumers reject new output until explicitly updated. No historical-output selector is added.
 
-Current ASS/SSA branches support schema/model recognition, generic validation, inspection and exact restoration. Native ingest, model rendering and conversion remain later outcomes. Development shape recognition provides no stable release claim and does not publish a schema URI.
+Current ASS/SSA branches support schema/model recognition, content-first native ingest, model-driven native rendering, generic validation, inspection and independently verified exact restoration. New native encode output declares `experimental`; earlier `schema_only` observations remain accepted unchanged, and installed codec lookup controls native operation availability. Scripted conversion, final CLI/conformance freeze, stable candidate promotion and public release remain later outcomes. The development contract provides no stable release claim and does not publish a schema URI.
 
 ## Format capability states
 
 - `envelope_only`: the release can preserve and exactly restore a valid source envelope but does not claim native semantic ingest or model-driven rendering.
-- `schema_only`: the current schema/model recognizes the native shape; generic validation, inspection and restoration are available while native ingest/render are absent.
+- `schema_only`: the declaration records schema/model recognition and generic restoration without claiming native ingest/render. Current unreleased source also accepts earlier schema-only observations after experimental codecs are installed.
 - `experimental`: the executable implements documented native behavior whose compatibility contract has not completed its stable release gate.
 - `stable`: the format has passed the applicable v1 acceptance and release gates for that software/schema version.
 
-Capability booleans are independent facts. Schema recognition does not imply an installed codec, model-driven rendering does not imply exact restoration, and exact restoration does not imply native parsing. Consumers must use `format_support` rather than infer capability from a format key or file extension.
+Capability booleans are independent facts. Schema recognition does not imply an installed codec, model-driven rendering does not imply exact restoration, and exact restoration does not imply native parsing. Consumers use `format_support` for the document's declaration and the running executable's installed codec availability for an operation; neither a format key nor a file extension proves availability. Acceptance of an earlier schema-only declaration under the evolving unreleased development contract is not a stable capability promise.
 
 ## Fidelity and conversion
 
@@ -62,4 +62,4 @@ The [S023 roadmap](roadmap.md) targets a compatible v1.1.0 ASS/SSA addition. The
 
 New native encode output in the future release targets exact 1.1.0 identity, with current software/schema lockstep. Old exact-version consumers, including the released v1.0.0 executable, reject these new documents until they explicitly support the new contract. Historical input support on the new executable does not provide forward compatibility to old consumers. No historical-output selector or migration command is introduced by this planning slice. Any incompatible change to an established public guarantee blocks the minor target and requires a major-version decision; all compatibility claims must be proven by the documented command/version matrix and candidate evidence.
 
-The [ASS/SSA contract](formats/ass-ssa.md) is bounded: S023 ratified planning and S024 realizes schema/model recognition. Native interpretation, stable support and later release remain separate outcomes.
+The [ASS/SSA contract](formats/ass-ssa.md) is bounded: S023 ratified planning, S024 realized schema/model recognition, and S025 realizes experimental native ingest/render on 2026-09-15. Scripted conversion, stable support and later release remain separate outcomes.

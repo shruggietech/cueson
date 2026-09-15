@@ -1,0 +1,22 @@
+[
+  {
+    "severity": "warning",
+    "code": "unsupported_override",
+    "source_order": 7
+  },
+  {
+    "severity": "warning",
+    "code": "malformed_override",
+    "source_order": 8
+  },
+  {
+    "severity": "warning",
+    "code": "unsupported_karaoke_timing",
+    "source_order": 9
+  },
+  {
+    "severity": "warning",
+    "code": "unsupported_override",
+    "source_order": 10
+  }
+]
