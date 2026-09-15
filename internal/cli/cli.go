@@ -757,7 +757,7 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 		}
 		from, ok := normalizeConvertSource(parsed.convert.from)
 		if !ok {
-			return parsed, convertInvocationError("--from must be auto, cueson, srt, or vtt")
+			return parsed, convertInvocationError("--from must be auto, cueson, srt, vtt, ass, or ssa")
 		}
 		parsed.convert.from = from
 		if parsed.convert.target == "" {
@@ -765,7 +765,7 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 		}
 		target, ok := normalizeSubtitleFormat(parsed.convert.target)
 		if !ok {
-			return parsed, convertInvocationError("--to must be srt or vtt")
+			return parsed, convertInvocationError("--to must be srt, vtt, ass, or ssa")
 		}
 		parsed.convert.target = target
 		canonicalEncoding := ""
@@ -782,6 +782,11 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 		if parsed.convert.from == string(codec.FormatWebVTT) && parsed.convert.encoding != "" {
 			if canonicalEncoding != codec.EncodingUTF8 && canonicalEncoding != codec.EncodingUTF8BOM {
 				return parsed, convertInvocationError("WebVTT requires UTF-8; --encoding is incompatible with --from vtt")
+			}
+		}
+		if (parsed.convert.from == "ass" || parsed.convert.from == "ssa") && parsed.convert.encoding != "" {
+			if canonicalEncoding != codec.EncodingUTF8 && canonicalEncoding != codec.EncodingUTF8BOM {
+				return parsed, convertInvocationError("ASS/SSA require UTF-8; --encoding is incompatible with the selected source")
 			}
 		}
 		if parsed.convert.force && (!parsed.convert.outputSet || parsed.convert.output == "-") {
@@ -852,6 +857,8 @@ func normalizeSubtitleFormat(value string) (string, bool) {
 		return string(codec.FormatSubRip), true
 	case "vtt", "webvtt":
 		return string(codec.FormatWebVTT), true
+	case "ass", "ssa":
+		return strings.ToLower(strings.TrimSpace(value)), true
 	default:
 		return "", false
 	}

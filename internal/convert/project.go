@@ -11,6 +11,9 @@ func projectDocument(source model.Document, targetFormat string, translations []
 	if len(translations) != len(source.Cues) {
 		return model.Document{}, fmt.Errorf("payload translation count does not match cue count")
 	}
+	if len(source.Cues) == 0 {
+		return model.Document{}, fmt.Errorf("text target requires readable dialogue")
+	}
 	target := model.Document{
 		Schema: source.Schema, SchemaVersion: source.SchemaVersion, Format: targetFormat,
 		FormatSupport: model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
@@ -71,6 +74,11 @@ func splitPayloadLines(payload string) []string {
 }
 
 func recomputeSummaries(document *model.Document) {
+	if len(document.Cues) == 0 {
+		document.Document = model.DocumentSummary{}
+		document.Stats = model.Stats{}
+		return
+	}
 	minimum := document.Cues[0].Timing.StartMilliseconds
 	maximum := document.Cues[0].Timing.EndMilliseconds
 	for index := range document.Cues {

@@ -120,12 +120,12 @@ var orderedCommandSurface = []cliCommandSpec{
 	},
 	{
 		Name:        "convert",
-		Summary:     "Convert SubRip and WebVTT through the common model.",
-		Description: "Convert Cue JSON, SubRip, or WebVTT input to the other supported native subtitle format.",
+		Summary:     "Convert SubRip, WebVTT, ASS, and SSA through the model.",
+		Description: "Convert Cue JSON or native subtitle input to a distinct supported target format; ASS/SSA are experimental.",
 		Usage:       "cueson [global options] convert [options] INPUT --to FORMAT",
 		Options: []cliOptionSpec{
-			{Spellings: []string{"--to"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"srt", "vtt"}, Description: "Select srt or vtt."},
-			{Spellings: []string{"--from"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt"}, Description: "Select auto, cueson, srt, or vtt (default auto)."},
+			{Spellings: []string{"--to"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"srt", "vtt", "ass", "ssa"}, Description: "Select srt, vtt, ass, or ssa; ASS/SSA are experimental."},
+			{Spellings: []string{"--from"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, cueson, srt, vtt, ass, or ssa (default auto)."},
 			{Spellings: []string{"--encoding"}, ValueName: "NAME", ValueKind: cliValueEncoding, Values: canonicalEncodingValues(), Description: "Select the native source text encoding."},
 			{Spellings: []string{"-o", "--output"}, ValueName: "PATH", ValueKind: cliValuePath, Description: "Write native output to PATH instead of stdout."},
 			{Spellings: []string{"-f", "--force"}, Description: "Replace an existing regular output file."},
@@ -134,6 +134,7 @@ var orderedCommandSurface = []cliCommandSpec{
 		},
 		Notes: []string{
 			"Input aliases: json and cue-json for cueson; subrip for srt; webvtt for vtt.",
+			"ASS/SSA accept UTF-8 only. Scripted targets report changed centisecond endpoints.",
 			"Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le; utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.",
 			"WebVTT accepts UTF-8 only.",
 			"--output - selects stdout. --force requires a filesystem output.",

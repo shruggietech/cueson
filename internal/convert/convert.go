@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/shruggietech/cueson/internal/model"
+	"github.com/shruggietech/cueson/internal/source"
 )
 
 // Convert projects one validated source document into canonical target bytes.
@@ -14,6 +15,9 @@ func Convert(ctx context.Context, document model.Document, targetFormat string, 
 }
 
 func convertWithRenderer(ctx context.Context, document model.Document, targetFormat string, options Options, renderer targetRenderer) (Result, error) {
+	if ctx == nil {
+		return Result{}, fmt.Errorf("convert: invalid_context")
+	}
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
@@ -26,7 +30,13 @@ func convertWithRenderer(ctx context.Context, document model.Document, targetFor
 	if err := document.Validate(); err != nil {
 		return Result{}, fmt.Errorf("validate conversion source: %w", err)
 	}
-	analysis, err := analyzeCompatibility(document, targetFormat)
+	if err := source.ValidateIntegrity(ctx, document); err != nil {
+		if cancelled := ctx.Err(); cancelled != nil {
+			return Result{}, cancelled
+		}
+		return Result{}, fmt.Errorf("convert: invalid_source_integrity")
+	}
+	analysis, err := analyzeCompatibilityContext(ctx, document, targetFormat)
 	if err != nil {
 		return Result{}, err
 	}
@@ -37,11 +47,16 @@ func convertWithRenderer(ctx context.Context, document model.Document, targetFor
 	if options.Strict && report.HasLosses() {
 		return Result{LossReport: report}, &StrictLossError{Report: report}
 	}
-	target, err := projectDocument(document, targetFormat, analysis.Translations)
+	var target model.Document
+	if analysis.Target != nil {
+		target = *analysis.Target
+	} else {
+		target, err = projectDocument(document, targetFormat, analysis.Translations)
+	}
 	if err != nil {
 		return Result{LossReport: report}, projectionFailure(document.Format, targetFormat, "format_data", err)
 	}
-	bytes, diagnostics, err := renderer(ctx, target, targetFormat)
+	bytes, diagnostics, err := renderer(ctx, document, target, targetFormat)
 	if err != nil {
 		return Result{LossReport: report}, projectionFailure(document.Format, targetFormat, "format_data", err)
 	}
@@ -49,5 +64,5 @@ func convertWithRenderer(ctx context.Context, document model.Document, targetFor
 }
 
 func supportedPair(sourceFormat, targetFormat string) bool {
-	return sourceFormat == "subrip" && targetFormat == "webvtt" || sourceFormat == "webvtt" && targetFormat == "subrip"
+	return supportedFormat(sourceFormat) && supportedFormat(targetFormat) && sourceFormat != targetFormat
 }

@@ -1,0 +1,16 @@
+[Script Info]
+ScriptType: v4.00
+WrapStyle: 0
+[V4 Styles]
+Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,TertiaryColour,BackColour,Bold,Italic,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,AlphaLevel,Encoding
+Style: Default,Arial,20,16777215,255,0,0,0,0,1,2,0,2,10,10,10,0,1
+[Events]
+Format: Marked,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
+Dialogue: Marked=0,0:00:01.00,0:00:02.50,Default,,0,0,0,,{comment\k10}A{\p1}m 0 0 l 1 1{\p0}B{\pos(1,2)}C
+Comment: Marked=0,0:00:01.00,0:00:02.50,Default,,0,0,0,,Note
+kept inert extension
+[Extra]
+; inert
+[Fonts]
+fontname: bundle.ttf
+!!!!

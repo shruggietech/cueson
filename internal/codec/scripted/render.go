@@ -43,6 +43,10 @@ func Render(ctx context.Context, document model.Document, strict bool) (RenderRe
 		// publication boundary diagnostic independent of their unsafe contents.
 		return RenderResult{}, fmt.Errorf("render scripted: invalid_source_integrity")
 	}
+	return renderValidated(ctx, document, strict)
+}
+
+func renderValidated(ctx context.Context, document model.Document, strict bool) (RenderResult, error) {
 	native := document.FormatData.ASS
 	if document.Format == "ssa" {
 		native = document.FormatData.SSA

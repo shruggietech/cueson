@@ -1,0 +1,253 @@
+{
+  "source_format": "ssa",
+  "targets": [
+    {
+      "target_format": "subrip",
+      "cues": [
+        {
+          "end_milliseconds": 2500,
+          "plain_text": "Hello\nworld",
+          "start_milliseconds": 1000,
+          "lines": [
+            "Hello",
+            "world"
+          ]
+        }
+      ],
+      "losses": [
+        {
+          "path": "/format_data/ssa/records/1/fields/0",
+          "code": "conversion_scripted_metadata_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/0",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/1",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/2",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/3",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/4",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/5",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/6",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/9",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/10",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/11",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/12",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/13",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/14",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/15",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/16",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/17",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/0",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/3",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/4",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/5",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/6",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/7",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/8",
+          "code": "conversion_scripted_event_field_omitted"
+        }
+      ]
+    },
+    {
+      "target_format": "webvtt",
+      "cues": [
+        {
+          "end_milliseconds": 2500,
+          "plain_text": "Hello\nworld",
+          "start_milliseconds": 1000,
+          "lines": [
+            "Hello",
+            "world"
+          ]
+        }
+      ],
+      "losses": [
+        {
+          "path": "/format_data/ssa/records/1/fields/0",
+          "code": "conversion_scripted_metadata_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/0",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/1",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/2",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/3",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/4",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/5",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/6",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/9",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/10",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/11",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/12",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/13",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/14",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/15",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/16",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/styles/0/fields/17",
+          "code": "conversion_scripted_style_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/0",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/3",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/4",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/5",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/6",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/7",
+          "code": "conversion_scripted_event_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/8",
+          "code": "conversion_scripted_event_field_omitted"
+        }
+      ]
+    },
+    {
+      "target_format": "ass",
+      "cues": [
+        {
+          "end_milliseconds": 2500,
+          "plain_text": "Hello\nworld",
+          "start_milliseconds": 1000,
+          "lines": [
+            "Hello",
+            "world"
+          ]
+        }
+      ],
+      "losses": [
+        {
+          "path": "/format_data/ssa/styles/0/fields/5",
+          "code": "conversion_scripted_variant_field_omitted"
+        },
+        {
+          "path": "/format_data/ssa/events/0/fields/0",
+          "code": "conversion_scripted_variant_field_omitted"
+        }
+      ]
+    }
+  ]
+}

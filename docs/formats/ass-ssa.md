@@ -1,12 +1,14 @@
 # ASS and SSA development format contract
 
-**Status:** S025 experimental native ingest/render in unreleased 1.1.0-dev; conversion and stable release gates remain deferred
+**Status:** S025 native ingest/render and S026 complete experimental conversion in unreleased 1.1.0-dev; full CLI/hardening and stable release gates remain later outcomes
 
 On 2026-09-15, S023 ratified the bounded native contract for the scripted-format milestone without adding codecs or changing a released capability. The [constitution](../../.specify/memory/constitution.md), [schema baseline](../schema.md), [compatibility contract](../compatibility.md), and [architecture](../architecture.md) control shared behavior. P02 owns the planning contract, P05 owns schema realization, and P06-P08 own corpus, ingest and rendering evidence. The P identifiers refer to atomic outcomes in the S023 milestone plan; their completion and development availability are stated separately below.
 
 S024 realized annotated typed schema/model recognition on 2026-09-15, with generic Cue JSON validation, inspection and exact restoration under `schema_only`. S025 adds experimental content-first native detection/ingest and deterministic model-driven ASS/SSA rendering under unreleased `1.1.0-dev`; exact source restoration is tested independently. Earlier schema-only documents remain accepted without rewriting their capability observations. Published v1.0.0 software/schema remain unchanged. Current development supports constructed recognized records without fabricated capture fields and nonempty zero-dialogue documents with null media bounds. The [S024 model](../../specs/S024-extend-versioned-schema-model/data-model.md) records the original ownership baseline; later conversion, CLI/conformance freeze and stable release gates remain distinct outcomes.
 
 ## References and authority
+
+S026 implements the ten remaining directions and verifies the full twelve-direction graph in the [conversion contract](../conversion.md). Native owner losses remain atomic; text-target drawing-only/unreadable dialogue is fatal, mixed drawings are reported, text-source targets use deterministic defaults and checked nearest-centisecond ties-up rounding, and dialect differences are mapped or accounted per field. A private original-plus-target validation/render boundary preserves exact source truth without changing public Cue JSON validation. Full release-wide CLI integration, broader hardening, and stable freeze remain P11-P13.
 
 References were inspected on 2026-09-15. They inform the dialect boundaries; the requirements below are Cueson's acceptance and fidelity policy, not a promise to reproduce a particular pixel renderer.
 
@@ -124,7 +126,7 @@ Additional selected-profile limits are 1 MiB per physical line, nesting depth 32
 
 ## Source-linked acceptance and evidence matrix
 
-Each row identifies an acceptance requirement and its verification owners. S025 supplies P06-P08 corpus, ingest, rendering and independent restoration evidence for the experimental native scope; P09-P13 conversion, complete CLI integration, conformance hardening and final contract freeze remain later gates. A row spanning those later owners does not claim that all its future evidence or stable support already exists.
+Each row identifies an acceptance requirement and its verification owners. S025 supplies P06-P08 corpus, ingest, rendering and independent restoration evidence; S026 supplies P09-P10 conversion evidence and necessary conversion command integration. P11-P13 complete CLI integration, conformance hardening and final contract freeze remain later gates. A row spanning those later owners does not claim that all its future evidence or stable support already exists.
 
 | Row ID | Acceptance and preservation boundary | Reference | Verification owner |
 |---|---|---|---|
@@ -144,6 +146,6 @@ Each row identifies an acceptance requirement and its verification owners. S025 
 | `scripted-render-cycle` | Deterministic native textual output reparses to equivalent accepted semantics and retained content; byte restoration tested independently; no pixel equivalence. | R1, R5; constitution | P06-P08, P12 |
 | `scripted-complete-conversion` | All twelve cross-format directions report every target-incompatible style, native record, drawing, timing, speaker, token, attachment, metadata, and override loss; strict/fatal output is atomic. | Cueson no-silent-loss principle | P09-P12 |
 | `scripted-hostile-bounds` | Acquisition, lines, occurrences, tags, depth, attachments, diagnostics, arithmetic, and output have tested ceilings and deterministic all-or-nothing rejection. | Constitution; explicit limits above | P05-P12 |
-| `scripted-stable-gate` | Schema recognition, experimental ingest/render, restoration, conversion and stable evidence remain distinct; current source advertises experimental native capabilities, with conversion and stable release gates deferred. | Schema/compatibility contracts | P03-P05, P11-P16 |
+| `scripted-stable-gate` | Schema recognition, experimental ingest/render, restoration, conversion and stable evidence remain distinct; current source advertises experimental native/conversion behavior, with full CLI/hardening and stable release gates later. | Schema/compatibility contracts | P03-P05, P11-P16 |
 
 S025 provides the native encode/render integration needed to exercise P06-P08. P11 still owns the complete CLI/help/completion workflow outcome; P12 hardens the complete conformance surface; P13 freezes this profile and its published guides with accepted evidence. Profiles outside these rows must remain explicit unsupported/deferred behavior or undergo a ratified contract expansion. No source-linked example, generic restoration ability, schema-only recognition or experimental codec implementation is sufficient for a stable codec claim.

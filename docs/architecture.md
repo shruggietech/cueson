@@ -1,6 +1,6 @@
 # Cueson Architecture
 
-**Status:** v1.0.0 released architecture with S024/S025 development additions
+**Status:** v1.0.0 released architecture with S024-S026 development additions
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
@@ -12,7 +12,11 @@ Current source stages executable and canonical schema identity `1.1.0-dev` toget
 
 On 2026-09-15, S024 added shared typed ordered ASS/SSA structures in `internal/model`, with separate matching dialect branches and `schema_only` declarations. S025 adds experimental native parser/renderers in `internal/codec/scripted` while retaining acceptance of those earlier schema-only observations. Content-first selection, strict UTF-8 decoding, declared-field ownership and bounded native projection are shared across both dialects. The source package remains codec-independent; exact restoration verifies preserved bytes separately from canonical native rendering. No attachment, effect or external resource is executed, loaded or fetched.
 
-Scripted rendering validates the complete model and source envelope, traverses retained physical order, and serializes recognized structured owners. Common dialogue timing supplies canonical centiseconds; capture-only native timestamps and raw lines remain unchanged observations. Constructed recognized owners may omit capture fields and declaration references; the renderer inserts the canonical declaration they require and restores a following captured owner's declaration when necessary. A complete bounded candidate is reparsed before output publication, so malformed preservation-only records, inconsistent projections, unsafe metadata and ambiguous framing cannot publish native output. Scripted conversion and stable support remain later gates.
+Scripted rendering validates the complete model and source envelope, traverses retained physical order, and serializes recognized structured owners. Common dialogue timing supplies canonical centiseconds; capture-only native timestamps and raw lines remain unchanged observations. Constructed recognized owners may omit capture fields and declaration references; the renderer inserts the canonical declaration they require and restores a following captured owner's declaration when necessary. A complete bounded candidate is reparsed before output publication, so malformed preservation-only records, inconsistent projections, unsafe metadata and ambiguous framing cannot publish native output. Stable support remains a later gate.
+
+S026 completes the twelve distinct conversions among SubRip, WebVTT, ASS, and SSA while keeping scripted codecs experimental. Complete native-owner loss accounting and balanced emphasis precede strict refusal and rendering. Text-source scripted targets use deterministic defaults and checked nearest-centisecond rounding with explicit endpoint losses; variant construction retains representable native owners and accounts for dialect field/presentation differences. Original source bytes never become generated target provenance.
+
+This is an explicit bounded departure from routing all private targets through public source-native validation: internal ValidateScriptedTarget and RenderTarget receive the original and target separately, validate original document/integrity and exact envelope equality, retain applicable native ownership/privacy/projection/capture checks, and avoid claiming original bytes are already the target dialect. Public Cue JSON Validate and matching native Render retain their source grammar restrictions. Capture-free targets do not interpret unrelated text encodings as original scripted capture lines.
 
 Development package proof uses the current schema and explicit development verification. This is a dated departure from frozen S019 candidate packaging because current canonical bytes now evolve under an unreleased identity. Released schemas and historical proof remain immutable; S028 owns final stable promotion and immutable-copy proof.
 
@@ -40,7 +44,7 @@ The executable entry point under `cmd/cueson` is a minimal operating-system adap
 
 Dependencies point inward toward stable, dependency-light contracts. `internal/model` does not depend on CLI, source, codecs, conversion, or OCR. Codec availability is the authority for native ingest and render capability; schema recognition alone is not.
 
-Current source implements `internal/codec` as a capability registry plus bounded detection/decoding and native SubRip, WebVTT and experimental ASS/SSA parser/renderers. `internal/convert` owns the established SubRip/WebVTT target projection, compatibility analysis, deterministic runtime-only loss reports, and conversion rendering; scripted conversion remains deferred. `internal/ocr` remains reserved future ownership.
+Current source implements `internal/codec` as a capability registry plus bounded detection/decoding and native SubRip, WebVTT and experimental ASS/SSA parser/renderers. `internal/convert` owns all twelve distinct four-format projections, compatibility analysis, complete deterministic runtime-only loss reports, and source-aware conversion rendering. Scripted targets remain experimental; `internal/ocr` remains reserved future ownership.
 
 Validation, inspection, and conversion share one CLI-owned validated-input path so Cue JSON precedence, native content-first selection, schema and semantic checks, source integrity, and codec availability cannot drift among commands. Inspection projects that result into a fixed privacy-bounded report rather than exposing the Cue model directly. Help and four static shell completion definitions derive their public vocabulary from one ordered CLI surface catalogue while semantic option conflicts remain in the explicit parser.
 

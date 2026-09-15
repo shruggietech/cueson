@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added all ten remaining conversions among SubRip, WebVTT, ASS, and SSA, with complete atomic scripted losses, deterministic native defaults, checked centisecond precision, target reparsing, and twelve-direction publication safety evidence; ASS/SSA remain experimental.
 - Added experimental bounded ASS v4+/SSA v4 UTF-8 detection, source-preserving ingest, native Actor/karaoke projections, owner-driven textual rendering, guarded CLI workflows, and provenance-governed paired acceptance/rejection corpus evidence.
 - Added exact local historical Cue JSON 1.0.0 validation and command compatibility, plus typed annotated ASS/SSA schema-only branches with ordered native content, checked references, readable Text projections and bounded privacy validation.
 - Added the S023 scripted-format milestone roadmap, native ASS/SSA preservation/rendering contract, exact historical v1 input compatibility matrix, and governed v1.1.0 epic with sixteen atomic release/public-hosting outcomes.
@@ -41,9 +42,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-15: Guard recognized scripted content against extension or explicit-selector escape, and distinguish bracketed native headers from actual JSON containers at the shared input boundary.
 - 2026-09-15: Serialize editable native owners with checked declaration insertion/restoration and exact centisecond precision, never captured raw rows; retain safely bounded malformed non-dialogue values conservatively for preservation only and refuse their rendering in every mode.
 - 2026-09-15: Track one shared scripted conformance matrix with executed native evidence and explicit deferred conversion, platform and stable-release gates; replace duplicate-record scans with encounter-order maps to avoid quadratic work within collection limits.
+- 2026-09-15: Validate constructed scripted conversion targets through an internal original-plus-target boundary with exact immutable envelope equality and retained capture/integrity checks, preserving public Cue JSON source-native validation and never fabricating target provenance.
+- 2026-09-15: Use checked nearest-centisecond rounding with ties upward and atomic endpoint losses; reject collapsed intervals, unsafe literal native control reinterpretation, and drawing-only text output instead of inventing timing or dialogue.
+- 2026-09-15: Preserve representable ASS/SSA owners with explicit alignment mapping and per-field accounting for Layer/Marked, color/alpha roles, and dialect-only observations; retain old conversion loss meanings and add governed fixed-work four-format conversion fuzzing.
+- 2026-09-15: Account explicitly for custom scripted source identifier annotations and nonzero ignored SSA color alpha observations during conversion; retain native SubRip sequence framing and existing WebVTT identifier policies.
 
 ### Fixed
 
+- Account for each scripted style emphasis value cancelled before readable converted text, including neutral values, named resets, and use across cues; strict reports retain the complete atomic omission.
 - Exempt the canonical original-filename disagreement diagnostic from strict scripted rendering; conforming ASS/SSA models encoded under SubRip/WebVTT extensions render identically in strict and permissive modes.
 - Bound signed and unsigned scripted colors before conversion, close native metadata path/context gaps, verify source capture observations and preserve unknown override names; align all active snapshot-verifier instructions with development mode.
 - Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.

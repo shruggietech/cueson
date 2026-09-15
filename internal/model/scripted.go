@@ -263,6 +263,10 @@ func nativeSafeName(s string) bool {
 }
 
 func validateScriptedDocument(doc Document) error {
+	return validateScriptedDocumentWithSourcePolicy(doc, false)
+}
+
+func validateScriptedDocumentWithSourcePolicy(doc Document, target bool) error {
 	if err := validateCollectionLimits(doc); err != nil {
 		return err
 	}
@@ -293,12 +297,17 @@ func validateScriptedDocument(doc Document) error {
 	if err != nil {
 		return err
 	}
-	if err = scriptedSourcePrivacy(doc.Source, doc.Format); err != nil {
-		return err
+	if !target {
+		if err = scriptedSourcePrivacy(doc.Source, doc.Format); err != nil {
+			return err
+		}
 	}
-	capture, err := inspectScriptedCaptureSource(doc.Source)
-	if err != nil {
-		return err
+	capture := scriptedSourceCapture{lines: []string{}, eventFields: map[int]map[string]string{}}
+	if !target || scriptedTargetHasCaptures(doc) {
+		capture, err = inspectScriptedCaptureSource(doc.Source)
+		if err != nil {
+			return err
+		}
 	}
 	diagnosticIndex := map[string]bool{}
 	for _, diagnostic := range doc.Diagnostics {
