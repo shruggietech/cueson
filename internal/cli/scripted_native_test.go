@@ -83,6 +83,10 @@ func TestScriptedNativeEndToEndAndSourceSeparation(t *testing.T) {
 					if status != ExitSuccess {
 						t.Fatalf("render = %d %s", status, stderr)
 					}
+					strictStatus, strictNative, strictDiagnostics := runForTest(context.Background(), []string{"render", encoded, "--to", format, "--strict"})
+					if strictStatus != ExitSuccess || strictNative != native {
+						t.Fatalf("strict render of conforming %s source under %s = %d %s", format, extension, strictStatus, strictDiagnostics)
+					}
 					parsed, err := scripted.Parse(context.Background(), []byte(native), format)
 					if err != nil {
 						t.Fatal(err)

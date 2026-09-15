@@ -19,7 +19,7 @@
 
 Independent test: shared inventory/provenance/hash/privacy/encoding and required row resolution, without marking downstream assertions passed.
 
-- [x] T006 [P] [US1] Author paired accepted and malformed scripted source fixtures with redistribution/byte contracts in testdata/fixtures/scripted/ass, testdata/fixtures/scripted/ssa and testdata/malformed/scripted (FR-001).
+- [x] T006 [P] [US1] Author paired accepted and malformed scripted source fixtures with redistribution/byte contracts in testdata/fixtures/scripted and testdata/malformed/scripted (FR-001).
 - [x] T007 [US1] Add unique payload/projection/diagnostic/canonical-byte records to testdata/manifest.json (FR-001/FR-002).
 - [x] T008 [US1] Extend testdata/conformance-matrix.json and internal/conformance/matrix_test.go with shared scripted rows and explicit deferred downstream evidence (FR-002).
 - [x] T009 [US1] Implement independent native/common/provenance/diagnostic and exact restoration assertions in internal/conformance/scripted_test.go (FR-002/FR-010/FR-014).

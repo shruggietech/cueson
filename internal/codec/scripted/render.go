@@ -51,7 +51,7 @@ func Render(ctx context.Context, document model.Document, strict bool) (RenderRe
 		if slices.Contains([]string{"malformed_native_record", "malformed_attachment"}, diagnostic.Code) {
 			return RenderResult{}, fmt.Errorf("render scripted: %s", diagnostic.Code)
 		}
-		if strict && diagnostic.Code != "extension_mismatch" {
+		if strict && diagnostic.Code != "format_extension_disagreement" {
 			return RenderResult{}, fmt.Errorf("render scripted strict: %s", diagnostic.Code)
 		}
 	}
