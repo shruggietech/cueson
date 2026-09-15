@@ -713,13 +713,20 @@ func validateScriptedScalar(f ScriptedField, format string, order int) error {
 		var value uint64
 		if strings.HasPrefix(strings.ToUpper(raw), "&H") {
 			value, err = strconv.ParseUint(strings.TrimSuffix(raw[2:], "&"), 16, 32)
-		} else {
+		} else if strings.HasPrefix(raw, "-") {
+			// SSA signed colors represent the same 32 native ABGR bits. Reject
+			// overflow before explicitly reinterpreting that equal-width value.
 			var signed int64
-			signed, err = strconv.ParseInt(raw, 10, 64)
-			if signed < math.MinInt32 || signed > math.MaxUint32 {
-				err = fmt.Errorf("invalid color")
+			signed, err = strconv.ParseInt(raw, 10, 32)
+			if err != nil {
+				return scriptedError("invalid_native_field_value", order)
 			}
-			value = uint64(uint32(signed))
+			value = uint64(uint32(int32(signed)))
+		} else {
+			value, err = strconv.ParseUint(strings.TrimPrefix(raw, "+"), 10, 32)
+		}
+		if err != nil {
+			return scriptedError("invalid_native_field_value", order)
 		}
 		cv = ScriptedColor{uint8(value >> 24), uint8(value >> 16), uint8(value >> 8), uint8(value)}
 	}

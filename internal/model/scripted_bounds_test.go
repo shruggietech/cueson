@@ -179,6 +179,41 @@ func TestScriptedAggregateFieldAmplification(t *testing.T) {
 	}
 }
 
+func TestScriptedSignedAndUnsignedColorBoundaries(t *testing.T) {
+	for _, format := range []string{"ass", "ssa"} {
+		for _, c := range []struct {
+			lexeme string
+			color  ScriptedColor
+		}{
+			{"-1", ScriptedColor{255, 255, 255, 255}},
+			{"-2147483648", ScriptedColor{128, 0, 0, 0}},
+			{"4294967295", ScriptedColor{255, 255, 255, 255}},
+			{"+4294967295", ScriptedColor{255, 255, 255, 255}},
+			{"&HFFFFFFFF", ScriptedColor{255, 255, 255, 255}},
+			{"&H80000000", ScriptedColor{128, 0, 0, 0}},
+			{"0", ScriptedColor{}},
+		} {
+			t.Run(format+"/"+c.lexeme, func(t *testing.T) {
+				field := ScriptedField{FieldName: "PrimaryColour", RawValue: c.lexeme, TypedValue: &ScriptedValue{Kind: "color", Color: &c.color}}
+				if err := validateScriptedScalar(field, format, 0); err != nil {
+					t.Fatalf("valid native color/equivalent typed bits: %v", err)
+				}
+				wrong := c.color
+				wrong.Red ^= 1
+				field.TypedValue.Color = &wrong
+				if err := validateScriptedScalar(field, format, 0); err == nil || !strings.Contains(err.Error(), "inconsistent_typed_value") {
+					t.Fatalf("lexical/typed disagreement: %v", err)
+				}
+			})
+		}
+		for _, lexeme := range []string{"-2147483649", "4294967296", "+4294967296", "-9223372036854775808", "18446744073709551615", "&H100000000"} {
+			if err := validateScriptedScalar(ScriptedField{FieldName: "PrimaryColour", RawValue: lexeme}, format, 0); err == nil || !strings.Contains(err.Error(), "invalid_native_field_value") {
+				t.Fatalf("%s out-of-range %q: %v", format, lexeme, err)
+			}
+		}
+	}
+}
+
 func TestScriptedAggregateSpanAmplification(t *testing.T) {
 	d := scriptedExample(t, "ass")
 	n := d.FormatData.ASS
