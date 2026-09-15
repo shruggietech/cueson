@@ -337,7 +337,7 @@ func buildInspectionReport(input validatedInput) (inspectionReport, error) {
 			ExtensionFormat: inspectionFormatPointer(input.extensionFormat),
 		},
 		Format: document.Format,
-		Schema: inspectionSchemaSummary{ID: schema.ID(), Version: schema.Version(), Compatible: true},
+		Schema: inspectionSchemaSummary{ID: document.Schema, Version: document.SchemaVersion, Compatible: true},
 		Capabilities: inspectionCapabilitySummary{
 			Declared: inspectionDeclaredCapabilities{
 				Status:                       document.FormatSupport.Status,

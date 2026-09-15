@@ -37,7 +37,7 @@ The official Cueson identity is retained in the repository as the complete [bran
 
 The v1.0.0 history, immutable schema, and concise [release notes](docs/releases/v1.0.0.md) are bound to immutable annotated tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) at `2cad4c816340404289b4d1d87179a4071713bb46`. The [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) publishes the exact thirteen files accepted by default-branch proof run [34621429626](https://github.com/shruggietech/cueson/actions/runs/34621429626). [Release verification](docs/release-verification.md) records the independent public-byte check, and the governed [release process](docs/release-process.md) keeps milestone closure, signatures, attestations, public schema hosting, and production actions separately authorized.
 
-The [development roadmap](docs/roadmap.md) charts the operator-approved next v1.1.0 ASS/SSA milestone, its sixteen atomic issues and later XML, SAMI, broadcast and bitmap/OCR work. The [ASS/SSA page](docs/formats/ass-ssa.md) is a future implementation contract; the released v1.0.0 executable/schema still support only SubRip and WebVTT native workflows.
+The [development roadmap](docs/roadmap.md) charts the operator-approved next v1.1.0 ASS/SSA milestone, its sixteen atomic issues and later XML, SAMI, broadcast and bitmap/OCR work. Current source uses unreleased `1.1.0-dev`: it accepts exact historical 1.0.0 Cue JSON locally and adds `schema_only` ASS/SSA model branches for generic validation, inspection and exact restoration. Native ASS/SSA ingest, rendering and conversion await later slices. Released v1.0.0 supports SubRip and WebVTT.
 
 ## Installation
 
@@ -55,7 +55,7 @@ Run these examples from the repository root. Create an empty `quickstart` direct
 go run ./cmd/cueson version
 ```
 
-Expected result: exit status 0, stdout is exactly `1.0.0` plus LF, and stderr is empty.
+Expected result when running current source: exit status 0, stdout is exactly `1.1.0-dev` plus LF, and stderr is empty. The published executable reports `1.0.0`.
 
 <!-- docs-verify:example encode -->
 

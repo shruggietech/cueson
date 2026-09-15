@@ -78,8 +78,8 @@ func TestRunVersion(t *testing.T) {
 			if status != ExitSuccess {
 				t.Fatalf("Run() status = %d, want %d; stderr = %q", status, ExitSuccess, stderr)
 			}
-			if stdout != "1.0.0\n" {
-				t.Errorf("Run() stdout = %q, want %q", stdout, "1.0.0\\n")
+			if stdout != "1.1.0-dev\n" {
+				t.Errorf("Run() stdout = %q, want %q", stdout, "1.1.0-dev\\n")
 			}
 			if stderr != "" {
 				t.Errorf("Run() stderr = %q, want empty", stderr)
@@ -657,8 +657,8 @@ func TestRunSchemaVersion(t *testing.T) {
 
 	for _, args := range [][]string{{"schema", "--version"}, {"--quiet", "schema", "--version"}} {
 		status, stdout, stderr := runForTest(context.Background(), args)
-		if status != ExitSuccess || stdout != "1.0.0\n" || stderr != "" {
-			t.Errorf("Run(%q) = (%d, %q, %q), want (0, %q, empty)", args, status, stdout, stderr, "1.0.0\\n")
+		if status != ExitSuccess || stdout != "1.1.0-dev\n" || stderr != "" {
+			t.Errorf("Run(%q) = (%d, %q, %q), want (0, %q, empty)", args, status, stdout, stderr, "1.1.0-dev\\n")
 		}
 	}
 }
@@ -1057,7 +1057,7 @@ func TestEncodeRenderAndRestoreWorkflow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if document.Schema != schema.ID() || document.SchemaVersion != "1.0.0" || document.Producer.Name != "cueson" || document.Producer.Version != "1.0.0" {
+	if document.Schema != schema.ID() || document.SchemaVersion != "1.1.0-dev" || document.Producer.Name != "cueson" || document.Producer.Version != "1.1.0-dev" {
 		t.Fatalf("encoded identity = (%q, %q, %#v)", document.Schema, document.SchemaVersion, document.Producer)
 	}
 	if document.Format != "subrip" || document.FormatSupport.Status != "stable" || len(document.Cues) != 1 {
@@ -1175,7 +1175,7 @@ func TestWebVTTEncodeRenderRestoreWorkflow(t *testing.T) {
 	if err != nil {
 		t.Fatalf("schema.Decode(encoded) error = %v", err)
 	}
-	if document.Schema != schema.ID() || document.SchemaVersion != "1.0.0" || document.Producer.Name != "cueson" || document.Producer.Version != "1.0.0" {
+	if document.Schema != schema.ID() || document.SchemaVersion != "1.1.0-dev" || document.Producer.Name != "cueson" || document.Producer.Version != "1.1.0-dev" {
 		t.Fatalf("encoded identity = (%q, %q, %#v)", document.Schema, document.SchemaVersion, document.Producer)
 	}
 	if document.Format != "webvtt" || document.FormatSupport.Status != "stable" || !document.FormatSupport.IngestSupported || !document.FormatSupport.RenderSupported || !document.FormatSupport.RestoreSupported {

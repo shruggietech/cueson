@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added exact local historical Cue JSON 1.0.0 validation and command compatibility, plus typed annotated ASS/SSA schema-only branches with ordered native content, checked references, readable Text projections and bounded privacy validation.
 - Added the S023 scripted-format milestone roadmap, native ASS/SSA preservation/rendering contract, exact historical v1 input compatibility matrix, and governed v1.1.0 epic with sixteen atomic release/public-hosting outcomes.
 
 - Added the branded `cueson.io` product and documentation site, deterministic repository-source generation, immutable versioned schema routes, Cloudflare Workers Static Assets deployment unit, independent artifact and production verification, and read-only pull-request site CI.
@@ -15,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Advanced current executable/schema/new output to unreleased `1.1.0-dev` and restored explicit development snapshot proof using the current schema; preserved all published schema and release evidence bytes.
 - Reconciled maintained current-state prose with completed v1 milestone closure, S021 public schema/site hosting and S022 verification, preserving chronological delivery evidence.
 
 - Bound production site deployment to a manually selected full `main` commit, serving the apex while permanently redirecting `www` with path and query preservation.
@@ -28,9 +30,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - 2026-09-15: Plan ASS/SSA as a bounded compatible v1.1.0 addition, require exact historical v1.0.0 local schema/semantics on the future executable, and disclose old-consumer rejection of new output identities; reject unavoidable public breaks before minor release implementation.
 - 2026-09-15: Preserve matching native branch and physical-record ownership with checked attachment ranges, immutable source observations, usable derived dialogue and explicit whole-operation rejection for unsafe metadata or unsupported timing; retain existing shared safety ceilings and separate release/production authority.
+- 2026-09-15: Stage S024 as exact `1.1.0-dev`, admit schema-only scripted models and nonempty zero-dialogue/null-bound summaries, and validate historical 1.0.0 with its frozen semantics. Final stable identity/immutable copy remain S028 work.
+- 2026-09-15: Replace current frozen-candidate packaging assumptions with explicit non-publishing development schema proof because canonical bytes now evolve; preserve historical evidence and separately authorized release/production boundaries.
+- 2026-09-15: Interpret alphabetic reset/font override suffixes conservatively through declared names, preserving ambiguous complete tag identities and raw Text; verify capture-only observations against original source positions independently of edited owners.
+- 2026-09-15: Validate declared record grammar before privacy exemptions, inspect retained malformed non-dialogue values conservatively, reject relative resource separators and code execution effects, and require positive native dialogue intervals independently of edited common timing.
+- 2026-09-15: Replace the development model's path-looking semicolon-comment exemption with conservative inert-comment inspection because comments can retain original resource provenance; field/declaration names also remain structural metadata without content exemptions.
 
 ### Fixed
 
+- Bound signed and unsigned scripted colors before conversion, close native metadata path/context gaps, verify source capture observations and preserve unknown override names; align all active snapshot-verifier instructions with development mode.
 - Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.
 
 ## [1.0.0] - 2026-09-11

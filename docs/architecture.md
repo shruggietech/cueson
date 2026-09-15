@@ -1,10 +1,18 @@
 # Cueson Architecture
 
-**Status:** v1.0.0 stable released architecture
+**Status:** v1.0.0 released architecture with S024 development additions
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
 This document is the architecture of record for the stable v1.0.0 release. The [project constitution](../.specify/memory/constitution.md) remains the highest repository authority. The [working project specification](Cueson-Project-Specification-v0.0.0.md) supplies broader context and roadmap detail when it does not conflict with ratified slices.
+
+## S024 development architecture
+
+Current source stages executable and canonical schema identity `1.1.0-dev` together. The local schema registry selects an exact supported instance URI/version pair before structural and version-specific semantic validation; current discovery and new output continue using the development contract. Historical input keeps its producer and source truth, and all Cue JSON command paths complete integrity validation before output publication. Inspection reports the loaded identity.
+
+ASS/SSA share typed ordered scripted structures in `internal/model`, with separate matching dialect branches. Generic inspection, validation and restoration use these structures while nil codec registrations truthfully expose absent native ingest/render capabilities. The source package remains codec-independent. Scripted logical Text projection and privacy checks derive from retained native/source content, without executing attachments or external resources.
+
+Development package proof uses the current schema and explicit development verification. This is a dated departure from frozen S019 candidate packaging because current canonical bytes now evolve under an unreleased identity. Released schemas and historical proof remain immutable; S028 owns final stable promotion and immutable-copy proof.
 
 ## Public and internal boundaries
 

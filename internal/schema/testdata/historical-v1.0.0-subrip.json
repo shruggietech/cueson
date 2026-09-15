@@ -1,6 +1,6 @@
 {
-  "$schema": "https://cueson.io/schema/v1.1.0-dev/cueson.schema.json",
-  "schema_version": "1.1.0-dev",
+  "$schema": "https://cueson.io/schema/v1.0.0/cueson.schema.json",
+  "schema_version": "1.0.0",
   "format": "subrip",
   "format_support": {
     "status": "stable",
@@ -81,7 +81,7 @@
         "raw_text": "<i>Hello, world.</i>",
         "plain_text": "Hello, world.",
         "lines": [
-          "Hello, world."
+          "<i>Hello, world.</i>"
         ]
       },
       "speakers": [],

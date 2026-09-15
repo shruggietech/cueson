@@ -19,6 +19,8 @@ const (
 	FormatAuto   Format = "auto"
 	FormatSubRip Format = "subrip"
 	FormatWebVTT Format = "webvtt"
+	FormatASS    Format = "ass"
+	FormatSSA    Format = "ssa"
 )
 
 // Capability names one independently optional codec operation.
