@@ -44,7 +44,7 @@ Repository configuration is changed in dependency order and each write is follow
 
 ## Delivery state
 
-Work slices S001 through S022 are present on `main`. The repository includes the ratified foundation, published v0.0.0 envelope release, stable native SubRip/WebVTT workflows, conversion, validation, inspection, completion, whole-system conformance, annotated schema and independently verified v1.0.0 release. S020 publication/reconciliation is merged; S021 launched the public site and immutable versioned schemas; S022 corrected independent address-family production verification. The production deployment remains the reviewed S021 revision, rather than following every repository merge automatically.
+Work slices S001 through S023 are present on `main`. S023 planning/contracts merged through PR [#68](https://github.com/shruggietech/cueson/pull/68) at `0b1922f8a50cdfda766db63012f0d9f7d259146c`, closing #52, #53 and #54. S024 now implements #55/#56 under unreleased `1.1.0-dev`. The foundation, published releases, stable SubRip/WebVTT and S021 public hosting remain established; production remains the reviewed S021 revision and does not automatically deploy on merge.
 
 | Outcome | Delivery evidence on `main` |
 |---|---|
@@ -79,6 +79,6 @@ The v1 release binds version/schema lockstep, stable SubRip/WebVTT declarations,
 
 ## Next milestone and active slice
 
-The [S023 roadmap](roadmap.md) publishes [milestone v1.1.0](https://github.com/shruggietech/cueson/milestone/3), [epic #51](https://github.com/shruggietech/cueson/issues/51), and sixteen native atomic children #52 through #67. S023 owns planning/contracts issues #52, #53 and #54; future schema/model, codec/corpus, conversion, CLI/hardening, candidate, release and hosting slices remain Backlog behind their native blockers. The exact acyclic graph and provisional chronological slice grouping are maintained in the roadmap and verified [issue-map snapshot](../specs/S023-plan-scripted-format-milestone/issue-map.json).
+The [S023 roadmap](roadmap.md) maintains [milestone v1.1.0](https://github.com/shruggietech/cueson/milestone/3), [epic #51](https://github.com/shruggietech/cueson/issues/51) and sixteen atomic children. S023 issues #52/#53/#54 are closed; S024 issues #55/#56 use In progress and Slice S024. S025 is proposed for #57/#58/#59 after those blockers clear. Native GitHub stages and dependencies control; no additional active arrivals were present at S024 kickoff.
 
 At S023 publication read-back, `cueson Delivery` contains forty-five unique issue items: twenty-eight historical Done items and seventeen new milestone items. Every child has the native milestone/parent/blockers and governed labels, owning Slice text, actual Stage and unused default Status. The spanning epic uses In progress and no single Slice. S023 issues proceed through PR review until human merge, while downstream issues stay Backlog until dependencies clear. Native GitHub state controls after subsequent transitions; this dated read-back is not a permanent assertion that the queue never changes.

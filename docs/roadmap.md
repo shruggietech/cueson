@@ -1,14 +1,16 @@
 # Cueson development roadmap
 
-**Status:** S023 operator-approved milestone plan and future contracts, pending final PR merge ratification
+**Status:** S023 ratified milestone plan; S024 schema/model development in progress
 
-**Assessed:** 2026-09-15 against merged S022 main revision `5c75deee710e89349689789a5f854deb091069f4`.
+**Assessed:** 2026-09-15 against merged S023 main revision `0b1922f8a50cdfda766db63012f0d9f7d259146c` and active native issue dependencies.
 
 ## Current delivery state
 
 v0.0.0 and v1.0.0 are released and independently verified, their milestones/epics are closed, and stable SubRip/WebVTT native workflows are implemented. S021 launched the public documentation site and immutable schemas; S022 corrected independent IPv4/IPv6 verification. The production site remains deployed from reviewed S021 revision `46838fd5cc888b299a09b89da676db0005b00f16`; merging later repository changes does not deploy production.
 
 At the fresh S023 assessment there were no open issues or new active arrivals. S023 publishes native [milestone v1.1.0](https://github.com/shruggietech/cueson/milestone/3), coordination [epic #51](https://github.com/shruggietech/cueson/issues/51), and sixteen atomic children. Native issue relationships, milestone membership and cueson Delivery Project remain planning authority. This prose and the [S023 issue-map snapshot](../specs/S023-plan-scripted-format-milestone/issue-map.json) provide traceability rather than duplicate custom Project metadata.
+
+S023 merged through PR #68 and planning issues #52, #53 and #54 are closed. At S024 kickoff no additional active issues had arrived: #55 and #56 were Ready, with remaining children behind their native blockers. S024 implements their coherent historical-registry/scripted-model outcome under `1.1.0-dev`. The next proposed slice remains S025 corpus, ingest and rendering (#57, #58 and #59), preserving each acceptance criterion and keeping conversion, full CLI/conformance and release gates in their later slices. Native GitHub state controls subsequent transitions.
 
 ## Next release scope and compatibility gate
 

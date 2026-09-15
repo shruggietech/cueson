@@ -104,7 +104,7 @@ The release must use the verified artifacts associated with the approved source 
 
 The versioned repository schema, the schema embedded in every official binary, and the schema distributed in every release archive must be byte-identical. Their schema identity and version must match the release version.
 
-After release, `schema/releases/v0.0.0/cueson.schema.json` and `schema/releases/v1.0.0/cueson.schema.json` are immutable. The v1.0.0 copy matches the canonical, embedded, emitted, and packaged schema byte-for-byte. Any correction now requires a new software and schema version; no path may overwrite an already released copy or move an existing tag to conceal the change.
+After release, `schema/releases/v0.0.0/cueson.schema.json` and `schema/releases/v1.0.0/cueson.schema.json` are immutable. Their corresponding tagged canonical, embedded, emitted and packaged copies match byte-for-byte. Current development canonical bytes now use `1.1.0-dev`; final 1.1.0 promotion requires a new independently verified immutable copy. No path may overwrite a released schema or move a released tag.
 
 The canonical `https://cueson.io/schema/v0.0.0/cueson.schema.json` and `https://cueson.io/schema/v1.0.0/cueson.schema.json` paths are published by the separately specified and authorized S021 production continuation. Their bytes must equal the immutable repository and release copies. Consumers may continue using embedded, repository, or release-artifact copies offline. No mutable schema alias is published.
 

@@ -177,7 +177,7 @@ func runRender(ctx context.Context, options renderOptions, stdout io.Writer, std
 		diagnostics.write(diagnosticError, "render: Cue JSON acquisition failed")
 		return ExitRuntimeFailure
 	}
-	document, err := schema.Decode(payload)
+	loaded, err := loadCueJSONInput(ctx, payload, selectionBasisExplicit)
 	if err != nil {
 		diagnostics.write(diagnosticError, fmt.Sprintf("render: %v", err))
 		return ExitRuntimeFailure
@@ -197,7 +197,7 @@ func runRender(ctx context.Context, options renderOptions, stdout io.Writer, std
 		diagnostics.write(diagnosticError, fmt.Sprintf("render: %v", err))
 		return ExitRuntimeFailure
 	}
-	result, err := renderer(ctx, document, codec.RenderOptions{Strict: options.strict})
+	result, err := renderer(ctx, loaded.document, codec.RenderOptions{Strict: options.strict})
 	if err != nil {
 		diagnostics.write(diagnosticError, fmt.Sprintf("render: %v", err))
 		return ExitRuntimeFailure
@@ -288,6 +288,8 @@ func workflowRegistry(encoding string) (*codec.Registry, error) {
 	return codec.NewRegistry(
 		codec.Registration{Format: codec.FormatSubRip, Aliases: []string{"srt"}, Extensions: []string{"srt"}, Detect: detectSubRip, Decode: decodeSubRip, Render: renderSubRip},
 		codec.Registration{Format: codec.FormatWebVTT, Aliases: []string{"vtt"}, Extensions: []string{"vtt"}, Detect: detectWebVTT, Decode: decodeWebVTT, Render: renderWebVTT},
+		codec.Registration{Format: codec.FormatASS},
+		codec.Registration{Format: codec.FormatSSA},
 	)
 }
 

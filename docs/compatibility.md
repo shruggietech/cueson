@@ -23,9 +23,16 @@ Starting with v1.0.0, incompatible changes to either public interface require a 
 
 No mutable `latest` schema identity is part of the contract. Every released schema copy is immutable. The v1.0.0 canonical and immutable schemas are available from the repository, release archives, embedded executable, and byte-exact public `cueson.io` route. S021 completed separately authorized public hosting of both v0.0.0 and v1.0.0 immutable schemas.
 
+## Current development compatibility
+
+S024 current source uses unreleased `1.1.0-dev` and accepts exact historical 1.0.0 input with the bundled released schema and preserved historical semantics. Validate, inspect, restore, matching native render and established conversion paths retain historical identity, producer and source truth. Missing, approximate, mismatched, unsupported and unpromoted final identities reject locally. Current schema discovery and new encode output use the development identity; released exact-version consumers reject new output until explicitly updated. No historical-output selector is added.
+
+Current ASS/SSA branches support schema/model recognition, generic validation, inspection and exact restoration. Native ingest, model rendering and conversion remain later outcomes. Development shape recognition provides no stable release claim and does not publish a schema URI.
+
 ## Format capability states
 
 - `envelope_only`: the release can preserve and exactly restore a valid source envelope but does not claim native semantic ingest or model-driven rendering.
+- `schema_only`: the current schema/model recognizes the native shape; generic validation, inspection and restoration are available while native ingest/render are absent.
 - `experimental`: the executable implements documented native behavior whose compatibility contract has not completed its stable release gate.
 - `stable`: the format has passed the applicable v1 acceptance and release gates for that software/schema version.
 
@@ -55,4 +62,4 @@ The [S023 roadmap](roadmap.md) targets a compatible v1.1.0 ASS/SSA addition. The
 
 New native encode output in the future release targets exact 1.1.0 identity, with current software/schema lockstep. Old exact-version consumers, including the released v1.0.0 executable, reject these new documents until they explicitly support the new contract. Historical input support on the new executable does not provide forward compatibility to old consumers. No historical-output selector or migration command is introduced by this planning slice. Any incompatible change to an established public guarantee blocks the minor target and requires a major-version decision; all compatibility claims must be proven by the documented command/version matrix and candidate evidence.
 
-The [ASS/SSA contract](formats/ass-ssa.md) is future, bounded and unimplemented. S023 changes no current runtime capabilities, executable/schema version or immutable bytes. Generic restoration, schema recognition, native interpretation and stable support remain separate facts.
+The [ASS/SSA contract](formats/ass-ssa.md) is bounded: S023 ratified planning and S024 realizes schema/model recognition. Native interpretation, stable support and later release remain separate outcomes.

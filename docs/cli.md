@@ -4,6 +4,12 @@
 
 This document is the maintained CLI authority. The public command names and behavior described here form the stable v1.0.0 contract published through immutable tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) and the verified [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0). The exact generated help under `internal/cli/testdata/help/` and executable documentation tests are checked against this reference.
 
+## Current source additions
+
+Current S024 source reports `1.1.0-dev` from `version` and `schema --version`, and emits the exact current development schema. Existing native output uses that identity. Exact historical 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown or mismatched identities and corrupt source envelopes fail before publication.
+
+ASS/SSA Cue JSON models are `schema_only`: generic validate, inspect and exact restore are available. Native codecs remain absent; `render --to ass` or `--to ssa` reports a recognized unavailable capability and publishes nothing. Full native help/completion/input coverage remains #62 after codec implementation. Published v1.0.0 behavior remains the historical contract described below.
+
 ## Invocation, streams, and status
 
 The root form is `cueson [global options] <command>`. Global options may appear before or after the command until the `--` delimiter ends option processing. User paths are literal; Cueson does not expand globs, tildes, or environment-variable syntax.

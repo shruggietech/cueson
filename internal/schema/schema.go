@@ -16,8 +16,11 @@ import (
 )
 
 const (
-	schemaID      = "https://cueson.io/schema/v1.0.0/cueson.schema.json"
-	schemaVersion = "1.0.0"
+	schemaID            = "https://cueson.io/schema/v1.1.0-dev/cueson.schema.json"
+	schemaVersion       = "1.1.0-dev"
+	historicalV1ID      = "https://cueson.io/schema/v1.0.0/cueson.schema.json"
+	historicalV1Version = "1.0.0"
+	schemaDialect       = "https://json-schema.org/draft/2020-12/schema"
 )
 
 var (
@@ -27,9 +30,18 @@ var (
 	//go:embed testdata/representative.cueson.json
 	representativeBytes []byte
 
+	// The immutable resource is packaged locally because executable validation
+	// must never retrieve an input-controlled schema URI.
+	//go:embed historical/v1.0.0/cueson.schema.json
+	historicalV1Bytes []byte
+
 	compileOnce   sync.Once
 	compiled      *jsonschema.Schema
 	compiledError error
+
+	historicalCompileOnce  sync.Once
+	historicalCompiled     *jsonschema.Schema
+	historicalCompileError error
 )
 
 // ID returns the current canonical schema identifier.
@@ -79,9 +91,9 @@ func Decode(data []byte) (model.Document, error) {
 	if err != nil {
 		return document, fmt.Errorf("parse Cue JSON: %w", err)
 	}
-	contract, err := Compiled()
+	contract, err := selectContract(instance)
 	if err != nil {
-		return document, fmt.Errorf("compile embedded schema: %w", err)
+		return document, fmt.Errorf("validate Cue JSON structure: select exact contract: %w", err)
 	}
 	if err := contract.Validate(instance); err != nil {
 		return document, fmt.Errorf("validate Cue JSON structure: %w", err)
@@ -93,6 +105,29 @@ func Decode(data []byte) (model.Document, error) {
 		return document, fmt.Errorf("validate Cue JSON semantics: %w", err)
 	}
 	return document, nil
+}
+
+func selectContract(instance any) (*jsonschema.Schema, error) {
+	header, ok := instance.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("cue JSON identity requires an object root")
+	}
+	id, idOK := header["$schema"].(string)
+	version, versionOK := header["schema_version"].(string)
+	if !idOK || !versionOK {
+		return nil, fmt.Errorf("cue JSON identity requires string $schema and schema_version")
+	}
+	switch {
+	case id == schemaID && version == schemaVersion:
+		return Compiled()
+	case id == historicalV1ID && version == historicalV1Version:
+		historicalCompileOnce.Do(func() {
+			historicalCompiled, historicalCompileError = compileArtifact(historicalV1Bytes, historicalV1ID, historicalV1Version)
+		})
+		return historicalCompiled, historicalCompileError
+	default:
+		return nil, fmt.Errorf("unsupported or mismatched Cue JSON identity ($schema, schema_version)")
+	}
 }
 
 func validateUnicodeEscapes(data []byte) error {
@@ -166,52 +201,72 @@ func CheckLockstep(softwareVersion string) error {
 }
 
 func compileCanonical() (*jsonschema.Schema, error) {
-	artifact, err := decodeOne(canonicalBytes)
+	return compileArtifact(canonicalBytes, schemaID, schemaVersion)
+}
+
+// denySchemaLoader rejects every resource not registered by the executable.
+// Standard dialect metaschemas are bundled by the validator itself.
+type denySchemaLoader struct{}
+
+func (denySchemaLoader) Load(string) (any, error) {
+	return nil, fmt.Errorf("unbundled schema resource is unavailable")
+}
+
+func compileArtifact(data []byte, id, version string) (*jsonschema.Schema, error) {
+	artifact, err := decodeOne(data)
 	if err != nil {
-		return nil, fmt.Errorf("parse canonical schema: %w", err)
+		return nil, fmt.Errorf("parse schema artifact %s: %w", id, err)
 	}
 	header, ok := artifact.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("canonical schema root is not an object")
+		return nil, fmt.Errorf("schema artifact %s root is not an object", id)
 	}
-	if err := validateArtifactIdentity(header); err != nil {
+	if err := validateContractArtifactIdentity(header, id, version); err != nil {
 		return nil, err
 	}
 
 	compiler := jsonschema.NewCompiler()
+	compiler.UseLoader(denySchemaLoader{})
 	compiler.AssertContent()
 	compiler.AssertFormat()
-	if err := compiler.AddResource(schemaID, artifact); err != nil {
-		return nil, fmt.Errorf("register canonical schema: %w", err)
+	if err := compiler.AddResource(id, artifact); err != nil {
+		return nil, fmt.Errorf("register schema artifact %s: %w", id, err)
 	}
-	contract, err := compiler.Compile(schemaID)
+	contract, err := compiler.Compile(id)
 	if err != nil {
-		return nil, fmt.Errorf("compile canonical schema: %w", err)
+		return nil, fmt.Errorf("compile schema artifact %s: %w", id, err)
 	}
 	if contract.DraftVersion != 2020 {
-		return nil, fmt.Errorf("canonical schema draft is %d, want 2020", contract.DraftVersion)
+		return nil, fmt.Errorf("schema artifact %s draft is %d, want 2020", id, contract.DraftVersion)
 	}
 	return contract, nil
 }
 
 func validateArtifactIdentity(header map[string]any) error {
-	if !strings.HasSuffix(schemaID, "/v"+schemaVersion+"/cueson.schema.json") {
-		return fmt.Errorf("schema identifier %q does not contain schema version %q", schemaID, schemaVersion)
+	return validateContractArtifactIdentity(header, schemaID, schemaVersion)
+}
+
+func validateContractArtifactIdentity(header map[string]any, id, version string) error {
+	if !strings.HasSuffix(id, "/v"+version+"/cueson.schema.json") {
+		return fmt.Errorf("schema identifier %q does not contain schema version %q", id, version)
 	}
-	if got := stringValue(header["$id"]); got != schemaID {
-		return fmt.Errorf("canonical schema $id is %q, want %q", got, schemaID)
+	if got := stringValue(header["$schema"]); got != schemaDialect {
+		return fmt.Errorf("schema dialect is %q, want %q", got, schemaDialect)
+	}
+	if got := stringValue(header["$id"]); got != id {
+		return fmt.Errorf("canonical schema $id is %q, want %q", got, id)
 	}
 	properties, ok := header["properties"].(map[string]any)
 	if !ok {
 		return fmt.Errorf("canonical schema properties are missing")
 	}
 	instanceSchemaProperty, ok := properties["$schema"].(map[string]any)
-	if !ok || stringValue(instanceSchemaProperty["const"]) != schemaID {
-		return fmt.Errorf("canonical instance $schema const must be %q", schemaID)
+	if !ok || stringValue(instanceSchemaProperty["const"]) != id {
+		return fmt.Errorf("canonical instance $schema const must be %q", id)
 	}
 	versionProperty, ok := properties["schema_version"].(map[string]any)
-	if !ok || stringValue(versionProperty["const"]) != schemaVersion {
-		return fmt.Errorf("canonical schema schema_version const must be %q", schemaVersion)
+	if !ok || stringValue(versionProperty["const"]) != version {
+		return fmt.Errorf("canonical schema schema_version const must be %q", version)
 	}
 	return nil
 }

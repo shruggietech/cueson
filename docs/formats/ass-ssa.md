@@ -1,8 +1,10 @@
 # ASS and SSA future format contract
 
-**Status:** Planned v1.1.0 contract, unimplemented in the released v1.0.0 software and schema
+**Status:** S024 schema-only model in unreleased 1.1.0-dev; native codecs remain planned
 
 S023 defines the bounded native contract for the next scripted-format milestone. It does not add a codec, change the executable version, admit a schema artifact, or make a stable capability claim. The [constitution](../../.specify/memory/constitution.md), [schema baseline](../schema.md), [compatibility contract](../compatibility.md), and [architecture](../architecture.md) control shared behavior. P02 owns this contract; P05 owns its future schema realization; P06-P08 own corpus, ingest, and rendering evidence. The P identifiers refer to atomic outcomes in the S023 milestone plan, not shipped capabilities.
+
+S024 realizes the annotated typed schema/model portion of this contract. Generic Cue JSON validation, inspection and exact restoration are available for conforming ASS/SSA documents; native ingest, rendering and conversion remain absent. The published v1.0.0 software/schema are unchanged. Current development supports constructed recognized records without fabricated capture fields and nonempty zero-dialogue documents with null media bounds. Detailed current structure is recorded in the [S024 model](../../specs/S024-extend-versioned-schema-model/data-model.md).
 
 ## References and authority
 

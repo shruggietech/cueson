@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	normativeSchemaSHA256  = "ae98cebeb31f6bfe1e7a39916a185d0a365d4ef19ef4aa5a0fdfc9afb28e0877"
+	normativeSchemaSHA256  = "cdd77c73bf95a200309552e73ac9d3b6db1c1f366c222768ada666dd1c14593b"
 	v0ReleasedSchemaSHA256 = "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975"
 	v1ReleasedSchemaSHA256 = "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541"
 )
@@ -32,7 +32,7 @@ func TestAnnotationCoverage(t *testing.T) {
 
 	artifact := annotationArtifact(t)
 	reachable := reachableDefinitions(t, artifact)
-	if got, want := len(reachable), 44; got != want {
+	if got, want := len(reachable), 65; got != want {
 		t.Fatalf("reachable definition count = %d, want %d", got, want)
 	}
 
@@ -81,6 +81,15 @@ func TestAnnotationCoverage(t *testing.T) {
 		"$/$defs/webvtt_document_data",
 		"$/$defs/webvtt_block",
 		"$/$defs/webvtt_region_data",
+		"$/$defs/ass_document_data",
+		"$/$defs/ssa_document_data",
+		"$/$defs/scripted_cue_data",
+		"$/$defs/scripted_style",
+		"$/$defs/scripted_event",
+		"$/$defs/scripted_attachment",
+		"$/$defs/scripted_span",
+		"$/$defs/scripted_tag",
+		"$/$defs/scripted_karaoke",
 	}
 	for _, pointer := range requiredExamples {
 		node := schemaNodeAt(t, artifact, pointer)
@@ -151,7 +160,11 @@ func TestAnnotationExamplesPreserveNativeFidelity(t *testing.T) {
 			for lineIndex, line := range lines {
 				textLines[lineIndex] = line.(string)
 			}
-			if got, want := strings.Join(textLines, "\n"), payload["raw_text"]; got != want {
+			owner := payload["raw_text"]
+			if example["format"] == "ass" || example["format"] == "ssa" {
+				owner = payload["plain_text"]
+			}
+			if got, want := strings.Join(textLines, "\n"), owner; got != want {
 				t.Errorf("root example %d cue %d payload lines join to %q, want raw_text %q", index, cueIndex, got, want)
 			}
 		}
@@ -239,8 +252,8 @@ func TestV1ReleasedSchemaMatchesCanonical(t *testing.T) {
 	if !bytes.Equal(canonical, Bytes()) {
 		t.Fatal("canonical schema file does not match embedded schema bytes")
 	}
-	if !bytes.Equal(released, canonical) {
-		t.Fatal("released v1.0.0 schema is not byte-identical to the canonical schema")
+	if !bytes.Equal(released, historicalV1Bytes) {
+		t.Fatal("released v1.0.0 schema is not byte-identical to its historical embedded authority")
 	}
 	digest := sha256.Sum256(released)
 	if got := hex.EncodeToString(digest[:]); got != v1ReleasedSchemaSHA256 {
@@ -254,7 +267,7 @@ func TestV1ReleasedSchemaMatchesCanonical(t *testing.T) {
 	if !ok {
 		t.Fatal("released v1.0.0 schema root is not an object")
 	}
-	if err := validateArtifactIdentity(artifact); err != nil {
+	if err := validateContractArtifactIdentity(artifact, historicalV1ID, historicalV1Version); err != nil {
 		t.Fatalf("released v1.0.0 schema identity: %v", err)
 	}
 }

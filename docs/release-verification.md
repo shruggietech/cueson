@@ -4,7 +4,11 @@
 
 This guide defines the repository-owned artifact proof established by issue [#11](https://github.com/shruggietech/cueson/issues/11), records how accepted default-branch evidence was used to publish and independently verify [v0.0.0](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and [v1.0.0](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), and documents the non-publishing candidate proof required by issue [#37](https://github.com/shruggietech/cueson/issues/37). The checked-in workflow produces candidate evidence only; it does not create tags, GitHub Releases, release assets, signatures, attestations, or production `cueson.io` state.
 
-## Supported matrix
+## Current development proof
+
+The checked-in workflow builds non-publishing `1.1.0-dev` snapshots and uses explicit development verification for the evolving canonical schema. It retains exact head revision, schema/software identity, archive/SBOM/checksum proof and native Linux, Windows and macOS execution. The v1.0.0 matrix and evidence below describe historical release preparation; current filenames substitute `1.1.0-dev`. Final stable immutable-copy promotion remains #65.
+
+## Published v1.0.0 matrix
 
 The snapshot builds with `CGO_ENABLED=0` for:
 
@@ -17,7 +21,7 @@ The snapshot builds with `CGO_ENABLED=0` for:
 | `windows/amd64` | `cueson_1.0.0_windows_amd64.zip` | `cueson.exe` |
 | `windows/arm64` | `cueson_1.0.0_windows_arm64.zip` | `cueson.exe` |
 
-Every archive contains exactly the target executable, `cueson.schema.json`, `LICENSE`, and `NOTICE` at its root. Candidate construction packages the immutable [versioned v1.0.0 schema](../schema/releases/v1.0.0/cueson.schema.json), verifies its exact 1.0.0 identity, and compares it byte-for-byte with the canonical repository schema and the schema embedded in every binary. Packaged `LICENSE` and `NOTICE` bytes must match their repository sources, and each legal-file archive member must use the portable approved non-executable mode `0644`. `cueson_1.0.0_checksums.txt` covers exactly the six archives. Each target binary produces one target-bound SPDX JSON SBOM named for the corresponding archive. The immutable [v0.0.0 release schema](../schema/releases/v0.0.0/cueson.schema.json) remains unchanged.
+Every archive contains exactly the target executable, `cueson.schema.json`, `LICENSE` and `NOTICE` at its root. Published v1.0.0 proof packaged its immutable schema and compared tagged canonical/embedded/packaged bytes. Current S024 snapshot proof instead packages `internal/schema/cueson.schema.json` with exact `1.1.0-dev` identity and explicit `-development`, still proving source revision, six archives, checksums, target-bound SBOMs, legal bytes and native smoke. This mode does not establish stable immutable-copy proof; #65 owns final promotion. Historical published schema/evidence bytes remain unchanged.
 
 ## Exact tools
 

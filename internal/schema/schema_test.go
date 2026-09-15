@@ -19,10 +19,10 @@ func TestCanonicalSchemaAndRepresentative(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Decode(Representative()) error = %v", err)
 	}
-	if got, want := ID(), "https://cueson.io/schema/v1.0.0/cueson.schema.json"; got != want {
+	if got, want := ID(), "https://cueson.io/schema/v1.1.0-dev/cueson.schema.json"; got != want {
 		t.Errorf("ID() = %q, want %q", got, want)
 	}
-	if got, want := Version(), "1.0.0"; got != want {
+	if got, want := Version(), "1.1.0-dev"; got != want {
 		t.Errorf("Version() = %q, want %q", got, want)
 	}
 	if document.Schema != ID() || document.SchemaVersion != Version() {
@@ -393,7 +393,10 @@ func checkProjectNames(value any, path string) error {
 	if values, ok := object["enum"].([]any); ok && !strings.Contains(path, "/safe_basename/") {
 		for _, raw := range values {
 			value, ok := raw.(string)
-			if ok && !isLowerSnakeCase(value) {
+			// Uppercase K is the case-sensitive ASS/SSA karaoke source lexeme,
+			// not a Cueson-owned enum spelling. Keep this exception local.
+			nativeKaraoke := path == "$/$defs/scripted_karaoke/properties/variant" && value == "K"
+			if ok && !isLowerSnakeCase(value) && !nativeKaraoke {
 				return &nameError{path: path + "/enum", name: value}
 			}
 		}
@@ -412,9 +415,27 @@ func TestProjectNameCheckerRejectsDrift(t *testing.T) {
 	for _, artifact := range []any{
 		map[string]any{"properties": map[string]any{"camelCase": map[string]any{}}},
 		map[string]any{"enum": []any{"Not_Snake"}},
+		map[string]any{"enum": []any{"K"}},
 	} {
 		if err := checkProjectNames(artifact, "$"); err == nil {
 			t.Errorf("checkProjectNames(%v) error = nil, want rejection", artifact)
+		}
+	}
+}
+
+func TestProjectNameCheckerKaraokeLexemeExceptionIsScoped(t *testing.T) {
+	t.Parallel()
+	const variantPath = "$/$defs/scripted_karaoke/properties/variant"
+	if err := checkProjectNames(map[string]any{"enum": []any{"K"}}, variantPath); err != nil {
+		t.Fatalf("native karaoke K rejected: %v", err)
+	}
+	for _, tc := range []struct{ path, value string }{
+		{variantPath, "KF"},
+		{"$/$defs/scripted_karaoke/properties/other", "K"},
+		{"$/$defs/other/properties/variant", "K"},
+	} {
+		if err := checkProjectNames(map[string]any{"enum": []any{tc.value}}, tc.path); err == nil {
+			t.Fatalf("owned value %q at %s passed outside native exception", tc.value, tc.path)
 		}
 	}
 }

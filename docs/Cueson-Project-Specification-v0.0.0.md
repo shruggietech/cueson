@@ -16,6 +16,8 @@ This document is the project's initial working specification. During repository 
 
 The concise ratified implementation baselines are [architecture.md](architecture.md), [schema.md](schema.md), and [cli.md](cli.md). Those topic documents control implementation when this broader roadmap retains an older provisional alternative. Changes to a ratified baseline require a later Spec Kit decision and changelog entry.
 
+S023 ratified the next compatible v1.1.0 scripted-format milestone. S024 stages current `1.1.0-dev`, exact historical 1.0.0 input compatibility and ASS/SSA schema-only models; codec/corpus implementation follows in S025, then conversion, CLI/conformance, stable candidate proof, separately authorized publication and public hosting. The [development roadmap](roadmap.md) owns chronological slice grouping and native GitHub issue dependencies; draft format section order is not an execution priority.
+
 ## Executive summary
 
 Cueson is an official ShruggieTech utility for converting subtitle and caption formats into and out of a canonical, versioned JSON representation called Cue JSON. The first stable release targets complete SubRip (`.srt`) and WebVTT (`.vtt`) support, and the project is deliberately designed so additional text, XML, and bitmap subtitle families can be added without replacing the core document model.

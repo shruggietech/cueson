@@ -168,8 +168,10 @@ type Placement struct {
 }
 
 type CueFormatData struct {
-	SubRip *SubRipCueData `json:"subrip,omitempty"`
-	WebVTT *WebVTTCueData `json:"webvtt,omitempty"`
+	SubRip *SubRipCueData   `json:"subrip,omitempty"`
+	WebVTT *WebVTTCueData   `json:"webvtt,omitempty"`
+	ASS    *ScriptedCueData `json:"ass,omitempty"`
+	SSA    *ScriptedCueData `json:"ssa,omitempty"`
 }
 
 type SubRipCueData struct {
@@ -204,8 +206,10 @@ type WebVTTSettingOccurrence struct {
 }
 
 type DocumentFormatData struct {
-	SubRip *SubRipDocumentData `json:"subrip,omitempty"`
-	WebVTT *WebVTTDocumentData `json:"webvtt,omitempty"`
+	SubRip *SubRipDocumentData   `json:"subrip,omitempty"`
+	WebVTT *WebVTTDocumentData   `json:"webvtt,omitempty"`
+	ASS    *ScriptedDocumentData `json:"ass,omitempty"`
+	SSA    *ScriptedDocumentData `json:"ssa,omitempty"`
 }
 
 type SubRipDocumentData struct {
@@ -254,6 +258,17 @@ type Stats struct {
 
 // Validate checks invariants that are intentionally clearer outside JSON Schema.
 func (document Document) Validate() error {
+	if document.SchemaVersion == "1.1.0-dev" && document.Schema == "https://cueson.io/schema/v1.1.0-dev/cueson.schema.json" && (document.Format == "ass" || document.Format == "ssa") {
+		return validateScriptedDocument(document)
+	}
+	if document.FormatData.ASS != nil || document.FormatData.SSA != nil {
+		return fmt.Errorf("scripted format_data requires the current scripted contract")
+	}
+	for index := range document.Cues {
+		if document.Cues[index].FormatData.ASS != nil || document.Cues[index].FormatData.SSA != nil {
+			return fmt.Errorf("cues[%d].format_data contains a scripted branch outside its contract", index)
+		}
+	}
 	if err := validateCollectionLimits(document); err != nil {
 		return err
 	}

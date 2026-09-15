@@ -215,7 +215,7 @@ func runRestore(ctx context.Context, options restoreOptions, stderr io.Writer, d
 		diagnostics.write(diagnosticError, "restore: Cue JSON acquisition failed")
 		return ExitRuntimeFailure
 	}
-	document, err := schema.Decode(payload)
+	loaded, err := loadCueJSONInput(ctx, payload, selectionBasisExplicit)
 	if err != nil {
 		diagnostics.write(diagnosticError, err.Error())
 		return ExitRuntimeFailure
@@ -226,7 +226,7 @@ func runRestore(ctx context.Context, options restoreOptions, stderr io.Writer, d
 	} else if options.noMetadata {
 		metadataMode = source.MetadataNone
 	}
-	report, err := source.Restore(ctx, document, source.RestoreOptions{Output: options.output, OutputDir: options.outputDir, Force: options.force, Metadata: metadataMode})
+	report, err := source.Restore(ctx, loaded.document, source.RestoreOptions{Output: options.output, OutputDir: options.outputDir, Force: options.force, Metadata: metadataMode})
 	if err != nil {
 		var precondition *source.PreconditionError
 		if errors.As(err, &precondition) {
@@ -741,8 +741,8 @@ func parseInvocation(args []string) (invocation, *invocationError) {
 		if parsed.render.target == "" {
 			return parsed, renderInvocationError("render requires --to FORMAT")
 		}
-		if parsed.render.target != "srt" && parsed.render.target != "subrip" && parsed.render.target != "vtt" && parsed.render.target != "webvtt" {
-			return parsed, renderInvocationError("--to must be srt or vtt")
+		if parsed.render.target != "srt" && parsed.render.target != "subrip" && parsed.render.target != "vtt" && parsed.render.target != "webvtt" && parsed.render.target != "ass" && parsed.render.target != "ssa" {
+			return parsed, renderInvocationError("--to must be srt, vtt, ass, or ssa; ASS/SSA renderers are unavailable")
 		}
 		if parsed.render.force && (!parsed.render.outputSet || parsed.render.output == "-") {
 			return parsed, renderInvocationError("--force requires a filesystem output")
