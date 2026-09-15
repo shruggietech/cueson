@@ -8,10 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added the S023 scripted-format milestone roadmap, native ASS/SSA preservation/rendering contract, exact historical v1 input compatibility matrix, and governed v1.1.0 epic with sixteen atomic release/public-hosting outcomes.
+
 - Added the branded `cueson.io` product and documentation site, deterministic repository-source generation, immutable versioned schema routes, Cloudflare Workers Static Assets deployment unit, independent artifact and production verification, and read-only pull-request site CI.
 - Published unsigned annotated tag `v1.0.0` and the exact thirteen-asset GitHub Release from accepted default-branch proof for `2cad4c816340404289b4d1d87179a4071713bb46`.
 
 ### Changed
+
+- Reconciled maintained current-state prose with completed v1 milestone closure, S021 public schema/site hosting and S022 verification, preserving chronological delivery evidence.
 
 - Bound production site deployment to a manually selected full `main` commit, serving the apex while permanently redirecting `www` with path and query preservation.
 - Reconciled current repository documentation after independently downloading and verifying every public v1.0.0 archive, SPDX JSON SBOM, and checksum file against the accepted release evidence.
@@ -21,6 +25,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-11: Treat root documentation, released schemas, and approved brand-kit files as authoritative inputs while keeping generated site content disposable and drift-checked.
 - 2026-09-11: Publish one Cloudflare Worker with Static Assets on the apex and `www`, permit production deployment only from an exact reviewed `main` revision, and retain independent DNS, TLS, redirect, route, revision, and byte-identity verification.
 - 2026-09-15: Evaluate A and AAAA independently in the production verifier's system and DNS-over-HTTPS paths, require usable typed address evidence from each resolver, and preserve all other verification and production-authority boundaries.
+
+- 2026-09-15: Plan ASS/SSA as a bounded compatible v1.1.0 addition, require exact historical v1.0.0 local schema/semantics on the future executable, and disclose old-consumer rejection of new output identities; reject unavoidable public breaks before minor release implementation.
+- 2026-09-15: Preserve matching native branch and physical-record ownership with checked attachment ranges, immutable source observations, usable derived dialogue and explicit whole-operation rejection for unsafe metadata or unsupported timing; retain existing shared safety ceilings and separate release/production authority.
 
 ### Fixed
 

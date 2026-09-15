@@ -1,0 +1,198 @@
+{
+  "assessment_date": "2026-09-15",
+  "baseline_commit": "5c75deee710e89349689789a5f854deb091069f4",
+  "milestone_number": 3,
+  "milestone_title": "v1.1.0",
+  "project_number": 3,
+  "project_title": "cueson Delivery",
+  "epic_issue": 51,
+  "issues": [
+    {
+      "draft_id": "epic",
+      "issue_number": 51,
+      "issue_id": 5460755718,
+      "node_id": "I_kwDOUTHZE88AAAABRXyFBg",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8qY",
+      "slice": null,
+      "direct_blockers": []
+    },
+    {
+      "draft_id": "P01",
+      "issue_number": 52,
+      "issue_id": 5460756449,
+      "node_id": "I_kwDOUTHZE88AAAABRXyH4Q",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8qc",
+      "slice": "S023",
+      "direct_blockers": [
+        49
+      ]
+    },
+    {
+      "draft_id": "P02",
+      "issue_number": 53,
+      "issue_id": 5460757105,
+      "node_id": "I_kwDOUTHZE88AAAABRXyKcQ",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8qs",
+      "slice": "S023",
+      "direct_blockers": [
+        52
+      ]
+    },
+    {
+      "draft_id": "P03",
+      "issue_number": 54,
+      "issue_id": 5460757814,
+      "node_id": "I_kwDOUTHZE88AAAABRXyNNg",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8q4",
+      "slice": "S023",
+      "direct_blockers": [
+        52
+      ]
+    },
+    {
+      "draft_id": "P04",
+      "issue_number": 55,
+      "issue_id": 5460758516,
+      "node_id": "I_kwDOUTHZE88AAAABRXyP9A",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8rA",
+      "slice": "S024",
+      "direct_blockers": [
+        54
+      ]
+    },
+    {
+      "draft_id": "P05",
+      "issue_number": 56,
+      "issue_id": 5460759097,
+      "node_id": "I_kwDOUTHZE88AAAABRXySOQ",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8rQ",
+      "slice": "S024",
+      "direct_blockers": [
+        53,
+        54
+      ]
+    },
+    {
+      "draft_id": "P06",
+      "issue_number": 57,
+      "issue_id": 5460759798,
+      "node_id": "I_kwDOUTHZE88AAAABRXyU9g",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8rg",
+      "slice": "S025",
+      "direct_blockers": [
+        56
+      ]
+    },
+    {
+      "draft_id": "P07",
+      "issue_number": 58,
+      "issue_id": 5460760535,
+      "node_id": "I_kwDOUTHZE88AAAABRXyX1w",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8ro",
+      "slice": "S025",
+      "direct_blockers": [
+        55,
+        57
+      ]
+    },
+    {
+      "draft_id": "P08",
+      "issue_number": 59,
+      "issue_id": 5460761114,
+      "node_id": "I_kwDOUTHZE88AAAABRXyaGg",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8r0",
+      "slice": "S025",
+      "direct_blockers": [
+        58
+      ]
+    },
+    {
+      "draft_id": "P09",
+      "issue_number": 60,
+      "issue_id": 5460761813,
+      "node_id": "I_kwDOUTHZE88AAAABRXyc1Q",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8r4",
+      "slice": "S026",
+      "direct_blockers": [
+        59
+      ]
+    },
+    {
+      "draft_id": "P10",
+      "issue_number": 61,
+      "issue_id": 5460762684,
+      "node_id": "I_kwDOUTHZE88AAAABRXygPA",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8sA",
+      "slice": "S026",
+      "direct_blockers": [
+        60
+      ]
+    },
+    {
+      "draft_id": "P11",
+      "issue_number": 62,
+      "issue_id": 5460763448,
+      "node_id": "I_kwDOUTHZE88AAAABRXyjOA",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8sM",
+      "slice": "S027",
+      "direct_blockers": [
+        61
+      ]
+    },
+    {
+      "draft_id": "P12",
+      "issue_number": 63,
+      "issue_id": 5460764164,
+      "node_id": "I_kwDOUTHZE88AAAABRXymBA",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8sk",
+      "slice": "S027",
+      "direct_blockers": [
+        62
+      ]
+    },
+    {
+      "draft_id": "P13",
+      "issue_number": 64,
+      "issue_id": 5460764700,
+      "node_id": "I_kwDOUTHZE88AAAABRXyoHA",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8s0",
+      "slice": "S028",
+      "direct_blockers": [
+        63
+      ]
+    },
+    {
+      "draft_id": "P14",
+      "issue_number": 65,
+      "issue_id": 5460765420,
+      "node_id": "I_kwDOUTHZE88AAAABRXyq7A",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8tI",
+      "slice": "S028",
+      "direct_blockers": [
+        64
+      ]
+    },
+    {
+      "draft_id": "P15",
+      "issue_number": 66,
+      "issue_id": 5460766137,
+      "node_id": "I_kwDOUTHZE88AAAABRXytuQ",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8tc",
+      "slice": "S029",
+      "direct_blockers": [
+        65
+      ]
+    },
+    {
+      "draft_id": "P16",
+      "issue_number": 67,
+      "issue_id": 5460766816,
+      "node_id": "I_kwDOUTHZE88AAAABRXywYA",
+      "project_item_id": "PVTI_lADOBpohEc4Bi59Izg7B8t4",
+      "slice": "S030",
+      "direct_blockers": [
+        66
+      ]
+    }
+  ]
+}

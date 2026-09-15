@@ -54,6 +54,12 @@ Unknown, malformed, unsupported, or non-representable source information is pres
 
 The dedicated [SubRip](formats/srt.md) and [WebVTT](formats/webvtt.md) pages define their stable v1 native grammars, diagnostics, fixtures, ingest, rendering, and conversion contracts. Conversion validates source-envelope integrity, projects only model data into a private target representation, computes its complete loss report before rendering, and keeps that target representation and report outside Cue JSON. Strict conversion rejects every known loss before output publication.
 
+## Planned scripted-format extension
+
+The [S023 roadmap](roadmap.md) groups future ASS/SSA schema compatibility, native fidelity, conversion, CLI integration and release/public hosting into coherent atomic outcomes. The [native contract](formats/ass-ssa.md) uses matching `format_data.ass`/`format_data.ssa` branches, one retained physical-record order, checked attachment record ranges and explicit editable ownership beside original source observations. This avoids duplicating attachment content and preserves the existing generic collection/input/diagnostic ceilings. No native implementation or pixel renderer is introduced by S023.
+
+The [future version contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) extends the existing shared validated-input boundary with exact local historical schema selection and version-specific semantics. Current output schema discovery/official lockstep remains separate from historical input support. Version constants alone are not compatibility proof, and unknown identities never authorize network retrieval. Current Go packages stay internal and existing runtime/source/schema behavior remains unchanged.
+
 ## Version and schema relationship
 
 The executable version has one build-version source under `internal/version`. The canonical schema has its own embedded identity and `schema_version`, and the build verifies equality rather than deriving one mutable value from the other. Official release success requires executable version, embedded schema version, and release tag version to agree.

@@ -37,6 +37,8 @@ The official Cueson identity is retained in the repository as the complete [bran
 
 The v1.0.0 history, immutable schema, and concise [release notes](docs/releases/v1.0.0.md) are bound to immutable annotated tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) at `2cad4c816340404289b4d1d87179a4071713bb46`. The [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) publishes the exact thirteen files accepted by default-branch proof run [34621429626](https://github.com/shruggietech/cueson/actions/runs/34621429626). [Release verification](docs/release-verification.md) records the independent public-byte check, and the governed [release process](docs/release-process.md) keeps milestone closure, signatures, attestations, public schema hosting, and production actions separately authorized.
 
+The [development roadmap](docs/roadmap.md) charts the operator-approved next v1.1.0 ASS/SSA milestone, its sixteen atomic issues and later XML, SAMI, broadcast and bitmap/OCR work. The [ASS/SSA page](docs/formats/ass-ssa.md) is a future implementation contract; the released v1.0.0 executable/schema still support only SubRip and WebVTT native workflows.
+
 ## Installation
 
 Download the archive for your platform from the [v1.0.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) and verify it with `cueson_1.0.0_checksums.txt`. Six pure-Go archives cover Windows, macOS, and Linux on amd64 and arm64, and each archive has a matching SPDX JSON SBOM.
