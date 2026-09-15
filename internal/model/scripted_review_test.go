@@ -1,0 +1,255 @@
+package model
+
+import (
+	"encoding/base64"
+	"slices"
+	"strings"
+	"testing"
+)
+
+func TestScriptedUnknownFieldsHaveContextualInertRoles(t *testing.T) {
+	for _, format := range []string{"ass", "ssa"} {
+		for _, c := range []struct{ context, name, value string }{
+			{"style", "SourceFile", "/home/alice/project.ass"}, {"style", "SourceFile", "relative.ass"}, {"style", "X-Native", "/workspace/private.ass"}, {"style", "ScriptType", "/root/private.ass"}, {"style", "Title", "/opt/private.ass"}, {"style", "Text", "/mnt/private.ass"}, {"event", "Fontname", "/workspace/private.ass"}, {"event", "SourceFile", "~/private.ass"}, {"style", "X-Native", "opaque/relative/path"},
+		} {
+			t.Run(format+"/"+c.context+"/"+c.name+"/"+c.value, func(t *testing.T) {
+				d := scriptedExample(t, format)
+				n := d.FormatData.ASS
+				if n == nil {
+					n = d.FormatData.SSA
+				}
+				field := ScriptedField{FieldName: c.name, RawValue: c.value}
+				if c.context == "style" {
+					n.Styles[0].Fields = append(n.Styles[0].Fields, field)
+					n.Records[1].DeclarationFields = append(n.Records[1].DeclarationFields, ScriptedDeclarationField{FieldName: c.name})
+				} else {
+					event := &n.Events[0]
+					event.Fields = append(event.Fields[:len(event.Fields)-1], field, event.Fields[len(event.Fields)-1])
+					decl := &n.Records[3]
+					decl.DeclarationFields = append(decl.DeclarationFields[:len(decl.DeclarationFields)-1], ScriptedDeclarationField{FieldName: c.name}, decl.DeclarationFields[len(decl.DeclarationFields)-1])
+				}
+				if err := d.Validate(); err == nil || !strings.Contains(err.Error(), "unsafe_source_metadata") {
+					t.Fatalf("unsafe structured extension accepted: %v", err)
+				}
+				// The original grammar uses the same actual style/event context, including
+				// names that happen to be canonical only in another native context.
+				original := scriptedExample(t, format)
+				b, _ := base64.StdEncoding.DecodeString(original.Source.Assets[0].DataBase64)
+				lines := strings.Split(string(b), "\n")
+				if c.context == "style" {
+					lines[3] += "," + c.name
+					lines[4] += "," + c.value
+				} else {
+					lines[6] = strings.Replace(lines[6], ", Text", ", "+c.name+", Text", 1)
+					lines[7] = strings.Replace(lines[7], ",,Hello", ",,"+c.value+",Hello", 1)
+				}
+				setScriptedSourceBytes(&original, []byte(strings.Join(lines, "\n")))
+				if err := original.Validate(); err == nil || !strings.Contains(err.Error(), "unsafe_source_metadata") {
+					t.Fatalf("unsafe original extension accepted: %v", err)
+				}
+			})
+		}
+	}
+	for _, profile := range []string{"ass-style", "ssa-style", "ass-event", "ssa-event"} {
+		name := "Text"
+		if strings.HasSuffix(profile, "-style") {
+			name = "Fontname"
+		}
+		if err := scriptedContentFieldPrivacy(name, "content discusses /workspace/captions.ass and ~/notes", 0, profile); err != nil {
+			t.Fatalf("explicit native content role %s: %v", profile, err)
+		}
+	}
+}
+
+func TestScriptedMetadataDetectsEveryAbsoluteAndHomePath(t *testing.T) {
+	for _, path := range []string{"/workspace/private.ass", "/opt/private.ass", "/root/private.ass", "/mnt/private.ass", "/unusual-prefix/private.ass", "~/private.ass", "~someone/private.ass", "note=/workspace/private.ass", "note[/opt/private.ass", "note>/workspace/private.ass", "note\u00a0~/private.ass", "(/root/private.ass)", "ftp://private.invalid/media"} {
+		d := scriptedExample(t, "ass")
+		title := path
+		d.Metadata.Title = &title
+		if err := d.Validate(); err == nil || !strings.Contains(err.Error(), "unsafe_source_metadata") {
+			t.Fatalf("document metadata path %q: %v", path, err)
+		}
+		d = scriptedExample(t, "ass")
+		order := 7
+		d.Diagnostics = []Diagnostic{{Severity: "warning", Code: "source_variant", Message: "Observed " + path, SourceOrder: &order}}
+		d.Stats.DiagnosticCount = 1
+		d.Stats.WarningCount = 1
+		if err := d.Validate(); err == nil || !strings.Contains(err.Error(), "unsafe_source_metadata") {
+			t.Fatalf("diagnostic path %q: %v", path, err)
+		}
+		d = scriptedExample(t, "ass")
+		b, _ := base64.StdEncoding.DecodeString(d.Source.Assets[0].DataBase64)
+		b = []byte(strings.Replace(string(b), "ScriptType: v4.00+", "ScriptType: v4.00+\nTitle: "+path, 1))
+		setScriptedSourceBytes(&d, b)
+		if err := d.Validate(); err == nil || !strings.Contains(err.Error(), "unsafe_source_metadata") {
+			t.Fatalf("original metadata path %q: %v", path, err)
+		}
+	}
+}
+
+func TestScriptedCaptureObservationsRequireVerifiedPhysicalEvidence(t *testing.T) {
+	for _, c := range []struct {
+		name   string
+		mutate func(*Document)
+	}{
+		{"raw recognized record", func(d *Document) { s := "Style: unrelated safe content"; d.FormatData.ASS.Records[2].RawLine = &s }},
+		{"raw header", func(d *Document) { s := "[Unrelated Safe Section]"; d.FormatData.ASS.Sections[2].RawHeader = &s }},
+		{"cue timestamp", func(d *Document) { s := "0:00:01.10"; d.Cues[0].FormatData.ASS.StartTimestampRaw = &s }},
+		{"native timestamp occurrence", func(d *Document) { d.FormatData.ASS.Events[0].Fields[1].RawValue = "0:00:01.10" }},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			d := scriptedExample(t, "ass")
+			c.mutate(&d)
+			if err := d.Validate(); err == nil || !strings.Contains(err.Error(), "inconsistent_source_capture") {
+				t.Fatalf("forged capture: %v", err)
+			}
+		})
+	}
+	for _, part := range []string{"hash", "length"} {
+		d := scriptedExample(t, "ass")
+		if part == "hash" {
+			d.Source.Assets[0].Hashes.SHA256 = strings.Repeat("0", 64)
+		} else {
+			d.Source.Assets[0].Size.Bytes++
+		}
+		if err := d.Validate(); err == nil || !strings.Contains(err.Error(), "source integrity") {
+			t.Fatalf("unverified source %s: %v", part, err)
+		}
+	}
+	for _, ending := range []string{"no_final_lf", "bom_crlf"} {
+		d := scriptedExample(t, "ass")
+		b, _ := base64.StdEncoding.DecodeString(d.Source.Assets[0].DataBase64)
+		if ending == "no_final_lf" {
+			b = []byte(strings.TrimSuffix(string(b), "\n"))
+		} else {
+			b = []byte("\ufeff" + strings.ReplaceAll(string(b), "\n", "\r\n"))
+			d.Source.Assets[0].Encoding = nil
+		}
+		setScriptedSourceBytes(&d, b)
+		if err := d.Validate(); err != nil {
+			t.Fatalf("truthful %s decoded observations: %v", ending, err)
+		}
+	}
+	// Structured edits may diverge from original raw capture. Original timing
+	// remains observed while common timing owns an independently editable value.
+	d := scriptedExample(t, "ass")
+	v := 22.0
+	d.FormatData.ASS.Styles[0].Fields[2].RawValue = "22"
+	d.FormatData.ASS.Styles[0].Fields[2].TypedValue.Decimal = &v
+	start, span := int64(1011), int64(989)
+	d.Cues[0].Timing.StartMilliseconds = start
+	d.Cues[0].Timing.DurationMilliseconds = span
+	d.Document.MediaStartMilliseconds = &start
+	d.Document.MediaSpanMilliseconds = &span
+	d.Stats.MediaSpanMilliseconds = &span
+	if err := d.Validate(); err != nil {
+		t.Fatalf("editable owners with truthful old captures: %v", err)
+	}
+	n := d.FormatData.ASS
+	for i := range n.Sections {
+		n.Sections[i].RawHeader = nil
+	}
+	for i := range n.Records {
+		n.Records[i].RawLine = nil
+	}
+	n.Styles[0].DeclarationID = nil
+	n.Events[0].DeclarationID = nil
+	d.Cues[0].FormatData.ASS.StartTimestampRaw = nil
+	d.Cues[0].FormatData.ASS.EndTimestampRaw = nil
+	n.Events[0].Fields[1].RawValue = "0:00:01.10"
+	if err := d.Validate(); err != nil {
+		t.Fatalf("constructed owners without invented captures: %v", err)
+	}
+}
+
+func TestScriptedCaptureOriginalReorderedStartFirstDeclaration(t *testing.T) {
+	d := scriptedExample(t, "ass")
+	n := d.FormatData.ASS
+	event := &n.Events[0]
+	event.Fields[0], event.Fields[1] = event.Fields[1], event.Fields[0]
+	decl := &n.Records[3]
+	decl.DeclarationFields[0], decl.DeclarationFields[1] = decl.DeclarationFields[1], decl.DeclarationFields[0]
+	b, _ := base64.StdEncoding.DecodeString(d.Source.Assets[0].DataBase64)
+	lines := strings.Split(string(b), "\n")
+	lines[6] = strings.Replace(lines[6], "Layer, Start", "Start, Layer", 1)
+	lines[7] = strings.Replace(lines[7], "Dialogue: 0,0:00:01.00", "Dialogue:   0:00:01.00,0", 1)
+	decl.RawLine = &lines[6]
+	n.Records[4].RawLine = &lines[7]
+	setScriptedSourceBytes(&d, []byte(strings.Join(lines, "\n")))
+	if err := d.Validate(); err != nil {
+		t.Fatalf("original Start-first framing: %v", err)
+	}
+}
+
+func TestScriptedUnknownPrefixOverridesRemainExactAndDiagnosed(t *testing.T) {
+	for _, text := range []string{`{\random1}text`, `{\fnonsense1}text`, `{\rdefault}text`, `{\fnarial}text`, `{\rUndeclared}text`, `{\fnUnknown Font}text`} {
+		facts, err := ProjectScriptedText(text, 0, 1000, 2000)
+		if err != nil || len(facts.Tags) != 1 || !slices.Contains(facts.DiagnosticCodes, "unsupported_override") {
+			t.Fatalf("opaque prefix %q: %#v %v", text, facts, err)
+		}
+		if facts.Tags[0].Name == "r" || facts.Tags[0].Name == "fn" || facts.Tags[0].Raw != text[1:len(text)-5] {
+			t.Fatalf("native tag identity/lexeme lost: %#v", facts.Tags)
+		}
+	}
+	names := ScriptedTextNames{ResetStyles: map[string]bool{"Default": true, "Style1": true}, FontFamilies: map[string]bool{"Arial": true, "Noto Sans": true}}
+	for _, c := range []struct{ text, name, parameter string }{{`{\rDefault}text`, "r", "Default"}, {`{\rStyle1}text`, "r", "Style1"}, {`{\fnArial}text`, "fn", "Arial"}, {`{\fnNoto Sans}text`, "fn", "Noto Sans"}} {
+		facts, err := ProjectScriptedText(c.text, 0, 1000, 2000, names)
+		if err != nil || len(facts.Tags) != 1 || facts.Tags[0].Name != c.name || facts.Tags[0].Parameter != c.parameter || len(facts.DiagnosticCodes) != 0 {
+			t.Fatalf("declared prefix identity %q: %#v %v", c.text, facts, err)
+		}
+	}
+}
+
+func TestScriptedCapturedCommentAndRepeatedEventsEvidence(t *testing.T) {
+	d := scriptedExample(t, "ass")
+	n := d.FormatData.ASS
+	event := &n.Events[0]
+	event.EventType = "comment"
+	event.CueID = nil
+	d.Cues = []Cue{}
+	d.Document = DocumentSummary{}
+	d.Stats = Stats{}
+	b, _ := base64.StdEncoding.DecodeString(d.Source.Assets[0].DataBase64)
+	lines := strings.Split(string(b), "\n")
+	lines[7] = strings.Replace(lines[7], "Dialogue:", "Comment:", 1)
+	n.Records[4].RawLine = &lines[7]
+	setScriptedSourceBytes(&d, []byte(strings.Join(lines, "\n")))
+	if err := d.Validate(); err != nil {
+		t.Fatalf("valid captured Comment: %v", err)
+	}
+	event.Fields[1].RawValue = "0:00:01.10"
+	if err := d.Validate(); err == nil || !strings.Contains(err.Error(), "inconsistent_source_capture") {
+		t.Fatalf("forged Comment timestamp: %v", err)
+	}
+	event.Fields[1].RawValue = "0:00:01.00"
+	second := *event
+	second.EventID = "event-second"
+	second.RecordID = "record-comment-second"
+	second.Fields = append([]ScriptedField{}, event.Fields...)
+	second.Fields[1].RawValue = "0:00:03.00"
+	second.Fields[2].RawValue = "0:00:04.00"
+	second.Fields[0], second.Fields[1] = second.Fields[1], second.Fields[0]
+	declarationID := "record-format-second"
+	second.DeclarationID = &declarationID
+	declaration := append([]ScriptedDeclarationField{}, n.Records[3].DeclarationFields...)
+	declaration[0], declaration[1] = declaration[1], declaration[0]
+	header := "[Events]"
+	formatLine := strings.Replace(lines[6], "Layer, Start", "Start, Layer", 1)
+	values := []string{}
+	for _, field := range second.Fields {
+		values = append(values, field.RawValue)
+	}
+	commentLine := "Comment:   " + strings.Join(values, ",")
+	n.Sections = append(n.Sections, ScriptedSection{SectionID: "section-events-second", SourceOrder: 8, Name: "Events", RawHeader: &header})
+	n.Records = append(n.Records, ScriptedRecord{RecordID: declarationID, SourceOrder: 9, SectionID: "section-events-second", Kind: "format_declaration", RawLine: &formatLine, DeclarationFields: declaration}, ScriptedRecord{RecordID: second.RecordID, SourceOrder: 10, SectionID: "section-events-second", Kind: "event", RawLine: &commentLine, EventID: &second.EventID})
+	n.Events = append(n.Events, second)
+	b, _ = base64.StdEncoding.DecodeString(d.Source.Assets[0].DataBase64)
+	setScriptedSourceBytes(&d, append(b, []byte(header+"\n"+formatLine+"\n"+commentLine+"\n")...))
+	if err := d.Validate(); err != nil {
+		t.Fatalf("repeated Events with distinct active Start-first Format: %v", err)
+	}
+	n.Events[1].Fields[0].RawValue = "0:00:01.00"
+	if err := d.Validate(); err == nil || !strings.Contains(err.Error(), "inconsistent_source_capture") {
+		t.Fatalf("capture borrowed from prior section: %v", err)
+	}
+}

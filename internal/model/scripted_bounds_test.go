@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/base64"
 	"fmt"
 	"strings"
 	"testing"
@@ -17,6 +18,18 @@ func addScriptedAttachment(d *Document, encoded string) {
 	header := "fontname: sample.ttf"
 	n.Records = append(n.Records, ScriptedRecord{RecordID: "record-font-header", SourceOrder: sectionOrder + 1, SectionID: "section-fonts", Kind: "attachment_header", RawLine: &header, AttachmentID: &aid}, ScriptedRecord{RecordID: "record-font-data", SourceOrder: sectionOrder + 2, SectionID: "section-fonts", Kind: "attachment_data", RawLine: &encoded})
 	n.Attachments = append(n.Attachments, ScriptedAttachment{AttachmentID: aid, HeaderRecordID: "record-font-header", DataStartRecordID: "record-font-data", DataRecordCount: 1, AttachmentType: "font", Name: "sample.ttf"})
+	syncScriptedAttachmentSource(d)
+}
+func syncScriptedAttachmentSource(d *Document) {
+	b, _ := base64.StdEncoding.DecodeString(d.Source.Assets[0].DataBase64)
+	prefix, _, _ := strings.Cut(string(b), "[Fonts]")
+	n := d.FormatData.ASS
+	if n == nil {
+		n = d.FormatData.SSA
+	}
+	header := *n.Records[len(n.Records)-2].RawLine
+	data := *n.Records[len(n.Records)-1].RawLine
+	setScriptedSourceBytes(d, []byte(prefix+"[Fonts]\n"+header+"\n"+data+"\n"))
 }
 func TestScriptedAttachmentRangeAndEncodedBounds(t *testing.T) {
 	for _, s := range []string{"!!", "!!!", "!!!!", strings.Repeat("!", 80)} {
@@ -45,6 +58,7 @@ func TestScriptedAttachmentRangeAndEncodedBounds(t *testing.T) {
 			d := scriptedExample(t, "ass")
 			addScriptedAttachment(&d, "!!")
 			c.change(&d)
+			syncScriptedAttachmentSource(&d)
 			e := d.Validate()
 			if e == nil || !strings.Contains(e.Error(), c.want) {
 				t.Fatalf("%v, want %s", e, c.want)

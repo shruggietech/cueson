@@ -1,6 +1,7 @@
 package model
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -21,6 +22,14 @@ func scriptedExample(t *testing.T, format string) Document {
 		t.Fatal(e)
 	}
 	return d
+}
+func setScriptedSourceBytes(d *Document, b []byte) {
+	asset := &d.Source.Assets[0]
+	asset.DataBase64 = base64.StdEncoding.EncodeToString(b)
+	asset.Size.Bytes = int64(len(b))
+	asset.Hashes.SHA256 = fmt.Sprintf("%x", sha256.Sum256(b))
+	size := fmt.Sprintf("%d bytes", len(b))
+	asset.Size.Text = &size
 }
 func TestScriptedModelCapturedAndConstructed(t *testing.T) {
 	for _, format := range []string{"ass", "ssa"} {
@@ -186,7 +195,7 @@ func TestScriptedUnknownFieldsAliasesAndContentRoles(t *testing.T) {
 	d.Cues[0].FormatData.ASS.Projection.SpeakerFieldName = &actor
 	b, _ := base64.StdEncoding.DecodeString(d.Source.Assets[0].DataBase64)
 	b = append(b, []byte("; content-role discussion of C:\\examples\\captions.ass\n")...)
-	d.Source.Assets[0].DataBase64 = base64.StdEncoding.EncodeToString(b)
+	setScriptedSourceBytes(&d, b)
 	if e := d.Validate(); e != nil {
 		t.Fatalf("unknown/reordered native fields, Actor alias, inert content comment: %v", e)
 	}

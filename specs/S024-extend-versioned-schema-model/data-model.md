@@ -6,7 +6,7 @@ The current1.1.0-dev pair and historical1.0.0 pair select immutable local resour
 
 ## Scripted document and physical sequence
 
-Matching ass/ssa branches own dialect, ordered sections/records/styles/events/attachments. Sections contain document-local section_id, source_order, exact name and optional raw_header capture. Records contain record_id, source_order, physically owning section_id, closed kind, optional raw_line capture and kind-specific fields/references. Section headers and records jointly own one contiguous physical sequence. Duplicate IDs, unowned records and sequence gaps reject.
+Matching ass/ssa branches own dialect, ordered sections/records/styles/events/attachments. Sections contain document-local section_id, source_order, exact name and optional raw_header capture. Records contain record_id, source_order, physically owning section_id, closed kind, optional raw_line capture and kind-specific fields/references. Section headers and records jointly own one contiguous physical sequence. Duplicate IDs, unowned records and sequence gaps reject. Nonnil capture observations must match their positions in the verified original asset; source-declared timestamp captures remain independent of edited common timing.
 
 format_declaration records contain ordered exact field names and recognized field identities. Their record_id is declaration_id. Declared fields apply only within their section occurrence until replacement. Recognized canonical dialect fields are mandatory/unique; Name/Actor is the only alias, final Text owns comma suffix.
 

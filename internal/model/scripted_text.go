@@ -19,10 +19,14 @@ type ScriptedTextFacts struct {
 	DrawingExcluded bool
 	DiagnosticCodes []string
 }
+type ScriptedTextNames struct {
+	ResetStyles  map[string]bool
+	FontFamilies map[string]bool
+}
 
 // ProjectScriptedText computes the ratified explicit-break/drawing/karaoke view.
 // It neither loads fonts nor simulates layout, wrapping, or pixels.
-func ProjectScriptedText(text string, wrap int, start, end int64) (ScriptedTextFacts, error) {
+func ProjectScriptedText(text string, wrap int, start, end int64, names ...ScriptedTextNames) (ScriptedTextFacts, error) {
 	f := ScriptedTextFacts{Lines: []string{}, Spans: []ScriptedSpan{}, Tags: []ScriptedTag{}, Karaoke: []ScriptedKaraoke{}, Tokens: []Token{}, DiagnosticCodes: []string{}}
 	if !scriptedPhysical(text) || wrap < 0 || wrap > 3 || start < 0 || end <= start {
 		return f, fmt.Errorf("inconsistent_projection")
@@ -137,15 +141,6 @@ func ProjectScriptedText(text string, wrap int, start, end int64) (ScriptedTextF
 			}
 			name := string(r[nameStart:p])
 			paramStart := p
-			// Recognized prefix tags have alphabetic parameters (notably \rStyle and \fnFont).
-			for _, prefix := range []string{"fn", "r"} {
-				if strings.HasPrefix(name, prefix) && len(name) > len(prefix) {
-					name = prefix
-					p = nameStart + len(prefix)
-					paramStart = p
-					break
-				}
-			}
 			depth := 0
 			for p < j {
 				if r[p] == '(' {
@@ -168,6 +163,26 @@ func ProjectScriptedText(text string, wrap int, start, end int64) (ScriptedTextF
 			}
 			if depth != 0 {
 				diag("malformed_override")
+			}
+			// Prefix-like unknown alphabetic identities are ambiguous. Split only
+			// when the complete suffix identifies declared native content exactly.
+			if len(names) > 0 {
+				full := string(r[nameStart:p])
+				for _, prefix := range []string{"fn", "r"} {
+					if !strings.HasPrefix(name, prefix) || len(name) <= len(prefix) {
+						continue
+					}
+					declared := names[0].ResetStyles
+					if prefix == "fn" {
+						declared = names[0].FontFamilies
+					}
+					suffix := full[len(prefix):]
+					if declared[suffix] {
+						name = prefix
+						paramStart = nameStart + len(prefix)
+						break
+					}
+				}
 			}
 			parameter := string(r[paramStart:p])
 			tag := ScriptedTag{Name: name, Parameter: parameter, StartScalar: a, EndScalar: p, Raw: string(r[a:p])}
@@ -235,7 +250,7 @@ func ProjectScriptedText(text string, wrap int, start, end int64) (ScriptedTextF
 	return f, nil
 }
 
-func validateScriptedProjection(c *Cue, e ScriptedEvent, n *ScriptedCueData, wrap int, diagnosticIndex map[string]bool) error {
+func validateScriptedProjection(c *Cue, e ScriptedEvent, n *ScriptedCueData, wrap int, diagnosticIndex map[string]bool, textNames ScriptedTextNames) error {
 	p := n.Projection
 	if p.Origin != "native_derived" || p.SourceEventID != e.EventID || nativeName(p.TextFieldName) != "text" || p.WrapStyle < 0 || p.WrapStyle > 3 {
 		return scriptedError("inconsistent_projection", c.SourceOrder)
@@ -243,7 +258,7 @@ func validateScriptedProjection(c *Cue, e ScriptedEvent, n *ScriptedCueData, wra
 	if p.WrapStyle != wrap {
 		return scriptedError("inconsistent_projection", c.SourceOrder)
 	}
-	f, err := ProjectScriptedText(e.Text, wrap, c.Timing.StartMilliseconds, c.Timing.EndMilliseconds)
+	f, err := ProjectScriptedText(e.Text, wrap, c.Timing.StartMilliseconds, c.Timing.EndMilliseconds, textNames)
 	if err != nil {
 		return scriptedError(err.Error(), c.SourceOrder)
 	}

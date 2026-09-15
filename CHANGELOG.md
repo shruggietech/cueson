@@ -32,9 +32,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-15: Preserve matching native branch and physical-record ownership with checked attachment ranges, immutable source observations, usable derived dialogue and explicit whole-operation rejection for unsafe metadata or unsupported timing; retain existing shared safety ceilings and separate release/production authority.
 - 2026-09-15: Stage S024 as exact `1.1.0-dev`, admit schema-only scripted models and nonempty zero-dialogue/null-bound summaries, and validate historical 1.0.0 with its frozen semantics. Final stable identity/immutable copy remain S028 work.
 - 2026-09-15: Replace current frozen-candidate packaging assumptions with explicit non-publishing development schema proof because canonical bytes now evolve; preserve historical evidence and separately authorized release/production boundaries.
+- 2026-09-15: Interpret alphabetic reset/font override suffixes conservatively through declared names, preserving ambiguous complete tag identities and raw Text; verify capture-only observations against original source positions independently of edited owners.
 
 ### Fixed
 
+- Bound signed and unsigned scripted colors before conversion, close native metadata path/context gaps, verify source capture observations and preserve unknown override names; align all active snapshot-verifier instructions with development mode.
 - Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.
 
 ## [1.0.0] - 2026-09-11

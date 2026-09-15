@@ -137,11 +137,26 @@ const (
 
 var scriptedID = regexp.MustCompile(`^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$`)
 var scriptedTime = regexp.MustCompile(`^([0-9]+):([0-5][0-9]):([0-5][0-9])\.([0-9]{2})$`)
-var metadataIdentity = regexp.MustCompile(`(?i)(?:[a-z]:[\\/]|\\\\|file:|https?://|/(?:home|users|tmp|var|etc)/|localhost|(?:host|machine|user)(?:name|id)\s*[:=])`)
+var metadataIdentity = regexp.MustCompile(`(?i)(?:[a-z]:[\\/]|\\\\|file:|[a-z][a-z0-9+.-]*://|(?:^|[^\p{L}\p{N}_])(?:/|~[^\s/\\]*[/\\])|localhost|(?:host|machine|user)(?:name|id)\s*[:=])`)
+var inertNativeScalar = regexp.MustCompile(`^[\p{L}\p{N} ._+&=#%()\[\]{}!;-]*$`)
 var assStyleNames = strings.Split("Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding", ",")
 var ssaStyleNames = strings.Split("Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,TertiaryColour,BackColour,Bold,Italic,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,AlphaLevel,Encoding", ",")
 var assEventNames = strings.Split("Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text", ",")
 var ssaEventNames = strings.Split("Marked,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text", ",")
+var scriptedFieldProfiles = func() map[string]map[string]bool {
+	profiles := map[string]map[string]bool{}
+	lists := map[string][]string{"ass-style": assStyleNames, "ssa-style": ssaStyleNames, "ass-event": assEventNames, "ssa-event": ssaEventNames, "metadata": strings.Split("Title,ScriptType,Collisions,PlayResX,PlayResY,PlayDepth,Timer,WrapStyle,ScaledBorderAndShadow,YCbCr Matrix,Synch Point", ",")}
+	profiles["scalar"] = map[string]bool{}
+	for profile, list := range lists {
+		profiles[profile] = map[string]bool{}
+		for _, name := range list {
+			n := nativeName(name)
+			profiles[profile][n] = true
+			profiles["scalar"][n] = true
+		}
+	}
+	return profiles
+}()
 
 func nativeName(s string) string {
 	s = asciiLower(strings.Trim(s, " "))
@@ -215,6 +230,10 @@ func validateScriptedDocument(doc Document) error {
 	if err = scriptedSourcePrivacy(doc.Source, doc.Format); err != nil {
 		return err
 	}
+	capture, err := inspectScriptedCaptureSource(doc.Source)
+	if err != nil {
+		return err
+	}
 	diagnosticIndex := map[string]bool{}
 	for _, diagnostic := range doc.Diagnostics {
 		if diagnostic.SourceOrder != nil {
@@ -255,6 +274,9 @@ func validateScriptedDocument(doc Document) error {
 		if s.RawHeader != nil && (!scriptedPhysical(*s.RawHeader) || metadataIdentity.MatchString(*s.RawHeader)) {
 			return scriptedError("unsafe_source_metadata", s.SourceOrder)
 		}
+		if s.RawHeader != nil && !capture.matches(s.SourceOrder, *s.RawHeader) {
+			return scriptedError("inconsistent_source_capture", s.SourceOrder)
+		}
 		sections[s.SectionID] = s
 	}
 	for _, section := range native.Sections {
@@ -279,6 +301,9 @@ func validateScriptedDocument(doc Document) error {
 		}
 		if r.RawLine != nil && !scriptedPhysical(*r.RawLine) {
 			return scriptedError("invalid_native_line", r.SourceOrder)
+		}
+		if r.RawLine != nil && !capture.matches(r.SourceOrder, *r.RawLine) {
+			return scriptedError("inconsistent_source_capture", r.SourceOrder)
 		}
 		if slices.Contains([]string{"blank", "comment", "unknown", "malformed", "attachment_data"}, r.Kind) && r.RawLine == nil {
 			return scriptedError("missing_capture_content", r.SourceOrder)
@@ -309,7 +334,7 @@ func validateScriptedDocument(doc Document) error {
 			if strings.EqualFold(strings.TrimSpace(field.FieldName), "ScriptType") && strings.TrimSpace(field.RawValue) != dialect {
 				return scriptedError("mismatched_native_dialect", r.SourceOrder)
 			}
-			if err = validateScriptedScalar(field, doc.Format, r.SourceOrder); err != nil {
+			if err = validateScriptedScalar(field, doc.Format, r.SourceOrder, "metadata"); err != nil {
 				return err
 			}
 			if strings.EqualFold(strings.TrimSpace(field.FieldName), "WrapStyle") {
@@ -375,6 +400,7 @@ func validateScriptedDocument(doc Document) error {
 	}
 	styles := map[string]ScriptedStyle{}
 	styleByName := map[string][]string{}
+	textNames := ScriptedTextNames{ResetStyles: map[string]bool{}, FontFamilies: map[string]bool{}}
 	last = -1
 	for _, s := range native.Styles {
 		r, ok := records[s.RecordID]
@@ -399,9 +425,9 @@ func validateScriptedDocument(doc Document) error {
 		}
 		for _, f := range s.Fields {
 			if s.Valid || f.TypedValue != nil {
-				err = validateScriptedScalar(f, doc.Format, r.SourceOrder)
+				err = validateScriptedScalar(f, doc.Format, r.SourceOrder, "style")
 			} else {
-				err = validateRetainedScriptedField(f, r.SourceOrder)
+				err = validateRetainedScriptedField(f, r.SourceOrder, doc.Format+"-style")
 			}
 			if err != nil {
 				return err
@@ -409,6 +435,10 @@ func validateScriptedDocument(doc Document) error {
 		}
 		styles[s.StyleID] = s
 		styleByName[s.Name] = append(styleByName[s.Name], s.StyleID)
+		if s.Valid {
+			textNames.ResetStyles[s.Name] = true
+			textNames.FontFamilies[fieldRaw(s.Fields, "fontname")] = true
+		}
 	}
 	events := map[string]ScriptedEvent{}
 	last = -1
@@ -446,14 +476,17 @@ func validateScriptedDocument(doc Document) error {
 			return scriptedError("invalid_dialogue_ownership", r.SourceOrder)
 		}
 		for _, f := range e.Fields {
+			if e.Valid && r.RawLine != nil && (nativeName(f.FieldName) == "start" || nativeName(f.FieldName) == "end") && capture.eventFields[r.SourceOrder][nativeName(f.FieldName)] != f.RawValue {
+				return scriptedError("inconsistent_source_capture", r.SourceOrder)
+			}
 			if !e.Valid && f.TypedValue == nil {
-				if err = validateRetainedScriptedField(f, r.SourceOrder); err != nil {
+				if err = validateRetainedScriptedField(f, r.SourceOrder, doc.Format+"-event"); err != nil {
 					return err
 				}
 				continue
 			}
 			if nativeName(f.FieldName) != "start" && nativeName(f.FieldName) != "end" {
-				if err = validateScriptedScalar(f, doc.Format, r.SourceOrder); err != nil {
+				if err = validateScriptedScalar(f, doc.Format, r.SourceOrder, "event"); err != nil {
 					return err
 				}
 			} else if _, err = scriptedMilliseconds(f.RawValue); err != nil {
@@ -477,7 +510,7 @@ func validateScriptedDocument(doc Document) error {
 		if event.EventType != "dialogue" && event.Valid && event.EventType == "comment" {
 			start, _ := scriptedMilliseconds(fieldRaw(event.Fields, "start"))
 			end, _ := scriptedMilliseconds(fieldRaw(event.Fields, "end"))
-			facts, projectionErr := ProjectScriptedText(event.Text, wrapStyle, start, end)
+			facts, projectionErr := ProjectScriptedText(event.Text, wrapStyle, start, end, textNames)
 			order := records[event.RecordID].SourceOrder
 			if projectionErr != nil || !slices.Equal(event.Spans, facts.Spans) || !slices.Equal(event.Tags, facts.Tags) || !equalScriptedKaraoke(event.Karaoke, facts.Karaoke) {
 				return scriptedError("inconsistent_projection", order)
@@ -530,7 +563,13 @@ func validateScriptedDocument(doc Document) error {
 				}
 			}
 		}
-		if err = validateScriptedProjection(c, e, n, wrapStyle, diagnosticIndex); err != nil {
+		if n.StartTimestampRaw != nil && capture.eventFields[c.SourceOrder]["start"] != *n.StartTimestampRaw {
+			return scriptedError("inconsistent_source_capture", c.SourceOrder)
+		}
+		if n.EndTimestampRaw != nil && capture.eventFields[c.SourceOrder]["end"] != *n.EndTimestampRaw {
+			return scriptedError("inconsistent_source_capture", c.SourceOrder)
+		}
+		if err = validateScriptedProjection(c, e, n, wrapStyle, diagnosticIndex, textNames); err != nil {
 			return err
 		}
 	}
@@ -667,15 +706,22 @@ func scriptedMilliseconds(s string) (int64, error) {
 	cc, _ := strconv.ParseInt(m[4], 10, 64)
 	return h*3_600_000 + mm*60_000 + ss*1000 + cc*10, nil
 }
-func validateScriptedScalar(f ScriptedField, format string, order int) error {
+func validateScriptedScalar(f ScriptedField, format string, order int, contexts ...string) error {
 	n := nativeName(f.FieldName)
-	if err := scriptedContentFieldPrivacy(f.FieldName, f.RawValue, order); err != nil {
+	profile := "scalar"
+	if len(contexts) > 0 {
+		profile = contexts[0]
+		if profile != "metadata" {
+			profile = format + "-" + profile
+		}
+	}
+	if err := scriptedContentFieldPrivacy(f.FieldName, f.RawValue, order, profile); err != nil {
 		return err
 	}
 	if !scriptedPhysical(f.RawValue) || (n != "text" && strings.Contains(f.RawValue, ",")) {
 		return scriptedError("invalid_native_field_value", order)
 	}
-	if n == "text" {
+	if n == "text" && scriptedFieldProfiles[profile][n] {
 		if f.TypedValue != nil && (f.TypedValue.Kind != "string" || f.TypedValue.String == nil || *f.TypedValue.String != f.RawValue) {
 			return scriptedError("inconsistent_typed_value", order)
 		}
@@ -688,7 +734,11 @@ func validateScriptedScalar(f ScriptedField, format string, order int) error {
 	var bv bool
 	var cv ScriptedColor
 	var err error
-	switch n {
+	typeName := n
+	if !scriptedFieldProfiles[profile][n] {
+		typeName = ""
+	}
+	switch typeName {
 	case "bold", "italic", "underline", "strikeout":
 		kind = "boolean"
 		iv, err = strconv.ParseInt(raw, 10, 64)
@@ -765,8 +815,8 @@ func validateScriptedScalar(f ScriptedField, format string, order int) error {
 	return nil
 }
 
-func validateRetainedScriptedField(f ScriptedField, order int) error {
-	if err := scriptedContentFieldPrivacy(f.FieldName, f.RawValue, order); err != nil {
+func validateRetainedScriptedField(f ScriptedField, order int, profile string) error {
+	if err := scriptedContentFieldPrivacy(f.FieldName, f.RawValue, order, profile); err != nil {
 		return err
 	}
 	if !scriptedPhysical(f.FieldName) || !scriptedPhysical(f.RawValue) || (nativeName(f.FieldName) != "text" && strings.Contains(f.RawValue, ",")) {
@@ -775,8 +825,12 @@ func validateRetainedScriptedField(f ScriptedField, order int) error {
 	return nil
 }
 
-func scriptedContentFieldPrivacy(name, value string, order int) error {
+func scriptedContentFieldPrivacy(name, value string, order int, profile string) error {
 	n := nativeName(name)
+	content := ((strings.HasSuffix(profile, "-event") && slices.Contains([]string{"text", "name", "style"}, n)) || (strings.HasSuffix(profile, "-style") && slices.Contains([]string{"fontname", "name"}, n)) || (profile == "scalar" && slices.Contains([]string{"text", "fontname", "name", "style"}, n))) && scriptedFieldProfiles[profile][n]
+	if !content && metadataIdentity.MatchString(value) {
+		return scriptedError("unsafe_source_metadata", order)
+	}
 	if strings.Contains(n, "automation") || strings.Contains(n, "script execution") || (n == "effect" && (strings.Contains(strings.ToLower(value), "template") || strings.Contains(strings.ToLower(value), "!code"))) {
 		if strings.TrimSpace(value) != "" {
 			return scriptedError("unsafe_active_content", order)
@@ -785,6 +839,26 @@ func scriptedContentFieldPrivacy(name, value string, order int) error {
 	}
 	if slices.Contains([]string{"audio uri", "audio file", "video file", "timecodes file", "keyframes file", "last style storage", "computer", "hostname", "machine", "username", "user id", "machine id"}, n) && strings.TrimSpace(value) != "" {
 		return scriptedError("unsafe_source_metadata", order)
+	}
+	if !scriptedFieldProfiles[profile][n] {
+		var compactBuilder strings.Builder
+		for _, r := range n {
+			if r != '_' && r != '-' && r != ' ' {
+				compactBuilder.WriteRune(r)
+			}
+		}
+		compact := compactBuilder.String()
+		for _, role := range []string{"file", "path", "uri", "resource", "source", "host", "machine", "user", "author", "account", "directory", "folder", "home", "device"} {
+			if strings.Contains(compact, role) && strings.TrimSpace(value) != "" {
+				return scriptedError("unsafe_source_metadata", order)
+			}
+		}
+		// Unknown additions are retained only in the closed inert scalar role.
+		// URI/path punctuation and unclassifiable extension values cannot obtain
+		// a content exemption by choosing an unrecognized native field name.
+		if metadataIdentity.MatchString(value) || !inertNativeScalar.MatchString(value) {
+			return scriptedError("unsafe_source_metadata", order)
+		}
 	}
 	return nil
 }
@@ -967,7 +1041,7 @@ func scriptedSourcePrivacy(source SourceEnvelope, format string) error {
 				values := strings.SplitN(value, ",", len(declaration))
 				if len(values) == len(declaration) {
 					for i, name := range declaration {
-						if err = scriptedContentFieldPrivacy(name, values[i], order); err != nil {
+						if err = scriptedContentFieldPrivacy(name, values[i], order, format+"-"+kind); err != nil {
 							return err
 						}
 					}
