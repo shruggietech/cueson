@@ -188,7 +188,7 @@ func projectScriptedTarget(ctx context.Context, source model.Document, targetFor
 	if (targetFormat != "ass" && targetFormat != "ssa") || len(translations) != len(source.Cues) || len(source.Cues) > model.MaxDocumentItems-8 {
 		return model.Document{}, nil, fmt.Errorf("invalid_scripted_target")
 	}
-	target := model.Document{Schema: schema.ID(), SchemaVersion: schema.Version(), Format: targetFormat, FormatSupport: model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, Producer: source.Producer, Source: cloneSourceEnvelope(source.Source), Metadata: model.Metadata{}, Cues: []model.Cue{}, Diagnostics: []model.Diagnostic{}}
+	target := model.Document{Schema: schema.ID(), SchemaVersion: schema.Version(), Format: targetFormat, FormatSupport: model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}, Producer: source.Producer, Source: cloneSourceEnvelope(source.Source), Metadata: model.Metadata{}, Cues: []model.Cue{}, Diagnostics: []model.Diagnostic{}}
 	native := &model.ScriptedDocumentData{Dialect: "v4.00+", Sections: []model.ScriptedSection{}, Records: []model.ScriptedRecord{}, Styles: []model.ScriptedStyle{}, Events: []model.ScriptedEvent{}, Attachments: []model.ScriptedAttachment{}}
 	styleSection := "V4+ Styles"
 	if targetFormat == "ssa" {

@@ -49,12 +49,12 @@ var orderedCommandSurface = []cliCommandSpec{
 	{
 		Name:        "encode",
 		Summary:     "Encode a subtitle source as Cue JSON.",
-		Description: "Encode a SubRip, WebVTT, or experimental ASS/SSA source as Cue JSON while preserving its exact source bytes.",
+		Description: "Encode a SubRip, WebVTT, or ASS/SSA source as Cue JSON while preserving its exact source bytes.",
 		Usage:       "cueson [global options] encode [options] INPUT",
 		Options: []cliOptionSpec{
 			{Spellings: []string{"-o", "--output"}, ValueName: "PATH", ValueKind: cliValuePath, Description: "Write Cue JSON to PATH (default INPUT.cueson.json)."},
 			{Spellings: []string{"-f", "--force"}, Description: "Replace an existing regular output file."},
-			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental."},
+			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, srt, vtt, ass, or ssa (default auto); ASS/SSA follow the bounded stable profile."},
 			{Spellings: []string{"--encoding"}, ValueName: "NAME", ValueKind: cliValueEncoding, Values: canonicalEncodingValues(), Description: "Select the source text encoding."},
 			{Spellings: []string{"--pretty"}, Description: "Indent Cue JSON output."},
 			{Spellings: []string{"--stdout"}, Description: "Write Cue JSON to stdout."},
@@ -106,7 +106,7 @@ var orderedCommandSurface = []cliCommandSpec{
 		Description: "Render validated Cue JSON from its structured model in its matching native subtitle format.",
 		Usage:       "cueson [global options] render [options] INPUT.cueson.json --to FORMAT",
 		Options: []cliOptionSpec{
-			{Spellings: []string{"--to"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"srt", "vtt", "ass", "ssa"}, Description: "Select srt, vtt, ass, or ssa; ASS/SSA are experimental."},
+			{Spellings: []string{"--to"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"srt", "vtt", "ass", "ssa"}, Description: "Select srt, vtt, ass, or ssa; ASS/SSA follow the bounded stable profile."},
 			{Spellings: []string{"-o", "--output"}, ValueName: "PATH", ValueKind: cliValuePath, Description: "Write native output to PATH instead of stdout."},
 			{Spellings: []string{"-f", "--force"}, Description: "Replace an existing regular output file."},
 			{Spellings: []string{"--strict"}, Description: "Reject known non-representable model content."},
@@ -127,10 +127,10 @@ var orderedCommandSurface = []cliCommandSpec{
 	{
 		Name:        "convert",
 		Summary:     "Convert SubRip, WebVTT, ASS, and SSA through the model.",
-		Description: "Convert Cue JSON or native subtitle input to a distinct supported target format; ASS/SSA are experimental.",
+		Description: "Convert Cue JSON or native subtitle input to a distinct supported target format; ASS/SSA follow the bounded stable profile.",
 		Usage:       "cueson [global options] convert [options] INPUT --to FORMAT",
 		Options: []cliOptionSpec{
-			{Spellings: []string{"--to"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"srt", "vtt", "ass", "ssa"}, Description: "Select srt, vtt, ass, or ssa; ASS/SSA are experimental."},
+			{Spellings: []string{"--to"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"srt", "vtt", "ass", "ssa"}, Description: "Select srt, vtt, ass, or ssa; ASS/SSA follow the bounded stable profile."},
 			{Spellings: []string{"--from"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, cueson, srt, vtt, ass, or ssa (default auto)."},
 			{Spellings: []string{"--encoding"}, ValueName: "NAME", ValueKind: cliValueEncoding, Values: canonicalEncodingValues(), Description: "Select the native source text encoding."},
 			{Spellings: []string{"-o", "--output"}, ValueName: "PATH", ValueKind: cliValuePath, Description: "Write native output to PATH instead of stdout."},
@@ -157,10 +157,10 @@ var orderedCommandSurface = []cliCommandSpec{
 	{
 		Name:        "validate",
 		Summary:     "Validate Cue JSON or a native subtitle without output.",
-		Description: "Validate Cue JSON, SubRip, WebVTT, or experimental ASS/SSA completely without creating or printing an output payload.",
+		Description: "Validate Cue JSON, SubRip, WebVTT, or ASS/SSA completely without creating or printing an output payload.",
 		Usage:       "cueson [global options] validate [options] INPUT",
 		Options: []cliOptionSpec{
-			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental."},
+			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA follow the bounded stable profile."},
 			{Spellings: []string{"--encoding"}, ValueName: "NAME", ValueKind: cliValueEncoding, Values: canonicalEncodingValues(), Description: "Select the native source text encoding."},
 		},
 		Notes: []string{
@@ -180,10 +180,10 @@ var orderedCommandSurface = []cliCommandSpec{
 	{
 		Name:        "inspect",
 		Summary:     "Inspect safe structural facts about an input.",
-		Description: "Inspect validated Cue JSON, SubRip, WebVTT, or experimental ASS/SSA as a privacy-bounded structural report.",
+		Description: "Inspect validated Cue JSON, SubRip, WebVTT, or ASS/SSA as a privacy-bounded structural report.",
 		Usage:       "cueson [global options] inspect [options] INPUT",
 		Options: []cliOptionSpec{
-			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental."},
+			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA follow the bounded stable profile."},
 			{Spellings: []string{"--encoding"}, ValueName: "NAME", ValueKind: cliValueEncoding, Values: canonicalEncodingValues(), Description: "Select the native source text encoding."},
 			{Spellings: []string{"--json"}, Description: "Write the compact inspection report version 1 as JSON."},
 		},

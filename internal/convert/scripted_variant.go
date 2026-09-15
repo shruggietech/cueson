@@ -32,7 +32,7 @@ func projectScriptedVariant(ctx context.Context, source model.Document, targetFo
 	}
 	target := source
 	target.Format = targetFormat
-	target.FormatSupport = model.FormatSupport{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
+	target.FormatSupport = model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
 	target.Metadata = model.Metadata{}
 	target.Source = cloneSourceEnvelope(source.Source)
 	target.Cues = append([]model.Cue{}, source.Cues...)

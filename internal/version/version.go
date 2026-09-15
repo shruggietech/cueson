@@ -5,10 +5,10 @@ import "strings"
 
 const releaseMarkerPrefix = "cueson-release-version:"
 
-// current is the development-build version.
-var current = "1.1.0-dev"
+// current is the current source-build contract version.
+var current = "1.1.0"
 
-// releaseOverride remains empty in development builds. Release tooling injects
+// releaseOverride remains empty in source builds. Release tooling injects
 // the version with a distinctive prefix so artifact verification can prove the
 // public version of foreign-target binaries without executing them.
 var releaseOverride string

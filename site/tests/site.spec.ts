@@ -4,7 +4,7 @@ import { expectMetadata, expectNoHorizontalOverflow } from "./helpers";
 
 const routes = [
   "/", "/docs/", "/docs/architecture/", "/docs/cli/", "/docs/schema/", "/docs/formats/subrip/",
-  "/docs/formats/webvtt/", "/docs/conversion/", "/docs/compatibility/", "/docs/brand/", "/docs/security/",
+  "/docs/formats/webvtt/", "/docs/formats/ass-ssa/", "/docs/conversion/", "/docs/compatibility/", "/docs/brand/", "/docs/security/",
   "/docs/contributing/", "/docs/changelog/", "/docs/releases/v1.0.0/", "/docs/releases/v0.0.0/",
   "/docs/release-process/", "/docs/release-verification/", "/docs/project-management/", "/docs/project-specification/",
   "/guides/media-formats/",
@@ -81,4 +81,15 @@ test("keyboard focus is visible", async ({ page }) => {
 test("versioned schemas exist and latest is absent", async ({ request }) => {
   for (const version of ["v0.0.0", "v1.0.0"]) expect((await request.get(`/schema/${version}/cueson.schema.json`)).status()).toBe(200);
   expect((await request.get("/schema/latest/cueson.schema.json")).status()).toBe(404);
+  expect((await request.get("/schema/v1.1.0/cueson.schema.json")).status()).toBe(404);
+});
+
+test("ASS and SSA candidate guide is navigable without advertising a published candidate", async ({ page }) => {
+  test.skip(test.info().project.name !== "desktop-1440", "sidebar navigation needs one desktop width");
+  await page.goto("/docs/formats/ass-ssa/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("ASS and SSA");
+  await expect(page.locator("main")).toContainText("unpublished 1.1.0 candidate");
+  await expect(page.getByRole("link", { name: "ASS and SSA", exact: true }).first()).toBeVisible();
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: /Download v1.0.0/i })).toHaveAttribute("href", /releases\/tag\/v1\.0\.0/);
 });

@@ -1,6 +1,6 @@
 # Conversion contract
 
-**Current status:** Stable SubRip/WebVTT conversion published in v1.0.0; S026 adds the complete experimental four-format graph in unreleased 1.1.0-dev
+**Current status:** Frozen stable four-format, twelve-direction conversion in the unpublished 1.1.0 candidate; published v1.0.0 retains SubRip/WebVTT conversion
 
 **Historical release status:** v0.0.0 does not include conversion
 
@@ -12,7 +12,7 @@ SubRip and WebVTT conversion preserves cue order, integer-millisecond timing, ov
 
 The loss report is deterministic and privacy-bounded. It contains stable codes, fixed messages, source and target formats, portable JSON Pointer paths, source-order references, cue IDs already present in the model, and small controlled context attributes. It never contains source bytes, caller paths, or machine identity. More than 8,192 atomic losses rejects the conversion rather than truncating the report.
 
-All twelve ordered distinct pairs among SubRip, WebVTT, ASS v4+, and SSA v4 are available for their documented baselines. ASS/SSA remain experimental. Scripted conversion preserves the immutable original source envelope and constructs a private target model; target defaults and derived target owners do not become observations of original source provenance or a new Cue JSON envelope. The original document and all asset integrity checks complete before analysis.
+All twelve ordered distinct pairs among SubRip, WebVTT, ASS v4+, and SSA v4 are available for their documented baselines. ASS/SSA use the frozen bounded stable profile. Scripted conversion preserves the immutable original source envelope and constructs a private target model; target defaults and derived target owners do not become observations of original source provenance or a new Cue JSON envelope. The original document and all asset integrity checks complete before analysis.
 
 Scripted sources preserve readable dialogue, integer-millisecond timing, and representable bold/italic/underline style and override emphasis when targeting text. Every omitted native metadata/style/event field, unsupported override, drawing span, attachment, and other retained native occurrence is accounted for independently. Source framing, ownership IDs, capture lexemes, and canonical declaration order are serialization choices rather than semantic losses. Unused styles still own observed presentation values and receive applicable field losses.
 
@@ -103,4 +103,4 @@ Drawing-only or entirely unreadable dialogue is fatal for scripted-to-text conve
 | ASS | SSA | Dialogue/native owners retain representable semantics; observed dialect-only columns mean a canonical baseline can be lossy. | Layer, ASS-only style columns, outline/back/alpha roles, and incompatible dialect fields or controls. | Malformed owners, unsupported alignment/scalars, unsafe captures, target reparse or bounds. |
 | SSA | ASS | Dialogue/native owners retain representable semantics; observed dialect-only columns mean a canonical baseline can be lossy. | Marked, TertiaryColour, AlphaLevel/color roles, and incompatible dialect fields or controls. | Malformed owners, unsupported alignment/scalars, unsafe captures, target reparse or bounds. |
 
-Same-format transformation belongs to `cueson render`, not `cueson convert`. The accepted grammar, native-fidelity rules, and row-level conformance evidence remain in the [SubRip](formats/srt.md), [WebVTT](formats/webvtt.md), and [ASS/SSA](formats/ass-ssa.md) contracts. Full release-wide CLI integration and hardening remain #62/#63; stable freeze and publication remain later separately governed gates.
+Same-format transformation belongs to `cueson render`, not `cueson convert`. The accepted grammar, native-fidelity rules, and row-level conformance evidence remain in the [SubRip](formats/srt.md), [WebVTT](formats/webvtt.md), and [ASS/SSA](formats/ass-ssa.md) contracts. S027 completes shared CLI discovery and conformance hardening; S028 freezes the stable candidate. Release publication and public hosting remain separately authorized #66/#67 outcomes.

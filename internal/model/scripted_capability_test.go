@@ -7,6 +7,7 @@ func TestScriptedCapabilityObservationsRemainTruthful(t *testing.T) {
 		for _, support := range []FormatSupport{
 			{Status: "schema_only", RestoreSupported: true},
 			{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+			{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
 		} {
 			d := scriptedExample(t, format)
 			d.FormatSupport = support
@@ -20,7 +21,7 @@ func TestScriptedCapabilityObservationsRemainTruthful(t *testing.T) {
 			{Status: "experimental", RenderSupported: true, RestoreSupported: true},
 			{Status: "experimental", IngestSupported: true, RenderSupported: true},
 			{Status: "experimental", IngestSupported: true, RenderSupported: true, RestoreSupported: true, OCRRequiredForSemanticOutput: true},
-			{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true},
+			{Status: "stable", IngestSupported: true, RestoreSupported: true},
 		} {
 			d := scriptedExample(t, format)
 			d.FormatSupport = support

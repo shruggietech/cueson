@@ -53,6 +53,31 @@ test("generated schemas retain immutable repository bytes and latest is absent",
     assert.deepEqual(generated, source);
   }
   await assert.rejects(readFile(path.join(siteRoot, "public", "schema", "latest", "cueson.schema.json")), { code: "ENOENT" });
+  await assert.rejects(readFile(path.join(siteRoot, "public", "schema", "v1.1.0", "cueson.schema.json")), { code: "ENOENT" });
+});
+
+test("candidate format navigation derives from authored routes while public releases stay unchanged", async () => {
+  const contentMap = await loadContentMap(siteRoot);
+  await generateSite({ repoRoot, siteRoot });
+  const formatDocs = [...contentMap.documents].sort((a, b) => a.order - b.order)
+    .filter((document) => document.slug.length === 2 && document.slug[0] === "formats");
+  assert.ok(formatDocs.some((document) => document.source === "docs/formats/ass-ssa.md" && document.slug[1] === "ass-ssa"));
+  const meta = JSON.parse(await readFile(path.join(siteRoot, "content", "generated", "formats", "meta.json"), "utf8"));
+  assert.deepEqual(meta.pages, formatDocs.map((document) => document.slug[1]));
+  const source = "See [ASS/SSA](formats/ass-ssa.md#encoding-timing-and-source-authority).";
+  assert.equal(rewriteMarkdownLinks(source, "docs/architecture.md", contentMap), "See [ASS/SSA](/docs/formats/ass-ssa/#encoding-timing-and-source-authority).");
+  assert.deepEqual(contentMap.schemas.map((schema) => schema.version), ["0.0.0", "1.0.0"]);
+  assert.ok(contentMap.downloads.every((download) => download.url.includes("/download/v1.0.0/")));
+  const rendered = await readFile(path.join(siteRoot, "content", "generated", "formats", "ass-ssa.mdx"), "utf8");
+  assert.match(rendered, /unpublished 1\.1\.0 candidate/);
+  assert.doesNotMatch(rendered, /Unavailable for scripted formats|conversion and the complete later CLI freeze remain deferred/);
+  const guide = await readFile(path.join(siteRoot, "public", "guides", "media-formats", "index.html"), "utf8");
+  for (const dialect of ["ASS", "SSA"]) {
+    const row = guide.match(new RegExp(`<div class="format-name">${dialect}</div>[\\s\\S]*?</tr>`));
+    assert.ok(row, `${dialect} support row is absent`);
+    assert.match(row[0], /Candidate 1\.1\.0/);
+    assert.doesNotMatch(row[0], /status-future">Future/);
+  }
 });
 
 test("deployment workflow is manual-only and binds a full main revision", async () => {

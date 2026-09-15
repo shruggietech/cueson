@@ -1,10 +1,10 @@
-Inspect validated Cue JSON, SubRip, WebVTT, or experimental ASS/SSA as a privacy-bounded structural report.
+Inspect validated Cue JSON, SubRip, WebVTT, or ASS/SSA as a privacy-bounded structural report.
 
 Usage:
   cueson [global options] inspect [options] INPUT
 
 Options:
-  --format FORMAT  Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental.
+  --format FORMAT  Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA follow the bounded stable profile.
   --encoding NAME  Select the native source text encoding.
   --json           Write the compact inspection report version 1 as JSON.
 

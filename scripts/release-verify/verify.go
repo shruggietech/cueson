@@ -56,19 +56,20 @@ type Target struct {
 }
 
 type ReleaseEvidence struct {
-	Version             string   `json:"version"`
-	Development         bool     `json:"development,omitempty"`
-	IntendedTag         string   `json:"intended_tag"`
-	SourceRevision      string   `json:"source_revision"`
-	ReleaseSchemaSHA256 string   `json:"release_schema_sha256"`
-	LicenseSHA256       string   `json:"license_sha256"`
-	NoticeSHA256        string   `json:"notice_sha256"`
-	ArchiveCount        int      `json:"archive_count"`
-	SBOMCount           int      `json:"sbom_count"`
-	ChecksumCount       int      `json:"checksum_count"`
-	HostExecuted        *string  `json:"host_executed"`
-	Targets             []Target `json:"targets"`
-	Published           bool     `json:"published"`
+	Version             string       `json:"version"`
+	Development         bool         `json:"development,omitempty"`
+	IntendedTag         string       `json:"intended_tag"`
+	SourceRevision      string       `json:"source_revision"`
+	ReleaseSchemaSHA256 string       `json:"release_schema_sha256"`
+	LicenseSHA256       string       `json:"license_sha256"`
+	NoticeSHA256        string       `json:"notice_sha256"`
+	ArchiveCount        int          `json:"archive_count"`
+	SBOMCount           int          `json:"sbom_count"`
+	ChecksumCount       int          `json:"checksum_count"`
+	HostExecuted        *string      `json:"host_executed"`
+	Targets             []Target     `json:"targets"`
+	Published           bool         `json:"published"`
+	NativeProof         *NativeProof `json:"native_proof,omitempty"`
 }
 
 type archiveMember struct {
@@ -206,6 +207,7 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	}
 
 	var hostExecuted *string
+	var nativeProof *NativeProof
 	for index := range targets {
 		target := &targets[index]
 		archivePath := filepath.Join(distDir, target.Archive)
@@ -246,6 +248,13 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 			if err := verifyHostCLI(ctx, binaryBytes, target.Binary, canonicalSchema, config.Version); err != nil {
 				return evidence, fmt.Errorf("execute %s: %w", target.Archive, err)
 			}
+			if config.Version == "1.1.0" && !config.Development {
+				proof, err := verifyStableHostCLI(ctx, binaryBytes, target.Binary, repoDir, config.Version)
+				if err != nil {
+					return evidence, fmt.Errorf("execute stable workflows %s: %w", target.Archive, err)
+				}
+				nativeProof = &proof
+			}
 			identity := target.GOOS + "/" + target.GOARCH
 			hostExecuted = &identity
 		}
@@ -258,7 +267,7 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 		Version: config.Version, Development: config.Development, IntendedTag: "v" + config.Version,
 		SourceRevision: config.Commit, ReleaseSchemaSHA256: releaseSchemaDigest, LicenseSHA256: license.sha256, NoticeSHA256: notice.sha256,
 		ArchiveCount: len(targets), SBOMCount: len(targets), ChecksumCount: len(checksums),
-		HostExecuted: hostExecuted, Targets: targets, Published: false,
+		HostExecuted: hostExecuted, Targets: targets, Published: false, NativeProof: nativeProof,
 	}, nil
 }
 

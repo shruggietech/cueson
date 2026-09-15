@@ -46,7 +46,7 @@ func TestScriptedGenericCommandsAndStrictConversionRefusal(t *testing.T) {
 						t.Fatal(err)
 					}
 					capabilities := report.Capabilities
-					if report.Format != format || report.Schema.Version != "1.1.0-dev" || capabilities.Declared.Status != "schema_only" || !capabilities.Installed.Ingest || !capabilities.Installed.Render || !capabilities.Installed.Restore || !capabilities.Installed.Validate || !capabilities.Installed.Inspect {
+					if report.Format != format || report.Schema.Version != "1.1.0" || capabilities.Declared.Status != "schema_only" || !capabilities.Installed.Ingest || !capabilities.Installed.Render || !capabilities.Installed.Restore || !capabilities.Installed.Validate || !capabilities.Installed.Inspect {
 						t.Fatalf("scripted report = %#v", report)
 					}
 				}

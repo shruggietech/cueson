@@ -94,9 +94,9 @@ func TestRegistryRejectsIncompleteOrApproximateIdentity(t *testing.T) {
 			doc["$schema"] = "https://cueson.io/schema/v9.0.0/cueson.schema.json"
 			doc["schema_version"] = "9.0.0"
 		}},
-		{"unpromoted release identity", func(doc map[string]any) {
-			doc["$schema"] = "https://cueson.io/schema/v1.1.0/cueson.schema.json"
-			doc["schema_version"] = "1.1.0"
+		{"unreleased development identity", func(doc map[string]any) {
+			doc["$schema"] = "https://cueson.io/schema/v1.1.0-dev/cueson.schema.json"
+			doc["schema_version"] = "1.1.0-dev"
 		}},
 		{"unsupported envelope", func(doc map[string]any) {
 			doc["$schema"] = "https://cueson.io/schema/v0.0.0/cueson.schema.json"

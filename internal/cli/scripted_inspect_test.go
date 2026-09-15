@@ -55,7 +55,7 @@ func TestScriptedInspectionCountsRetainedNativeOwners(t *testing.T) {
 					if report.Blocks.Total != 0 || report.Document.NonCueBlockCount != 0 || report.Document.BodyItemCount != report.Document.CueCount || report.Scripted.DialogueEventCount != report.Document.CueCount {
 						t.Fatalf("native records redefined common/WebVTT counts: %+v", report)
 					}
-					if report.Capabilities.Declared.Status != "experimental" || !report.Capabilities.Installed.Ingest || !report.Capabilities.Installed.Render {
+					if report.Capabilities.Declared.Status != "stable" || !report.Capabilities.Installed.Ingest || !report.Capabilities.Installed.Render {
 						t.Fatalf("native capabilities = %+v", report.Capabilities)
 					}
 					assertInspectionJSONKeys(t, []byte(output))

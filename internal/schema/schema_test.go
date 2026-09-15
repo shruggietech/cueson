@@ -19,10 +19,10 @@ func TestCanonicalSchemaAndRepresentative(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Decode(Representative()) error = %v", err)
 	}
-	if got, want := ID(), "https://cueson.io/schema/v1.1.0-dev/cueson.schema.json"; got != want {
+	if got, want := ID(), "https://cueson.io/schema/v1.1.0/cueson.schema.json"; got != want {
 		t.Errorf("ID() = %q, want %q", got, want)
 	}
-	if got, want := Version(), "1.1.0-dev"; got != want {
+	if got, want := Version(), "1.1.0"; got != want {
 		t.Errorf("Version() = %q, want %q", got, want)
 	}
 	if document.Schema != ID() || document.SchemaVersion != Version() {

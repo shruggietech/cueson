@@ -1,8 +1,8 @@
 # Cueson development roadmap
 
-**Status:** S023-S026 merged; S027 scripted CLI/conformance hardening in progress
+**Status:** S023-S027 merged; S028 frozen v1.1.0 candidate in progress
 
-**Assessed:** 2026-09-15 against merged S026 main revision `771240800aa9ebec35ba3fab19e054cc10a81e74`, all active issues, native dependencies, and milestone/Project state.
+**Assessed:** 2026-09-15 against merged S027 main revision `351036cc0c6972aa6f5953af591d4f49df718695`, all active issues, native dependencies, and milestone/Project state.
 
 ## Current delivery state
 
@@ -14,19 +14,23 @@ S023 merged through PR #68 and planning issues #52, #53 and #54 are closed. S024
 
 S026 merged through PR #71 at `771240800aa9ebec35ba3fab19e054cc10a81e74`, closing #60/#61 with all twelve conversion directions and complete loss/publication evidence. Post-merge CI, CodeQL, Site and Release proof passed on that exact revision. The fresh S027 assessment found no new active arrivals: epic #51 and #62-#67 remain open, with ten of sixteen atomic children complete. S027 combines #62/#63 to finish shared catalogue discovery, privacy-safe scripted inspection, filesystem-free meaningful fuzzing, independent capture ceilings, strict matrix evidence and native restoration/safety conformance. Preserve #62's existing command classes and execute its acceptance before closing #63; stable/release/public hosting remain #64-#67.
 
+S027 merged through PR #72 at `351036cc0c6972aa6f5953af591d4f49df718695`, closing #62/#63. All exact-main CI, CodeQL, Site and Release proof checks passed. Post-merge housekeeping synchronized clean main, verified automatic remote head deletion and corrected Project Done stages with unused default Status. Fresh S028 kickoff found no new arrivals: epic #51 and #64-#67 remain open, with twelve of sixteen atomic children complete. S028 combines #64/#65 into the frozen public-contract and exact non-publishing 1.1.0 candidate narrative; #64 acceptance precedes #65. Official release and exact-main public schema/site hosting remain #66/#67.
+
+S028 promotes only the exact current contract and official native declarations to 1.1.0 stable within the bounded profile. Valid schema-only and complete experimental declarations remain input observations; installed capability never rewrites them. Development identity is not a new historical contract. Current canonical/immutable/emitted/package equality, stable native evidence, published old-consumer refusal and six-target package proof supplement S027's development conformance. Authored ASS/SSA preview/navigation can be built, while published download metadata and the two public schema routes remain unchanged until public hosting is authorized.
+
 ## Next release scope and compatibility gate
 
 The next major delivery milestone targets **v1.1.0: stable documented ASS/SSA native workflows, preserved historical v1.0.0 input handling, verified official release assets and immutable public schema/site hosting**. It is a compatible minor-release target, not a major-version change. Any unavoidable established CLI/schema break blocks this target and requires an explicit major-version decision before proceeding.
 
 Selecting ASS/SSA first is an explicit deviation from treating draft section order as execution priority: the [main working specification](Cueson-Project-Specification-v0.0.0.md) lists future families without ranking them. Two related text-native dialects share sections/styles/events, retained overrides, semantic dialogue, model rendering and one conversion verification surface. This reuses the source envelope, registry, loss reports, corpus, annotations and pure-Go proof without prematurely adding an XML profile stack or binary/OCR runtime. Every other candidate remains below; the ordering is a cohesion judgment rather than a promised effort estimate.
 
-The [future ASS/SSA contract](formats/ass-ssa.md) pins a bounded ASS v4+/SSA v4 UTF-8 profile, accepted/rejected semantics, retained native structures and edit ownership. It does not promise a pixel/video renderer, legacy codepage decoding or arbitrary external-resource loading. Source fidelity and privacy remain binding: retain accepted native/source information or reject an unsafe whole operation, never silently sanitize raw fields or mislabel lossy conversion.
+The [ASS/SSA contract](formats/ass-ssa.md) pins a bounded ASS v4+/SSA v4 UTF-8 profile, accepted/rejected semantics, retained native structures and edit ownership. It does not promise a pixel/video renderer, legacy codepage decoding or arbitrary external-resource loading. Source fidelity and privacy remain binding: retain accepted native/source information or reject an unsafe whole operation, never silently sanitize raw fields or mislabel lossy conversion.
 
 The [future exact-version compatibility contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) requires historical 1.0.0 schema/semantics on the new executable, current exact output identity and version-aware capabilities. Current v1.0.0 and planned v1.1.0 reject v0.0.0 identity; the historical v0 binary remains unchanged. Old exact-version consumers reject new 1.1.0 documents and must explicitly add that contract. A constant bump or identity-relaxing schema comparison does not prove compatibility.
 
 ## Chronological execution slices
 
-Each slice runs the installed Spec Kit/autopilot workflow end-to-end with one integrated implementation/review/verification story. S027 is active; later codes/groupings are provisional until their kickoff and must be reassessed after each merge and any new issue. Preserve atomic acceptance criteria if analysis requires a narrower reviewable implementation session.
+Each slice runs the installed Spec Kit/autopilot workflow end-to-end with one integrated implementation/review/verification story. S028 is active; later codes/groupings are provisional until their kickoff and must be reassessed after each merge and any new issue. Preserve atomic acceptance criteria if analysis requires a narrower reviewable implementation session.
 
 | Order | Proposed slice | Atomic children | Complete outcome and shared verification |
 |---|---|---|---|
@@ -64,7 +68,7 @@ The native blocked-by graph is acyclic and transitively reduced. Same-slice coor
 | [#66](https://github.com/shruggietech/cueson/issues/66) | [#65](https://github.com/shruggietech/cueson/issues/65) | Publish and independently verify v1.1.0 |
 | [#67](https://github.com/shruggietech/cueson/issues/67) | [#66](https://github.com/shruggietech/cueson/issues/66) | Publish the v1.1.0 schema and documentation on cueson.io |
 
-Each child has the governed six-section body and independent acceptance/verification, one milestone, governed labels and exactly one Project item. Stage reflects actual progress, owning Slice is child planning text, and default Status stays unused. The spanning epic has no single Slice. S023-S026 children are Done; S027 children move through implementation and PR review, and downstream children stay Backlog until their open native prerequisites clear. Use Specced, Ready, In progress, Release verification or Done only with the corresponding evidence. Native assignees, parents/dependencies and milestone facts are not copied into custom fields.
+Each child has the governed six-section body and independent acceptance/verification, one milestone, governed labels and exactly one Project item. Stage reflects actual progress, owning Slice is child planning text, and default Status stays unused. The spanning epic has no single Slice. S023-S027 children are Done; S028 children move through implementation and PR review, and downstream children stay Backlog until their open native prerequisites clear. Use Specced, Ready, In progress, Release verification or Done only with the corresponding evidence. Native assignees, parents/dependencies and milestone facts are not copied into custom fields.
 
 ## Subsequent roadmap candidates
 

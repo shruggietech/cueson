@@ -1,14 +1,14 @@
 # Cueson CLI Contract
 
-**Status:** Complete v1.0.0 stable published command contract
+**Status:** Frozen 1.1.0 stable candidate command contract; published v1.0.0 behavior retained
 
 This document is the maintained CLI authority. The public command names and behavior described here form the stable v1.0.0 contract published through immutable tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) and the verified [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0). The exact generated help under `internal/cli/testdata/help/` and executable documentation tests are checked against this reference.
 
-## Current source additions
+## Current stable candidate
 
-Current S025 source reports `1.1.0-dev` from `version` and `schema --version`, and emits the exact current development schema. Existing native output uses that identity. Exact historical 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown or mismatched identities and corrupt source envelopes fail before publication.
+Current source reports exact `1.1.0` from `version` and `schema --version`, and emits the byte-identical canonical/immutable candidate schema. Every new native encode uses that identity and official producer version. Exact historical 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown, mismatched and former development identities and corrupt source envelopes fail before publication. The released v1.0.0 executable rejects new 1.1.0 output, including documents encoded from its existing text formats; there is no historical-output selector.
 
-S025 adds experimental ASS/SSA detection, ingest and model-driven textual rendering. New native output declares `experimental` with ingest, render and restore available; existing `schema_only` input observations remain accepted independently of installed codec availability. Generic validate, inspect and exact restore accept both observations. Cross-format conversion, complete release-wide discovery coverage (#62), and stable declarations remain later gates. Published v1.0.0 behavior remains the historical contract described below.
+The frozen bounded ASS/SSA profile provides stable native detection/ingest, textual rendering, all twelve conversion directions, validation, privacy-safe inspection, exact restoration and shared help/completion discovery. Official new output declares `stable` with ingest, render and restore true and OCR false. Exact-current `schema_only` and complete `experimental` declarations remain accepted observations independent of installed codec availability and are never rewritten on load. Published v1.0.0 remains unchanged; the 1.1.0 candidate is not tagged, released or publicly schema-hosted.
 
 ## Invocation, streams, and status
 
@@ -36,7 +36,7 @@ The root help lists exactly nine commands: `encode`, `restore`, `render`, `conve
 cueson [global options] encode [options] INPUT
 ```
 
-`encode` captures one bounded regular SubRip, WebVTT, or experimental ASS/SSA input, derives common and native cue data, validates the resulting document, and preserves the exact source bytes in Cue JSON.
+`encode` captures one bounded regular SubRip, WebVTT, or bounded ASS/SSA input, derives common and native cue data, validates the resulting document, and preserves the exact source bytes in Cue JSON.
 
 - `-o`, `--output` `PATH`: write Cue JSON to `PATH`; without an output selection, the destination is `INPUT.cueson.json`. `--output -` selects stdout.
 - `-f`, `--force`: replace an approved existing regular filesystem output.
@@ -84,7 +84,7 @@ cueson [global options] render [options] INPUT.cueson.json --to FORMAT
 
 `render` validates Cue JSON and serializes its structured cue model in the document's matching native format. It is intentionally distinct from exact restoration.
 
-- `--to` `FORMAT`: select `srt`, `vtt`, `ass`, or `ssa`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`. ASS/SSA textual rendering is experimental.
+- `--to` `FORMAT`: select `srt`, `vtt`, `ass`, or `ssa`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`. ASS/SSA textual rendering follows the stable bounded profile.
 - `-o`, `--output` `PATH`: write native output to a filesystem path instead of stdout; `--output -` selects stdout.
 - `-f`, `--force`: replace an approved existing regular filesystem output.
 - `--strict`: reject known non-representable, ambiguous, or preserved nonconforming model content before publication.
@@ -101,7 +101,7 @@ cueson render --to srt --output quickstart/rendered.srt quickstart/document.cues
 cueson [global options] convert [options] INPUT --to FORMAT
 ```
 
-`convert` accepts Cue JSON, SubRip, WebVTT, ASS, or SSA and serializes a private target projection in a distinct supported native format. All twelve distinct directions are implemented; ASS/SSA are experimental. Cue JSON recognition has precedence; actual JSON containers or `.json`-named invalid content do not fall through to a native codec. Recognized bracketed ASS/SSA content reaches guarded native classification even with a conflicting filename.
+`convert` accepts Cue JSON, SubRip, WebVTT, ASS, or SSA and serializes a private target projection in a distinct supported native format. All twelve distinct directions are implemented; ASS/SSA follow the stable bounded profile. Cue JSON recognition has precedence; actual JSON containers or `.json`-named invalid content do not fall through to a native codec. Recognized bracketed ASS/SSA content reaches guarded native classification even with a conflicting filename.
 
 - `--to` `FORMAT`: select `srt`, `vtt`, `ass`, or `ssa`; `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
 - `--from` `FORMAT`: select `auto`, `cueson`, `srt`, `vtt`, `ass`, or `ssa`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
@@ -126,7 +126,7 @@ cueson convert --strict --to srt --output quickstart/converted.srt testdata/fixt
 cueson [global options] validate [options] INPUT
 ```
 
-`validate` accepts Cue JSON, SubRip, WebVTT, or experimental ASS/SSA and performs the complete applicable validation stack without creating or printing a payload.
+`validate` accepts Cue JSON, SubRip, WebVTT, or bounded ASS/SSA and performs the complete applicable validation stack without creating or printing a payload.
 
 - `--format` `FORMAT`: select `auto`, `cueson`, `srt`, `vtt`, `ass`, or `ssa`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
 - `--encoding` `NAME`: for native input, select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.

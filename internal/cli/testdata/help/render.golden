@@ -4,7 +4,7 @@ Usage:
   cueson [global options] render [options] INPUT.cueson.json --to FORMAT
 
 Options:
-  --to FORMAT        Select srt, vtt, ass, or ssa; ASS/SSA are experimental.
+  --to FORMAT        Select srt, vtt, ass, or ssa; ASS/SSA follow the bounded stable profile.
   -o, --output PATH  Write native output to PATH instead of stdout.
   -f, --force        Replace an existing regular output file.
   --strict           Reject known non-representable model content.

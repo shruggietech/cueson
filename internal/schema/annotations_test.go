@@ -20,7 +20,9 @@ import (
 )
 
 const (
-	normativeSchemaSHA256  = "e20bf44c06b456687dd1203f8f8d8699d4c27df288725f8e423618491e47771a"
+	// S028 promotes the exact identity and adds the complete stable scripted
+	// capability tuple; annotation edits cannot change this normative snapshot.
+	normativeSchemaSHA256  = "ae07334fa1b9aa9481234376b982e606074559333af9ab430c59fc6b1481d960"
 	v0ReleasedSchemaSHA256 = "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975"
 	v1ReleasedSchemaSHA256 = "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541"
 )

@@ -49,7 +49,7 @@ func TestScriptedTargetsBaselineDeterminismAndHistoricalInput(t *testing.T) {
 				if len(losses) != 0 || len(translation.Issues) != 0 {
 					t.Fatalf("baseline losses: %+v %+v", losses, translation.Issues)
 				}
-				if target.SchemaVersion != "1.1.0-dev" || target.FormatSupport.Status != "experimental" {
+				if target.SchemaVersion != "1.1.0" || target.FormatSupport.Status != "stable" {
 					t.Fatal("target identity")
 				}
 				if err := target.Validate(); err == nil {

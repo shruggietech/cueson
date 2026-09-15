@@ -31,13 +31,13 @@ The [official v1.0.0 release](https://github.com/shruggietech/cueson/releases/ta
 - Keep the Cueson JSON Schema and official executable versioned together.
 - Deliver portable native binaries for Windows, macOS, and Linux.
 
-The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages define the stable v1 [SubRip](docs/formats/srt.md) and [WebVTT](docs/formats/webvtt.md) contracts. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
+The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages define the [SubRip](docs/formats/srt.md), [WebVTT](docs/formats/webvtt.md), and bounded candidate [ASS/SSA](docs/formats/ass-ssa.md) contracts. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
 
 The official Cueson identity is retained in the repository as the complete [brand kit](brand/cueson/1.0.0/kit/README.md). See the [Cueson brand guide](docs/brand.md) for provenance, integrity verification, asset selection, licensing boundaries, and the [official ShruggieTech download](https://brand.shruggie.tech/cueson/downloads/cueson-brand-1.0.0.zip).
 
 The v1.0.0 history, immutable schema, and concise [release notes](docs/releases/v1.0.0.md) are bound to immutable annotated tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) at `2cad4c816340404289b4d1d87179a4071713bb46`. The [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) publishes the exact thirteen files accepted by default-branch proof run [34621429626](https://github.com/shruggietech/cueson/actions/runs/34621429626). [Release verification](docs/release-verification.md) records the independent public-byte check, and the governed [release process](docs/release-process.md) keeps milestone closure, signatures, attestations, public schema hosting, and production actions separately authorized.
 
-The [development roadmap](docs/roadmap.md) charts the operator-approved next v1.1.0 ASS/SSA milestone, its sixteen atomic issues and later XML, SAMI, broadcast and bitmap/OCR work. Current source uses unreleased `1.1.0-dev`: S024 added exact historical 1.0.0 Cue JSON input and typed scripted model branches on 2026-09-15; S025 adds experimental [ASS/SSA](docs/formats/ass-ssa.md) content-first ingest, deterministic model-driven rendering and independently verified exact restoration; S026 completes all twelve distinct [conversion directions](docs/conversion.md) among SubRip, WebVTT, ASS, and SSA with explicit atomic losses and strict/fatal publication safety. Existing `schema_only` scripted observations remain accepted. Final CLI/conformance freeze and stable release gates remain later outcomes. Released v1.0.0 supports SubRip and WebVTT.
+The [development roadmap](docs/roadmap.md) charts the v1.1.0 ASS/SSA milestone and later XML, SAMI, broadcast and bitmap/OCR work. Current source is the unpublished **1.1.0 stable candidate**, with the frozen bounded [ASS/SSA profile](docs/formats/ass-ssa.md), all twelve distinct [conversion directions](docs/conversion.md), complete CLI discovery and privacy-safe inspection, conformance hardening and exact source restoration. Official new output declares stable capability. Exact historical 1.0.0 input remains supported; the published v1.0.0 executable rejects new 1.1.0 output, including output encoded from SubRip/WebVTT. Schema-only and complete experimental capability observations remain valid under the exact current identity without being rewritten. The candidate is not tagged or publicly released, and its schema URI is not yet publicly hosted. Published downloads below remain v1.0.0 with SubRip/WebVTT support.
 
 ## Installation
 
@@ -55,7 +55,7 @@ Run these examples from the repository root. Create an empty `quickstart` direct
 go run ./cmd/cueson version
 ```
 
-Expected result when running current source: exit status 0, stdout is exactly `1.1.0-dev` plus LF, and stderr is empty. The published executable reports `1.0.0`.
+Expected result when running current source: exit status 0, stdout is exactly `1.1.0` plus LF, and stderr is empty. The published executable reports `1.0.0`.
 
 <!-- docs-verify:example encode -->
 

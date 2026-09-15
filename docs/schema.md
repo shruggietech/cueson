@@ -1,6 +1,6 @@
 # Cue JSON Schema Baseline
 
-**Status:** v1.0.0 released; current source targets unreleased 1.1.0-dev
+**Status:** Exact 1.1.0 stable candidate; v1.0.0 released and unchanged
 
 Historical v1.0.0: stable schema released and independently verified. Its immutable bytes remain the historical input authority.
 
@@ -13,10 +13,10 @@ This document defines the stable v1.0.0 schema, including the foundation realize
 The schema artifact uses JSON Schema Draft 2020-12. Three similar-looking fields have distinct meanings:
 
 - The schema artifact's `$schema` keyword identifies the Draft 2020-12 metaschema.
-- The stable schema artifact's `$id` is `https://cueson.io/schema/v1.0.0/cueson.schema.json`.
-- A current-source Cue JSON instance uses `$schema` `https://cueson.io/schema/v1.1.0-dev/cueson.schema.json` and `schema_version` `1.1.0-dev`. Historical 1.0.0 input retains its original exact identity.
+- The current canonical schema artifact's `$id` is `https://cueson.io/schema/v1.1.0/cueson.schema.json`; the historical released schema retains its exact v1.0.0 identity.
+- A current-source Cue JSON instance uses `$schema` `https://cueson.io/schema/v1.1.0/cueson.schema.json` and `schema_version` `1.1.0`. Historical 1.0.0 input retains its original exact identity.
 
-The canonical Cueson URI identifies an exact contract. Consumers resolve released 1.0.0 through the [immutable v1 schema](../schema/releases/v1.0.0/cueson.schema.json), tagged canonical artifact, [v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), public versioned route or historical executable embedding. Current discovery emits the development schema. Cueson never emits or serves a mutable `latest` alias.
+The canonical Cueson URI identifies an exact contract. Consumers resolve released 1.0.0 through the [immutable v1 schema](../schema/releases/v1.0.0/cueson.schema.json), tagged canonical artifact, [v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), public versioned route or historical executable embedding. Current discovery emits the exact 1.1.0 candidate schema, byte-identical to the immutable repository candidate copy; its public URI is an identity, not a current hosting claim. Cueson never emits or serves a mutable `latest` alias.
 
 Users can discover the embedded contract version with `cueson schema --version` and emit the exact embedded schema with `cueson schema` or `cueson schema --output PATH`. A Cue JSON instance identifies its target contract through `$schema` and `schema_version`; consumers must evaluate both against an exact supported version rather than infer compatibility from the producer software version.
 
@@ -26,11 +26,11 @@ Starting with v1.0.0, breaking changes require a major-version increase. Additiv
 
 S018 froze the implemented CLI and Cue JSON behavior, S019 promoted that reviewed contract to identity 1.0.0 with a byte-identical immutable repository copy, S020 published and independently verified the exact tagged schema and release archives, and S021 publishes the immutable v0.0.0 and v1.0.0 schema bytes at their canonical versioned domain paths. No production alias exists.
 
-## Current development schema evolution
+## Current 1.1.0 candidate contract
 
-S024 implemented exact local historical 1.0.0 structure and version-specific semantics, and annotated `ass` and `ssa` branches under `1.1.0-dev`, on 2026-09-15. S025 adds experimental native ingest/render declarations under that same unreleased development identity. Historical source and producer observations remain intact. Unknown or mismatched identities reject without network retrieval. The current development URI is an exact local identity without a new production route or immutable release copy. Final 1.1.0 promotion remains owned by #65.
+S024 established local exact historical 1.0.0 validation and the typed scripted model; S025-S027 completed native workflows, all twelve conversion edges and CLI/conformance hardening. S028 freezes and promotes the current contract to exact 1.1.0, with a byte-identical [immutable repository candidate schema](../schema/releases/v1.1.0/cueson.schema.json). Unknown, mismatched, v0.0.0 and former development identities reject without network retrieval. Historical identity, producer and source observations remain intact. The 1.1.0 candidate is unpublished; its public schema route remains the later #67 outcome.
 
-Current scripted encode output declares `experimental`, with ingest true, render true, restore true and OCR false. Earlier `schema_only` declarations (ingest false, render false, restore true and OCR false) remain structurally and semantically accepted; loading them does not rewrite their observations. Installed codec availability controls whether the current executable can perform native operations. Scripted documents retain ordered sections/records, declaration field occurrences, styles, dialogue and non-dialogue events, attachments and native Text. Common cue lines/plain text are deterministic readable projections; native Text remains authoritative. The model checks local references, lexical observations, projection provenance, metadata privacy and traversal bounds. Nonempty zero-dialogue scripted documents have empty cues and null media bounds; historical 1.0.0 minimum-cue rules remain unchanged. Constructed recognized records may omit capture-only declarations and lexical observations rather than invent source evidence. The [S024 model contract](../specs/S024-extend-versioned-schema-model/data-model.md) records the original schema-only ownership baseline; the [current native contract](formats/ass-ssa.md) records S025 codec behavior.
+Current official scripted encode output declares `stable`, with ingest true, render true, restore true and OCR false. Lower-capability `schema_only` declarations (ingest false, render false, restore true and OCR false) and complete `experimental` native declarations (ingest true, render true, restore true and OCR false) remain structurally and semantically accepted under exact 1.1.0 identity; loading them does not rewrite their observations. Installed codec availability controls whether the current executable can perform native operations. Scripted documents retain ordered sections/records, declaration field occurrences, styles, dialogue and non-dialogue events, attachments and native Text. Common cue lines/plain text are deterministic readable projections; native Text remains authoritative. The model checks local references, lexical observations, projection provenance, metadata privacy and traversal bounds. Nonempty zero-dialogue scripted documents have empty cues and null media bounds; historical 1.0.0 minimum-cue rules remain unchanged. Constructed recognized records may omit capture-only declarations and lexical observations rather than invent source evidence. The [S024 model contract](../specs/S024-extend-versioned-schema-model/data-model.md) records the original schema-only ownership baseline; the [current native contract](formats/ass-ssa.md) records the frozen bounded native profile.
 
 Safely bounded malformed non-dialogue records and malformed attachment content are preservation-only. They retain truthful original captures and deterministic diagnostics without fabricating an interpretable owner or empty attachment range. They remain valid for generic inspection and exact restoration where the accepted-source privacy rules permit retention, but rendering refuses them in all modes. Recognized records render from editable owners rather than `raw_line`; inserted declarations for constructed owners and restored declarations for following captured owners affect canonical output only.
 
@@ -86,7 +86,7 @@ File extensions and CLI tokens `srt` and `vtt` are aliases that normalize to can
 
 These keys and their format-native shapes identify format families. Capability fields separately declare whether the matching executable can ingest, render, or restore them. SubRip and WebVTT have completed the stable v1.0.0 release gate.
 
-Current unreleased `1.1.0-dev` also defines `ass` and `ssa`. These canonical keys and CLI tokens have experimental native ingest/render support; their presence does not imply scripted conversion or stable support.
+Current candidate 1.1.0 also defines `ass` and `ssa`, with stable bounded native ingest/render and twelve-direction conversion support. Canonical format keys alone never prove declared or installed capabilities.
 
 ## Official format capability
 
@@ -173,6 +173,6 @@ Schema implementation distinguishes:
 
 Schema validation does not infer codec availability. Native codec presence remains an executable capability concern described by [the architecture](architecture.md) and [CLI contract](cli.md). Maintained documentation paths and local heading links are checked offline by the repository's standalone documentation verifier; that check does not publish the schema or validate external network availability.
 
-Cross-format conversion loss reports and private target projections are runtime-only values. They are not Cue JSON properties, do not change schema version 1.0.0, and never replace the validated source document or its exact source envelope.
+Cross-format conversion loss reports and private target projections are runtime-only values. They are not Cue JSON properties, do not add properties to Cue JSON or select its schema identity, and never replace the validated source document or its exact source envelope.
 
 The versioned `inspect --json` report is likewise a separate CLI output contract rather than Cue JSON. It reports only bounded structural facts, excludes source bytes and content-bearing identifiers, and represents target-dependent conversion loss as not evaluated when no target was requested.
