@@ -34,4 +34,3 @@ The final wording corrections affect planning and contract prose only. Existing 
 ## Delivery boundaries
 
 This slice adds no runtime codec, version bump, immutable-schema change, release, or production deployment. The prepared commit and authorized official PR will close #52, #53, and #54 after human merge. Hosted CI and bot review results are recorded on that PR against its actual head; they are not claimed by this preparation record. Human merge and later release/production actions remain separate operator decisions.
-
