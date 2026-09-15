@@ -32,7 +32,7 @@ Deploy Worker code and static assets atomically. Allow Wrangler or the Workers A
 ## Read-back and public verification
 
 1. Run `corepack pnpm verify:cloudflare -- --phase after --snapshot PATH` to read the Worker inventory, Custom Domains, both DNS records, and redirect state back from Cloudflare, require the two declared bindings, and prove unrelated state matches the pre-mutation snapshot.
-2. Resolve apex and `www` through the system resolver and at least one public DNS-over-HTTPS resolver.
+2. Resolve apex and `www` through the system resolver and at least one public DNS-over-HTTPS resolver. Query A and AAAA independently in each resolver and require at least one usable address family per hostname per resolver; IPv4-only, IPv6-only, and dual-stack hostnames are valid. DNS-over-HTTPS evidence must include successful HTTP and DNS status plus actual requested-family address records, rather than aliases alone. If neither family resolves, report both family outcomes.
 3. Verify a trusted TLS handshake and certificate hostname coverage.
 4. Verify apex success, representative documentation routes, the media guide, deployment metadata, and every official download link.
 5. Verify `www` returns 308 and preserves an arbitrary path and query.

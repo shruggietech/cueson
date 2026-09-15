@@ -1,10 +1,10 @@
 import { createHash } from "node:crypto";
-import { resolve4, resolve6 } from "node:dns/promises";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import tls from "node:tls";
 import { fileURLToPath } from "node:url";
+import { verifyDnsOverHttps, verifySystemDns } from "./production-dns.mjs";
 
 const siteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = new Map();
@@ -58,13 +58,6 @@ function verifyHtml(route, html) {
   for (const [pattern, label] of requirements) if (!pattern.test(html)) throw new Error(`${route}: missing ${label}`);
 }
 
-async function verifyDnsOverHttps(hostname) {
-  const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(hostname)}&type=A`, { headers: { accept: "application/dns-json" }, signal: AbortSignal.timeout(20_000) });
-  if (!response.ok) throw new Error(`${hostname}: DNS-over-HTTPS returned ${response.status}`);
-  const result = await response.json();
-  if (result.Status !== 0 || !Array.isArray(result.Answer) || result.Answer.length === 0) throw new Error(`${hostname}: DNS-over-HTTPS returned no A answer`);
-}
-
 async function verify() {
   const localDeployment = JSON.parse(await readFile(path.join(siteRoot, "public", "deployment.json"), "utf8"));
   const deploymentResponse = await fetchSuccess("/deployment.json");
@@ -97,10 +90,8 @@ async function verify() {
   }
 
   if (!skipNetworkIdentity && origin.hostname === "cueson.io") {
-    const addresses = [...await resolve4("cueson.io"), ...await resolve6("cueson.io").catch(() => [])];
-    if (addresses.length === 0) throw new Error("cueson.io: no public DNS addresses");
-    const wwwAddresses = [...await resolve4("www.cueson.io"), ...await resolve6("www.cueson.io").catch(() => [])];
-    if (wwwAddresses.length === 0) throw new Error("www.cueson.io: no public DNS addresses");
+    await verifySystemDns("cueson.io");
+    await verifySystemDns("www.cueson.io");
     await verifyDnsOverHttps("cueson.io");
     await verifyDnsOverHttps("www.cueson.io");
     await verifyTls("cueson.io");

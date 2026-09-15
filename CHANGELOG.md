@@ -20,6 +20,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - 2026-09-11: Treat root documentation, released schemas, and approved brand-kit files as authoritative inputs while keeping generated site content disposable and drift-checked.
 - 2026-09-11: Publish one Cloudflare Worker with Static Assets on the apex and `www`, permit production deployment only from an exact reviewed `main` revision, and retain independent DNS, TLS, redirect, route, revision, and byte-identity verification.
+- 2026-09-15: Evaluate A and AAAA independently in the production verifier's system and DNS-over-HTTPS paths, require usable typed address evidence from each resolver, and preserve all other verification and production-authority boundaries.
+
+### Fixed
+
+- Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.
 
 ## [1.0.0] - 2026-09-11
 
