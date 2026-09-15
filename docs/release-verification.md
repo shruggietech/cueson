@@ -119,6 +119,12 @@ A pull-request run proves its exact reviewed head, not the final publication tar
 
 The repository ruleset does not require this check. S009 nevertheless required it as operational evidence on its official pull request; changing the protected required-check set remains separately governed repository-control work.
 
+## Publication decision binding
+
+The dated 1.1.0 history is prepared metadata, not a published release. The reviewed preparation pull request must merge before final tag selection; fresh accepted main proof of the actual squash revision then supplies the exact publication source and thirteen-asset inventory. Earlier S028 main evidence and preparation PR proof remain historical/review evidence and cannot substitute for this new source binding. The decision also binds the exact separately frozen formatted public-note digest, without implicitly stripping the candidate banner from the prospective guide.
+
+Present the complete source/asset/schema/legal/native/notes package before requesting exact tag creation/push or release/asset publication authority. Publication #66 stays open until independently downloaded public bytes and GitHub read-back establish the authorized result. Public release availability remains v1.0.0 during preparation; public schema/site activation remains #67.
+
 ## Delivered evidence
 
 The `Non-publishing snapshot` job passed on the final head of pull request [#21](https://github.com/shruggietech/cueson/pull/21), together with all CI, CodeQL, and pull-request-policy gates. The operator then merged the pull request into `main` as `3da0a4b4eeae57024d837c5f46e9d62537ffab95` on 2026-09-10, closing issue [#11](https://github.com/shruggietech/cueson/issues/11). Post-merge [CI run 34421328445](https://github.com/shruggietech/cueson/actions/runs/34421328445) and [CodeQL run 34421328401](https://github.com/shruggietech/cueson/actions/runs/34421328401) also completed successfully.

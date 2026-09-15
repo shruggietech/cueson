@@ -1,12 +1,16 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
+	"time"
+	"unicode/utf8"
 )
 
 func TestRepositoryReleasePolicy(t *testing.T) {
@@ -296,6 +300,123 @@ func TestStableReleaseEvidenceContract(t *testing.T) {
 	}
 	if count.Const != 32 {
 		t.Fatal("native proof does not require all old-consumer safety probes")
+	}
+}
+
+func TestPreparedV110HistoryPreservesReleasedBytes(t *testing.T) {
+	t.Parallel()
+	repository := filepath.Clean(filepath.Join("..", ".."))
+	changelog := readPolicyFile(t, filepath.Join(repository, "CHANGELOG.md"))
+	const preparedHeading = "## [1.1.0] - 2026-09-15\n"
+	if strings.Count(changelog, "## [Unreleased]\n") != 1 || strings.Count(changelog, preparedHeading) != 1 {
+		t.Fatal("preparation requires one fresh Unreleased and one dated v1.1.0 section")
+	}
+	prepared := strings.Index(changelog, preparedHeading)
+	historical := strings.Index(changelog, "## [1.0.0] - 2026-09-11\n")
+	if strings.Index(changelog, "## [Unreleased]\n") >= prepared || historical <= prepared {
+		t.Fatal("release sections are not in newest-first order")
+	}
+	section := changelog[prepared:historical]
+	seenCategories := make(map[string]bool)
+	var previousDecision time.Time
+	for _, line := range strings.Split(section, "\n") {
+		if strings.HasPrefix(line, "### ") {
+			category := strings.TrimPrefix(line, "### ")
+			if seenCategories[category] {
+				t.Fatalf("prepared release duplicates category %q", category)
+			}
+			seenCategories[category] = true
+		}
+		if len(line) >= 14 && line[0:2] == "- " && line[12:14] == ": " {
+			date, err := time.Parse("2006-01-02", line[2:12])
+			if err != nil || (!previousDecision.IsZero() && date.Before(previousDecision)) {
+				t.Fatalf("invalid or nonchronological prepared decision: %s", line)
+			}
+			previousDecision = date
+		}
+	}
+	for _, category := range []string{"Added", "Changed", "Decisions", "Fixed"} {
+		if !seenCategories[category] {
+			t.Errorf("prepared history omits %s", category)
+		}
+	}
+	historicalEnd := strings.Index(changelog[historical:], "\n[Unreleased]:")
+	if historicalEnd < 0 {
+		t.Fatal("changelog comparison footer is absent")
+	}
+	const releasedHistorySHA256 = "b262a0e199e6f54451db3211f5c2fbccf7a959e7fbfe2e1e7653db20c170f417"
+	if got := fmt.Sprintf("%x", sha256.Sum256([]byte(changelog[historical:historical+historicalEnd]))); got != releasedHistorySHA256 {
+		t.Fatal("earlier released changelog bytes changed during preparation")
+	}
+}
+
+func TestPreparedV110PublicNotesBoundaries(t *testing.T) {
+	t.Parallel()
+	repository := filepath.Clean(filepath.Join("..", ".."))
+	notes := readPolicyFile(t, filepath.Join(repository, "specs", "S029-publish-verify-v1-1", "contracts", "release-notes.md"))
+	if !utf8.ValidString(notes) || strings.HasPrefix(notes, "\ufeff") || strings.Contains(notes, "\r") {
+		t.Fatal("public notes are not UTF-8 without BOM and LF")
+	}
+	if !strings.HasPrefix(notes, "# Cueson v1.1.0\n\n") || strings.Count(notes, "\n# ") != 0 {
+		t.Fatal("public notes do not have the exact single release title")
+	}
+	const suffix = "Full changelog: https://github.com/shruggietech/cueson/blob/v1.1.0/CHANGELOG.md\n"
+	if !strings.HasSuffix(notes, suffix) {
+		t.Fatal("public notes omit the exact final tagged changelog link")
+	}
+	for _, required := range []string{"UTF-8 ASS v4+/SSA v4", "all twelve conversion directions", "strict/fatal refusal", "Exact historical 1.0.0", "Every new encode uses exact 1.1.0", "v1.0.0 consumers reject", "no historical-output selector", "schema-only", "experimental input observations", "original bytes", "byte or pixel equivalence", "external resources", "legacy ASS/SSA codepages", "unsigned and unattested", "Public schema/site hosting remains a separately authorized outcome"} {
+		if !strings.Contains(notes, required) {
+			t.Errorf("public notes omit reviewed disclosure %q", required)
+		}
+	}
+	for _, forbidden := range []string{"**Status:**", "unpublished", "No tag", "No GitHub Release", "downloads remain", "Publication-ready"} {
+		if strings.Contains(notes, forbidden) {
+			t.Errorf("public body contains candidate-only availability claim %q", forbidden)
+		}
+	}
+	changelog := readPolicyFile(t, filepath.Join(repository, "CHANGELOG.md"))
+	if len(notes)*2 >= len(changelog) {
+		t.Fatal("public highlights are not substantially shorter than the detailed changelog")
+	}
+}
+
+func TestPublicationDecisionContractBindsPreparationOnly(t *testing.T) {
+	t.Parallel()
+	repository := filepath.Clean(filepath.Join("..", ".."))
+	contract := readPolicyFile(t, filepath.Join(repository, "specs", "S029-publish-verify-v1-1", "contracts", "publication-decision.md"))
+	if regexp.MustCompile(`\b[0-9a-f]{40}\b`).MatchString(contract) {
+		t.Fatal("preparation contract prematurely selects a publication revision")
+	}
+	for _, required := range []string{"Preparation only", "actual full lowercase 40-character post-merge", "current default-branch revision", "predicted squash result", "fresh verification", "GoReleaser v2.18.1", "Syft v1.51.1", "artifact ID", "expiry", "published: false", "223b61cbcf6337167039268576b2c739564585fff10e6cc6076e47a03526a0f7", "LICENSE", "NOTICE", "linux/amd64", "windows/amd64", "darwin/amd64", "same accepted bundle without rebuilding", "32 old-consumer refusal paths", "32 identity probes", "no arm64 native execution", "positive byte length", "SHA-256 digest", "2026-09-15", "github-format/main.go -stdin", "without implicit banner removal", "Create tag", "Push tag", "Publish GitHub Release", "Publish release assets", "Independently read back", "expired artifact", "invalidates the pending decision", "newly reviewed decision package", "upload is partial", "stop all dependent publication", "operator recovery judgment", "Close #66 and unblock #67 only after"} {
+		if !strings.Contains(contract, required) {
+			t.Errorf("decision contract omits governed obligation %q", required)
+		}
+	}
+	want := make(map[string]string, 13)
+	for _, target := range expectedTargets("1.1.0") {
+		want[target.Archive] = "Archive|" + target.GOOS + "/" + target.GOARCH
+		want[target.SBOM] = "SPDX JSON SBOM|" + target.GOOS + "/" + target.GOARCH
+	}
+	want["cueson_1.1.0_checksums.txt"] = "Checksum manifest|Six archives"
+	seen := make(map[string]bool, len(want))
+	for _, line := range strings.Split(contract, "\n") {
+		if !strings.HasPrefix(line, "| `cueson_") {
+			continue
+		}
+		fields := strings.Split(line, "|")
+		if len(fields) != 5 {
+			t.Fatalf("invalid publication inventory row %q", line)
+		}
+		name := strings.Trim(strings.TrimSpace(fields[1]), "`")
+		kind := strings.TrimSpace(fields[2])
+		target := strings.Trim(strings.TrimSpace(fields[3]), "`")
+		if seen[name] || want[name] != kind+"|"+target {
+			t.Fatalf("unexpected, duplicate or wrong-target publication asset %q", name)
+		}
+		seen[name] = true
+	}
+	if len(seen) != len(want) {
+		t.Fatalf("publication contract lists %d assets, want exactly thirteen", len(seen))
 	}
 }
 

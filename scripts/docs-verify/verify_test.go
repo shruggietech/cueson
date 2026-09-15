@@ -175,7 +175,7 @@ func TestV1ChangelogRequiresUnreleasedBeforeReleaseSection(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assertViolation(t, result.violations, "CHANGELOG.md: Unreleased must precede the dated 1.0.0 section")
+	assertViolation(t, result.violations, "CHANGELOG.md: prepared sections must begin Unreleased, dated 1.1.0, then historical 1.0.0")
 }
 
 func TestCurrentV1CandidateAndWorkingSpecificationMarkers(t *testing.T) {
@@ -390,7 +390,7 @@ func newRepository(t *testing.T) string {
 	}
 	writeFile(t, repo, "README.md", readme.String())
 	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative\n")
-	writeFile(t, repo, "CHANGELOG.md", "# Changelog\n\n## [Unreleased]\n\n### Added\n\n- Post-release work.\n\n## [1.0.0] - 2026-09-11\n\n[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD\n[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0\n")
+	writeFile(t, repo, "CHANGELOG.md", "# Changelog\n\n## [Unreleased]\n\n### Added\n\n- Post-release work.\n\n## [1.1.0] - 2026-09-15\n\n### Added\n\n- Prepared candidate history.\n\n## [1.0.0] - 2026-09-11\n\n[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD\n[1.1.0]: https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0\n[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0\n")
 	writeFile(t, repo, "README.md", readme.String()+"\nv1.0.0 released and independently verified; v0.0.0 remains historical; v1.0.0 GitHub Release.\n")
 	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative stable schema released and independently verified\n")
 	writeFile(t, repo, "docs/compatibility.md", "# Compatibility\n\nCLI Cue JSON Schema internal/ v0.0.0 v1.0.0 Windows macOS Linux production stable release published and independently verified\n")

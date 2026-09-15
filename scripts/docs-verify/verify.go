@@ -71,7 +71,7 @@ var requiredExampleIDs = []string{
 }
 
 var requiredReferenceMarkers = map[string][]string{
-	"CHANGELOG.md":          {"[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD", "[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0"},
+	"CHANGELOG.md":          {"[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD", "[1.1.0]: https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0", "[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0"},
 	"README.md":             {"v1.0.0 released and independently verified", "v0.0.0", "v1.0.0 GitHub Release", "1.1.0 stable candidate", "published v1.0.0 executable rejects new 1.1.0 output"},
 	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "non-normative", "stable schema released and independently verified"},
 	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v1.0.0", "Windows", "macOS", "Linux", "production", "stable release published and independently verified"},
@@ -81,7 +81,7 @@ var requiredReferenceMarkers = map[string][]string{
 	"docs/formats/ass-ssa.md":                     {"Frozen bounded stable profile", "unpublished 1.1.0 candidate", "All twelve distinct four-format directions", "UTF-8", "attachments", "karaoke", "drawings", "complexity_limit", "scripted-stable-gate"},
 	"docs/cli.md":                                 {"exact `1.1.0`", "complete `experimental`", "`schema_only`", "historical-output selector", "former development identities"},
 	"docs/release-verification.md":                {"-version 1.1.0 -commit", "same bundle", "Published old-consumer proof", "`published: false`"},
-	"docs/release-process.md":                     {"## v1.1.0 stable candidate preparation", "#66/#67", "fresh post-squash main evidence"},
+	"docs/release-process.md":                     {"## v1.1.0 stable candidate preparation", "#66/#67", "fresh post-squash main evidence", "preparation pull request", "tag contains the finalized changelog", "#66 remains open until independent public verification"},
 }
 
 var staleClaims = map[string][]string{
@@ -225,12 +225,7 @@ func verifyReleaseChangelog(root string) []violation {
 	if err != nil {
 		return nil
 	}
-	unreleased := strings.Index(content, "## [Unreleased]\n")
-	release := strings.Index(content, "## [1.0.0] - 2026-09-11\n")
-	if unreleased < 0 || release < 0 || unreleased >= release {
-		return []violation{{path: "CHANGELOG.md", message: "Unreleased must precede the dated 1.0.0 section"}}
-	}
-	return nil
+	return verifyPreparedChangelog(content)
 }
 
 func verifyRequiredSuffixes(root string) []violation {
