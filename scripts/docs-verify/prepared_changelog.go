@@ -7,7 +7,9 @@ import (
 )
 
 var (
-	preparedReleaseHeading = regexp.MustCompile(`^## \[([^\]]+)\](?: - (.*))?$`)
+	preparedReleaseHeading = regexp.MustCompile(`^\[([^\]]+)\](?:[ \t]+-[ \t]+(.*))?$`)
+	preparedATXHeading     = regexp.MustCompile(`^(#{1,6})(?:[ \t]+(.*)|[ \t]*)$`)
+	preparedClosingHashes  = regexp.MustCompile(`[ \t]+#+[ \t]*$`)
 	preparedCompareLink    = regexp.MustCompile(`^\[([^\]]+)\]:\s*(.*)$`)
 )
 
@@ -26,16 +28,29 @@ func verifyPreparedChangelog(content string) []violation {
 		"1.1.0":      "https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0",
 		"1.0.0":      "https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0",
 	}
+	versions := map[string]string{"unreleased": "Unreleased", "1.1.0": "1.1.0", "1.0.0": "1.0.0"}
 	categories := make(map[string]bool)
 	current := ""
 	fence := ""
+	referencePrefix := ""
 	allowedCategories := map[string]bool{
 		"Added": true, "Changed": true, "Deprecated": true, "Removed": true,
 		"Fixed": true, "Security": true, "Decisions": true,
 	}
 	for index, line := range strings.Split(content, "\n") {
+		// CommonMark allows at most three spaces before block headings and
+		// reference definitions. Four spaces or a leading tab are code.
+		indent := len(line) - len(strings.TrimLeft(line, " "))
+		isCode := indent > 3 || strings.HasPrefix(line[indent:], "\t")
+		if isCode && referencePrefix == "" {
+			continue
+		}
+		if !isCode {
+			line = line[indent:]
+		}
 		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+		if !isCode && (strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~")) {
+			referencePrefix = ""
 			marker := trimmed[:3]
 			if fence == "" {
 				fence = marker
@@ -47,25 +62,50 @@ func verifyPreparedChangelog(content string) []violation {
 		if fence != "" {
 			continue
 		}
-		if match := preparedCompareLink.FindStringSubmatch(line); len(match) != 0 {
-			if expected, ok := links[match[1]]; ok {
-				linkCounts[match[1]]++
+		reference := line
+		if referencePrefix != "" {
+			if trimmed != "" && !strings.Contains(line, "[") {
+				reference = referencePrefix + "\n" + line
+			}
+			referencePrefix = ""
+		}
+		// Reference labels can span nonblank lines and collapse whitespace.
+		// Keep the CommonMark 999-character ceiling and process headings
+		// independently, so an unfinished label cannot hide metadata.
+		if strings.HasPrefix(reference, "[") && !strings.Contains(reference, "]") && len(reference) <= 1000 {
+			referencePrefix = reference
+		}
+		if match := preparedCompareLink.FindStringSubmatch(reference); len(match) != 0 && len(match[1]) <= 999 {
+			if version, ok := versions[normalizeReference(match[1])]; ok {
+				expected := links[version]
+				linkCounts[version]++
 				if match[2] != expected {
-					violations = append(violations, violation{path: name, line: index + 1, message: "prepared comparison link must use the exact planned tags: " + match[1]})
+					violations = append(violations, violation{path: name, line: index + 1, message: "prepared comparison link must use the exact planned tags: " + version})
 				}
 			}
 		}
-		if strings.HasPrefix(line, "## ") {
+		if isCode {
+			continue
+		}
+		heading := preparedATXHeading.FindStringSubmatch(line)
+		if len(heading) == 0 {
+			continue
+		}
+		text := strings.TrimSpace(preparedClosingHashes.ReplaceAllString(heading[2], ""))
+		if len(heading[1]) == 2 {
 			current = ""
 			categories = make(map[string]bool)
-			match := preparedReleaseHeading.FindStringSubmatch(line)
+			match := preparedReleaseHeading.FindStringSubmatch(text)
 			if len(match) == 0 {
-				if strings.HasPrefix(line, "## [Unreleased]") || strings.HasPrefix(line, "## [1.1.0]") {
+				if strings.HasPrefix(text, "[Unreleased]") || strings.HasPrefix(text, "[1.1.0]") {
 					violations = append(violations, violation{path: name, line: index + 1, message: "malformed prepared release heading"})
 				}
 				continue
 			}
 			current = match[1]
+			if version, ok := versions[normalizeReference(current)]; ok {
+				current = version
+			}
 			sections = append(sections, preparedSection{name: current})
 			counts[current]++
 			if current == "Unreleased" && match[2] != "" {
@@ -78,8 +118,8 @@ func verifyPreparedChangelog(content string) []violation {
 			}
 			continue
 		}
-		if (current == "Unreleased" || current == "1.1.0") && strings.HasPrefix(line, "### ") {
-			category := strings.TrimPrefix(line, "### ")
+		if (current == "Unreleased" || current == "1.1.0") && len(heading[1]) == 3 {
+			category := text
 			if !allowedCategories[category] {
 				violations = append(violations, violation{path: name, line: index + 1, message: "invalid prepared changelog category: " + category})
 			} else if categories[category] {

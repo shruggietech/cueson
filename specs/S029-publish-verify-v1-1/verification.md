@@ -25,3 +25,7 @@ Installed convergence prerequisites passed. Assessment covered all twelve functi
 All 42 accumulated changelog entries were retained. Earlier release sections remain byte-identical with SHA-256 b262a0e199e6f54451db3211f5c2fbccf7a959e7fbfe2e1e7653db20c170f417 over the historical section span excluding the intentionally advanced comparison-link footer. Runtime, schemas, fixtures, Site source, release-verifier execution, workflows and publishing configuration remain unchanged.
 
 Exact clean-revision package proof and terminal GitHub checks/reviews will be recorded by formatted/read-back completion comment to preserve the reviewed source. T018-T021 are existing external delivery obligations; no tag, release, asset, production or final-merge authorization is inferred.
+
+## Round-one review remediation
+
+Automatic Codex review identified two valid P2 metadata bypasses: permitted indentation in rendered release/category headings, and case/whitespace-equivalent reference definitions. Regression checks reproduced the failures before remediation. The scoped parser now accounts for rendered ATX headings and logical label equivalence, preserves fenced/indented code controls and rejects earlier wrong targets and duplicate definitions. Changed-module quality checks and final integration verification pass; the updated exact committed candidate and second-round external results are recorded in the PR completion evidence.

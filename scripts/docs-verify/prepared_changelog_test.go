@@ -58,3 +58,45 @@ func TestRepositoryChangelogIsPreparedForV110(t *testing.T) {
 		t.Fatalf("prepared repository metadata: %v", violationStrings(violations))
 	}
 }
+
+func TestPreparedChangelogMarkdownEquivalence(t *testing.T) {
+	for _, test := range []struct {
+		name    string
+		content string
+		want    string
+	}{
+		{"indented valid headings", strings.ReplaceAll(validPreparedHistory, "\n##", "\n   ##"), ""},
+		{"indented duplicate release", strings.Replace(validPreparedHistory, "## [1.0.0]", "   ## [1.1.0] - 2026-09-15\n\n## [1.0.0]", 1), "exactly one 1.1.0 section"},
+		{"indented duplicate category", strings.Replace(validPreparedHistory, "### Decisions", "  ### Added", 1), "duplicate prepared changelog category"},
+		{"indented invalid category", strings.Replace(validPreparedHistory, "### Decisions", " ### Features", 1), "invalid prepared changelog category"},
+		{"indented reordered release", strings.Replace(validPreparedHistory, "## [Unreleased]", "   ## [1.0.0] - 2026-09-11\n\n## [Unreleased]", 1), "must begin Unreleased"},
+		{"closing ATX hashes", strings.ReplaceAll(strings.ReplaceAll(validPreparedHistory, "## [1.1.0] - 2026-09-15", "  ## [1.1.0] - 2026-09-15 ###"), "### Decisions", " ### Decisions ###"), ""},
+		{"closing-hash duplicate category", strings.Replace(validPreparedHistory, "### Decisions", "   ### Added ###", 1), "duplicate prepared changelog category"},
+		{"tab-separated ATX", strings.ReplaceAll(validPreparedHistory, "## ", "##\t"), ""},
+		{"four-space code", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n    ## [1.1.0] - 2026-09-15\n    ### Added\n    ### Bogus", 1), ""},
+		{"equivalent reference labels", strings.Replace(validPreparedHistory, "[Unreleased]:", "   [  UnReLeAsEd\t ]:", 1), ""},
+		{"case-insensitive duplicate reference", validPreparedHistory + "[unreleased]: https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD\n", "exactly one comparison link: Unreleased"},
+		{"indented duplicate reference", validPreparedHistory + "   [  Unreleased  ]: https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD\n", "exactly one comparison link: Unreleased"},
+		{"earlier wrong case target", strings.Replace(validPreparedHistory, "[Unreleased]:", "[UNRELEASED]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD\n[Unreleased]:", 1), "exact planned tags: Unreleased"},
+		{"earlier wrong indented target", strings.Replace(validPreparedHistory, "[1.1.0]:", "  [ 1.1.0 ]: https://github.com/shruggietech/cueson/compare/v1.0.0...v1.2.0\n[1.1.0]:", 1), "exact planned tags: 1.1.0"},
+		{"four-space reference code", validPreparedHistory + "    [unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD\n", ""},
+		{"leading-tab code", validPreparedHistory + "\n\t## [1.1.0] - 2026-09-15\n\t[unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD\n", ""},
+		{"multiline equivalent label", strings.Replace(validPreparedHistory, "[Unreleased]:", "[\n UnReLeAsEd\n ]:", 1), ""},
+		{"multiline tab whitespace label", strings.Replace(validPreparedHistory, "[Unreleased]:", "[\n\tUnReLeAsEd\n ]:", 1), ""},
+		{"multiline earlier wrong target", strings.Replace(validPreparedHistory, "[Unreleased]:", "[\n Unreleased\n ]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD\n[Unreleased]:", 1), "exact planned tags: Unreleased"},
+		{"unfinished label cannot hide heading", strings.Replace(validPreparedHistory, "## [1.1.0] - 2026-09-15", "[\n   ## [1.1.0] - 2026-09-15", 1), ""},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			violations := violationStrings(verifyPreparedChangelog(test.content))
+			if test.want == "" {
+				if len(violations) != 0 {
+					t.Fatalf("unexpected violations: %v", violations)
+				}
+				return
+			}
+			if !strings.Contains(strings.Join(violations, "\n"), test.want) {
+				t.Fatalf("want %q, got %v", test.want, violations)
+			}
+		})
+	}
+}
