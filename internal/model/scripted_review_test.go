@@ -2,10 +2,49 @@ package model
 
 import (
 	"encoding/base64"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
 )
+
+func TestScriptedInertScalarGrammarPreservesUnicodeAndPunctuation(t *testing.T) {
+	grammar := regexp.MustCompile(`^[\p{L}\p{N} ._+&=#%()\[\]{}!;-]*$`)
+	for _, c := range []struct {
+		value string
+		valid bool
+	}{
+		{"", true}, {"opaque native content", true}, {"字幕 École Ελληνικά ١٢ Ⅷ ²", true}, {" ._+&=#%()[]{}!;-", true},
+		{"opaque/path", false}, {`opaque\path`, false}, {"opaque:value", false}, {"opaque~value", false}, {"opaque,value", false}, {"opaque>value", false}, {"opaque\u00a0value", false}, {"opaque\tvalue", false}, {"opaque\nvalue", false}, {"opaque😀value", false}, {"opaque\xffvalue", false},
+	} {
+		if got := isInertNativeScalar(c.value); got != c.valid || got != grammar.MatchString(c.value) {
+			t.Fatalf("inert native grammar for %q: got %v, want %v", c.value, got, c.valid)
+		}
+		field := ScriptedField{FieldName: "X-Inert", RawValue: c.value}
+		if err := validateScriptedScalar(field, "ass", 0, "style"); (err == nil) != c.valid {
+			t.Fatalf("native extension acceptance for %q: %v", c.value, err)
+		}
+	}
+	for r := rune(0); r < 128; r++ {
+		value := string(r)
+		if isInertNativeScalar(value) != grammar.MatchString(value) {
+			t.Fatalf("ASCII native grammar changed at %U", r)
+		}
+	}
+}
+
+func TestScriptedMetadataPrefilterPreservesIdentityMatcher(t *testing.T) {
+	for _, value := range []string{
+		"ordinary native content", "字幕 Ελληνικά ١٢ Ⅷ", "opaque scalar", "LOWERCASE", "", "\xff",
+		`C:\private\source.ass`, "D:/private/source.ass", `\\machine\share`, "FILE:source", "https://private.invalid", "git+ssh://private.invalid",
+		"/workspace/source.ass", "note>/opt/source.ass", "note\u00a0~/source.ass", "~someone/source.ass", `~someone\source.ass`, "LOCALHOST", "localhoſt",
+		"hostname:private", "machineid=private", "username\u00a0:private", "userid=private", "machineNAME=private",
+	} {
+		if containsScriptedMetadataIdentity(value) != metadataIdentity.MatchString(value) {
+			t.Fatalf("metadata prefilter changed identity match for %q", value)
+		}
+	}
+}
 
 func TestScriptedUnknownFieldsHaveContextualInertRoles(t *testing.T) {
 	for _, format := range []string{"ass", "ssa"} {

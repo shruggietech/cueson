@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -138,7 +139,27 @@ const (
 var scriptedID = regexp.MustCompile(`^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$`)
 var scriptedTime = regexp.MustCompile(`^([0-9]+):([0-5][0-9]):([0-5][0-9])\.([0-9]{2})$`)
 var metadataIdentity = regexp.MustCompile(`(?i)(?:[a-z]:[\\/]|\\\\|file:|[a-z][a-z0-9+.-]*://|(?:^|[^\p{L}\p{N}_])(?:/|~[^\s/\\]*[/\\])|localhost|(?:host|machine|user)(?:name|id)\s*[:=])`)
-var inertNativeScalar = regexp.MustCompile(`^[\p{L}\p{N} ._+&=#%()\[\]{}!;-]*$`)
+
+func containsScriptedMetadataIdentity(value string) bool {
+	// Every identity alternative needs one of these markers. Ordinary inert
+	// scalar values avoid the regexp engine without changing its grammar.
+	return strings.ContainsAny(value, `:/\~=lL`) && metadataIdentity.MatchString(value)
+}
+
+func isInertNativeScalar(value string) bool {
+	for _, r := range value {
+		if r < utf8.RuneSelf {
+			if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || strings.ContainsRune(" ._+&=#%()[]{}!;-", r) {
+				continue
+			}
+		} else if unicode.IsLetter(r) || unicode.IsNumber(r) {
+			continue
+		}
+		return false
+	}
+	return true
+}
+
 var assStyleNames = strings.Split("Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding", ",")
 var ssaStyleNames = strings.Split("Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,TertiaryColour,BackColour,Bold,Italic,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,AlphaLevel,Encoding", ",")
 var assEventNames = strings.Split("Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text", ",")
@@ -243,7 +264,7 @@ func validateScriptedDocument(doc Document) error {
 	hasDiag := func(code string, order int) bool { return diagnosticIndex[code+":"+strconv.Itoa(order)] }
 	wrapStyle := 0
 	for _, value := range []*string{doc.Metadata.Title, doc.Metadata.Description, doc.Metadata.Language, doc.Metadata.Kind} {
-		if value != nil && metadataIdentity.MatchString(*value) {
+		if value != nil && containsScriptedMetadataIdentity(*value) {
 			return fmt.Errorf("unsafe_source_metadata in document metadata")
 		}
 	}
@@ -268,10 +289,10 @@ func validateScriptedDocument(doc Document) error {
 			return scriptedError("invalid_native_section", s.SourceOrder)
 		}
 		last = s.SourceOrder
-		if metadataIdentity.MatchString(s.Name) {
+		if containsScriptedMetadataIdentity(s.Name) {
 			return scriptedError("unsafe_source_metadata", s.SourceOrder)
 		}
-		if s.RawHeader != nil && (!scriptedPhysical(*s.RawHeader) || metadataIdentity.MatchString(*s.RawHeader)) {
+		if s.RawHeader != nil && (!scriptedPhysical(*s.RawHeader) || containsScriptedMetadataIdentity(*s.RawHeader)) {
 			return scriptedError("unsafe_source_metadata", s.SourceOrder)
 		}
 		if s.RawHeader != nil && !capture.matches(s.SourceOrder, *s.RawHeader) {
@@ -526,7 +547,7 @@ func validateScriptedDocument(doc Document) error {
 		if diagnostic.SourceOrder != nil && (*diagnostic.SourceOrder < 0 || *diagnostic.SourceOrder >= len(orders)) {
 			return fmt.Errorf("invalid scripted diagnostic source_order")
 		}
-		if metadataIdentity.MatchString(diagnostic.Message) {
+		if containsScriptedMetadataIdentity(diagnostic.Message) {
 			return fmt.Errorf("unsafe_source_metadata in diagnostic message")
 		}
 	}
@@ -828,7 +849,7 @@ func validateRetainedScriptedField(f ScriptedField, order int, profile string) e
 func scriptedContentFieldPrivacy(name, value string, order int, profile string) error {
 	n := nativeName(name)
 	content := ((strings.HasSuffix(profile, "-event") && slices.Contains([]string{"text", "name", "style"}, n)) || (strings.HasSuffix(profile, "-style") && slices.Contains([]string{"fontname", "name"}, n)) || (profile == "scalar" && slices.Contains([]string{"text", "fontname", "name", "style"}, n))) && scriptedFieldProfiles[profile][n]
-	if !content && metadataIdentity.MatchString(value) {
+	if !content && containsScriptedMetadataIdentity(value) {
 		return scriptedError("unsafe_source_metadata", order)
 	}
 	if strings.Contains(n, "automation") || strings.Contains(n, "script execution") || (n == "effect" && (strings.Contains(strings.ToLower(value), "template") || strings.Contains(strings.ToLower(value), "!code"))) {
@@ -856,7 +877,7 @@ func scriptedContentFieldPrivacy(name, value string, order int, profile string) 
 		// Unknown additions are retained only in the closed inert scalar role.
 		// URI/path punctuation and unclassifiable extension values cannot obtain
 		// a content exemption by choosing an unrecognized native field name.
-		if metadataIdentity.MatchString(value) || !inertNativeScalar.MatchString(value) {
+		if !isInertNativeScalar(value) {
 			return scriptedError("unsafe_source_metadata", order)
 		}
 	}
@@ -879,7 +900,7 @@ func scriptedMetadata(name, value string, order int) error {
 		return nil
 	}
 	allowed := []string{"title", "scripttype", "collisions", "playresx", "playresy", "playdepth", "timer", "wrapstyle", "scaledborderandshadow", "ycbcr matrix", "synch point"}
-	if !slices.Contains(allowed, key) || metadataIdentity.MatchString(value) {
+	if !slices.Contains(allowed, key) || containsScriptedMetadataIdentity(value) {
 		return scriptedError("unsafe_source_metadata", order)
 	}
 	if key == "timer" {
@@ -931,7 +952,7 @@ func scriptedRecordPrivacy(r ScriptedRecord, section string) error {
 		}
 		return nil
 	}
-	if metadataIdentity.MatchString(raw) {
+	if containsScriptedMetadataIdentity(raw) {
 		return scriptedError("unsafe_source_metadata", r.SourceOrder)
 	}
 	if trimmed == "" || strings.HasPrefix(trimmed, ";") {
@@ -997,7 +1018,7 @@ func scriptedSourcePrivacy(source SourceEnvelope, format string) error {
 				if strings.EqualFold(section, styleSection) {
 					seenStyles = true
 				}
-				if metadataIdentity.MatchString(section) {
+				if containsScriptedMetadataIdentity(section) {
 					return scriptedError("unsafe_source_metadata", order)
 				}
 				continue
