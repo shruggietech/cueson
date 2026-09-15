@@ -66,7 +66,7 @@ func finalizeValidateOptions(options *validateOptions) error {
 	}
 	format, known := normalizeInputFormat(options.format)
 	if !known {
-		return fmt.Errorf("--format must be auto, cueson, srt, or vtt")
+		return invalidSelectorError("validate", "--format")
 	}
 	options.format = format
 	if options.encoding != "" {

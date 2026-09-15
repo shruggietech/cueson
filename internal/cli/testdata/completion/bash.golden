@@ -38,9 +38,9 @@ _cueson_completion() {
     convert:--to) _cueson_filter_candidates "$current" 'srt' 'vtt' 'ass' 'ssa'; return ;;
     convert:--from) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt' 'ass' 'ssa'; return ;;
     convert:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
-    validate:--format) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt'; return ;;
+    validate:--format) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt' 'ass' 'ssa'; return ;;
     validate:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
-    inspect:--format) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt'; return ;;
+    inspect:--format) _cueson_filter_candidates "$current" 'auto' 'cueson' 'srt' 'vtt' 'ass' 'ssa'; return ;;
     inspect:--encoding) _cueson_filter_candidates "$current" 'utf-8' 'utf-8-bom' 'utf-16le' 'utf-16be' 'windows-1252' 'iso-8859-1'; return ;;
   esac
   if [[ "$command" == 'encode' && "$current" == '--format='* ]]; then
@@ -81,7 +81,7 @@ _cueson_completion() {
   fi
   if [[ "$command" == 'validate' && "$current" == '--format='* ]]; then
     local value_prefix="${current#*=}"
-    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt'
+    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt' 'ass' 'ssa'
     for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--format='"${COMPREPLY[index]}"; done
     return
   fi
@@ -93,7 +93,7 @@ _cueson_completion() {
   fi
   if [[ "$command" == 'inspect' && "$current" == '--format='* ]]; then
     local value_prefix="${current#*=}"
-    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt'
+    _cueson_filter_candidates "$value_prefix" 'auto' 'cueson' 'srt' 'vtt' 'ass' 'ssa'
     for (( index=0; index<${#COMPREPLY[@]}; index++ )); do COMPREPLY[index]='--format='"${COMPREPLY[index]}"; done
     return
   fi

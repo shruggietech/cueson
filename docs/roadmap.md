@@ -1,8 +1,8 @@
 # Cueson development roadmap
 
-**Status:** S023-S025 merged; S026 complete scripted conversion in progress
+**Status:** S023-S026 merged; S027 scripted CLI/conformance hardening in progress
 
-**Assessed:** 2026-09-15 against merged S025 main revision `6173698ff112386907600e5572b9a365e4383453`, all active issues, native dependencies, and milestone/Project state.
+**Assessed:** 2026-09-15 against merged S026 main revision `771240800aa9ebec35ba3fab19e054cc10a81e74`, all active issues, native dependencies, and milestone/Project state.
 
 ## Current delivery state
 
@@ -11,6 +11,8 @@ v0.0.0 and v1.0.0 are released and independently verified, their milestones/epic
 At the fresh S023 assessment there were no open issues or new active arrivals. S023 publishes native [milestone v1.1.0](https://github.com/shruggietech/cueson/milestone/3), coordination [epic #51](https://github.com/shruggietech/cueson/issues/51), and sixteen atomic children. Native issue relationships, milestone membership and cueson Delivery Project remain planning authority. This prose and the [S023 issue-map snapshot](../specs/S023-plan-scripted-format-milestone/issue-map.json) provide traceability rather than duplicate custom Project metadata.
 
 S023 merged through PR #68 and planning issues #52, #53 and #54 are closed. S024 merged through PR #69 at `86ea7ecf8cd9166f1603a528f21e4e1c214f9fa0`, closing #55 and #56. S025 merged through PR #70 at `6173698ff112386907600e5572b9a365e4383453`, closing #57, #58 and #59 with experimental corpus, ingest, rendering and restoration evidence. The refreshed 2026-09-15 S026 kickoff assessment found no new issues: epic #51 and atomic #60-#67 remain active. S026 implements the coherent ten-new-direction conversion outcome (#60/#61), verifies the complete twelve-direction graph, and preserves later full CLI/conformance and stable/release/publication gates. Native GitHub state controls subsequent transitions.
+
+S026 merged through PR #71 at `771240800aa9ebec35ba3fab19e054cc10a81e74`, closing #60/#61 with all twelve conversion directions and complete loss/publication evidence. Post-merge CI, CodeQL, Site and Release proof passed on that exact revision. The fresh S027 assessment found no new active arrivals: epic #51 and #62-#67 remain open, with ten of sixteen atomic children complete. S027 combines #62/#63 to finish shared catalogue discovery, privacy-safe scripted inspection, filesystem-free meaningful fuzzing, independent capture ceilings, strict matrix evidence and native restoration/safety conformance. Preserve #62's existing command classes and execute its acceptance before closing #63; stable/release/public hosting remain #64-#67.
 
 ## Next release scope and compatibility gate
 
@@ -24,7 +26,7 @@ The [future exact-version compatibility contract](../specs/S023-plan-scripted-fo
 
 ## Chronological execution slices
 
-Each slice runs the installed Spec Kit/autopilot workflow end-to-end with one integrated implementation/review/verification story. S026 is active; later codes/groupings are provisional until their kickoff and must be reassessed after each merge and any new issue. Preserve atomic acceptance criteria if analysis requires a narrower reviewable implementation session.
+Each slice runs the installed Spec Kit/autopilot workflow end-to-end with one integrated implementation/review/verification story. S027 is active; later codes/groupings are provisional until their kickoff and must be reassessed after each merge and any new issue. Preserve atomic acceptance criteria if analysis requires a narrower reviewable implementation session.
 
 | Order | Proposed slice | Atomic children | Complete outcome and shared verification |
 |---|---|---|---|
@@ -37,7 +39,7 @@ Each slice runs the installed Spec Kit/autopilot workflow end-to-end with one in
 | 7 | S029-publish-verify-v1-1 | [#66](https://github.com/shruggietech/cueson/issues/66) | Explicitly authorized official tag/release and independently verified public artifacts. |
 | 8 | S030-publish-v1-1-public-schema-site | [#67](https://github.com/shruggietech/cueson/issues/67) | Reviewed artifact and explicitly authorized exact-main deployment, verified docs/downloads/three immutable schemas and milestone closure. |
 
-S025 is the largest candidate code slice. Keep corpus, ingest and rendering together so issues close on executed evidence. If S023/native implementation analysis shows the variants or retention surfaces cannot be reviewed coherently in one session, split into independently complete native outcomes and allocate fresh slice codes; do not close unfinished children or preserve these provisional numbers at the expense of verification.
+S025 was the largest completed native code slice. Keep coherent atomic outcomes together so issues close on executed evidence. If S023/native implementation analysis shows the variants or retention surfaces cannot be reviewed coherently in one session, split into independently complete native outcomes and allocate fresh slice codes; do not close unfinished children or preserve these provisional numbers at the expense of verification.
 
 ## Atomic hard dependencies
 
@@ -62,7 +64,7 @@ The native blocked-by graph is acyclic and transitively reduced. Same-slice coor
 | [#66](https://github.com/shruggietech/cueson/issues/66) | [#65](https://github.com/shruggietech/cueson/issues/65) | Publish and independently verify v1.1.0 |
 | [#67](https://github.com/shruggietech/cueson/issues/67) | [#66](https://github.com/shruggietech/cueson/issues/66) | Publish the v1.1.0 schema and documentation on cueson.io |
 
-Each child has the governed six-section body and independent acceptance/verification, one milestone, governed labels and exactly one Project item. Stage reflects actual progress, owning Slice is child planning text, and default Status stays unused. The spanning epic has no single Slice. S023-S025 children are Done; S026 children move through implementation and PR review, and downstream children stay Backlog until their open native prerequisites clear. Use Specced, Ready, In progress, Release verification or Done only with the corresponding evidence. Native assignees, parents/dependencies and milestone facts are not copied into custom fields.
+Each child has the governed six-section body and independent acceptance/verification, one milestone, governed labels and exactly one Project item. Stage reflects actual progress, owning Slice is child planning text, and default Status stays unused. The spanning epic has no single Slice. S023-S026 children are Done; S027 children move through implementation and PR review, and downstream children stay Backlog until their open native prerequisites clear. Use Specced, Ready, In progress, Release verification or Done only with the corresponding evidence. Native assignees, parents/dependencies and milestone facts are not copied into custom fields.
 
 ## Subsequent roadmap candidates
 

@@ -1,0 +1,46 @@
+# S027 conformance evidence research
+
+**Date**: 2026-09-15
+
+**Authority reviewed**: Root AGENTS.md, constitution 0.1.0, the S027 specification, current issue #63, closed native-contract issue #53 and corpus issue #57, the seventeen-row scripted matrix, maintained native/conversion conformance tests, and the current CI workflow. This artifact is read-only research; product and evidence implementation remain behind the blocking analysis gate.
+
+## Existing coverage and legitimate exclusions
+
+The matrix already has all seventeen scripted selected-profile rows, paired ASS/SSA accepted and malformed fixture references, native ingest/render evidence, parser fuzz references, and the applicable conversion evidence installed by S026. Fifteen platform entries already identify portable inapplicability or the existing source metadata rollback test. Portable grammar/model rows do not need invented operating-system-specific semantics: their named assertions execute under every native root-module CI job, while the platform_test category is reserved for actual filesystem/metadata/publication behavior. Preserve those explicit inapplicability reasons.
+
+Only scripted-hostile-bounds and scripted-stable-gate still defer platform_test to #63. Replace the hostile-bounds deferral with a named native workflow/safety test that actually checks scripted source acquisition, source integrity, filesystem publication/refusal, restored bytes, and portable diagnostics. Narrow the stable-gate platform deferral to immutable candidate/release proof owned by #64/#65 (and separately authorized publication), without implying stable support during S027. Preserve the existing stable-gate render_test deferral to #64/#65. A row may intentionally have both current experimental assertions and a separately described future stable proof; do not prohibit that combination indiscriminately.
+
+Existing CI already executes go test -count=1 ./... on Linux, Windows, and macOS, race tests on Linux, and six CGO-disabled target builds. There is no need to add redundant empty check names or claim local cross-compilation proves native execution. New named conformance assertions will run under those existing native jobs. Current-head hosted completion remains root's delivery evidence rather than a hard-coded success claim inside repository metadata.
+
+## Concrete strict-decoding defect
+
+The current loadConformanceMatrix helper performs a second JSON decode and rejects only when that decode returns nil. Valid matrix JSON followed by malformed trailing garbage therefore passes, because a syntax error is incorrectly treated like end-of-input. Require the second decode to return io.EOF; any other result rejects. Add negative tests for a second JSON value, malformed trailing bytes, unknown fields, BOM/non-UTF-8 metadata, and legitimate trailing whitespace. This is a meaningful metadata-integrity correction rather than a test mirroring a parser implementation.
+
+A generic decoder and exported internal matrix types can live in internal/testutil beside the existing domain-neutral fixture infrastructure. It should own strict UTF-8/JSON shape/trailing-data parsing, while conformance owns Cueson's required seventeen-row selected profile, fixture result associations, evidence applicability, and future release-gate policy. Do not put native codec, model, CLI, or source dependencies into testutil.
+
+The existing function-reference resolver searches byte substrings for func Test/Fuzz declarations. At minimum, bind fuzz_target to a Fuzz name and render/conversion/platform test evidence to a Test name, and reject directory references that escape the repository or use nonportable path spellings. Resolve actual Go declarations through go/parser if strengthening discovery, rather than accepting comments or string literals as evidence. Require the ratified row-ID set rather than relying only on a count of seventeen, so substitution of an unrelated row cannot masquerade as complete #53 coverage. Conformance should explicitly disallow surviving #63 development deferrals once this slice's evidence is installed, while retaining only the documented stable-gate #64/#65 exceptions.
+
+## Exact-restoration gap
+
+TestScriptedGovernedIngestRenderRestoreConformance already restores every accepted S025 scripted fixture, including preservation-only malformed owners. S026's six accepted conversion fixture records verify source hashes and immutable source documents but do not themselves perform exact restoration. Add a named conformance assertion for all accepted scripted and scripted-conversion source artifacts (34 accepted records today), including the two text-source conversion baselines. Each source artifact remains its own byte/hash restoration oracle; no new target golden or rewritten S025 expectation is necessary.
+
+Use the actual encode workflow, schema-decoded model, complete source.ValidateIntegrity check, and restore workflow into a private temporary directory. Compare restored bytes and the original artifact integrity independently, verify no input rewrite, and check caller-path privacy. Default restoration warnings for unsupported captured metadata are truthful; use explicit no-metadata restoration for a byte-only baseline and a separate policy test for native metadata/strict rollback, rather than treating unsupported creation-time restoration as a byte-fidelity failure. Source envelope and original schema/producer identity must remain unchanged.
+
+## Minimal native workflow and safety evidence
+
+- TestScriptedAcceptedFixtureRestorationConformance should cover each accepted scripted and scripted-conversion fixture by manifest identity, exact restored bytes/hash, unchanged source assets/model, and privacy. Include accepted malformed attachment/comment/style fixtures, whose restore path must remain independent from render refusal.
+- TestScriptedNativePlatformWorkflowConformance should exercise ASS and SSA BOM/CRLF sources through real encode, validate, inspect, model-driven render, exact restore, and one conversion. Check canonical native rendering independently from byte restoration, portable diagnostics, successful explicit destinations, and absence of staging artifacts. Existing Linux/Windows/macOS CI execution supplies native evidence.
+- TestScriptedNativePlatformSafetyConformance should mutate an encoded scripted document with a corrupt source envelope, unsafe source basename, fabricated capture/reference, or owning native/common mismatch, then exercise restore/render/conversion refusal with no stdout payload and byte-identical forced destinations. Use existing governed sources and isolated temporary models, without committing caller paths or arbitrary unsafe values into portable fixture expectations.
+- Matrix integrity tests should prove required row identities, source fixture associations, actual and kind-correct test/fuzz references, rejection of escaped references, strict trailing-data handling, and the precise remaining stable-gate deferral exceptions.
+
+Keep existing SubRip/WebVTT corpus outcomes and loss-report digests unchanged. The required new restoration assertions reuse accepted source inventory; add fixtures only for a retained minimized regression that demonstrates a new failure, not merely to duplicate existing safe/unsafe cases.
+
+## Fuzz integration observations for the coordinating agent
+
+The current fixed-work CI already runs native scripted FuzzParse and FuzzRenderParseCycle, model FuzzScriptedProjection, registry FuzzFormatSelection, and FuzzScriptedConversionCycle. Existing parser-cycle seeds primarily exercise basic source documents, inert extension lines, and BOM/CRLF. Rich declared-field, alias, unknown/duplicate-field, attachment, and override seeds make those boundaries more meaningful. FuzzRenderParseCycle checks counts and common cues, but does not compare every style field, unknown record payload, declaration occurrence, or attachment encoded byte; strengthening those native-semantic comparisons is useful alongside focused deterministic corpus assertions. Fuzz callbacks must remain bounded and must not create filesystem output. These observations belong to the independent fuzz owner and do not require a parallel fixture dialect.
+
+## Disjoint ownership and verification
+
+The evidence implementer can own a new internal/testutil matrix decoder/types and their tests, conformance matrix integrity tests, new scripted CLI/platform/restoration safety conformance tests, and testdata/conformance-matrix.json evidence updates. Root owns Spec Kit artifacts, docs, CI workflow integration, full verification, and delivery. The independent fuzz owner owns native/model/registry/conversion fuzz changes and retained seeds. Coordinate new test names and update matrix metadata only after implementations exist.
+
+Focused verification is go test -count=1 ./internal/testutil ./internal/conformance, followed by root's complete native/schema/CLI/source/codec/conversion checks and hosted three-platform/six-build proof. Use a separate hidden job manifest for Windows tooling, with CREATE_NO_WINDOW and redirected noninteractive I/O. Before final metadata delivery, check UTF-8 without BOM, unwrapped prose, valid JSON, preserved source-artifact hashes, no mojibake, and no surviving #63 matrix deferral.

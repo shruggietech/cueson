@@ -126,12 +126,12 @@ cueson convert --strict --to srt --output quickstart/converted.srt testdata/fixt
 cueson [global options] validate [options] INPUT
 ```
 
-`validate` accepts Cue JSON, SubRip, or WebVTT and performs the complete applicable validation stack without creating or printing a payload.
+`validate` accepts Cue JSON, SubRip, WebVTT, or experimental ASS/SSA and performs the complete applicable validation stack without creating or printing a payload.
 
-- `--format` `FORMAT`: select `auto`, `cueson`, `srt`, or `vtt`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--format` `FORMAT`: select `auto`, `cueson`, `srt`, `vtt`, `ass`, or `ssa`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
 - `--encoding` `NAME`: for native input, select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.
 
-Cue JSON prohibits `--encoding`; WebVTT accepts only compatible UTF-8 selections. Auto mode gives valid Cue JSON precedence, then uses native content evidence and extension evidence. Success exits 0, writes empty stdout, and emits one success diagnostic plus any ordered warnings on stderr. Quiet suppresses success; silent also suppresses warnings.
+Cue JSON prohibits `--encoding`; WebVTT and ASS/SSA accept only compatible UTF-8 selections. Auto mode gives valid Cue JSON precedence, then uses native content evidence and extension evidence. Success exits 0, writes empty stdout, and emits one success diagnostic plus any ordered warnings on stderr. Quiet suppresses success; silent also suppresses warnings.
 
 ```text
 cueson validate testdata/fixtures/webvtt/minimal/source/minimal.vtt
@@ -145,11 +145,15 @@ cueson [global options] inspect [options] INPUT
 
 `inspect` uses the same classification and validation depth as `validate`, then emits a privacy-bounded structural report.
 
-- `--format` `FORMAT`: select `auto`, `cueson`, `srt`, or `vtt`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
+- `--format` `FORMAT`: select `auto`, `cueson`, `srt`, `vtt`, `ass`, or `ssa`; `json` and `cue-json` alias `cueson`, `subrip` aliases `srt`, and `webvtt` aliases `vtt`.
 - `--encoding` `NAME`: for native input, select `utf-8`, `utf-8-bom`, `utf-16le`, `utf-16be`, `windows-1252`, or `iso-8859-1`. Accepted aliases are `utf8`; `utf8-bom` and `utf-8-sig`; `utf16le` and `utf-16-le`; `utf16be` and `utf-16-be`; `windows1252` and `cp1252`; and `iso8859-1`, `latin1`, and `latin-1`.
 - `--json`: emit one compact deterministic inspection-report-version-1 JSON object plus LF instead of the human report.
 
 Success places the report on stdout and source warnings on stderr. Both modes exclude preserved bytes, content hashes, asset and cue IDs, payload and annotation text, native raw fields, timestamps, free-form diagnostic messages, caller paths, and machine identifiers. Loss is `not_evaluated` with reason `target_format_required` until a target-specific operation is requested.
+
+ASS/SSA reports add an optional `scripted` object of fifteen integer counts. It is omitted from SubRip/WebVTT reports, whose fields and human output retain their established meaning. `section_count`, `record_count`, `style_count`, `event_count`, and `attachment_count` count the corresponding retained native collections. `format_declaration_count`, `unknown_record_count`, and `malformed_record_count` count native records by kind. `invalid_style_count` and `invalid_event_count` count preserved owners marked invalid; `dialogue_event_count` and `comment_event_count` count events by validated type. `override_tag_count` sums event tag occurrences; `karaoke_span_count` sums karaoke entries; `unsupported_karaoke_span_count` counts entries marked unsupported. Drawing-only and non-dialogue native owners remain represented even when they produce no common cue. These counts do not disclose source names, fields, tag parameters, attachment payloads, actors, or text. Existing WebVTT block/body counters are not a scripted record inventory.
+
+The bounded scripted input profile accepts UTF-8 or matching UTF-8 BOM selection across all workflows. Established owning-command error classes remain: encode/validate/inspect report supported but incompatible scripted encodings as runtime refusal (1), while convert's explicit scripted-input preflight reports invocation refusal (2). Unknown encoding tokens remain invocation failures.
 
 ```text
 cueson inspect testdata/fixtures/webvtt/minimal/source/minimal.vtt

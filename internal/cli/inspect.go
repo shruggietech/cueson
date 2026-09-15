@@ -45,6 +45,7 @@ type inspectionReport struct {
 	Blocks               inspectionBlockSummary        `json:"blocks"`
 	Diagnostics          []inspectionDiagnosticSummary `json:"diagnostics"`
 	Loss                 inspectionLossState           `json:"loss"`
+	Scripted             *inspectionScriptedSummary    `json:"scripted,omitempty"`
 }
 
 type inspectionInputSummary struct {
@@ -166,6 +167,26 @@ type inspectionLossState struct {
 	Reason string `json:"reason"`
 }
 
+// Native owner counts remain distinct from common cues and WebVTT blocks.
+// This projection intentionally has no user-controlled native string values.
+type inspectionScriptedSummary struct {
+	SectionCount                int `json:"section_count"`
+	RecordCount                 int `json:"record_count"`
+	FormatDeclarationCount      int `json:"format_declaration_count"`
+	StyleCount                  int `json:"style_count"`
+	InvalidStyleCount           int `json:"invalid_style_count"`
+	EventCount                  int `json:"event_count"`
+	DialogueEventCount          int `json:"dialogue_event_count"`
+	CommentEventCount           int `json:"comment_event_count"`
+	InvalidEventCount           int `json:"invalid_event_count"`
+	AttachmentCount             int `json:"attachment_count"`
+	OverrideTagCount            int `json:"override_tag_count"`
+	KaraokeSpanCount            int `json:"karaoke_span_count"`
+	UnsupportedKaraokeSpanCount int `json:"unsupported_karaoke_span_count"`
+	UnknownRecordCount          int `json:"unknown_record_count"`
+	MalformedRecordCount        int `json:"malformed_record_count"`
+}
+
 func setInspectValue(options *inspectOptions, option, value string) error {
 	if options == nil {
 		return fmt.Errorf("inspect options are unavailable")
@@ -224,7 +245,7 @@ func finalizeInspectOptions(options *inspectOptions) error {
 	}
 	format, known := normalizeInputFormat(options.format)
 	if !known {
-		return fmt.Errorf("--format must be auto, cueson, srt, or vtt")
+		return invalidSelectorError("inspect", "--format")
 	}
 	options.format = format
 	if options.encoding != "" {
@@ -448,7 +469,64 @@ func buildInspectionReport(input validatedInput) (inspectionReport, error) {
 			CueOrdinal:  ordinal,
 		}
 	}
+	report.Scripted, err = projectInspectionScripted(document)
+	if err != nil {
+		return inspectionReport{}, err
+	}
 	return report, nil
+}
+
+func projectInspectionScripted(document model.Document) (*inspectionScriptedSummary, error) {
+	var native *model.ScriptedDocumentData
+	switch document.Format {
+	case "ass":
+		native = document.FormatData.ASS
+	case "ssa":
+		native = document.FormatData.SSA
+	default:
+		return nil, nil
+	}
+	if native == nil {
+		return nil, fmt.Errorf("scripted inspection requires matching native data")
+	}
+	summary := &inspectionScriptedSummary{
+		SectionCount: len(native.Sections), RecordCount: len(native.Records),
+		StyleCount: len(native.Styles), EventCount: len(native.Events), AttachmentCount: len(native.Attachments),
+	}
+	for _, record := range native.Records {
+		switch record.Kind {
+		case "format_declaration":
+			summary.FormatDeclarationCount++
+		case "unknown":
+			summary.UnknownRecordCount++
+		case "malformed":
+			summary.MalformedRecordCount++
+		}
+	}
+	for _, style := range native.Styles {
+		if !style.Valid {
+			summary.InvalidStyleCount++
+		}
+	}
+	for _, event := range native.Events {
+		switch event.EventType {
+		case "dialogue":
+			summary.DialogueEventCount++
+		case "comment":
+			summary.CommentEventCount++
+		}
+		if !event.Valid {
+			summary.InvalidEventCount++
+		}
+		summary.OverrideTagCount += len(event.Tags)
+		summary.KaraokeSpanCount += len(event.Karaoke)
+		for _, karaoke := range event.Karaoke {
+			if !karaoke.Supported {
+				summary.UnsupportedKaraokeSpanCount++
+			}
+		}
+	}
+	return summary, nil
 }
 
 func projectInspectionBlocks(document model.Document) inspectionBlockSummary {
@@ -606,6 +684,9 @@ func renderHumanInspection(report inspectionReport) ([]byte, error) {
 		fmt.Fprintf(&output, "  severity=%s code=%s source_order=%s cue_ordinal=%s\n", diagnostic.Severity, diagnostic.Code, nullableInt(diagnostic.SourceOrder), nullableInt(diagnostic.CueOrdinal))
 	}
 	fmt.Fprintf(&output, "Loss: %s (%s)\n", report.Loss.Status, report.Loss.Reason)
+	if native := report.Scripted; native != nil {
+		fmt.Fprintf(&output, "Scripted: sections=%d records=%d format_declarations=%d styles=%d invalid_styles=%d events=%d dialogue_events=%d comment_events=%d invalid_events=%d attachments=%d override_tags=%d karaoke_spans=%d unsupported_karaoke_spans=%d unknown_records=%d malformed_records=%d\n", native.SectionCount, native.RecordCount, native.FormatDeclarationCount, native.StyleCount, native.InvalidStyleCount, native.EventCount, native.DialogueEventCount, native.CommentEventCount, native.InvalidEventCount, native.AttachmentCount, native.OverrideTagCount, native.KaraokeSpanCount, native.UnsupportedKaraokeSpanCount, native.UnknownRecordCount, native.MalformedRecordCount)
+	}
 	return []byte(output.String()), nil
 }
 

@@ -1,5 +1,11 @@
 package cli
 
+import (
+	"fmt"
+	"slices"
+	"strings"
+)
+
 type cliValueKind uint8
 
 const (
@@ -151,16 +157,16 @@ var orderedCommandSurface = []cliCommandSpec{
 	{
 		Name:        "validate",
 		Summary:     "Validate Cue JSON or a native subtitle without output.",
-		Description: "Validate Cue JSON, SubRip, or WebVTT completely without creating or printing an output payload.",
+		Description: "Validate Cue JSON, SubRip, WebVTT, or experimental ASS/SSA completely without creating or printing an output payload.",
 		Usage:       "cueson [global options] validate [options] INPUT",
 		Options: []cliOptionSpec{
-			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt"}, Description: "Select auto, cueson, srt, or vtt (default auto)."},
+			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental."},
 			{Spellings: []string{"--encoding"}, ValueName: "NAME", ValueKind: cliValueEncoding, Values: canonicalEncodingValues(), Description: "Select the native source text encoding."},
 		},
 		Notes: []string{
 			"Format aliases: json and cue-json for cueson; subrip for srt; webvtt for vtt.",
 			"Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le; utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.",
-			"Cue JSON prohibits --encoding. WebVTT accepts UTF-8 only.",
+			"Cue JSON prohibits --encoding. WebVTT and ASS/SSA accept UTF-8 only.",
 		},
 		Streams: []string{
 			"stdout  Always empty.",
@@ -174,17 +180,17 @@ var orderedCommandSurface = []cliCommandSpec{
 	{
 		Name:        "inspect",
 		Summary:     "Inspect safe structural facts about an input.",
-		Description: "Inspect validated Cue JSON, SubRip, or WebVTT as a privacy-bounded structural report.",
+		Description: "Inspect validated Cue JSON, SubRip, WebVTT, or experimental ASS/SSA as a privacy-bounded structural report.",
 		Usage:       "cueson [global options] inspect [options] INPUT",
 		Options: []cliOptionSpec{
-			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt"}, Description: "Select auto, cueson, srt, or vtt (default auto)."},
+			{Spellings: []string{"--format"}, ValueName: "FORMAT", ValueKind: cliValueFormat, Values: []string{"auto", "cueson", "srt", "vtt", "ass", "ssa"}, Description: "Select auto, cueson, srt, vtt, ass, or ssa (default auto); ASS/SSA are experimental."},
 			{Spellings: []string{"--encoding"}, ValueName: "NAME", ValueKind: cliValueEncoding, Values: canonicalEncodingValues(), Description: "Select the native source text encoding."},
 			{Spellings: []string{"--json"}, Description: "Write the compact inspection report version 1 as JSON."},
 		},
 		Notes: []string{
 			"Format aliases: json and cue-json for cueson; subrip for srt; webvtt for vtt.",
 			"Encoding aliases: utf8; utf-8-bom, utf8-bom, utf-8-sig; utf16le, utf-16-le; utf16be, utf-16-be; windows1252, cp1252; iso8859-1, latin1, latin-1.",
-			"Cue JSON prohibits --encoding. WebVTT accepts UTF-8 only.",
+			"Cue JSON prohibits --encoding. WebVTT and ASS/SSA accept UTF-8 only.",
 		},
 		Streams: []string{
 			"stdout  One human report, or one compact JSON object with --json.",
@@ -251,6 +257,25 @@ var orderedCommandSurface = []cliCommandSpec{
 
 func canonicalEncodingValues() []string {
 	return []string{"utf-8", "utf-8-bom", "utf-16le", "utf-16be", "windows-1252", "iso-8859-1"}
+}
+
+// invalidSelectorError uses the same canonical vocabulary as help and completion.
+// Accepted aliases remain the responsibility of the input normalizer.
+func invalidSelectorError(commandName, spelling string) error {
+	command, found := lookupCommandSurface(commandName)
+	if found {
+		for _, option := range command.Options {
+			if !slices.Contains(option.Spellings, spelling) || len(option.Values) == 0 {
+				continue
+			}
+			choices := option.Values[0]
+			if len(option.Values) > 1 {
+				choices = strings.Join(option.Values[:len(option.Values)-1], ", ") + ", or " + option.Values[len(option.Values)-1]
+			}
+			return fmt.Errorf("%s must be %s", spelling, choices)
+		}
+	}
+	return fmt.Errorf("%s has no supported selector values", spelling)
 }
 
 func lookupCommandSurface(name string) (cliCommandSpec, bool) {

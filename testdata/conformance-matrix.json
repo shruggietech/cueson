@@ -160,6 +160,14 @@
               "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"
             },
             {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedNativePlatformWorkflowConformance"
+            },
+            {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedAcceptedFixtureRestorationConformance"
+            },
+            {
               "kind": "inapplicable",
               "reference": "conversion_test",
               "reason": "Exact source restoration uses the source envelope and is distinct from model-driven conversion."
@@ -458,6 +466,14 @@
               "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"
             },
             {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedNativePlatformWorkflowConformance"
+            },
+            {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedAcceptedFixtureRestorationConformance"
+            },
+            {
               "kind": "inapplicable",
               "reference": "conversion_test",
               "reason": "Exact source restoration uses the source envelope and is distinct from model-driven conversion."
@@ -697,6 +713,14 @@
             {
               "kind": "platform_test",
               "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"
+            },
+            {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedNativePlatformWorkflowConformance"
+            },
+            {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedAcceptedFixtureRestorationConformance"
             }
           ]
         },
@@ -1500,6 +1524,14 @@
             {
               "kind": "platform_test",
               "reference": "internal/source:TestRestoreMetadataPolicyAndRollback"
+            },
+            {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedNativePlatformWorkflowConformance"
+            },
+            {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedAcceptedFixtureRestorationConformance"
             }
           ]
         },
@@ -1631,9 +1663,8 @@
               "reference": "internal/convert:TestScriptedOutboundLossBoundAndCancellation"
             },
             {
-              "kind": "deferred",
-              "reference": "platform_test",
-              "reason": "Full native platform hardening remains deferred to issue #63; stable release platform proof additionally depends on issues #65 and #66."
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedNativePlatformSafetyConformance"
             }
           ]
         },
@@ -1670,9 +1701,13 @@
               "reference": "internal/conformance:TestScriptedTwelveDirectionConversionConformance"
             },
             {
+              "kind": "platform_test",
+              "reference": "internal/conformance:TestScriptedNativePlatformWorkflowConformance"
+            },
+            {
               "kind": "deferred",
               "reference": "platform_test",
-              "reason": "Full native platform hardening remains deferred to issue #63; stable release platform proof additionally depends on issues #65 and #66."
+              "reason": "Immutable stable capability and reviewed candidate platform proof remain owned by issues #64 and #65; current native workflow tests establish experimental development behavior only."
             },
             {
               "kind": "deferred",
