@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Reconciled maintained documentation with the independently verified public v1.1.0 tag, release and thirteen-asset inventory while preserving the frozen S028/S029 evidence.
+- Prepared a deterministic 22-HTML-route, three-immutable-schema artifact with seven exact v1.1.0 primary downloads, local-authority deployment comparison, public content-manifest digest verification and an exact-current-main recheck immediately before any separately authorized production mutation.
+
 ## [1.1.0] - 2026-09-15
 
 ### Added

@@ -12,16 +12,16 @@
 
 <p align="center">
   <a href="https://github.com/shruggietech/cueson/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/shruggietech/cueson/actions/workflows/ci.yml/badge.svg?branch=main&amp;event=push"></a>
-  <a href="https://github.com/shruggietech/cueson/releases/tag/v1.0.0"><img alt="Release" src="https://img.shields.io/github/v/release/shruggietech/cueson?display_name=tag&amp;sort=semver"></a>
+  <a href="https://github.com/shruggietech/cueson/releases/tag/v1.1.0"><img alt="Release" src="https://img.shields.io/github/v/release/shruggietech/cueson?display_name=tag&amp;sort=semver"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-62D9B7"></a>
   <a href="docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-repository-58A6FF"></a>
 </p>
 
-**A lossless, structured interchange layer for subtitle and caption content.**<br>**v1 contract formats:** SubRip (`.srt`) and WebVTT (`.vtt`)<br>**Status:** v1.0.0 released and independently verified
+**A lossless, structured interchange layer for subtitle and caption content.**<br>**v1.1 contract formats:** SubRip (`.srt`), WebVTT (`.vtt`), ASS (`.ass`) and SSA (`.ssa`)<br>**Status:** v1.1.0 released and independently verified
 
-Cueson encodes SubRip and WebVTT subtitle files into a canonical, versioned JSON representation called Cue JSON, renders the structured model back to deterministic native syntax, and converts between those formats with explicit loss reporting. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration.
+Cueson encodes SubRip, WebVTT, ASS and SSA subtitle files into a canonical, versioned JSON representation called Cue JSON, renders the structured model back to deterministic native syntax, and converts among those formats with explicit loss reporting. Its common cue model is directly usable by search, analysis, automation, and AI systems, while a source envelope preserves original assets for byte-exact restoration.
 
-The [official v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) contains the stable `cueson` executable, its canonical Draft 2020-12 Cue JSON schema, and a byte-identical [immutable v1 schema](schema/releases/v1.0.0/cueson.schema.json). It provides bounded native SubRip and WebVTT detection, decoding, semantic ingest, deterministic rendering, cross-format conversion, validation, inspection, shell completion, and codec-independent exact restoration. The earlier [v0.0.0 envelope-only release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) and its [immutable schema](schema/releases/v0.0.0/cueson.schema.json) remain available as historical foundations. The public product and documentation home is [cueson.io](https://cueson.io).
+The [official v1.1.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.1.0) contains the stable `cueson` executable, its canonical Draft 2020-12 Cue JSON schema, and a byte-identical [immutable v1.1 schema](schema/releases/v1.1.0/cueson.schema.json). It provides bounded native SubRip, WebVTT, ASS and SSA detection, decoding, semantic ingest, deterministic textual rendering, all twelve distinct cross-format conversion directions, validation, inspection, shell completion and codec-independent exact restoration. The [v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) and earlier [v0.0.0 envelope-only release](https://github.com/shruggietech/cueson/releases/tag/v0.0.0) remain available with their immutable schemas. The reviewed site artifact includes the canonical 1.1.0 schema route and refreshed documentation; issue [#67](https://github.com/shruggietech/cueson/issues/67) governs exact-main production activation and live read-back at [cueson.io](https://cueson.io).
 
 ## Capability direction
 
@@ -31,19 +31,19 @@ The [official v1.0.0 release](https://github.com/shruggietech/cueson/releases/ta
 - Keep the Cueson JSON Schema and official executable versioned together.
 - Deliver portable native binaries for Windows, macOS, and Linux.
 
-The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages define the [SubRip](docs/formats/srt.md), [WebVTT](docs/formats/webvtt.md), and bounded candidate [ASS/SSA](docs/formats/ass-ssa.md) contracts. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
+The ratified implementation baselines cover [architecture](docs/architecture.md), the [Cue JSON schema](docs/schema.md), and the [CLI contract](docs/cli.md). Dedicated format pages define the stable [SubRip](docs/formats/srt.md), [WebVTT](docs/formats/webvtt.md), and bounded [ASS/SSA](docs/formats/ass-ssa.md) contracts. The broader [Cueson Project Specification](docs/Cueson-Project-Specification-v0.0.0.md) remains a working roadmap, and the [media-format guide](docs/cueson-media-format-guide.html) explains the longer-term format landscape and product intent.
 
 The official Cueson identity is retained in the repository as the complete [brand kit](brand/cueson/1.0.0/kit/README.md). See the [Cueson brand guide](docs/brand.md) for provenance, integrity verification, asset selection, licensing boundaries, and the [official ShruggieTech download](https://brand.shruggie.tech/cueson/downloads/cueson-brand-1.0.0.zip).
 
-The v1.0.0 history, immutable schema, and concise [release notes](docs/releases/v1.0.0.md) are bound to immutable annotated tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) at `2cad4c816340404289b4d1d87179a4071713bb46`. The [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) publishes the exact thirteen files accepted by default-branch proof run [34621429626](https://github.com/shruggietech/cueson/actions/runs/34621429626). [Release verification](docs/release-verification.md) records the independent public-byte check, and the governed [release process](docs/release-process.md) keeps milestone closure, signatures, attestations, public schema hosting, and production actions separately authorized.
+The v1.1.0 history, immutable schema and maintained [release page](docs/releases/v1.1.0.md) are bound to immutable annotated tag [`v1.1.0`](https://github.com/shruggietech/cueson/tree/v1.1.0) at `7ff45c1d8cd8df377e1fb568b9785286b649fd7c`. The [v1.1.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.1.0) publishes the exact six archives, six SPDX JSON SBOMs and checksum manifest accepted by exact-main proof. [Release verification](docs/release-verification.md) records the independent public-byte check, and the governed [release process](docs/release-process.md) keeps milestone closure, signatures, attestations, public schema hosting and production actions separately authorized.
 
-The [development roadmap](docs/roadmap.md) charts the v1.1.0 ASS/SSA milestone and later XML, SAMI, broadcast and bitmap/OCR work. Current source is the unpublished **1.1.0 stable candidate**, with the frozen bounded [ASS/SSA profile](docs/formats/ass-ssa.md), all twelve distinct [conversion directions](docs/conversion.md), complete CLI discovery and privacy-safe inspection, conformance hardening and exact source restoration. Official new output declares stable capability. Exact historical 1.0.0 input remains supported; the published v1.0.0 executable rejects new 1.1.0 output, including output encoded from SubRip/WebVTT. Schema-only and complete experimental capability observations remain valid under the exact current identity without being rewritten. The candidate is not tagged or publicly released, and its schema URI is not yet publicly hosted. Published downloads below remain v1.0.0 with SubRip/WebVTT support.
+The [development roadmap](docs/roadmap.md) records the v1.1.0 ASS/SSA milestone and later XML, SAMI, broadcast and bitmap/OCR work. Current source and the public v1.1.0 release provide the frozen bounded [ASS/SSA profile](docs/formats/ass-ssa.md), all twelve distinct [conversion directions](docs/conversion.md), complete CLI discovery, privacy-safe inspection, conformance hardening and exact source restoration. Exact historical 1.0.0 input remains supported; the published v1.0.0 executable rejects new 1.1.0 output, including output encoded from SubRip/WebVTT. Schema-only and complete experimental capability observations remain valid under the exact current identity without being rewritten.
 
-The release-preparation change finalizes the dated 1.1.0 changelog before tagging. Its reviewed preparation pull request must merge first, then fresh accepted proof must bind the actual resulting main revision and all thirteen assets before the operator authorizes exact tag/release publication. A dated changelog or green preparation PR does not publish the candidate; #66 remains open until independent public verification, and #67 owns public schema/site hosting.
+S029 finalized the dated history, bound exact-main revision `7ff45c1d8cd8df377e1fb568b9785286b649fd7c` and thirteen public assets to fresh accepted proof, and independently verified the authorized tag and release. Issue #66 is complete. S030 child #76 owns the reviewed site artifact; parent #67 governs its separately authorized exact-main activation, live verification and milestone reconciliation.
 
 ## Installation
 
-Download the archive for your platform from the [v1.0.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0) and verify it with `cueson_1.0.0_checksums.txt`. Six pure-Go archives cover Windows, macOS, and Linux on amd64 and arm64, and each archive has a matching SPDX JSON SBOM.
+Download the archive for your platform from the [v1.1.0 GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.1.0) and verify it with `cueson_1.1.0_checksums.txt`. Six pure-Go archives cover Windows, macOS and Linux on amd64 and arm64, and each archive has a matching SPDX JSON SBOM.
 
 Developers building from source require Go 1.25.0 or newer. Clone the repository, then use `go run ./cmd/cueson`, `go build ./cmd/cueson`, or `go install ./cmd/cueson`. The published release remains pure Go with `CGO_ENABLED=0`. Versioned public schemas resolve at `https://cueson.io/schema/vVERSION/cueson.schema.json`; the schema embedded in each executable and archive remains available without network access.
 
@@ -57,7 +57,7 @@ Run these examples from the repository root. Create an empty `quickstart` direct
 go run ./cmd/cueson version
 ```
 
-Expected result when running current source: exit status 0, stdout is exactly `1.1.0` plus LF, and stderr is empty. The published executable reports `1.0.0`.
+Expected result for current source and the published v1.1.0 executable: exit status 0, stdout is exactly `1.1.0` plus LF, and stderr is empty.
 
 <!-- docs-verify:example encode -->
 
@@ -133,7 +133,7 @@ The complete command, option, alias, stream, exit-status, overwrite, and strict-
 
 Development is specification-driven with [GitHub Spec Kit](https://github.com/github/spec-kit). Run the product tests and build with `go test ./...` and `go build ./cmd/cueson`. Repository publication formatting, executable-documentation checks, and offline link verification run through `scripts/github-format` and `scripts/docs-verify` as described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward, and strict current-base rules. Required CI and CodeQL checks cover schema and conformance, native platforms, race detection, static analysis, vulnerability analysis, and pure-Go cross-builds. The non-publishing release proof and its exact commands are documented in [release verification](docs/release-verification.md); successful candidate verification does not publish Cueson.
+The default branch is protected by pull-request, resolved-conversation, squash-only, deletion, non-fast-forward and strict current-base rules. Required CI and CodeQL checks cover schema and conformance, native platforms, race detection, static analysis, vulnerability analysis and pure-Go cross-builds. The non-publishing release proof and the independently verified v1.1.0 publication record are documented in [release verification](docs/release-verification.md).
 
 Report security concerns privately through [GitHub Security Advisories](https://github.com/shruggietech/cueson/security/advisories/new) rather than a public issue.
 

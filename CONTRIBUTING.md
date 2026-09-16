@@ -1,8 +1,8 @@
 # Contributing to Cueson
 
-Cueson v1.0.0 is published with stable SubRip, WebVTT, conversion, validation, inspection, completion, schema, and restoration workflows. The immutable v0.0.0 envelope-only foundation remains available as historical evidence. Development and verification require Go 1.25.0 or newer.
+Cueson v1.1.0 is published with stable SubRip, WebVTT, ASS, SSA, twelve-direction conversion, validation, inspection, completion, schema, and restoration workflows. The immutable v1.0.0 and v0.0.0 releases remain available as historical evidence. Development and verification require Go 1.25.0 or newer.
 
-Start with an issue so the intended outcome, dependencies, and verification can be agreed before implementation begins. Read the [architecture](docs/architecture.md), [CLI contract](docs/cli.md), [schema contract](docs/schema.md), and [compatibility contract](docs/compatibility.md) before changing public surfaces. Format or conversion work must also begin with the dedicated [SubRip](docs/formats/srt.md), [WebVTT](docs/formats/webvtt.md), bounded [ASS/SSA](docs/formats/ass-ssa.md), and [conversion](docs/conversion.md) contracts. Current source targets the unpublished exact 1.1.0 stable candidate; retain historical released resources and explicitly distinguish generated preview content from production availability. Read the [brand guide](docs/brand.md) before referencing, updating, or distributing Cueson identity assets.
+Start with an issue so the intended outcome, dependencies, and verification can be agreed before implementation begins. Read the [architecture](docs/architecture.md), [CLI contract](docs/cli.md), [schema contract](docs/schema.md), and [compatibility contract](docs/compatibility.md) before changing public surfaces. Format or conversion work must also begin with the dedicated [SubRip](docs/formats/srt.md), [WebVTT](docs/formats/webvtt.md), bounded [ASS/SSA](docs/formats/ass-ssa.md), and [conversion](docs/conversion.md) contracts. Current source matches the published exact v1.1.0 software and schema contract; retain historical released resources and explicitly distinguish generated review artifacts from production availability. Read the [brand guide](docs/brand.md) before referencing, updating, or distributing Cueson identity assets.
 
 ## Development workflow
 
@@ -34,4 +34,4 @@ The default branch accepts squash pull requests through active repository protec
 
 An AI agent may prepare and verify a pull request, but the final merge remains a human decision unless the operator grants one explicit, pull-request-specific override.
 
-Candidate packaging is non-publishing. Immutable schema admission occurs through reviewed candidate work; tag creation, GitHub Release and asset publication, milestone closure, public schema hosting, and production changes follow the separately authorized [release process](docs/release-process.md).
+Release preparation and packaging are non-publishing. Immutable schema admission occurs through reviewed preparation work; tag creation, GitHub Release and asset publication, milestone closure, public schema hosting, and production changes follow the separately authorized [release process](docs/release-process.md).

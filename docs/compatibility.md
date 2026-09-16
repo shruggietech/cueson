@@ -1,6 +1,6 @@
 # Cueson Compatibility Contract
 
-**Status:** Frozen 1.1.0 stable candidate; v1.0.0 stable release published and independently verified
+**Status:** v1.1.0 stable release published and independently verified; v1.0.0 input compatibility retained
 
 This document defines which Cueson surfaces receive a public compatibility promise, how format capability states are interpreted, and which release and platform claims are currently valid.
 
@@ -23,11 +23,11 @@ Starting with v1.0.0, incompatible changes to either public interface require a 
 
 No mutable `latest` schema identity is part of the contract. Every released schema copy is immutable. The v1.0.0 canonical and immutable schemas are available from the repository, release archives, embedded executable, and byte-exact public `cueson.io` route. S021 completed separately authorized public hosting of both v0.0.0 and v1.0.0 immutable schemas.
 
-## Current candidate compatibility
+## Current release compatibility
 
-The exact 1.1.0 stable candidate accepts historical 1.0.0 documents through the bundled immutable local schema and preserved version-specific semantics. Validate, inspect, restore, matching native render and established conversion paths preserve loaded identity, producer and source truth. Missing, approximate, mismatched, unknown, v0.0.0 and former 1.1.0-dev identities reject locally without network retrieval. Current discovery and every new encode, including SubRip/WebVTT, use exact 1.1.0. The published v1.0.0 executable rejects this new output until explicitly updated; historical input support on the candidate does not grant forward compatibility to old consumers. No historical-output selector or migration command is added.
+The exact 1.1.0 stable release accepts historical 1.0.0 documents through the bundled immutable local schema and preserved version-specific semantics. Validate, inspect, restore, matching native render and established conversion paths preserve loaded identity, producer and source truth. Missing, approximate, mismatched, unknown, v0.0.0 and former 1.1.0-dev identities reject locally without network retrieval. Current discovery and every new encode, including SubRip/WebVTT, use exact 1.1.0. The published v1.0.0 executable rejects this new output; historical input support in v1.1.0 does not grant forward compatibility to old consumers. No historical-output selector or migration command is added.
 
-The candidate freezes bounded ASS v4+/SSA v4 detection, strict UTF-8 ingest, common/native semantic ownership, textual model rendering, all twelve four-format conversion directions, validation, privacy-safe inspection and independently verified exact restoration. Official encode and private native targets declare `stable`; exact-current `schema_only` and complete `experimental` declarations remain valid observations unchanged. Stable identifies the verified bounded contract, not pixel rendering or public availability. The candidate is unpublished and its 1.1.0 schema URI is not yet publicly hosted.
+The release freezes bounded ASS v4+/SSA v4 detection, strict UTF-8 ingest, common/native semantic ownership, textual model rendering, all twelve four-format conversion directions, validation, privacy-safe inspection and independently verified exact restoration. Official encode and private native targets declare `stable`; exact-current `schema_only` and complete `experimental` declarations remain valid observations unchanged. Stable identifies the verified bounded contract, not pixel rendering. The reviewed artifact includes the exact 1.1.0 schema URI; issue #67 governs production activation and live read-back.
 
 ## Format capability states
 
@@ -58,8 +58,8 @@ The v1.0.0 executable, immutable schema, release notes, annotated tag, and thirt
 
 ## Minor-release compatibility boundary
 
-The [S023 roadmap](roadmap.md) targets a compatible v1.1.0 ASS/SSA addition. The [ratified version contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) requires the candidate executable to accept exact historical v1.0.0 documents using the released local schema and version-specific semantics, preserving their input identity, producer, source truth and promised CLI behavior. Released v1.0.0 and the 1.1.0 candidate reject v0.0.0 input identity; the historical v0.0.0 executable remains available for its own envelopes.
+The [S023 roadmap](roadmap.md) planned the compatible v1.1.0 ASS/SSA addition. The [ratified version contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) requires the v1.1.0 executable to accept exact historical v1.0.0 documents using the released local schema and version-specific semantics, preserving their input identity, producer, source truth and promised CLI behavior. Released v1.0.0 and v1.1.0 reject v0.0.0 input identity; the historical v0.0.0 executable remains available for its own envelopes.
 
-New native encode output targets exact 1.1.0 identity, with current software/schema lockstep. Old exact-version consumers, including the released v1.0.0 executable, reject these new documents until they explicitly support the new contract. Historical input support on the new executable does not provide forward compatibility to old consumers. No historical-output selector or migration command is introduced by this candidate. Any incompatible change to an established public guarantee blocks the minor target and requires a major-version decision; all compatibility claims must be proven by the documented command/version matrix and candidate evidence.
+New native encode output targets exact 1.1.0 identity, with current software/schema lockstep. Old exact-version consumers, including the released v1.0.0 executable, reject these new documents. Historical input support on the new executable does not provide forward compatibility to old consumers. No historical-output selector or migration command is included in this release. Any incompatible change to an established public guarantee requires a major-version decision; all compatibility claims must be proven by the documented command/version matrix and release evidence.
 
-The [ASS/SSA contract](formats/ass-ssa.md) freezes the bounded native profile completed by S025-S027 and promoted in S028. Tags/releases and public schema/site hosting remain separate #66/#67 outcomes. Other format families remain explicitly deferred.
+The [ASS/SSA contract](formats/ass-ssa.md) freezes the bounded native profile completed by S025-S027, promoted in S028 and published through #66. S030 child #76 prepares the public schema/site artifact, while #67 governs production deployment and live verification. Other format families remain explicitly deferred.

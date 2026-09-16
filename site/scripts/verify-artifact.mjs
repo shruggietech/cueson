@@ -33,11 +33,11 @@ async function verifyArtifact() {
     const relative = route === "/" ? "index.html" : route.endsWith("/") ? `${route.slice(1)}index.html` : route.slice(1);
     await assertRegular(relative);
   }
-  for (const [version, expectedHash] of Object.entries(deployment.schemas)) {
-    const relative = `schema/v${version}/cueson.schema.json`;
+  for (const schema of deployment.schemas) {
+    const relative = schema.public_path.slice(1);
     const artifact = await readFile(target(relative));
-    const source = await readFile(path.join(repoRoot, "schema", "releases", `v${version}`, "cueson.schema.json"));
-    if (!artifact.equals(source) || sha256(artifact) !== expectedHash) throw new Error(`${relative}: immutable schema identity mismatch`);
+    const source = await readFile(path.join(repoRoot, "schema", "releases", `v${schema.version}`, "cueson.schema.json"));
+    if (!artifact.equals(source) || artifact.length !== schema.byte_length || sha256(artifact) !== schema.sha256) throw new Error(`${relative}: immutable schema identity mismatch`);
   }
   try {
     await lstat(target("schema/latest"));
@@ -47,7 +47,7 @@ async function verifyArtifact() {
   }
   const entries = await readdir(outputRoot);
   if (!entries.includes("404.html")) throw new Error("404.html: missing static not-found surface");
-  process.stdout.write(`verified deployable artifact for ${deployment.commit}: ${deployment.routes.length} declared routes and ${Object.keys(deployment.schemas).length} immutable schemas\n`);
+  process.stdout.write(`verified deployable artifact for ${deployment.commit}: ${deployment.routes.length} declared routes and ${deployment.schemas.length} immutable schemas\n`);
 }
 
 await verifyArtifact();

@@ -2,11 +2,11 @@
 
 ## Supported versions
 
-The published v1.0.0 release is the current stable line and includes the documented SubRip, WebVTT, conversion, validation, inspection, completion, schema, and restoration boundaries. The published v0.0.0 release remains an immutable envelope-only historical foundation. Publication never extends either release beyond its documented capability boundary.
+The published v1.1.0 release is the current stable line and includes the documented SubRip, WebVTT, ASS, SSA, conversion, validation, inspection, completion, schema, and restoration boundaries. The published v1.0.0 and v0.0.0 releases remain immutable historical foundations. Publication never extends any release beyond its documented capability boundary.
 
 Security corrections are applied to current development and assessed for every affected published release. Supported-version declarations accompany published stable releases and do not authorize rewriting an immutable release artifact or schema.
 
-The unpublished exact 1.1.0 candidate extends these boundaries to bounded ASS/SSA native workflows and all twelve conversion directions. Drawings, overrides and attachments are retained data, never external resource loading or execution. Stable candidate support does not claim a new published release or replace immutable historical resources.
+The exact v1.1.0 release extends the stable boundaries to bounded ASS/SSA native workflows and all twelve conversion directions. Drawings, overrides and attachments are retained data, never external resource loading or execution. This support does not replace immutable historical resources.
 
 ## Reporting a vulnerability
 

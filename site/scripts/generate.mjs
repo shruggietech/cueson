@@ -12,6 +12,15 @@ const gitHubBlobRoot = "https://github.com/shruggietech/cueson/blob/main/";
 const gitHubTreeRoot = "https://github.com/shruggietech/cueson/tree/main/";
 const generatedRoots = ["content/generated", "public/assets", "public/schema", "public/guides"];
 const generatedFiles = ["public/content-manifest.json", "public/deployment.json"];
+const releaseAssetFilenames = (version) => [
+  `cueson_${version}_windows_amd64.zip`,
+  `cueson_${version}_windows_arm64.zip`,
+  `cueson_${version}_darwin_amd64.tar.gz`,
+  `cueson_${version}_darwin_arm64.tar.gz`,
+  `cueson_${version}_linux_amd64.tar.gz`,
+  `cueson_${version}_linux_arm64.tar.gz`,
+  `cueson_${version}_checksums.txt`,
+];
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
@@ -157,12 +166,26 @@ export async function loadContentMap(siteRoot = defaultSiteRoot) {
   const bytes = await readFile(path.join(siteRoot, "content-map.json"));
   const contentMap = JSON.parse(bytes.toString("utf8"));
   if (contentMap.generator_version !== 1 || contentMap.origin !== "https://cueson.io") throw new Error("content-map.json: unsupported authority metadata");
+  const release = contentMap.release;
+  if (!release || !/^\d+\.\d+\.\d+$/.test(release.version) || release.tag !== `v${release.version}` || release.url !== `https://github.com/shruggietech/cueson/releases/tag/${release.tag}`) {
+    throw new Error("content-map.json: invalid current release identity");
+  }
   for (const key of ["documents", "schemas", "downloads", "brand_assets", "direct_files"]) {
     if (!Array.isArray(contentMap[key])) throw new Error(`content-map.json: ${key} must be an array`);
   }
+  const expectedDownloadPrefix = `https://github.com/shruggietech/cueson/releases/download/${release.tag}/`;
+  const downloadNames = new Set();
+  const downloadURLs = new Set();
+  const downloadFiles = [];
   for (const download of contentMap.downloads) {
-    if (typeof download.name !== "string" || !/^https:\/\/github\.com\/shruggietech\/cueson\/releases\/download\/v1\.0\.0\//.test(download.url)) throw new Error("content-map.json: invalid release download");
+    if (typeof download.name !== "string" || download.name.length === 0 || typeof download.url !== "string" || !download.url.startsWith(expectedDownloadPrefix)) throw new Error("content-map.json: invalid release download");
+    if (downloadNames.has(download.name) || downloadURLs.has(download.url)) throw new Error("content-map.json: duplicate release download");
+    downloadNames.add(download.name);
+    downloadURLs.add(download.url);
+    downloadFiles.push(download.url.slice(expectedDownloadPrefix.length));
   }
+  const expectedReleaseAssetFilenames = releaseAssetFilenames(release.version);
+  if (downloadFiles.length !== expectedReleaseAssetFilenames.length || downloadFiles.some((name, index) => name !== expectedReleaseAssetFilenames[index])) throw new Error("content-map.json: release download inventory mismatch");
   const outputs = new Set();
   for (const document of contentMap.documents) {
     assertRelativePath(document.source, document.source);
@@ -170,6 +193,11 @@ export async function loadContentMap(siteRoot = defaultSiteRoot) {
     const output = document.slug.length === 0 ? "content/generated/index.mdx" : `content/generated/${document.slug.join("/")}.mdx`;
     if (outputs.has(output.toLowerCase())) throw new Error(`${output}: duplicate generated path`);
     outputs.add(output.toLowerCase());
+  }
+  const schemaVersions = new Set();
+  for (const schema of contentMap.schemas) {
+    if (!/^\d+\.\d+\.\d+$/.test(schema.version) || schema.source !== `schema/releases/v${schema.version}/cueson.schema.json` || schema.public !== `schema/v${schema.version}/cueson.schema.json` || !Number.isSafeInteger(schema.byte_length) || schema.byte_length <= 0 || !/^[0-9a-f]{64}$/.test(schema.sha256) || schemaVersions.has(schema.version)) throw new Error("content-map.json: invalid released schema");
+    schemaVersions.add(schema.version);
   }
   for (const record of [...contentMap.schemas, ...contentMap.brand_assets, ...contentMap.direct_files]) {
     assertRelativePath(record.source, record.source);
@@ -224,9 +252,10 @@ async function collectExpected(repoRoot, siteRoot, sourceCommit) {
   for (const schema of contentMap.schemas) {
     const bytes = await readFile(safeTarget(repoRoot, schema.source));
     const digest = sha256(bytes);
+    if (bytes.length !== schema.byte_length) throw new Error(`${schema.source}: immutable schema byte length mismatch`);
     if (digest !== schema.sha256) throw new Error(`${schema.source}: immutable schema hash mismatch`);
     expected.set(`public/${schema.public}`, bytes);
-    schemas.push({ version: schema.version, source: schema.source, public_path: `/${schema.public}`, bytes: bytes.length, sha256: digest });
+    schemas.push({ version: schema.version, source: schema.source, public_path: `/${schema.public}`, byte_length: bytes.length, sha256: digest });
   }
 
   const directFiles = [];
@@ -240,6 +269,7 @@ async function collectExpected(repoRoot, siteRoot, sourceCommit) {
   const manifest = {
     generator_version: contentMap.generator_version,
     origin: contentMap.origin,
+    release: contentMap.release,
     documents,
     brand_assets: brandAssets,
     schemas,
@@ -250,9 +280,10 @@ async function collectExpected(repoRoot, siteRoot, sourceCommit) {
   expected.set("public/content-manifest.json", manifestBytes);
   expected.set("public/deployment.json", stableJson({
     commit: sourceCommit,
+    release: contentMap.release,
     content_manifest_sha256: sha256(manifestBytes),
     routes: ["/", ...documents.map((document) => document.route), "/guides/media-formats/", ...schemas.map((schema) => schema.public_path)],
-    schemas: Object.fromEntries(schemas.map((schema) => [schema.version, schema.sha256])),
+    schemas: schemas.map(({ version, public_path, byte_length, sha256: digest }) => ({ version, public_path, byte_length, sha256: digest })),
     downloads: contentMap.downloads,
   }));
   return { expected, summary: { commit: sourceCommit, content_manifest_sha256: sha256(manifestBytes), documents: documents.length, brand_assets: brandAssets.length, schemas: schemas.length, direct_files: directFiles.length } };
@@ -314,7 +345,7 @@ export async function generateSite({ repoRoot = defaultRepoRoot, siteRoot = defa
   for (const root of generatedRoots) {
     const target = safeTarget(resolvedSiteRoot, root);
     if (target === resolvedSiteRoot) throw new Error(`${root}: refusing broad generated cleanup`);
-    await rm(target, { recursive: true, force: true });
+    await rm(target, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
   }
   for (const file of generatedFiles) await rm(safeTarget(resolvedSiteRoot, file), { force: true });
   for (const [relative, bytes] of expected) {

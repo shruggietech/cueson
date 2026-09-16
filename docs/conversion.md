@@ -1,6 +1,6 @@
 # Conversion contract
 
-**Current status:** Frozen stable four-format, twelve-direction conversion in the unpublished 1.1.0 candidate; published v1.0.0 retains SubRip/WebVTT conversion
+**Current status:** Stable four-format, twelve-direction conversion in the published and independently verified v1.1.0 release; historical v1.0.0 retains SubRip/WebVTT conversion
 
 **Historical release status:** v0.0.0 does not include conversion
 
@@ -103,4 +103,4 @@ Drawing-only or entirely unreadable dialogue is fatal for scripted-to-text conve
 | ASS | SSA | Dialogue/native owners retain representable semantics; observed dialect-only columns mean a canonical baseline can be lossy. | Layer, ASS-only style columns, outline/back/alpha roles, and incompatible dialect fields or controls. | Malformed owners, unsupported alignment/scalars, unsafe captures, target reparse or bounds. |
 | SSA | ASS | Dialogue/native owners retain representable semantics; observed dialect-only columns mean a canonical baseline can be lossy. | Marked, TertiaryColour, AlphaLevel/color roles, and incompatible dialect fields or controls. | Malformed owners, unsupported alignment/scalars, unsafe captures, target reparse or bounds. |
 
-Same-format transformation belongs to `cueson render`, not `cueson convert`. The accepted grammar, native-fidelity rules, and row-level conformance evidence remain in the [SubRip](formats/srt.md), [WebVTT](formats/webvtt.md), and [ASS/SSA](formats/ass-ssa.md) contracts. S027 completes shared CLI discovery and conformance hardening; S028 freezes the stable candidate. Release publication and public hosting remain separately authorized #66/#67 outcomes.
+Same-format transformation belongs to `cueson render`, not `cueson convert`. The accepted grammar, native-fidelity rules and row-level conformance evidence remain in the [SubRip](formats/srt.md), [WebVTT](formats/webvtt.md), and [ASS/SSA](formats/ass-ssa.md) contracts. S027 completed shared CLI discovery and conformance hardening, S028 froze the stable contract, and #66 published and independently verified v1.1.0. The reviewed schema/site artifact belongs to #76; #67 governs its production deployment and live verification.

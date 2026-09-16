@@ -430,7 +430,7 @@
         <span class="eyebrow">The real reason Cueson exists</span>
         <h1>Make media content <span class="accent">directly readable to AI.</span></h1>
         <p class="lede">A huge amount of what people say, read, watch, and archive is trapped behind subtitle formats that machines cannot treat as ordinary text. Some are simple text files. Some are dense XML. Some are old binary broadcast records. Some are literally pictures of words. Cueson is designed to turn that fractured universe into one predictable Cue JSON surface where the words, timing, speakers, provenance, layout, and other useful context are directly visible.</p>
-        <p class="hero-note"><strong>Current v1.0.0 release boundary:</strong> Cueson provides stable Cue JSON, SubRip, and WebVTT encode, restore, render, conversion, validation, inspection, and completion workflows in the published, independently verified v1.0.0 release. Its documentation and immutable released schemas are published at cueson.io. The unpublished 1.1.0 candidate adds a frozen bounded ASS v4+/SSA v4 native profile and all twelve distinct four-format conversion directions; it retains exact original source bytes while drawing/font/image processing is excluded. Public downloads and schema hosting below remain the released v1.0.0 state. OCR and other format families remain future work.</p>
+        <p class="hero-note"><strong>Current v1.1.0 release boundary:</strong> Cueson provides stable Cue JSON, SubRip, WebVTT, ASS and SSA encode, restore, textual render, all twelve conversion directions, validation, inspection and completion workflows in the published, independently verified v1.1.0 release. The bounded ASS v4+/SSA v4 profile retains exact original source bytes while drawing/font/image processing is excluded. The reviewed site artifact contains current pages and immutable v0.0.0, v1.0.0 and v1.1.0 schemas; issue #67 governs exact-main production activation and independent live read-back. OCR and other format families remain future work.</p>
 
         <div class="pipeline" aria-label="How Cueson unlocks media for AI">
           <div class="pipeline-box">
@@ -472,11 +472,11 @@
           <div>
             <span class="eyebrow">Target format map</span>
             <h2>The subtitle universe Cueson is designed to open up</h2>
-            <p>SRT and WebVTT are the stable format contracts in the published v1.0.0 release. The unpublished 1.1.0 stable candidate adds the bounded UTF-8 ASS v4+/SSA v4 profile, twelve-direction conversion and retained native data without visual resource execution. Other families remain future directions and show why the common Cue JSON model matters long term, especially when the original content is binary or image-based rather than plain text.</p>
+            <p>SRT and WebVTT are stable format contracts retained from v1.0.0. The published v1.1.0 release adds the bounded UTF-8 ASS v4+/SSA v4 profile, twelve-direction conversion and retained native data without visual resource execution. Other families remain future directions and show why the common Cue JSON model matters long term, especially when the original content is binary or image-based rather than plain text.</p>
           </div>
           <div class="legend" aria-label="Format legend">
             <span class="badge status-v1">v1</span>
-            <span class="badge status-v1">Candidate 1.1.0</span>
+            <span class="badge status-v1">Stable 1.1.0</span>
             <span class="badge status-future">Future</span>
             <span class="badge status-ocr">Future + OCR</span>
             <span class="badge kind-text">Text</span>
@@ -506,7 +506,7 @@
         <div class="format-name">SRT</div>
         <div class="extensions">.srt</div>
         <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-v1">v1</span>
-            <span class="badge status-v1">Candidate 1.1.0</span></div>
+            <span class="badge status-v1">Stable 1.1.0</span></div>
       </td>
       <td><div class="family">Simple timed text</div><div class="muted">Originally created around the SubRip subtitle-ripping tool, then adopted almost everywhere as a simple subtitle interchange format.</div></td>
       <td>Downloaded subtitles, media players, video editing, localization handoffs, archives, and subtitle sidecars.</td>
@@ -518,7 +518,7 @@
         <div class="format-name">WebVTT</div>
         <div class="extensions">.vtt</div>
         <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-v1">v1</span>
-            <span class="badge status-v1">Candidate 1.1.0</span></div>
+            <span class="badge status-v1">Stable 1.1.0</span></div>
       </td>
       <td><div class="family">Web timed text</div><div class="muted">Designed for timed text on the web and used with HTML video and audio.</div></td>
       <td>Web captions, subtitles, chapters, speaker labels, descriptions, cue positioning, and time-aligned metadata.</td>
@@ -562,7 +562,7 @@
       <td class="format-cell">
         <div class="format-name">ASS</div>
         <div class="extensions">.ass</div>
-        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-v1">Candidate 1.1.0</span></div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-v1">Stable 1.1.0</span></div>
       </td>
       <td><div class="family">Styled subtitle script</div><div class="muted">Advanced SubStation Alpha, strongly associated with Aegisub and sophisticated fansubbing workflows.</div></td>
       <td>Anime, fansubs, karaoke, signs, elaborate styling, precise positioning, typography, and visual subtitle effects.</td>
@@ -573,7 +573,7 @@
       <td class="format-cell">
         <div class="format-name">SSA</div>
         <div class="extensions">.ssa</div>
-        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-v1">Candidate 1.1.0</span></div>
+        <div class="badge-row"><span class="badge kind-text">Text</span><span class="badge status-v1">Stable 1.1.0</span></div>
       </td>
       <td><div class="family">Styled subtitle script</div><div class="muted">SubStation Alpha, the predecessor to ASS.</div></td>
       <td>Legacy styled subtitles, fansubs, positioned dialogue, and older subtitle-authoring workflows.</td>
