@@ -37,10 +37,12 @@ jobs:
         with:
           ref: ${{ inputs.revision }}
           fetch-depth: 0
-      - name: Bind checkout to main
+      - name: Bind checkout to current main
         shell: bash
         run: |
           test "$(git rev-parse HEAD)" = "$REVISION"
+          git fetch origin main
+          test "$REVISION" = "$(git rev-parse origin/main)"
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: "24"

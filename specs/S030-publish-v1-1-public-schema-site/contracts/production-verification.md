@@ -4,7 +4,7 @@
 
 The manual deployment input MUST be a full lowercase Git commit. Immediately before proof and mutation, the workflow MUST fetch the default branch and require the selected revision to equal `origin/main`. Being an ancestor is insufficient.
 
-The selected revision MUST receive the complete repository and site verification suite before deployment. Production credentials MUST remain limited to the protected manual deployment job and MUST never reach pull-request execution.
+The workflow MUST also fetch the default branch and require exact equality immediately after checkout, before package installation or any other checkout-controlled tool can use the protected job's production credentials. The selected revision MUST receive the complete repository and site verification suite before deployment. Production credentials MUST remain limited to the protected manual deployment job and MUST never reach pull-request execution.
 
 ## Local authority and public read-back
 
