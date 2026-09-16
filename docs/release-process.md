@@ -30,7 +30,7 @@ A release decision starts only from a clean, reviewed default-branch commit. Bef
 
 1. Every issue committed to the candidate is closed or truthfully moved, and the Project and milestone agree with that state.
 2. The executable version, embedded schema version, and intended tag version are identical.
-3. The detailed candidate history and dated architecture decisions are complete under `[Unreleased]` in [CHANGELOG.md](../CHANGELOG.md); the separately authorized release-publication slice finalizes the dated version section and retains a fresh `[Unreleased]` section for later work.
+3. The detailed candidate history and chronological architecture decisions are finalized in one valid dated 1.1.0 section of [CHANGELOG.md](../CHANGELOG.md), with one fresh `[Unreleased]` section retained. This prepared metadata must reach reviewed main before tag selection, so the tag contains the finalized changelog; a dated section does not assert public availability.
 4. Repository formatting, tests, race detection, vet, vulnerability analysis, CodeQL, platform-native tests, and pure-Go target builds are green.
 5. The non-publishing snapshot and repository-owned verifier pass for the exact default-branch candidate commit and record its full revision plus `release_schema_sha256` in deterministic evidence.
 6. Documentation describes the candidate's actual commands and format-support declarations, distinguishes exact restoration from rendering and conversion, and contains no capability inherited from a different release.
@@ -68,6 +68,14 @@ S028 combines contract/documentation freeze (#64) and exact candidate proof (#65
 Candidate construction accepts six pure-Go archives, six target-bound SBOMs, one six-entry checksum manifest and identical schema/legal bytes at the exact clean revision. Matching packaged-host native/historical/safety workflows run on governed amd64 Linux, Windows and macOS; arm64 packages receive structural/build-information proof without native execution claims. Pull-request evidence binds the reviewed head only, and fresh post-squash main evidence must identify the later publication commit.
 
 Publication-ready [v1.1.0 notes](releases/v1.1.0.md) remain prospective and substantially shorter than the detailed changelog. Published downloads and the two existing public schema routes remain v1.0.0/historical authority. ASS/SSA preview documentation does not deploy the site or activate a public 1.1.0 schema. No S028 action tags, releases, uploads release assets, merges, closes the milestone or changes production; #66/#67 retain those separately authorized outcomes.
+
+## Reviewed publication preparation
+
+S029 finalizes the dated history and freezes a separate exact public release-note body while preserving the prospective candidate guide. The preparation pull request closes only preparation #74, not publication #66. The human operator merges that reviewed change before any publication target is selected, ensuring the tag contains the finalized changelog.
+
+After that squash merge, fresh green main CI, security, Site and same-bundle native package proof must bind the actual resulting revision. Present the operator one exact decision package with source, schema/legal identity, thirteen named/sized/digested assets, checksum bijection, three governed native evidence records and the digest of the explicitly selected formatted public notes. Neither an earlier S028 bundle nor the preparation PR head is the final publication package.
+
+Exact tag creation/push and official release/asset publication each require their specific authorizations. Source, tool, artifact, schema, note or check changes, expired proof or partial publication require a refreshed decision. #66 remains open until independent public verification proves the approved tag, official release, exact assets and body. #67 and epic/milestone closure remain separate outcomes. Current public availability remains v1.0.0.
 
 ## Pull-request and default-branch candidate binding
 

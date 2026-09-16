@@ -1,8 +1,8 @@
 # Cueson development roadmap
 
-**Status:** S023-S027 merged; S028 frozen v1.1.0 candidate in progress
+**Status:** S023-S028 merged; S029 reviewed v1.1.0 publication preparation in progress
 
-**Assessed:** 2026-09-15 against merged S027 main revision `351036cc0c6972aa6f5953af591d4f49df718695`, all active issues, native dependencies, and milestone/Project state.
+**Assessed:** 2026-09-15 against merged S028 main revision `6a55b48c654e14f5baaf89a9add51fa4f5a4d04a`, all active issues, native dependencies, and milestone/Project state.
 
 ## Current delivery state
 
@@ -20,6 +20,10 @@ S028 promotes only the exact current contract and official native declarations t
 
 ## Next release scope and compatibility gate
 
+S028 merged through PR #73 at `6a55b48c654e14f5baaf89a9add51fa4f5a4d04a`, closing #64/#65 with frozen bounded contracts, exact stable 1.1.0 identity and immutable schema, seventeen executable scripted evidence rows, exact six-target candidate and same-bundle native/historical/old-consumer proof. All post-merge CI, CodeQL, Site and Release proof checks passed, including three packaged native hosts. Housekeeping synchronized clean main, pruned the automatically deleted remote S028 head and reconciled Done stages/default Status. Local S026-S028 branches were retained because ordinary deletion rejects squash ancestry. Fourteen of sixteen atomic epic children are complete; no new operator-created issue arrived before S029 kickoff.
+
+S029 explicitly separates reviewed publication preparation [#74](https://github.com/shruggietech/cueson/issues/74), a native child/blocker of #66, from independently verified public publication #66. Finalize dated history and exact public notes through the preparation PR, then select the actual human-merged main revision only after fresh accepted proof. The future decision package binds all thirteen approved public assets and exact notes with separate tag/release authority. Closing preparation #74 does not close publication #66 or unblock hosting #67. This narrows the earlier S029 grouping to the work authorized now; publication remains its separately authorized continuation and public hosting remains S030.
+
 The next major delivery milestone targets **v1.1.0: stable documented ASS/SSA native workflows, preserved historical v1.0.0 input handling, verified official release assets and immutable public schema/site hosting**. It is a compatible minor-release target, not a major-version change. Any unavoidable established CLI/schema break blocks this target and requires an explicit major-version decision before proceeding.
 
 Selecting ASS/SSA first is an explicit deviation from treating draft section order as execution priority: the [main working specification](Cueson-Project-Specification-v0.0.0.md) lists future families without ranking them. Two related text-native dialects share sections/styles/events, retained overrides, semantic dialogue, model rendering and one conversion verification surface. This reuses the source envelope, registry, loss reports, corpus, annotations and pure-Go proof without prematurely adding an XML profile stack or binary/OCR runtime. Every other candidate remains below; the ordering is a cohesion judgment rather than a promised effort estimate.
@@ -30,7 +34,7 @@ The [future exact-version compatibility contract](../specs/S023-plan-scripted-fo
 
 ## Chronological execution slices
 
-Each slice runs the installed Spec Kit/autopilot workflow end-to-end with one integrated implementation/review/verification story. S028 is active; later codes/groupings are provisional until their kickoff and must be reassessed after each merge and any new issue. Preserve atomic acceptance criteria if analysis requires a narrower reviewable implementation session.
+Each slice runs the installed Spec Kit/autopilot workflow end-to-end with one integrated implementation/review/verification story. S029 preparation is active; later codes/groupings are provisional until their kickoff and must be reassessed after each merge and any new issue. Preserve atomic acceptance criteria if analysis requires a narrower reviewable implementation session.
 
 | Order | Proposed slice | Atomic children | Complete outcome and shared verification |
 |---|---|---|---|
@@ -40,14 +44,14 @@ Each slice runs the installed Spec Kit/autopilot workflow end-to-end with one in
 | 4 | S026-complete-scripted-conversion | [#60](https://github.com/shruggietech/cueson/issues/60), [#61](https://github.com/shruggietech/cueson/issues/61) | Twelve-direction four-format matrix, complete deterministic losses, precision and strict/fatal publication safety. |
 | 5 | S027-harden-scripted-cli-conformance | [#62](https://github.com/shruggietech/cueson/issues/62), [#63](https://github.com/shruggietech/cueson/issues/63) | Shared CLI catalogue/input integration, executed conformance/fuzz/limit/privacy evidence and native-platform gates. |
 | 6 | S028-freeze-v1-1-release-candidate | [#64](https://github.com/shruggietech/cueson/issues/64), [#65](https://github.com/shruggietech/cueson/issues/65) | Accurate frozen docs/stable profile, exact 1.1.0 identity/immutable copy and packaged non-publishing release proof. |
-| 7 | S029-publish-verify-v1-1 | [#66](https://github.com/shruggietech/cueson/issues/66) | Explicitly authorized official tag/release and independently verified public artifacts. |
+| 7 | S029-publish-verify-v1-1 | [#74](https://github.com/shruggietech/cueson/issues/74), [#66](https://github.com/shruggietech/cueson/issues/66) | Reviewed dated metadata/public notes/decision preparation #74 first; fresh actual post-merge proof and explicit tag/release authority precede independently verified #66 public artifacts. |
 | 8 | S030-publish-v1-1-public-schema-site | [#67](https://github.com/shruggietech/cueson/issues/67) | Reviewed artifact and explicitly authorized exact-main deployment, verified docs/downloads/three immutable schemas and milestone closure. |
 
 S025 was the largest completed native code slice. Keep coherent atomic outcomes together so issues close on executed evidence. If S023/native implementation analysis shows the variants or retention surfaces cannot be reviewed coherently in one session, split into independently complete native outcomes and allocate fresh slice codes; do not close unfinished children or preserve these provisional numbers at the expense of verification.
 
 ## Atomic hard dependencies
 
-The native blocked-by graph is acyclic and transitively reduced. Same-slice coordination is not a reciprocal hard blocker. Completed S022 issue #49 remains the first prerequisite; the sixteen children are native sub-issues of epic #51.
+The native blocked-by graph is acyclic and transitively reduced. Same-slice coordination is not a reciprocal hard blocker. Completed S022 issue #49 remains the first prerequisite; the sixteen atomic children are native sub-issues of epic #51. Preparation #74 is nested under #66 and adds a separate prerequisite; its S028 inputs are already verified closed baselines rather than new open blockers.
 
 | Atomic issue | Direct native blocker | Outcome |
 |---|---|---|
@@ -65,10 +69,11 @@ The native blocked-by graph is acyclic and transitively reduced. Same-slice coor
 | [#63](https://github.com/shruggietech/cueson/issues/63) | [#62](https://github.com/shruggietech/cueson/issues/62) | Harden scripted-format conformance and fuzz boundaries |
 | [#64](https://github.com/shruggietech/cueson/issues/64) | [#63](https://github.com/shruggietech/cueson/issues/63) | Freeze v1.1 contracts and publish-ready documentation |
 | [#65](https://github.com/shruggietech/cueson/issues/65) | [#64](https://github.com/shruggietech/cueson/issues/64) | Prepare the exact v1.1.0 release candidate and proof |
-| [#66](https://github.com/shruggietech/cueson/issues/66) | [#65](https://github.com/shruggietech/cueson/issues/65) | Publish and independently verify v1.1.0 |
+| [#74](https://github.com/shruggietech/cueson/issues/74) | None (S028 inputs verified closed) | Prepare reviewed dated metadata, public notes and exact publication decision contract |
+| [#66](https://github.com/shruggietech/cueson/issues/66) | [#65](https://github.com/shruggietech/cueson/issues/65), [#74](https://github.com/shruggietech/cueson/issues/74) | Publish and independently verify v1.1.0 after preparation merge and fresh exact-main proof |
 | [#67](https://github.com/shruggietech/cueson/issues/67) | [#66](https://github.com/shruggietech/cueson/issues/66) | Publish the v1.1.0 schema and documentation on cueson.io |
 
-Each child has the governed six-section body and independent acceptance/verification, one milestone, governed labels and exactly one Project item. Stage reflects actual progress, owning Slice is child planning text, and default Status stays unused. The spanning epic has no single Slice. S023-S027 children are Done; S028 children move through implementation and PR review, and downstream children stay Backlog until their open native prerequisites clear. Use Specced, Ready, In progress, Release verification or Done only with the corresponding evidence. Native assignees, parents/dependencies and milestone facts are not copied into custom fields.
+Each child has the governed six-section body and independent acceptance/verification, one milestone, governed labels and exactly one Project item. Stage reflects actual progress, owning Slice is child planning text, and default Status stays unused. The spanning epic has no single Slice. S023-S028 atomic children are Done. Preparation #74 moves through S029 implementation/PR review under open publication #66; #66 retains its closed #65 prerequisite and new #74 blocker. Hosting #67 stays Backlog until #66 independently completes. Use Specced, Ready, In progress, Release verification or Done only with the corresponding evidence. Native assignees, parents/dependencies and milestone facts are not copied into custom fields.
 
 ## Subsequent roadmap candidates
 

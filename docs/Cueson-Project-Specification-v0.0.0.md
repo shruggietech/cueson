@@ -20,6 +20,8 @@ S023 ratified the next compatible v1.1.0 scripted-format milestone. S024 staged 
 
 ## Executive summary
 
+S028 merged with green exact-main candidate proof and closed #64/#65. S029 first prepares reviewed dated release history, exact public notes and a normative decision contract through independently closeable #74 under publication #66. A human preparation merge and fresh accepted proof of the actual resulting main revision must precede the exact tag/release decision package and separate publication authority. #66 remains open until public artifacts are independently verified; #67 retains public schema/site deployment and final milestone coordination. Preparation metadata never asserts that publication or production activation has occurred.
+
 Cueson is an official ShruggieTech utility for converting subtitle and caption formats into and out of a canonical, versioned JSON representation called Cue JSON. The first stable release targets complete SubRip (`.srt`) and WebVTT (`.vtt`) support, and the project is deliberately designed so additional text, XML, and bitmap subtitle families can be added without replacing the core document model.
 
 The project has two equally important products: the `cueson` executable and the Cueson JSON Schema. They are versioned in lock step. Every released binary emits the schema version matching its own software version, embeds that schema in the executable, and validates generated Cue JSON against it before reporting success.

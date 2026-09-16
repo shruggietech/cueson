@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-15
+
 ### Added
 
 - Added the byte-identical immutable v1.1.0 candidate schema, frozen bounded ASS/SSA contract, authored Site preview/navigation, exact candidate evidence and matching packaged native workflow/old-consumer compatibility proof without publishing a release.
@@ -20,6 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added the branded `cueson.io` product and documentation site, deterministic repository-source generation, immutable versioned schema routes, Cloudflare Workers Static Assets deployment unit, independent artifact and production verification, and read-only pull-request site CI.
 - Published unsigned annotated tag `v1.0.0` and the exact thirteen-asset GitHub Release from accepted default-branch proof for `2cad4c816340404289b4d1d87179a4071713bb46`.
 
+- Prepared reviewed v1.1.0 publication history, exact public release notes and a source/asset/authority-bound decision contract without publishing a tag, release or production change.
+
 ### Changed
 
 - Admit truthful experimental scripted capability observations alongside existing schema-only inputs under the evolving development schema, and extend the opt-in corpus verifier with scripted cycles and explicit preservation-only render refusals.
@@ -29,8 +33,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Bound production site deployment to a manually selected full `main` commit, serving the apex while permanently redirecting `www` with path and query preservation.
 - Reconciled current repository documentation after independently downloading and verifying every public v1.0.0 archive, SPDX JSON SBOM, and checksum file against the accepted release evidence.
 
-### Decisions
+- Promoted the reviewed current candidate software/schema identity and official scripted native declarations from 1.1.0-dev to 1.1.0 stable within the ratified UTF-8 ASS v4+/SSA v4 profile; existing released schemas, fixtures and public inventory remain immutable.
 
+### Fixed
+
+- Reject malformed trailing conformance-matrix data and require real kind-correct test/fuzz references and the ratified scripted row set rather than accepting incomplete evidence.
+
+- Account for each scripted style emphasis value cancelled before readable converted text, including neutral values, named resets, and use across cues; strict reports retain the complete atomic omission.
+- Exempt the canonical original-filename disagreement diagnostic from strict scripted rendering; conforming ASS/SSA models encoded under SubRip/WebVTT extensions render identically in strict and permissive modes.
+- Bound signed and unsigned scripted colors before conversion, close native metadata path/context gaps, verify source capture observations and preserve unknown override names; align all active snapshot-verifier instructions with development mode.
+- Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.
+
+### Decisions
 
 - 2026-09-11: Treat root documentation, released schemas, and approved brand-kit files as authoritative inputs while keeping generated site content disposable and drift-checked.
 - 2026-09-11: Publish one Cloudflare Worker with Static Assets on the apex and `www`, permit production deployment only from an exact reviewed `main` revision, and retain independent DNS, TLS, redirect, route, revision, and byte-identity verification.
@@ -58,18 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-15: Reuse stable canonical/immutable six-target candidate verification, strengthen same-bundle native package command/safety proof and execute digest/source-bound published v1.0.0 consumer refusal on fresh candidate output. Tag/release, production schemas/site and final merge remain separately authorized.
 - 2026-09-15: Freeze maintained/native/schema/CLI and generated preview contracts without activating v1.1.0 public downloads or schema routes; derive format navigation from the governed content map so authored ASS/SSA preview cannot disappear from navigation.
 
-### Fixed
-
-- Reject malformed trailing conformance-matrix data and require real kind-correct test/fuzz references and the ratified scripted row set rather than accepting incomplete evidence.
-
-- Account for each scripted style emphasis value cancelled before readable converted text, including neutral values, named resets, and use across cues; strict reports retain the complete atomic omission.
-- Exempt the canonical original-filename disagreement diagnostic from strict scripted rendering; conforming ASS/SSA models encoded under SubRip/WebVTT extensions render identically in strict and permissive modes.
-- Bound signed and unsigned scripted colors before conversion, close native metadata path/context gaps, verify source capture observations and preserve unknown override names; align all active snapshot-verifier instructions with development mode.
-- Accept IPv4-only, IPv6-only, and dual-stack production hostnames through both DNS resolver paths, reject alias-only or invalid address evidence, and retain actionable diagnostics when neither address family resolves.
-
-### Changed
-
-- Promoted the reviewed current candidate software/schema identity and official scripted native declarations from 1.1.0-dev to 1.1.0 stable within the ratified UTF-8 ASS v4+/SSA v4 profile; existing released schemas, fixtures and public inventory remain immutable.
+- 2026-09-15: Finalize S029 tagged metadata through independently closeable preparation #74 before selecting the actual human-merged main source; require fresh exact-main proof and a reviewed thirteen-asset/formatted-notes decision package with distinct tag/release authority before publication #66 can complete.
 
 ## [1.0.0] - 2026-09-11
 
@@ -166,6 +169,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-10: Treat the operator-designated ShruggieTech 1.0.0 ZIP as the sole S011 acquisition authority, retain its archive and every safe payload file byte for byte, and preserve bundled terms without a redundant separate legal-review gate.
 - 2026-09-10: Treat pull-request release proof as review evidence and bind the proposed publication target only after the S012 squash-merge commit passes its own non-publishing proof on `main`.
 
-[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0
 [0.0.0]: https://github.com/shruggietech/cueson/releases/tag/v0.0.0
