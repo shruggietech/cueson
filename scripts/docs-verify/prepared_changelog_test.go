@@ -100,3 +100,36 @@ func TestPreparedChangelogMarkdownEquivalence(t *testing.T) {
 		})
 	}
 }
+
+func TestPreparedChangelogSetextAndFullFences(t *testing.T) {
+	for _, test := range []struct {
+		name    string
+		content string
+		want    string
+	}{
+		{"valid setext current", strings.Replace(validPreparedHistory, "## [1.1.0] - 2026-09-15", "[1.1.0] - 2026-09-15\n---", 1), ""},
+		{"indented duplicate setext", strings.Replace(validPreparedHistory, "## [1.0.0]", "  [1.1.0] - 2026-09-15\n   ---\n\n## [1.0.0]", 1), "exactly one 1.1.0 section"},
+		{"invalid setext date", strings.Replace(validPreparedHistory, "## [1.1.0] - 2026-09-15", "[1.1.0] - 2026-02-29\n---", 1), "valid YYYY-MM-DD"},
+		{"setext order", strings.Replace(validPreparedHistory, "## [Unreleased]", "[1.0.0] - 2026-09-11\n---\n\n## [Unreleased]", 1), "must begin Unreleased"},
+		{"four-space setext code", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n    [1.1.0] - 2026-09-15\n    ---", 1), ""},
+		{"short backtick run remains content", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n````text\n```\n## [1.1.0] - 2026-09-15\n### Bogus\n````", 1), ""},
+		{"short tilde run remains content", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n~~~~text\n~~~\n## [1.1.0] - 2026-09-15\n~~~~", 1), ""},
+		{"marker-prefixed content is not close", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n```text\n```not-a-close\n## [1.1.0] - 2026-09-15\n```", 1), ""},
+		{"real duplicate after full close", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n````text\n```\n````\n\n[1.1.0] - 2026-09-15\n---", 1), "exactly one 1.1.0 section"},
+		{"long whitespace close", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n```text\n## [1.1.0] - 2026-09-15\n  ````  \t", 1), ""},
+		{"mixed marker is content", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n```text\n~~~\n## [1.1.0] - 2026-09-15\n```", 1), ""},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			violations := violationStrings(verifyPreparedChangelog(test.content))
+			if test.want == "" {
+				if len(violations) != 0 {
+					t.Fatalf("unexpected violations: %v", violations)
+				}
+				return
+			}
+			if !strings.Contains(strings.Join(violations, "\n"), test.want) {
+				t.Fatalf("want %q, got %v", test.want, violations)
+			}
+		})
+	}
+}

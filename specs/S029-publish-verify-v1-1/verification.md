@@ -29,3 +29,7 @@ Exact clean-revision package proof and terminal GitHub checks/reviews will be re
 ## Round-one review remediation
 
 Automatic Codex review identified two valid P2 metadata bypasses: permitted indentation in rendered release/category headings, and case/whitespace-equivalent reference definitions. Regression checks reproduced the failures before remediation. The scoped parser now accounts for rendered ATX headings and logical label equivalence, preserves fenced/indented code controls and rejects earlier wrong targets and duplicate definitions. Changed-module quality checks and final integration verification pass; the updated exact committed candidate and second-round external results are recorded in the PR completion evidence.
+
+## Final-round review remediation
+
+The single requested second review identified two additional valid P2 gaps: level-two setext release headings and incomplete fenced-code delimiter tracking. Eleven focused regression cases reproduced eight failures before remediation. Shared release-section checks now handle setext dates, duplicates and ordering; fence state retains delimiter character and opening length and permits only sufficiently long matching whitespace-terminated closing delimiters. Full changed-module tests, vet, Staticcheck, vulnerability analysis and maintained-document audit passed. Independent final audit found zero unresolved material issues. No third review is requested; repository policy accepts verified descendant remediation once all final-round threads and required exact-head checks are satisfied.

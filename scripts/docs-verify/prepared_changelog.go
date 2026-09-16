@@ -7,10 +7,12 @@ import (
 )
 
 var (
-	preparedReleaseHeading = regexp.MustCompile(`^\[([^\]]+)\](?:[ \t]+-[ \t]+(.*))?$`)
-	preparedATXHeading     = regexp.MustCompile(`^(#{1,6})(?:[ \t]+(.*)|[ \t]*)$`)
-	preparedClosingHashes  = regexp.MustCompile(`[ \t]+#+[ \t]*$`)
-	preparedCompareLink    = regexp.MustCompile(`^\[([^\]]+)\]:\s*(.*)$`)
+	preparedReleaseHeading  = regexp.MustCompile(`^\[([^\]]+)\](?:[ \t]+-[ \t]+(.*))?$`)
+	preparedATXHeading      = regexp.MustCompile(`^(#{1,6})(?:[ \t]+(.*)|[ \t]*)$`)
+	preparedClosingHashes   = regexp.MustCompile(`[ \t]+#+[ \t]*$`)
+	preparedCompareLink     = regexp.MustCompile(`^\[([^\]]+)\]:\s*(.*)$`)
+	preparedSetextUnderline = regexp.MustCompile(`^(?:-+|=+)[ \t]*$`)
+	preparedNonParagraph    = regexp.MustCompile(`^(?:[-+*][ \t]+|[0-9]{1,9}[.)][ \t]+|>|(?:-[ \t]*){3,}$|(?:\*[ \t]*){3,}$|(?:_[ \t]*){3,}$)`)
 )
 
 type preparedSection struct {
@@ -31,7 +33,9 @@ func verifyPreparedChangelog(content string) []violation {
 	versions := map[string]string{"unreleased": "Unreleased", "1.1.0": "1.1.0", "1.0.0": "1.0.0"}
 	categories := make(map[string]bool)
 	current := ""
-	fence := ""
+	var fenceMarker byte
+	fenceLength := 0
+	var paragraph []string
 	referencePrefix := ""
 	allowedCategories := map[string]bool{
 		"Added": true, "Changed": true, "Deprecated": true, "Removed": true,
@@ -43,23 +47,24 @@ func verifyPreparedChangelog(content string) []violation {
 		indent := len(line) - len(strings.TrimLeft(line, " "))
 		isCode := indent > 3 || strings.HasPrefix(line[indent:], "\t")
 		if isCode && referencePrefix == "" {
+			paragraph = nil
 			continue
 		}
 		if !isCode {
 			line = line[indent:]
 		}
 		trimmed := strings.TrimSpace(line)
-		if !isCode && (strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~")) {
-			referencePrefix = ""
-			marker := trimmed[:3]
-			if fence == "" {
-				fence = marker
-			} else if fence == marker {
-				fence = ""
+		marker, length, tail := preparedFenceDelimiter(line)
+		if fenceLength != 0 {
+			if !isCode && marker == fenceMarker && length >= fenceLength && strings.Trim(tail, " \t") == "" {
+				fenceMarker, fenceLength = 0, 0
 			}
 			continue
 		}
-		if fence != "" {
+		if !isCode && length >= 3 && (marker != '`' || !strings.Contains(tail, "`")) {
+			referencePrefix = ""
+			paragraph = nil
+			fenceMarker, fenceLength = marker, length
 			continue
 		}
 		reference := line
@@ -75,7 +80,9 @@ func verifyPreparedChangelog(content string) []violation {
 		if strings.HasPrefix(reference, "[") && !strings.Contains(reference, "]") && len(reference) <= 1000 {
 			referencePrefix = reference
 		}
-		if match := preparedCompareLink.FindStringSubmatch(reference); len(match) != 0 && len(match[1]) <= 999 {
+		definition := preparedCompareLink.FindStringSubmatch(reference)
+		if len(definition) != 0 && len(definition[1]) <= 999 {
+			match := definition
 			if version, ok := versions[normalizeReference(match[1])]; ok {
 				expected := links[version]
 				linkCounts[version]++
@@ -85,14 +92,36 @@ func verifyPreparedChangelog(content string) []violation {
 			}
 		}
 		if isCode {
+			paragraph = nil
+			continue
+		}
+		if len(definition) != 0 {
+			paragraph = nil
 			continue
 		}
 		heading := preparedATXHeading.FindStringSubmatch(line)
-		if len(heading) == 0 {
+		level := 0
+		text := ""
+		if len(heading) != 0 {
+			level = len(heading[1])
+			text = strings.TrimSpace(preparedClosingHashes.ReplaceAllString(heading[2], ""))
+			paragraph = nil
+		} else if preparedSetextUnderline.MatchString(line) && len(paragraph) != 0 {
+			level = 2
+			if line[0] == '=' {
+				level = 1
+			}
+			text = strings.Join(paragraph, " ")
+			paragraph = nil
+		} else {
+			if trimmed == "" || preparedNonParagraph.MatchString(line) || preparedSetextUnderline.MatchString(line) {
+				paragraph = nil
+			} else {
+				paragraph = append(paragraph, trimmed)
+			}
 			continue
 		}
-		text := strings.TrimSpace(preparedClosingHashes.ReplaceAllString(heading[2], ""))
-		if len(heading[1]) == 2 {
+		if level == 2 {
 			current = ""
 			categories = make(map[string]bool)
 			match := preparedReleaseHeading.FindStringSubmatch(text)
@@ -118,7 +147,7 @@ func verifyPreparedChangelog(content string) []violation {
 			}
 			continue
 		}
-		if (current == "Unreleased" || current == "1.1.0") && len(heading[1]) == 3 {
+		if (current == "Unreleased" || current == "1.1.0") && level == 3 {
 			category := text
 			if !allowedCategories[category] {
 				violations = append(violations, violation{path: name, line: index + 1, message: "invalid prepared changelog category: " + category})
@@ -140,4 +169,16 @@ func verifyPreparedChangelog(content string) []violation {
 		violations = append(violations, violation{path: name, message: "prepared sections must begin Unreleased, dated 1.1.0, then historical 1.0.0"})
 	}
 	return violations
+}
+
+func preparedFenceDelimiter(line string) (byte, int, string) {
+	if len(line) == 0 || (line[0] != '`' && line[0] != '~') {
+		return 0, 0, ""
+	}
+	marker := line[0]
+	length := 0
+	for length < len(line) && line[length] == marker {
+		length++
+	}
+	return marker, length, line[length:]
 }
