@@ -53,7 +53,7 @@
 **Independent Test**: Workflow policy proves only three Cloudflare-facing steps receive the token, and documentation defines the exact owner, resources, permissions, rotation, expiry, revocation, and replacement checks.
 
 - [x] T012 [US2] Remove `CLOUDFLARE_API_TOKEN` from workflow job scope and add it only to Cloudflare preflight, deployment, and post-deployment read-back steps in `.github/workflows/site-deploy.yml`.
-- [x] T013 [US2] Document account ownership, exact account/zone resources, Workers Scripts Write plus Zone/DNS/Transform Rules Read permissions, 90-day rotation, expiry handling, replacement validation, emergency revocation, and non-secret audit evidence in `docs/release-process.md`.
+- [x] T013 [US2] Document account ownership, exact account/zone resources, Workers Scripts Legacy Edit plus Zone/DNS/Transform Rules/Workers Routes Read permissions, 90-day rotation, expiry handling, replacement validation, emergency revocation, and non-secret audit evidence in `docs/release-process.md`.
 - [x] T014 [US2] Update `docs/architecture.md` and `CHANGELOG.md` with the exact execution-identity, step-scoped credential, and corrected forwarding decisions.
 - [x] T015 [US2] Run focused workflow/documentation checks and review the full verifier call surface against the permission contract; record green US2 evidence in `specs/S032-repair-protected-production-deploy/verification.md`.
 
@@ -77,17 +77,17 @@
 **Purpose**: Publish the explicitly authorized implementation and reach a terminal reviewed exact head.
 
 - [x] T020 Push the authorized branch and publish a github-format/read-back official PR with `Closes` for the implementation issue and `Refs #78`; move both issues to PR review and clear default Status.
-- [ ] T021 Wait for all exact-head CI, CodeQL, Site, security, and first-round Codex results; inspect every review, comment, thread, check, and reaction and address every actionable finding with focused plus complete verification.
-- [ ] T022 If round one contains findings, request exactly one second Codex review with `@codex review`, then handle every second-round result without requesting a third automatic round; resolve threads only after concerns are satisfied.
-- [ ] T023 Publish formatted/read-back completion evidence on the PR, confirm all required checks are green at the final head and no actionable review remains, then hand off for the human final review and merge ritual.
+- [x] T021 Wait for all exact-head CI, CodeQL, Site, security, and first-round Codex results; inspect every review, comment, thread, check, and reaction and address every actionable finding with focused plus complete verification.
+- [x] T022 If round one contains findings, request exactly one second Codex review with `@codex review`, then handle every second-round result without requesting a third automatic round; resolve threads only after concerns are satisfied.
+- [x] T023 Publish formatted/read-back completion evidence on the PR, confirm all required checks are green at the final head and no actionable review remains, then hand off for the human final review and merge ritual.
 
 ## Phase 7: Post-merge production validation
 
 **Purpose**: Complete the operational outcome after the human merge.
 
-- [ ] T024 After operator-confirmed merge, perform standard safe housekeeping, verify exact current main, provision/read back the protected credential metadata, and move #78 to Release verification.
-- [ ] T025 Dispatch the merged workflow from `main` with exact current main under the standing production authorization; inspect its protected environment deployment record and every workflow step.
-- [ ] T026 Verify complete Cloudflare before/after state, public DNS/TLS/redirects, 25 routes, seven downloads, metadata, manifest, and three immutable schema bytes; prove GitHub and public deployment records identify the same exact main revision.
+- [x] T024 After operator-confirmed merge, perform standard safe housekeeping, verify exact current main, provision/read back the protected credential metadata, and move #78 to Release verification.
+- [x] T025 Dispatch the merged workflow from `main` with exact current main under the standing production authorization; inspect its protected environment deployment record and every workflow step.
+- [x] T026 Verify complete Cloudflare before/after state, public DNS/TLS/redirects, 25 routes, seven downloads, metadata, manifest, and three immutable schema bytes; prove GitHub and public deployment records identify the same exact main revision.
 - [ ] T027 Remove only temporary state proven stale and clean, publish formatted/read-back completion evidence, close #78, reconcile Project state, and report final production status.
 
 ## Dependencies and Execution Order

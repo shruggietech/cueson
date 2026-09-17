@@ -34,11 +34,11 @@
 
 ## Decision 5: Use an account-owned restricted Cloudflare API token
 
-**Decision**: Store an account-owned token as `CLOUDFLARE_API_TOKEN` in the protected GitHub `production` environment. Restrict resources to the ShruggieTech account and `cueson.io` zone. Grant Account Workers Scripts Write, Zone Zone Read, Zone DNS Read, and Zone Transform Rules Read.
+**Decision**: Store an account-owned token as `CLOUDFLARE_API_TOKEN` in the protected GitHub `production` environment. Grant the entire ShruggieTech account Developer Platform `Workers Scripts Legacy: Edit`. Grant only the specified `cueson.io` domain DNS & Zones `DNS: Read` and `Zone: Read`, Rules & Configuration `Zone Transform Rules: Read`, and Developer Platform `Workers Routes: Read`.
 
-**Rationale**: Worker upload and Custom Domain operations require Workers Scripts Write. The verifier reads zone identity, DNS records, Workers, Custom Domains, and redirect rulesets. The selected permissions cover those exact operations without broad account or zone administration.
+**Rationale**: Worker upload, Worker inventory, and Custom Domain operations require Workers Scripts Legacy Edit at account scope. Wrangler 4.131.1 also reads `GET /zones/{zone_id}/workers/routes` to detect route conflicts before applying configured Custom Domains, which requires Workers Routes Read on the zone. The verifier reads zone identity, DNS records, Workers, Custom Domains, and redirect rulesets. The selected permissions cover those exact operations without Workers Routes Edit or broad zone administration.
 
-**Alternatives considered**: Reuse a user OAuth session. Rejected because it is temporary, user-bound, and unsuitable for unattended protected Actions. Use a broad account token. Rejected because it violates least privilege. Add Workers Routes Write. Rejected because the deployment uses Custom Domains and the official API identifies Workers Scripts Write for that operation.
+**Alternatives considered**: Reuse a user OAuth session. Rejected because it is temporary, user-bound, and unsuitable for unattended protected Actions. Use a broad account token. Rejected because it violates least privilege. Grant Workers Routes Edit. Rejected because this configuration performs only the route-list read for conflict detection; Custom Domain mutation remains covered by Workers Scripts Legacy Edit.
 
 ## Decision 6: Limit secret exposure to Cloudflare-facing steps
 
@@ -56,6 +56,7 @@
 
 - Cloudflare Workers Scripts API: https://developers.cloudflare.com/api/resources/workers/subresources/scripts/methods/list/
 - Cloudflare Workers Custom Domains API: https://developers.cloudflare.com/api/resources/workers/subresources/domains/methods/update/
+- Cloudflare Workers Routes API: https://developers.cloudflare.com/api/resources/workers/subresources/routes/methods/list/
 - Cloudflare DNS Records API: https://developers.cloudflare.com/api/resources/dns/subresources/records/methods/list/
 - Cloudflare Zones API: https://developers.cloudflare.com/api/resources/zones/methods/list/
 - Cloudflare Rulesets API: https://developers.cloudflare.com/api/resources/rulesets/methods/list/

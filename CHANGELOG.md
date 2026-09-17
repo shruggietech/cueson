@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Decisions
 
-- 2026-09-17: Use an account-owned Cloudflare token restricted to the ShruggieTech account and `cueson.io` zone, expose it only to three Cloudflare-facing protected workflow steps, rotate within 90 days, and require GitHub and public deployment records to identify the same exact `main` revision.
+- 2026-09-17: Use an account-owned Cloudflare token with Entire Account Workers Scripts Legacy Edit and `cueson.io` DNS, Zone, Zone Transform Rules, and Workers Routes Read, expose it only to three Cloudflare-facing protected workflow steps, rotate within 90 days, and require GitHub and public deployment records to identify the same exact `main` revision.
 
 ## [1.1.0] - 2026-09-15
 

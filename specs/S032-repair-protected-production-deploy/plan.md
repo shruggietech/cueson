@@ -87,7 +87,7 @@ site/
 2. Bind workflow dispatch identity to main. `GITHUB_REF` and `GITHUB_SHA` must match the requested revision before checkout so GitHub deployment metadata describes the same commit later recorded publicly.
 3. Pass named arguments directly through pnpm. The standalone separator is a workflow defect, not a verifier feature.
 4. Test the actual command boundary. Direct Corepack subprocesses cover package-manager forwarding and parser behavior together without credentials or mutation.
-5. Use an account-owned resource-restricted API token. Workers Scripts Write plus Zone Read, DNS Read, and Transform Rules Read cover Wrangler upload, Custom Domains, and the full existing state verifier.
+5. Use an account-owned resource-restricted API token. Entire Account Workers Scripts Legacy Edit plus `cueson.io` Zone Read, DNS Read, Zone Transform Rules Read, and Workers Routes Read cover Wrangler upload, Custom Domains, route-conflict detection, and the full state verifier.
 6. Expose the token at step scope only. Checkout, setup, dependency installation, tests, and local artifact proof do not need production credentials.
 7. Rotate within 90 days, validate replacements before retirement, and revoke immediately on suspected exposure or ownership change.
 

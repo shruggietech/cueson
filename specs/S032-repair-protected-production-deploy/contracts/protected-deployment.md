@@ -23,7 +23,7 @@ No standalone `--` is passed to a verifier.
 
 ## Credential boundary
 
-`CLOUDFLARE_API_TOKEN` is absent from job scope and all source checkout, setup, install, test, build, and local verification steps. It is present only for Cloudflare preflight, Wrangler deploy, and Cloudflare post-deployment read-back.
+`CLOUDFLARE_API_TOKEN` is absent from job scope and all source checkout, setup, install, test, build, and local verification steps. It is present only for Cloudflare preflight, Wrangler deploy, and Cloudflare post-deployment read-back. Its resource and permission boundary is Entire Account `Workers Scripts Legacy: Edit`, plus Specified Domains `cueson.io` `DNS: Read`, `Zone: Read`, `Zone Transform Rules: Read`, and `Workers Routes: Read`.
 
 ## Mutation gate
 
