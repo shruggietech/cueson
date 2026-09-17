@@ -3,7 +3,8 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import tls from "node:tls";
-import { fileURLToPath } from "node:url";
+import { isDeepStrictEqual } from "node:util";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { verifyDnsOverHttps, verifySystemDns } from "./production-dns.mjs";
 
 const siteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -23,6 +24,14 @@ const origin = new URL(args.get("--origin") ?? "https://cueson.io");
 const expectedCommit = args.get("--expected-commit") ?? process.env.CUESON_SOURCE_COMMIT;
 const skipNetworkIdentity = args.has("--skip-network-identity");
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
+
+export function assertDeploymentMatches(localDeployment, publicDeployment) {
+  if (!isDeepStrictEqual(publicDeployment, localDeployment)) throw new Error("deployment.json: public metadata differs from the locally reviewed authority");
+}
+
+export function assertContentManifestDigest(localDeployment, manifestBytes) {
+  if (sha256(manifestBytes) !== localDeployment.content_manifest_sha256) throw new Error("content-manifest.json: public digest differs from the locally reviewed authority");
+}
 
 async function fetchSuccess(pathname, options = {}) {
   const response = await fetch(new URL(pathname, origin), { redirect: "manual", signal: AbortSignal.timeout(20_000), ...options });
@@ -58,30 +67,33 @@ function verifyHtml(route, html) {
   for (const [pattern, label] of requirements) if (!pattern.test(html)) throw new Error(`${route}: missing ${label}`);
 }
 
-async function verify() {
+export async function verify() {
   const localDeployment = JSON.parse(await readFile(path.join(siteRoot, "public", "deployment.json"), "utf8"));
   const deploymentResponse = await fetchSuccess("/deployment.json");
   if (!/no-store|max-age=0/.test(deploymentResponse.headers.get("cache-control") ?? "")) throw new Error("deployment.json: unsafe cache policy");
   const deployment = await deploymentResponse.json();
   const requiredCommit = expectedCommit ?? localDeployment.commit;
-  if (deployment.commit !== requiredCommit) throw new Error(`deployment.json: expected ${requiredCommit}, received ${deployment.commit}`);
-  for (const route of deployment.routes.filter((route) => route === "/" || route.endsWith("/"))) {
+  if (localDeployment.commit !== requiredCommit) throw new Error(`local deployment.json: expected ${requiredCommit}, received ${localDeployment.commit}`);
+  assertDeploymentMatches(localDeployment, deployment);
+  const manifestResponse = await fetchSuccess("/content-manifest.json");
+  const manifestBytes = Buffer.from(await manifestResponse.arrayBuffer());
+  assertContentManifestDigest(localDeployment, manifestBytes);
+  for (const route of localDeployment.routes.filter((route) => route === "/" || route.endsWith("/"))) {
     const response = await fetchSuccess(route);
     verifyHtml(route, await response.text());
   }
 
-  for (const [version, expectedHash] of Object.entries(localDeployment.schemas)) {
-    const route = `/schema/v${version}/cueson.schema.json`;
-    const response = await fetchSuccess(route);
+  for (const schema of localDeployment.schemas) {
+    const response = await fetchSuccess(schema.public_path);
     const bytes = Buffer.from(await response.arrayBuffer());
-    if (sha256(bytes) !== expectedHash) throw new Error(`${route}: public schema hash mismatch`);
-    if (!/application\/(schema\+json|json)/.test(response.headers.get("content-type") ?? "")) throw new Error(`${route}: incorrect content type`);
-    if (!/immutable/.test(response.headers.get("cache-control") ?? "")) throw new Error(`${route}: missing immutable cache policy`);
+    if (bytes.length !== schema.byte_length || sha256(bytes) !== schema.sha256) throw new Error(`${schema.public_path}: public schema identity mismatch`);
+    if (!/application\/(schema\+json|json)/.test(response.headers.get("content-type") ?? "")) throw new Error(`${schema.public_path}: incorrect content type`);
+    if (!/immutable/.test(response.headers.get("cache-control") ?? "")) throw new Error(`${schema.public_path}: missing immutable cache policy`);
   }
   const latest = await fetch(new URL("/schema/latest/cueson.schema.json", origin), { redirect: "manual", signal: AbortSignal.timeout(20_000) });
   if (latest.status !== 404) throw new Error(`/schema/latest/cueson.schema.json: expected 404, received ${latest.status}`);
 
-  for (const download of deployment.downloads ?? []) {
+  for (const download of localDeployment.downloads) {
     const first = await fetch(download.url, { redirect: "manual", signal: AbortSignal.timeout(20_000) });
     if (![301, 302, 303, 307, 308].includes(first.status) || !first.headers.get("location")) throw new Error(`${download.name}: release asset did not produce its expected redirect`);
     const terminal = await fetch(first.headers.get("location"), { redirect: "follow", signal: AbortSignal.timeout(20_000) });
@@ -100,7 +112,7 @@ async function verify() {
     const redirect = await fetch(probe, { redirect: "manual", signal: AbortSignal.timeout(20_000) });
     if (redirect.status !== 308 || redirect.headers.get("location") !== "https://cueson.io/docs/schema/?probe=s021") throw new Error("www: redirect does not preserve path and query");
   }
-  process.stdout.write(`verified ${origin.origin} at ${deployment.commit} with ${deployment.routes.length} routes and ${Object.keys(deployment.schemas).length} schemas\n`);
+  process.stdout.write(`verified ${origin.origin} at ${localDeployment.commit} with ${localDeployment.routes.length} routes and ${localDeployment.schemas.length} schemas\n`);
 }
 
-await verify();
+if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) await verify();

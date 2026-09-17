@@ -1,14 +1,14 @@
 # ASS and SSA format contract
 
-**Status:** Frozen bounded stable profile in the unpublished 1.1.0 candidate; published v1.0.0 has no ASS/SSA codec
+**Status:** Frozen bounded stable profile in the published v1.1.0 release; published v1.0.0 has no ASS/SSA codec
 
 On 2026-09-15, S023 ratified the bounded native contract for the scripted-format milestone without adding codecs or changing a released capability. The [constitution](../../.specify/memory/constitution.md), [schema baseline](../schema.md), [compatibility contract](../compatibility.md), and [architecture](../architecture.md) control shared behavior. P02 owns the planning contract, P05 owns schema realization, and P06-P08 own corpus, ingest and rendering evidence. The P identifiers refer to atomic outcomes in the S023 milestone plan; their completion and development availability are stated separately below.
 
-S024 established typed schema/model recognition; S025-S027 completed native ingest/render, independent restoration, twelve-direction conversion, shared CLI discovery and conformance hardening. S028 freezes and promotes this bounded profile to the exact 1.1.0 stable candidate. Official native encode and private targets declare stable capability; exact-current schema-only and complete experimental declarations remain accepted unchanged observations. Former development identities are not accepted by the final candidate. Published v1.0.0 remains unchanged, and 1.1.0 release/public schema availability remain #66/#67.
+S024 established typed schema/model recognition; S025-S027 completed native ingest/render, independent restoration, twelve-direction conversion, shared CLI discovery and conformance hardening. S028 froze and promoted this bounded profile to exact stable 1.1.0, and #66 published and independently verified the release. Official native encode and private targets declare stable capability; exact-current schema-only and complete experimental declarations remain accepted unchanged observations. Former development identities are not accepted. Published v1.0.0 remains unchanged. The reviewed 1.1.0 schema/site artifact belongs to #76; #67 governs production activation and live verification.
 
 ## References and authority
 
-S026 implements the ten remaining directions and verifies the full twelve-direction graph in the [conversion contract](../conversion.md). Native owner losses remain atomic; text-target drawing-only/unreadable dialogue is fatal, mixed drawings are reported, text-source targets use deterministic defaults and checked nearest-centisecond ties-up rounding, and dialect differences are mapped or accounted per field. A private original-plus-target validation/render boundary preserves exact source truth without changing public Cue JSON validation. S027 completes P11/P12 CLI and conformance acceptance; S028 freezes P13 and prepares P14 candidate proof.
+S026 implemented the ten remaining directions and verified the full twelve-direction graph in the [conversion contract](../conversion.md). Native owner losses remain atomic; text-target drawing-only/unreadable dialogue is fatal, mixed drawings are reported, text-source targets use deterministic defaults and checked nearest-centisecond ties-up rounding, and dialect differences are mapped or accounted per field. A private original-plus-target validation/render boundary preserves exact source truth without changing public Cue JSON validation. S027 completed P11/P12 CLI and conformance acceptance; S028 froze P13 and prepared P14 release proof.
 
 References were inspected on 2026-09-15. They inform the dialect boundaries; the requirements below are Cueson's acceptance and fidelity policy, not a promise to reproduce a particular pixel renderer.
 
@@ -21,7 +21,7 @@ References were inspected on 2026-09-15. They inform the dialect boundaries; the
 
 ## Capability and dialect boundaries
 
-| Capability | Released v1.0.0 | Current 1.1.0 candidate | Acceptance owner or remaining gate |
+| Capability | Released v1.0.0 | Published v1.1.0 | Acceptance owner or remaining gate |
 |---|---|---|---|
 | ASS/SSA schema recognition | Unavailable | Available; earlier schema-only observations remain accepted. | P05 defines annotated native shapes. |
 | Raw detection and decoding | Unavailable | Stable bounded content-first detection and strict UTF-8 decoding. | P07 implements the bounded profile below. |
@@ -30,9 +30,9 @@ References were inspected on 2026-09-15. They inform the dialect boundaries; the
 | Exact source restoration | No ASS/SSA document shape | Available through generic verified source-envelope restoration. | P06-P08 verify exact bytes independently. |
 | Cross-format conversion | Unavailable | All twelve distinct four-format directions available with complete loss accounting. | P09/P10 own the twelve distinct-format directions across SubRip, WebVTT, ASS and SSA with complete loss accounting. |
 | Pixel, video, or font rendering | Unavailable | Excluded. | No visual-equivalence promise. |
-| Stable ASS/SSA support | Unavailable | Frozen bounded stable candidate. | P11-P14 establish contract/conformance/candidate proof; P15/P16 own publication and public verification. |
+| Stable ASS/SSA support | Unavailable | Frozen bounded stable release. | P11-P15 establish contract/conformance/release proof and publication; P16 owns public schema/site verification. |
 
-The canonical JSON format keys and native CLI tokens are `ass` and `ssa`; `.ass` and `.ssa` extensions are detection hints, not authority. Content must declare `ScriptType: v4.00+` for ASS with `[V4+ Styles]`, or `ScriptType: v4.00` for SSA with `[V4 Styles]`. R1 documents these dialect distinctions. v4++, ASS2, older SSA versions, container packet grammars, and libass-specific extension semantics are outside the accepted profile. Unknown extensions inside an otherwise accepted document remain retained native content with diagnostics. The candidate implements native encode/render and the complete conversion/CLI surface for this profile; other profiles remain unsupported.
+The canonical JSON format keys and native CLI tokens are `ass` and `ssa`; `.ass` and `.ssa` extensions are detection hints, not authority. Content must declare `ScriptType: v4.00+` for ASS with `[V4+ Styles]`, or `ScriptType: v4.00` for SSA with `[V4 Styles]`. R1 documents these dialect distinctions. v4++, ASS2, older SSA versions, container packet grammars, and libass-specific extension semantics are outside the accepted profile. Unknown extensions inside an otherwise accepted document remain retained native content with diagnostics. The release implements native encode/render and the complete conversion/CLI surface for this profile; other profiles remain unsupported.
 
 Detection scans bounded decoded content for Script Info, one unambiguous ScriptType value, and a matching style section. An extension mismatch is diagnosed; mixed style dialects, missing or conflicting ScriptType declarations, and unsupported dialects fail the whole encode operation. Identical repeated ScriptType declarations may be retained with a duplicate diagnostic. There is no silent fallback from an ambiguous script to a different codec.
 
@@ -48,7 +48,7 @@ Accepted event timing is nonnegative `h:mm:ss.cc` with one or more hour digits, 
 
 ## Ordered native shape and declared fields
 
-The current candidate schema realizes the following structural ownership. S023 first ratified these logical shapes for P05; S028 accepts them under exact current `1.1.0` identity, preserving the original ownership boundaries.
+The current release schema realizes the following structural ownership. S023 first ratified these logical shapes for P05; S028 accepted them under exact current `1.1.0` identity, preserving the original ownership boundaries.
 
 | Location | Properties and meaning |
 |---|---|
@@ -112,7 +112,7 @@ Capture-only raw_header, raw_line, and timestamp lexemes are present for ingeste
 
 The renderer writes UTF-8 without BOM, LF physical lines, normalized prefixes, deterministic canonical recognized scalar formatting, retained ordering, and a final LF. Unknown inert lines and blank/comment records may reuse their retained decoded raw text after safety checks. It never reorders by timestamp, deduplicates styles/events, executes effects, flattens overrides, or fetches attachments. Uninterpretable declarations, malformed retained records/attachments, unresolved ownership, or unsafe ambiguity fail rendering in all modes. Permissive rendering may emit safely interpretable diagnosed unknown/duplicate native content with warnings; strict mode rejects every known conformance ambiguity before publication.
 
-Safely bounded malformed non-dialogue records and attachment content remain preservation-only with truthful raw captures and diagnostics. A malformed or empty attachment header has no fabricated attachment owner or zero-length data range. Accepted-source privacy checks still apply before retention, so a malformed prefix cannot grant Text, font or embedded-content exemptions. Generic inspection and exact restoration may accept these retained documents; model-driven rendering refuses them in both modes. The renderer reparses its complete bounded candidate before exposing bytes, independently checking declaration/framing safety and conformance diagnostics even when an edited model omitted an observation.
+Safely bounded malformed non-dialogue records and attachment content remain preservation-only with truthful raw captures and diagnostics. A malformed or empty attachment header has no fabricated attachment owner or zero-length data range. Accepted-source privacy checks still apply before retention, so a malformed prefix cannot grant Text, font or embedded-content exemptions. Generic inspection and exact restoration may accept these retained documents; model-driven rendering refuses them in both modes. The renderer reparses its complete bounded document before exposing bytes, independently checking declaration/framing safety and conformance diagnostics even when an edited model omitted an observation.
 
 Parse-render-parse equivalence compares dialect, complete item ordering and occurrence identities after position-based remapping, declared unknown field/value order, styles, events, attachments, common timing/text/speakers/tokens, and safety classifications. Canonical whitespace, BOM, line terminators, numeric lexemes, capture-only raw-line observations, and diagnostic line positions may differ; source restoration is tested separately for exact original bytes. A successful textual cycle proves model semantics and retention under this profile, not identical subtitle pixels across renderers.
 
@@ -126,7 +126,7 @@ Additional selected-profile limits are 1 MiB per physical line, nesting depth 32
 
 ## Source-linked acceptance and evidence matrix
 
-Each row identifies an acceptance requirement and its verification owners. S025 supplies corpus/ingest/render/restoration evidence, S026 supplies all twelve conversion directions, S027 supplies shared CLI and conformance/hostile-input evidence, and S028 closes the stable render/platform gates with exact candidate identity and packaged-host proof. The [executable conformance matrix](../../testdata/conformance-matrix.json) links every row to valid governed evidence; public release and hosting remain separate outcomes.
+Each row identifies an acceptance requirement and its verification owners. S025 supplies corpus/ingest/render/restoration evidence, S026 supplies all twelve conversion directions, S027 supplies shared CLI and conformance/hostile-input evidence, S028 closes the stable render/platform gates with exact release identity and packaged-host proof, and #66 establishes independently verified public release availability. The [executable conformance matrix](../../testdata/conformance-matrix.json) links every row to valid governed evidence; public schema/site hosting remains separate.
 
 | Row ID | Acceptance and preservation boundary | Reference | Verification owner |
 |---|---|---|---|
@@ -146,6 +146,6 @@ Each row identifies an acceptance requirement and its verification owners. S025 
 | `scripted-render-cycle` | Deterministic native textual output reparses to equivalent accepted semantics and retained content; byte restoration tested independently; no pixel equivalence. | R1, R5; constitution | P06-P08, P12 |
 | `scripted-complete-conversion` | All twelve cross-format directions report every target-incompatible style, native record, drawing, timing, speaker, token, attachment, metadata, and override loss; strict/fatal output is atomic. | Cueson no-silent-loss principle | P09-P12 |
 | `scripted-hostile-bounds` | Acquisition, lines, occurrences, tags, depth, attachments, diagnostics, arithmetic, and output have tested ceilings and deterministic all-or-nothing rejection. | Constitution; explicit limits above | P05-P12 |
-| `scripted-stable-gate` | Schema recognition and loaded lower-capability observations remain separate from stable installed native behavior; exact 1.1.0 stable render/platform/candidate evidence is required, while publication remains separate. | Schema/compatibility contracts | P03-P05, P11-P16 |
+| `scripted-stable-gate` | Schema recognition and loaded lower-capability observations remain separate from stable installed native behavior; exact 1.1.0 stable render/platform/release evidence and independently verified publication are required. | Schema/compatibility contracts | P03-P05, P11-P16 |
 
-The frozen profile is limited to these seventeen acceptance rows. Stable contract/conformance and candidate proof do not grant visual equivalence, legacy encoding support, external resource execution, or public release availability. Profiles outside these rows require an explicit ratified expansion; schema recognition and exact restoration alone do not establish native support.
+The frozen profile is limited to these seventeen acceptance rows. Stable contract, conformance and publication do not grant visual equivalence, legacy encoding support or external resource execution. Profiles outside these rows require an explicit ratified expansion; schema recognition and exact restoration alone do not establish native support.

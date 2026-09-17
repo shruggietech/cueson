@@ -5,7 +5,11 @@ import { handleRequest } from "./index.ts";
 function environment(body: BodyInit = "asset", headers: HeadersInit = {}) {
   return {
     ASSETS: {
-      fetch: async (request: Request) => new Response(body, { status: new URL(request.url).pathname.includes("latest") ? 404 : 200, headers }),
+      fetch: async (request: Request) => {
+        const pathname = new URL(request.url).pathname;
+        const missing = pathname.includes("latest") || pathname.includes("v9.9.9");
+        return new Response(body, { status: missing ? 404 : 200, headers });
+      },
     },
   };
 }
@@ -27,20 +31,24 @@ test("apex assets receive production security policy", async () => {
   assert.match(response.headers.get("cache-control") ?? "", /max-age=0/);
 });
 
-test("schemas retain bytes and receive immutable schema headers", async () => {
+test("all released schema routes retain bytes and receive immutable schema headers", async () => {
   const bytes = new Uint8Array([0, 1, 2, 255]);
-  const response = await handleRequest(new Request("https://cueson.io/schema/v1.0.0/cueson.schema.json"), environment(bytes));
-  assert.deepEqual(new Uint8Array(await response.arrayBuffer()), bytes);
-  assert.equal(response.headers.get("content-type"), "application/schema+json; charset=utf-8");
-  assert.equal(response.headers.get("cache-control"), "public, max-age=31536000, immutable");
+  for (const version of ["v0.0.0", "v1.0.0", "v1.1.0"]) {
+    const response = await handleRequest(new Request(`https://cueson.io/schema/${version}/cueson.schema.json`), environment(bytes));
+    assert.deepEqual(new Uint8Array(await response.arrayBuffer()), bytes);
+    assert.equal(response.headers.get("content-type"), "application/schema+json; charset=utf-8");
+    assert.equal(response.headers.get("cache-control"), "public, max-age=31536000, immutable");
+  }
 });
 
-test("deployment metadata is never cached and missing aliases stay missing", async () => {
+test("deployment metadata is never cached and missing schema aliases stay missing", async () => {
   const deployment = await handleRequest(new Request("https://cueson.io/deployment.json"), environment("{}"));
   assert.equal(deployment.headers.get("cache-control"), "no-store, max-age=0");
-  const latest = await handleRequest(new Request("https://cueson.io/schema/latest/cueson.schema.json"), environment());
-  assert.equal(latest.status, 404);
-  assert.equal(latest.headers.get("cache-control"), "no-store, max-age=0");
+  for (const pathname of ["/schema/latest/cueson.schema.json", "/schema/v9.9.9/cueson.schema.json"]) {
+    const missing = await handleRequest(new Request(`https://cueson.io${pathname}`), environment());
+    assert.equal(missing.status, 404);
+    assert.equal(missing.headers.get("cache-control"), "no-store, max-age=0");
+  }
 });
 
 test("only successful content-addressed framework assets receive immutable caching", async () => {

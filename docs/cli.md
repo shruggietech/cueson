@@ -1,14 +1,14 @@
 # Cueson CLI Contract
 
-**Status:** Frozen 1.1.0 stable candidate command contract; published v1.0.0 behavior retained
+**Status:** Stable 1.1.0 command contract, published and independently verified; historical v1.0.0 input behavior retained
 
 This document is the maintained CLI authority. The public command names and behavior described here form the stable v1.0.0 contract published through immutable tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) and the verified [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0). The exact generated help under `internal/cli/testdata/help/` and executable documentation tests are checked against this reference.
 
-## Current stable candidate
+## Current stable release
 
-Current source reports exact `1.1.0` from `version` and `schema --version`, and emits the byte-identical canonical/immutable candidate schema. Every new native encode uses that identity and official producer version. Exact historical 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown, mismatched and former development identities and corrupt source envelopes fail before publication. The released v1.0.0 executable rejects new 1.1.0 output, including documents encoded from its existing text formats; there is no historical-output selector.
+Current source and the official v1.1.0 executable report exact `1.1.0` from `version` and `schema --version`, and emit the byte-identical canonical/immutable release schema. Every new native encode uses that identity and official producer version. Exact historical 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown, mismatched and former development identities and corrupt source envelopes fail before publication. The released v1.0.0 executable rejects new 1.1.0 output, including documents encoded from its existing text formats; there is no historical-output selector.
 
-The frozen bounded ASS/SSA profile provides stable native detection/ingest, textual rendering, all twelve conversion directions, validation, privacy-safe inspection, exact restoration and shared help/completion discovery. Official new output declares `stable` with ingest, render and restore true and OCR false. Exact-current `schema_only` and complete `experimental` declarations remain accepted observations independent of installed codec availability and are never rewritten on load. Published v1.0.0 remains unchanged; the 1.1.0 candidate is not tagged, released or publicly schema-hosted.
+The frozen bounded ASS/SSA profile provides stable native detection/ingest, textual rendering, all twelve conversion directions, validation, privacy-safe inspection, exact restoration and shared help/completion discovery. Official new output declares `stable` with ingest, render and restore true and OCR false. Exact-current `schema_only` and complete `experimental` declarations remain accepted observations independent of installed codec availability and are never rewritten on load. Version 1.1.0 is tagged, publicly released and independently verified. The reviewed artifact includes its public schema route and refreshed site; #67 governs exact-main activation and live read-back.
 
 ## Invocation, streams, and status
 
@@ -209,4 +209,4 @@ cueson completion powershell
 
 ## Compatibility and release boundary
 
-The command names, options, aliases, streams, and exit-code classes above form the stable v1 CLI compatibility surface. Go packages remain under `internal/` and are not public APIs. Published executable and schema identity is `1.0.0`, and the immutable v1 schema is reviewed and verified with that identity. The GitHub release does not serve the public schema endpoint or deploy production state. See the [compatibility contract](compatibility.md) and [release process](release-process.md).
+The command names, options, aliases, streams and exit-code classes above form the stable v1 CLI compatibility surface. Go packages remain under `internal/` and are not public APIs. Published executable and schema identity is `1.1.0`, and the immutable v1.1 schema is reviewed, released and independently verified with that identity. GitHub Release publication does not itself serve the public schema endpoint or deploy production state. See the [compatibility contract](compatibility.md) and [release process](release-process.md).

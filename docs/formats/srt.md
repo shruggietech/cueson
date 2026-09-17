@@ -1,12 +1,12 @@
 # SubRip format contract
 
-**Current status:** Stable and published in v1.0.0
+**Current status:** Stable and published in v1.0.0 and v1.1.0
 
 **Historical release status:** v0.0.0 `envelope_only`
 
-Cueson v1.0.0 implements stable native SubRip detection, decoding, semantic ingest, exact source restoration, deterministic model-driven rendering, conversion, validation, and inspection. This contract defines accepted grammar and tolerated variants; the historical v0.0.0 executable remains envelope-only and does not contain the codec.
+Cueson v1.1.0 implements stable native SubRip detection, decoding, semantic ingest, exact source restoration, deterministic model-driven rendering, conversion, validation and inspection. This contract originated with v1.0.0; the historical v0.0.0 executable remains envelope-only and does not contain the codec.
 
-The unpublished 1.1.0 candidate retains this native contract and accepts exact historical 1.0.0 documents using their local released schema/semantics. New encode output always uses exact 1.1.0, which the published v1.0.0 executable rejects. Candidate conversion also supports bounded ASS/SSA targets with documented losses and strict refusal; published v1.0.0 remains limited to its original text-format graph.
+The published 1.1.0 release retains this native contract and accepts exact historical 1.0.0 documents using their local released schema/semantics. New encode output always uses exact 1.1.0, which the published v1.0.0 executable rejects. Version 1.1.0 also supports bounded ASS/SSA targets with documented losses and strict refusal; published v1.0.0 remains limited to its original text-format graph.
 
 ## Capability matrix
 

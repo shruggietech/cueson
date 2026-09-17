@@ -15,7 +15,7 @@ func TestRunCLI(t *testing.T) {
 	if code := runCLI([]string{"-repo", repo}, &stdout, &stderr); code != 0 {
 		t.Fatalf("runCLI() = %d, stderr = %q", code, stderr.String())
 	}
-	if got := stdout.String(); !strings.Contains(got, "checked 22 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
+	if got := stdout.String(); !strings.Contains(got, "checked 24 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
 		t.Fatalf("unexpected success output: %q", got)
 	}
 
@@ -189,6 +189,105 @@ func TestCurrentV1CandidateAndWorkingSpecificationMarkers(t *testing.T) {
 	assertViolation(t, result.violations, "README.md: stale capability or release claim remains: v0.1.0 development")
 	assertViolation(t, result.violations, "docs/Cueson-Project-Specification-v0.0.0.md: required contract marker is missing: canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte")
 	assertViolation(t, result.violations, "docs/Cueson-Project-Specification-v0.0.0.md: stale capability or release claim remains: public v1.0.0 schema matches the repository artifact exactly")
+}
+
+func TestPublishedV110CurrentStateMarkersAreRequired(t *testing.T) {
+	tests := []struct {
+		name   string
+		path   string
+		marker string
+	}{
+		{name: "readme release", path: "README.md", marker: "v1.1.0 released and independently verified"},
+		{name: "readme GitHub release", path: "README.md", marker: "v1.1.0 GitHub Release"},
+		{name: "schema release", path: "docs/schema.md", marker: "v1.1.0 schema released and independently verified"},
+		{name: "compatibility release", path: "docs/compatibility.md", marker: "v1.1.0 stable release published and independently verified"},
+		{name: "immutable schema copies", path: "docs/Cueson-Project-Specification-v0.0.0.md", marker: "canonical, immutable repository, embedded, emitted, and packaged v1.1.0 schema copies match byte-for-byte"},
+		{name: "release notes publication", path: "docs/releases/v1.1.0.md", marker: "public v1.1.0 GitHub Release"},
+		{name: "release checksum", path: "docs/releases/v1.1.0.md", marker: "cueson_1.1.0_checksums.txt"},
+		{name: "scripted format publication", path: "docs/formats/ass-ssa.md", marker: "published v1.1.0 release"},
+		{name: "roadmap issue split", path: "docs/roadmap.md", marker: "S030 child [#76]"},
+		{name: "project issue split", path: "docs/project-management.md", marker: "S030 child #76 owns the reviewed 1.1.0 schema/site artifact"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			repo := newRepository(t)
+			content := readFileForVerifierTest(t, repo, test.path)
+			writeFile(t, repo, test.path, strings.ReplaceAll(content, test.marker, "removed published-state marker"))
+			result, err := verifyRepository(repo)
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertViolation(t, result.violations, test.path+": required contract marker is missing: "+test.marker)
+		})
+	}
+}
+
+func TestPublishedV110DocsRejectCandidateEraClaims(t *testing.T) {
+	tests := []struct {
+		name  string
+		path  string
+		claim string
+	}{
+		{name: "readme unpublished candidate", path: "README.md", claim: "unpublished 1.1.0 stable candidate"},
+		{name: "readme release absent", path: "README.md", claim: "The candidate is not tagged or publicly released"},
+		{name: "readme old downloads", path: "README.md", claim: "Published downloads below remain v1.0.0"},
+		{name: "release notes unpublished candidate", path: "docs/releases/v1.1.0.md", claim: "Publication-ready notes for the unpublished 1.1.0 stable candidate"},
+		{name: "release notes release absent", path: "docs/releases/v1.1.0.md", claim: "No tag or GitHub Release has been published"},
+		{name: "release notes old downloads", path: "docs/releases/v1.1.0.md", claim: "public downloads remain v1.0.0"},
+		{name: "scripted format unpublished", path: "docs/formats/ass-ssa.md", claim: "unpublished 1.1.0 candidate"},
+		{name: "schema unpublished", path: "docs/schema.md", claim: "The 1.1.0 candidate is unpublished"},
+		{name: "compatibility candidate", path: "docs/compatibility.md", claim: "Frozen 1.1.0 stable candidate"},
+		{name: "release process candidate", path: "docs/release-process.md", claim: "## v1.1.0 stable candidate preparation"},
+		{name: "release issue open", path: "docs/release-process.md", claim: "#66 remains open until independent public verification"},
+		{name: "roadmap direct production ownership", path: "docs/roadmap.md", claim: "Public schema/site hosting remains S030 issue #67"},
+		{name: "roadmap stale preparation", path: "docs/roadmap.md", claim: "S029 preparation is active"},
+		{name: "roadmap direct deployment", path: "docs/roadmap.md", claim: "Reviewed artifact and explicitly authorized exact-main deployment"},
+		{name: "project direct production ownership", path: "docs/project-management.md", claim: "S030 issue #67 owns the public 1.1.0 schema/site continuation"},
+		{name: "project omitted preparation child", path: "docs/project-management.md", claim: "S030 owns the remaining public schema/site outcome #67"},
+		{name: "project production snapshot", path: "docs/project-management.md", claim: "Production remains the reviewed S021 revision"},
+		{name: "compatibility temporal absence", path: "docs/compatibility.md", claim: "The 1.1.0 schema URI is not yet publicly hosted"},
+		{name: "CLI temporal absence", path: "docs/cli.md", claim: "still-pending public schema route"},
+		{name: "schema temporal preparation", path: "docs/schema.md", claim: "issue #67 prepares the production route"},
+		{name: "architecture temporal availability", path: "docs/architecture.md", claim: "Public schema/site availability remains #67"},
+		{name: "conversion temporal hosting", path: "docs/conversion.md", claim: "Public schema/site hosting remains the separate #67 outcome"},
+		{name: "scripted format temporal hosting", path: "docs/formats/ass-ssa.md", claim: "public 1.1.0 schema/site availability remains #67"},
+		{name: "release process temporal hosting", path: "docs/release-process.md", claim: "Production schema hosting remains pending under #67"},
+		{name: "roadmap production snapshot", path: "docs/roadmap.md", claim: "The production site remains deployed from reviewed S021 revision"},
+		{name: "media guide production snapshot", path: "docs/cueson-media-format-guide.html", claim: "The current production site still serves the v1.0.0-era pages"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			repo := newRepository(t)
+			content := readFileForVerifierTest(t, repo, test.path)
+			if suffix, ok := requiredSuffixes[test.path]; ok {
+				content = strings.TrimSuffix(content, suffix) + test.claim + "\n\n" + suffix
+			} else {
+				content += "\n" + test.claim + "\n"
+			}
+			writeFile(t, repo, test.path, content)
+			result, err := verifyRepository(repo)
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertViolation(t, result.violations, test.path+": stale capability or release claim remains: "+test.claim)
+		})
+	}
+}
+
+func TestPublishedV110RulesPreserveFrozenSliceEvidence(t *testing.T) {
+	repo := newRepository(t)
+	historical := "unpublished 1.1.0 stable candidate\nNo tag or GitHub Release has been published\npublic downloads remain v1.0.0\n"
+	writeFile(t, repo, "specs/S028-freeze-v1-1-release-candidate/verification.md", historical)
+	writeFile(t, repo, "specs/S029-publish-verify-v1-1/verification.md", historical)
+	result, err := verifyRepository(repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.violations) != 0 {
+		t.Fatalf("frozen S028/S029 evidence must retain its time-bound contract: %v", result.violations)
+	}
 }
 
 func TestReleaseNotesLocalReference(t *testing.T) {

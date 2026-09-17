@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import contentMap from "@/content-map.json";
 
 export const site = {
   name: "Cueson",
   description: "Universal captions and subtitles through a lossless, structured interchange layer.",
   origin: "https://cueson.io",
   github: "https://github.com/shruggietech/cueson",
-  release: "https://github.com/shruggietech/cueson/releases/tag/v1.0.0",
-  version: "1.0.0",
+  release: contentMap.release.url,
+  version: contentMap.release.version,
+  tag: contentMap.release.tag,
 } as const;
 
 export function canonical(pathname = "/"): string {
