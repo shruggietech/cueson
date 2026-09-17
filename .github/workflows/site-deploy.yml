@@ -19,12 +19,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    environment: production
+    environment:
+      name: production
+      url: https://cueson.io/deployment.json
     env:
       REVISION: ${{ inputs.revision }}
       CLOUDFLARE_ACCOUNT_ID: 39e3052d61e3edccea7d68269ec07182
       CLOUDFLARE_ZONE_ID: ae7b2e3215426388c3012b5123784204
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - name: Validate requested main revision
         shell: bash
@@ -33,6 +34,8 @@ jobs:
             echo "revision must be a full lowercase Git SHA" >&2
             exit 1
           fi
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_SHA" = "$REVISION"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.revision }}
@@ -61,8 +64,10 @@ jobs:
         env:
           CUESON_SOURCE_COMMIT: ${{ inputs.revision }}
       - name: Preflight Cloudflare production state
-        run: corepack pnpm verify:cloudflare -- --phase before --snapshot "$RUNNER_TEMP/cueson-cloudflare-before.json"
+        run: corepack pnpm verify:cloudflare --phase before --snapshot "$RUNNER_TEMP/cueson-cloudflare-before.json"
         working-directory: site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Reconfirm exact current main revision before deployment
         shell: bash
         run: |
@@ -71,15 +76,19 @@ jobs:
       - name: Deploy exact verified artifact
         run: corepack pnpm exec wrangler deploy
         working-directory: site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Read back Cloudflare production state
-        run: corepack pnpm verify:cloudflare -- --phase after --snapshot "$RUNNER_TEMP/cueson-cloudflare-before.json"
+        run: corepack pnpm verify:cloudflare --phase after --snapshot "$RUNNER_TEMP/cueson-cloudflare-before.json"
         working-directory: site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Verify public deployment
         shell: bash
         working-directory: site
         run: |
           for attempt in $(seq 1 12); do
-            if corepack pnpm verify:production -- --expected-commit "$REVISION"; then
+            if corepack pnpm verify:production --expected-commit "$REVISION"; then
               exit 0
             fi
             if [[ "$attempt" -eq 12 ]]; then
