@@ -22,8 +22,8 @@ Any inequality is a terminal failure before the next authority boundary.
 | Owner | ShruggieTech organization security owner |
 | Account resource | ShruggieTech Cloudflare account only |
 | Zone resource | `cueson.io` only |
-| Account permission | Workers Scripts Write |
-| Zone permissions | Zone Read, DNS Read, Transform Rules Read |
+| Account permission | Entire Account, Developer Platform, Workers Scripts Legacy: Edit |
+| Zone permissions | Specified Domains `cueson.io`: DNS: Read, Zone: Read, Zone Transform Rules: Read, Workers Routes: Read |
 | Workflow exposure | Cloudflare preflight, deploy, and post-deployment read-back steps only |
 | Rotation | At most 90 days between rotations |
 | Emergency action | Immediate revoke, replace, preflight, and audit |

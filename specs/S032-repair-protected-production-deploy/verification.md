@@ -28,7 +28,7 @@
 - Correct Cloudflare named arguments reached the explicit missing-credential gate; a standalone separator failed as `invalid argument: --`.
 - Correct public-verifier named arguments passed parsing and reached the downstream fetch boundary; a standalone separator failed as `invalid argument: --`.
 - Static policy proved manual-only invocation, full lowercase revision validation, `refs/heads/main` execution, `GITHUB_SHA == REVISION`, three fresh `origin/main` equalities, no ancestor fallback, direct verifier arguments, the public deployment-record environment URL, no job-scoped token, and exactly three step-scoped token references.
-- The verifier call surface uses zone identity, DNS records, Worker scripts, Worker Custom Domains, zone ruleset inventory, and redirect ruleset detail. The documented Account Workers Scripts Write plus Zone Zone Read, DNS Read, and Transform Rules Read contract covers deployment and those calls without unrelated administrative permissions.
+- The verifier call surface uses zone identity, DNS records, Worker scripts, Worker Custom Domains, zone ruleset inventory, and redirect ruleset detail. Live validation additionally proved that pinned Wrangler 4.131.1 reads the zone Worker route inventory before applying Custom Domains. The complete contract is Entire Account Workers Scripts Legacy Edit plus `cueson.io` Zone Read, DNS Read, Zone Transform Rules Read, and Workers Routes Read; Workers Routes Edit is unnecessary.
 
 ## Complete verification
 
@@ -57,4 +57,12 @@
 - Project read-back confirms #78 and #79 are both PR review/S032, linked to #80, and retain empty default Status.
 - Round-one Codex review reported one P2 Windows portability finding: standard Corepack `pnpm.cmd` shims may target `pnpm.js`, and a leading separator after `%~dp0` must remain relative to the shim directory. The resolver now accepts `.js`, `.cjs`, and `.mjs`, strips only leading separators from the suffix, resolves with Windows path semantics, and has an explicit standard-Corepack-shim regression test.
 - Post-fix focused verification passed 13/13 tests. The complete site pipeline passed again with 88 unit tests, 81 browser tests plus six intentional project-scoped skips, exact 25-route/three-schema artifact verification, and Wrangler dry run.
-- Final exact-head checks and second-round review are pending.
+
+## Post-merge production validation
+
+- Pull request #80 was squash merged as exact `main` commit `ec8cab355f833efb5a632dcdc980881e294ee2f8`; post-merge housekeeping left one clean `main` worktree with no stale slice branch.
+- The durable GitHub `production` environment secret was provisioned and its metadata read back without exposing its value. Two fail-closed runs revealed missing account-level Custom Domain inventory and zone-level route inventory permissions before the complete least-privilege contract was established.
+- Authorized default-branch deployment run [35215482700](https://github.com/shruggietech/cueson/actions/runs/35215482700) bound the workflow, requested revision, checkout, freshly fetched `origin/main`, GitHub environment deployment, and public deployment to `ec8cab355f833efb5a632dcdc980881e294ee2f8`.
+- The run passed the complete site suite, Cloudflare preflight, exact-main mutation gate, Worker/static-asset deployment, authenticated Cloudflare read-back, and complete public production verifier.
+- Independent live read-back returned HTTP 200 from the apex and `deployment.json`, identified commit `ec8cab355f833efb5a632dcdc980881e294ee2f8`, and returned HTTP 308 from `www.cueson.io` to the apex while preserving the requested path and query.
+- Pull request #80 completed exact-head hosted checks, resolved its one round-one finding, completed the single authorized second Codex review cleanly, and was merged by the operator.
