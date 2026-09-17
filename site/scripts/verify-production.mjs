@@ -9,7 +9,7 @@ import { verifyDnsOverHttps, verifySystemDns } from "./production-dns.mjs";
 
 const siteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = new Map();
-const argumentsList = process.argv.slice(2).filter((argument) => argument !== "--");
+const argumentsList = process.argv.slice(2);
 for (let index = 0; index < argumentsList.length; index += 1) {
   const key = argumentsList[index];
   if (key === "--skip-network-identity") args.set(key, "true");

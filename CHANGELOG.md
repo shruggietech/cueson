@@ -6,10 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- Corrected protected production workflow argument forwarding, required the workflow execution ref and revision to match exact current `main`, and limited the Cloudflare token to preflight, deployment, and post-deployment read-back steps.
+
 ### Changed
 
 - Reconciled maintained documentation with the independently verified public v1.1.0 tag, release and thirteen-asset inventory while preserving the frozen S028/S029 evidence.
 - Prepared a deterministic 22-HTML-route, three-immutable-schema artifact with seven exact v1.1.0 primary downloads, local-authority deployment comparison, public content-manifest digest verification and an exact-current-main recheck immediately before any separately authorized production mutation.
+
+### Decisions
+
+- 2026-09-17: Use an account-owned Cloudflare token restricted to the ShruggieTech account and `cueson.io` zone, expose it only to three Cloudflare-facing protected workflow steps, rotate within 90 days, and require GitHub and public deployment records to identify the same exact `main` revision.
 
 ## [1.1.0] - 2026-09-15
 
