@@ -52,4 +52,7 @@
 
 ## Hosted checks and review
 
-Pending.
+- The authorized branch was pushed and official pull request #80 was published with `Closes #79` and `Refs #78`.
+- The PR body passed github-format before publication. Immediate read-back confirmed the intended headings, paragraphs, complete command fence, checklist, closing reference, production exclusion, and post-merge continuation.
+- Project read-back confirms #78 and #79 are both PR review/S032, linked to #80, and retain empty default Status.
+- Final exact-head checks and external reviews are pending.

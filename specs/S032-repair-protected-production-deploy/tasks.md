@@ -76,7 +76,7 @@
 
 **Purpose**: Publish the explicitly authorized implementation and reach a terminal reviewed exact head.
 
-- [ ] T020 Push the authorized branch and publish a github-format/read-back official PR with `Closes` for the implementation issue and `Refs #78`; move both issues to PR review and clear default Status.
+- [x] T020 Push the authorized branch and publish a github-format/read-back official PR with `Closes` for the implementation issue and `Refs #78`; move both issues to PR review and clear default Status.
 - [ ] T021 Wait for all exact-head CI, CodeQL, Site, security, and first-round Codex results; inspect every review, comment, thread, check, and reaction and address every actionable finding with focused plus complete verification.
 - [ ] T022 If round one contains findings, request exactly one second Codex review with `@codex review`, then handle every second-round result without requesting a third automatic round; resolve threads only after concerns are satisfied.
 - [ ] T023 Publish formatted/read-back completion evidence on the PR, confirm all required checks are green at the final head and no actionable review remains, then hand off for the human final review and merge ritual.
