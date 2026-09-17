@@ -8,12 +8,19 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const siteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+function resolveWindowsPnpmCliTarget(wrapper, source) {
+  const match = source.match(/"%~dp0([^"]*pnpm\.(?:cjs|mjs|js))"/i);
+  if (!match) return null;
+  const relativeTarget = match[1].replace(/^[/\\]+/, "").replaceAll("/", "\\");
+  return path.win32.resolve(path.win32.dirname(wrapper), relativeTarget);
+}
+
 function resolveWindowsPnpmCli() {
   for (const directory of (process.env.Path ?? process.env.PATH ?? "").split(path.delimiter)) {
     const wrapper = path.join(directory, "pnpm.cmd");
     if (!existsSync(wrapper)) continue;
-    const match = readFileSync(wrapper, "utf8").match(/"%~dp0([^"]*pnpm\.(?:cjs|mjs))"/i);
-    if (match) return path.resolve(path.dirname(wrapper), match[1].replaceAll("\\", path.sep));
+    const target = resolveWindowsPnpmCliTarget(wrapper, readFileSync(wrapper, "utf8"));
+    if (target) return target;
   }
   throw new Error("pnpm.cmd with a direct JavaScript CLI target was not found on PATH");
 }
@@ -41,6 +48,12 @@ function cloudflareEnvironment() {
   delete environment.CLOUDFLARE_API_TOKEN;
   return environment;
 }
+
+test("Windows pnpm shim resolution accepts the standard Corepack JavaScript target", () => {
+  const wrapper = "C:\\tools\\corepack\\pnpm.cmd";
+  const source = '@IF EXIST "%~dp0\\node.exe" ("%~dp0\\node.exe" "%~dp0\\..\\dist\\pnpm.js" %*)';
+  assert.equal(resolveWindowsPnpmCliTarget(wrapper, source), "C:\\tools\\dist\\pnpm.js");
+});
 
 test("Cloudflare package script forwards the workflow's named arguments", () => {
   const snapshot = path.join(mkdtempSync(path.join(os.tmpdir(), "cueson-cloudflare-")), "before.json");

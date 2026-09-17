@@ -55,4 +55,6 @@
 - The authorized branch was pushed and official pull request #80 was published with `Closes #79` and `Refs #78`.
 - The PR body passed github-format before publication. Immediate read-back confirmed the intended headings, paragraphs, complete command fence, checklist, closing reference, production exclusion, and post-merge continuation.
 - Project read-back confirms #78 and #79 are both PR review/S032, linked to #80, and retain empty default Status.
-- Final exact-head checks and external reviews are pending.
+- Round-one Codex review reported one P2 Windows portability finding: standard Corepack `pnpm.cmd` shims may target `pnpm.js`, and a leading separator after `%~dp0` must remain relative to the shim directory. The resolver now accepts `.js`, `.cjs`, and `.mjs`, strips only leading separators from the suffix, resolves with Windows path semantics, and has an explicit standard-Corepack-shim regression test.
+- Post-fix focused verification passed 13/13 tests. The complete site pipeline passed again with 88 unit tests, 81 browser tests plus six intentional project-scoped skips, exact 25-route/three-schema artifact verification, and Wrangler dry run.
+- Final exact-head checks and second-round review are pending.
