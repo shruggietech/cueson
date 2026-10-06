@@ -23,12 +23,12 @@ import (
 type NativeProof struct {
 	Formats                       []string `json:"formats"`
 	HistoricalInputCount          int      `json:"historical_input_count"`
-	OldConsumerVersion            string   `json:"old_consumer_version"`
-	OldConsumerRevision           string   `json:"old_consumer_revision"`
-	OldConsumerArchive            string   `json:"old_consumer_archive"`
-	OldConsumerArchiveSHA256      string   `json:"old_consumer_archive_sha256"`
-	OldConsumerRefusalCount       int      `json:"old_consumer_refusal_count"`
-	OldConsumerIdentityProbeCount int      `json:"old_consumer_identity_probe_count"`
+	OldConsumerVersion            string   `json:"old_consumer_version,omitempty"`
+	OldConsumerRevision           string   `json:"old_consumer_revision,omitempty"`
+	OldConsumerArchive            string   `json:"old_consumer_archive,omitempty"`
+	OldConsumerArchiveSHA256      string   `json:"old_consumer_archive_sha256,omitempty"`
+	OldConsumerRefusalCount       int      `json:"old_consumer_refusal_count,omitempty"`
+	OldConsumerIdentityProbeCount int      `json:"old_consumer_identity_probe_count,omitempty"`
 }
 
 type nativeEnvelope struct {
@@ -66,6 +66,14 @@ func (capabilities nativeCapabilities) stableComplete() bool {
 }
 
 func verifyStableHostCLI(ctx context.Context, binary []byte, name, repository, version string) (NativeProof, error) {
+	return verifyHostWorkflows(ctx, binary, name, repository, version, true)
+}
+
+func verifyDevelopmentHostCLI(ctx context.Context, binary []byte, name, repository, version string) (NativeProof, error) {
+	return verifyHostWorkflows(ctx, binary, name, repository, version, false)
+}
+
+func verifyHostWorkflows(ctx context.Context, binary []byte, name, repository, version string, publishedConsumer bool) (NativeProof, error) {
 	var proof NativeProof
 	directory, err := os.MkdirTemp("", "cueson-stable-native-")
 	if err != nil {
@@ -84,9 +92,11 @@ func verifyStableHostCLI(ctx context.Context, binary []byte, name, repository, v
 	if err != nil {
 		return proof, err
 	}
-	proof, err = verifyPublishedOldConsumer(ctx, repository, directory)
-	if err != nil {
-		return proof, err
+	if publishedConsumer {
+		proof, err = verifyPublishedOldConsumer(ctx, repository, directory)
+		if err != nil {
+			return proof, err
+		}
 	}
 	proof.Formats, proof.HistoricalInputCount = formats, historical
 	return proof, nil
@@ -372,8 +382,13 @@ func verifyForcedRefusal(ctx context.Context, binary, directory, input, action, 
 }
 
 func verifyHistoricalNative(ctx context.Context, binary, repository, directory string) (int, error) {
-	for _, format := range []struct{ name, native, target string }{{"subrip", "srt", "vtt"}, {"webvtt", "vtt", "srt"}} {
-		payload, err := readRegularFile(filepath.Join(repository, "internal", "schema", "testdata", "historical-v1.0.0-"+format.name+".json"))
+	inputs := []struct{ version, name, native, target string }{
+		{"1.0.0", "subrip", "srt", "vtt"}, {"1.0.0", "webvtt", "vtt", "srt"},
+		{"1.1.0", "subrip", "srt", "vtt"}, {"1.1.0", "webvtt", "vtt", "srt"},
+		{"1.1.0", "ass", "ass", "srt"}, {"1.1.0", "ssa", "ssa", "vtt"},
+	}
+	for _, format := range inputs {
+		payload, err := readRegularFile(filepath.Join(repository, "internal", "schema", "testdata", "historical-v"+format.version+"-"+format.name+".json"))
 		if err != nil {
 			return 0, err
 		}
@@ -381,15 +396,15 @@ func verifyHistoricalNative(ctx context.Context, binary, repository, directory s
 		if err := json.Unmarshal(payload, &envelope); err != nil {
 			return 0, err
 		}
-		if envelope.Version != "1.0.0" || len(envelope.Source.Assets) != 1 {
+		if envelope.Version != format.version || envelope.Schema != "https://cueson.io/schema/v"+format.version+"/cueson.schema.json" || len(envelope.Source.Assets) != 1 {
 			return 0, fmt.Errorf("frozen historical fixture identity differs")
 		}
 		original, err := base64.StdEncoding.DecodeString(envelope.Source.Assets[0].Data)
 		if err != nil {
 			return 0, err
 		}
-		input := filepath.Join(directory, "historical-"+format.name+".json")
-		output := filepath.Join(directory, "historical-restored."+format.native)
+		input := filepath.Join(directory, "historical-"+format.version+"-"+format.name+".json")
+		output := filepath.Join(directory, "historical-restored-"+format.version+"."+format.native)
 		if err := os.WriteFile(input, payload, 0600); err != nil {
 			return 0, err
 		}
@@ -398,7 +413,7 @@ func verifyHistoricalNative(ctx context.Context, binary, repository, directory s
 			if err != nil {
 				return 0, err
 			}
-			if args[0] == "inspect" && !bytes.Contains(result, []byte(`"version":"1.0.0"`)) {
+			if args[0] == "inspect" && !bytes.Contains(result, []byte(`"version":"`+format.version+`"`)) {
 				return 0, fmt.Errorf("historical inspection relabeled identity")
 			}
 		}
@@ -421,7 +436,7 @@ func verifyHistoricalNative(ctx context.Context, binary, repository, directory s
 			return 0, fmt.Errorf("historical payload changed")
 		}
 	}
-	return 2, nil
+	return len(inputs), nil
 }
 
 func verifyPublishedOldConsumer(ctx context.Context, repository, directory string) (NativeProof, error) {

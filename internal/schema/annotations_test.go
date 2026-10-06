@@ -20,9 +20,9 @@ import (
 )
 
 const (
-	// S028 promotes the exact identity and adds the complete stable scripted
-	// capability tuple; annotation edits cannot change this normative snapshot.
-	normativeSchemaSHA256  = "ae07334fa1b9aa9481234376b982e606074559333af9ab430c59fc6b1481d960"
+	// S033 stages consumer additions and exact development identity;
+	// annotation-only edits cannot change this normative snapshot.
+	normativeSchemaSHA256  = "0e69d9c884add390f345e0a914a80c8a8a315d78f1bcb6ae2b636a43816288cd"
 	v0ReleasedSchemaSHA256 = "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975"
 	v1ReleasedSchemaSHA256 = "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541"
 )
@@ -34,7 +34,7 @@ func TestAnnotationCoverage(t *testing.T) {
 
 	artifact := annotationArtifact(t)
 	reachable := reachableDefinitions(t, artifact)
-	if got, want := len(reachable), 65; got != want {
+	if got, want := len(reachable), 68; got != want {
 		t.Fatalf("reachable definition count = %d, want %d", got, want)
 	}
 
@@ -70,6 +70,10 @@ func TestAnnotationCoverage(t *testing.T) {
 		"$/properties/format_data",
 		"$/properties/diagnostics",
 		"$/properties/stats",
+		"$/properties/media_timing",
+		"$/$defs/speaker_id",
+		"$/$defs/speaker_attribution",
+		"$/$defs/media_timing",
 		"$/$defs/identifier",
 		"$/$defs/safe_basename",
 		"$/$defs/asset_hashes/properties/sha256",

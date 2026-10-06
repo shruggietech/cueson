@@ -25,10 +25,10 @@ func TestPackagedNativeWorkflowConformance(t *testing.T) {
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("build native test binary: %v: %s", err, output)
 	}
-	if _, err := verifyNativeWorkflows(context.Background(), binary, repository, t.TempDir(), "1.1.0"); err != nil {
+	if _, err := verifyNativeWorkflows(context.Background(), binary, repository, t.TempDir(), "1.2.0-dev"); err != nil {
 		t.Fatal(err)
 	}
-	if count, err := verifyHistoricalNative(context.Background(), binary, repository, t.TempDir()); err != nil || count != 2 {
+	if count, err := verifyHistoricalNative(context.Background(), binary, repository, t.TempDir()); err != nil || count != 6 {
 		t.Fatalf("historical packaged proof: count=%d error=%v", count, err)
 	}
 	// The normal unit suite never needs network access. Explicit proof execution
@@ -38,7 +38,7 @@ func TestPackagedNativeWorkflowConformance(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		proof, err := verifyStableHostCLI(context.Background(), binaryBytes, filepath.Base(binary), repository, "1.1.0")
+		proof, err := verifyStableHostCLI(context.Background(), binaryBytes, filepath.Base(binary), repository, "1.2.0-dev")
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -33,19 +33,20 @@ type inspectOptions struct {
 }
 
 type inspectionReport struct {
-	InspectReportVersion string                        `json:"inspect_report_version"`
-	Input                inspectionInputSummary        `json:"input"`
-	Format               string                        `json:"format"`
-	Schema               inspectionSchemaSummary       `json:"schema"`
-	Capabilities         inspectionCapabilitySummary   `json:"capabilities"`
-	Integrity            inspectionIntegritySummary    `json:"integrity"`
-	Assets               []inspectionAssetSummary      `json:"assets"`
-	Document             inspectionDocumentSummary     `json:"document"`
-	Cues                 []inspectionCueSummary        `json:"cues"`
-	Blocks               inspectionBlockSummary        `json:"blocks"`
-	Diagnostics          []inspectionDiagnosticSummary `json:"diagnostics"`
-	Loss                 inspectionLossState           `json:"loss"`
-	Scripted             *inspectionScriptedSummary    `json:"scripted,omitempty"`
+	InspectReportVersion string                           `json:"inspect_report_version"`
+	Input                inspectionInputSummary           `json:"input"`
+	Format               string                           `json:"format"`
+	Schema               inspectionSchemaSummary          `json:"schema"`
+	Capabilities         inspectionCapabilitySummary      `json:"capabilities"`
+	Integrity            inspectionIntegritySummary       `json:"integrity"`
+	Assets               []inspectionAssetSummary         `json:"assets"`
+	Document             inspectionDocumentSummary        `json:"document"`
+	Cues                 []inspectionCueSummary           `json:"cues"`
+	Blocks               inspectionBlockSummary           `json:"blocks"`
+	Diagnostics          []inspectionDiagnosticSummary    `json:"diagnostics"`
+	Loss                 inspectionLossState              `json:"loss"`
+	Scripted             *inspectionScriptedSummary       `json:"scripted,omitempty"`
+	ConsumerAnnotations  *model.ConsumerAnnotationSummary `json:"consumer_annotations,omitempty"`
 }
 
 type inspectionInputSummary struct {
@@ -473,6 +474,7 @@ func buildInspectionReport(input validatedInput) (inspectionReport, error) {
 	if err != nil {
 		return inspectionReport{}, err
 	}
+	report.ConsumerAnnotations = document.ConsumerAnnotationsSummary()
 	return report, nil
 }
 
@@ -686,6 +688,9 @@ func renderHumanInspection(report inspectionReport) ([]byte, error) {
 	fmt.Fprintf(&output, "Loss: %s (%s)\n", report.Loss.Status, report.Loss.Reason)
 	if native := report.Scripted; native != nil {
 		fmt.Fprintf(&output, "Scripted: sections=%d records=%d format_declarations=%d styles=%d invalid_styles=%d events=%d dialogue_events=%d comment_events=%d invalid_events=%d attachments=%d override_tags=%d karaoke_spans=%d unsupported_karaoke_spans=%d unknown_records=%d malformed_records=%d\n", native.SectionCount, native.RecordCount, native.FormatDeclarationCount, native.StyleCount, native.InvalidStyleCount, native.EventCount, native.DialogueEventCount, native.CommentEventCount, native.InvalidEventCount, native.AttachmentCount, native.OverrideTagCount, native.KaraokeSpanCount, native.UnsupportedKaraokeSpanCount, native.UnknownRecordCount, native.MalformedRecordCount)
+	}
+	if consumer := report.ConsumerAnnotations; consumer != nil {
+		fmt.Fprintf(&output, "Consumer annotations: attributions=%d timed=%d untimed=%d media_timing_present=%t media_boundary_check=%s cue_media_conflicts=%d\n", consumer.AttributionCount, consumer.TimedAttributionCount, consumer.UntimedAttributionCount, consumer.MediaTimingPresent, consumer.MediaBoundaryCheck, consumer.CueMediaConflictCount)
 	}
 	return []byte(output.String()), nil
 }

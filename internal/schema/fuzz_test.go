@@ -16,6 +16,15 @@ func FuzzDecodeCueJSON(f *testing.F) {
 		cue := document["cues"].([]any)[0].(map[string]any)
 		cue["timing"].(map[string]any)["duration_milliseconds"] = float64(1)
 	})
+	consumerAssigned := fuzzRepresentativeMutation(f, func(document map[string]any) {
+		cue := document["cues"].([]any)[0].(map[string]any)
+		cue["speaker_attributions"] = []any{map[string]any{"speaker_id": "e\u0301🙂", "start_milliseconds": 1250, "end_milliseconds": 4200}, map[string]any{"speaker_id": "__proto__"}}
+		document["media_timing"] = map[string]any{"duration_milliseconds": 5000, "timeline_start_milliseconds": -500}
+	})
+	consumerInvalid := fuzzRepresentativeMutation(f, func(document map[string]any) {
+		cue := document["cues"].([]any)[0].(map[string]any)
+		cue["speaker_attributions"] = []any{map[string]any{"speaker_id": "a\u202eb"}}
+	})
 	pairedSurrogate := bytes.Replace(Representative(), []byte("captions.srt"), []byte(`face\ud83d\ude00.srt`), 1)
 	unpairedHighSurrogate := bytes.Replace(Representative(), []byte("captions.srt"), []byte(`bad\ud800.srt`), 1)
 	unpairedLowSurrogate := bytes.Replace(Representative(), []byte("captions.srt"), []byte(`bad\udc00.srt`), 1)
@@ -32,6 +41,8 @@ func FuzzDecodeCueJSON(f *testing.F) {
 		unpairedLowSurrogate,
 		structurallyInvalid,
 		semanticallyInvalid,
+		consumerAssigned,
+		consumerInvalid,
 	} {
 		f.Add(seed)
 	}

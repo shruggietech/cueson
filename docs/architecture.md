@@ -8,7 +8,7 @@ This document is the architecture of record for the current published 1.1.0 stab
 
 ## Current release architecture
 
-Current source and official packages stage executable and canonical/immutable release schema identity `1.1.0` together. The local schema registry selects an exact supported current or historical 1.0.0 URI/version pair before structural and version-specific semantic validation. Current discovery and all new native output use the release contract; historical input preserves producer, source truth and loaded identity. Unknown, mismatched and former development identities never authorize network retrieval. Cue JSON command paths complete integrity validation before output publication.
+Published packages bind executable and immutable release schema identity `1.1.0` together. Current source stages exact `1.2.0-dev` and locally embeds immutable historical 1.1.0 and 1.0.0 contracts. The local schema registry selects an exact supported current or historical 1.1.0 or 1.0.0 URI/version pair before structural and version-specific semantic validation. Current discovery and all new native output use the staged development contract; historical input preserves producer, source truth and loaded identity. Unknown, mismatched and former development identities never authorize network retrieval. Cue JSON command paths complete integrity validation before output publication.
 
 On 2026-09-15, S024 added shared typed ordered ASS/SSA structures in `internal/model`, with separate matching dialect branches and `schema_only` declarations. S025 adds experimental native parser/renderers in `internal/codec/scripted` while retaining acceptance of those earlier schema-only observations. Content-first selection, strict UTF-8 decoding, declared-field ownership and bounded native projection are shared across both dialects. The source package remains codec-independent; exact restoration verifies preserved bytes separately from canonical native rendering. No attachment, effect or external resource is executed, loaded or fetched.
 
@@ -21,6 +21,8 @@ This is an explicit bounded departure from routing all private targets through p
 S028 returned package proof to stable immutable-copy verification at exact 1.1.0 after the S024-S027 development work. Released schemas and historical evidence remain immutable; reviewed candidate and post-squash main evidence bound their own exact source revisions before #66 publication.
 
 ## Public and internal boundaries
+
+S033 adds consumer data beside source observations in the common model. Shared validation runs before public output and private native target construction. Checked int64 media arithmetic and cue-contained half-open intervals reject inconsistent assignments. Original cue/media conflicts produce bounded runtime warnings; archive statistics remain source truth. Inspection projects only counts/state. A shared consumer omission pass covers all conversion edges, and native renderers use the same bounded warning contract. See [consumer speakers](consumer-speakers.md).
 
 Cueson's approved public v1 contracts are the `cueson` command-line interface and Cue JSON Schema. Go packages remain under `internal/` and make no public compatibility promise until a separate specification approves a library API. The maintained [compatibility contract](compatibility.md) defines version, format-state, platform, fidelity, and release boundaries for those surfaces.
 

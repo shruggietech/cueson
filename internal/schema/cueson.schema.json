@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cueson.io/schema/v1.1.0/cueson.schema.json",
+  "$id": "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json",
   "title": "Cue JSON",
-  "description": "Cueson 1.1.0 stable bounded four-format contract: exact source restoration, structured ASS v4+/SSA v4 native ownership, and exact historical v1.0.0 compatibility. Candidate identity does not imply a published release or public schema route.",
+  "description": "Cueson 1.2.0-dev development contract: optional consumer-owned speaker attribution and declared media timing beside preserved native observations and exact source bytes. Exact historical 1.0.0 and 1.1.0 input contracts remain bundled. This development identity does not imply a published release or public schema route.",
   "examples": [
     {
-      "$schema": "https://cueson.io/schema/v1.1.0/cueson.schema.json",
-      "schema_version": "1.1.0",
+      "$schema": "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json",
+      "schema_version": "1.2.0-dev",
       "format": "subrip",
       "format_support": {
         "status": "stable",
@@ -99,7 +99,17 @@
               "sequence_line_raw": "1",
               "timing_line_raw": "00:00:01,250 --> 00:00:04,200"
             }
-          }
+          },
+          "speaker_attributions": [
+            {
+              "speaker_id": "Interviewer"
+            },
+            {
+              "speaker_id": "Alex",
+              "start_milliseconds": 1250,
+              "end_milliseconds": 4200
+            }
+          ]
         }
       ],
       "format_data": {
@@ -116,11 +126,14 @@
         "error_count": 0,
         "has_word_level_timing": false,
         "media_span_milliseconds": 2950
+      },
+      "media_timing": {
+        "duration_milliseconds": 5000
       }
     },
     {
-      "$schema": "https://cueson.io/schema/v1.1.0/cueson.schema.json",
-      "schema_version": "1.1.0",
+      "$schema": "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json",
+      "schema_version": "1.2.0-dev",
       "format": "ass",
       "format_support": {
         "status": "schema_only",
@@ -131,7 +144,7 @@
       },
       "producer": {
         "name": "cueson-contract-example",
-        "version": "1.1.0"
+        "version": "1.2.0-dev"
       },
       "source": {
         "primary_asset_id": "asset-0",
@@ -611,8 +624,8 @@
       }
     },
     {
-      "$schema": "https://cueson.io/schema/v1.1.0/cueson.schema.json",
-      "schema_version": "1.1.0",
+      "$schema": "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json",
+      "schema_version": "1.2.0-dev",
       "format": "ssa",
       "format_support": {
         "status": "schema_only",
@@ -623,7 +636,7 @@
       },
       "producer": {
         "name": "cueson-contract-example",
-        "version": "1.1.0"
+        "version": "1.2.0-dev"
       },
       "source": {
         "primary_asset_id": "asset-0",
@@ -1082,16 +1095,16 @@
     "$schema": {
       "description": "Exact canonical schema identifier used by this Cue JSON instance.",
       "examples": [
-        "https://cueson.io/schema/v1.1.0/cueson.schema.json"
+        "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
       ],
-      "const": "https://cueson.io/schema/v1.1.0/cueson.schema.json"
+      "const": "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
     },
     "schema_version": {
       "description": "Cue JSON contract version targeted by this instance, independent of third-party producer versions.",
       "examples": [
-        "1.1.0"
+        "1.2.0-dev"
       ],
-      "const": "1.1.0"
+      "const": "1.2.0-dev"
     },
     "format": {
       "description": "Canonical format-family key for the source and matching native format data.",
@@ -1271,6 +1284,16 @@
         }
       ],
       "$ref": "#/$defs/stats"
+    },
+    "media_timing": {
+      "description": "Optional consumer-supplied media duration and timeline alignment. Cueson does not infer this declaration from subtitles or independently verify the media.",
+      "examples": [
+        {
+          "duration_milliseconds": 600000,
+          "timeline_start_milliseconds": 30000
+        }
+      ],
+      "$ref": "#/$defs/media_timing"
     }
   },
   "allOf": [
@@ -1698,7 +1721,7 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 255,
-      "pattern": "^[^<>:\"/\\\\|?*\u0000-\u001f]+$",
+      "pattern": "^[^<>:\"/\\\\|?*\u0000-\u001f\u007f]+$",
       "not": {
         "anyOf": [
           {
@@ -2059,6 +2082,22 @@
         "format_data": {
           "description": "Cue-level native data for the selected source format.",
           "$ref": "#/$defs/cue_format_data"
+        },
+        "speaker_attributions": {
+          "description": "Optional ordered consumer-assigned speaker entries, independent from native speakers. Missing or empty means no recorded attribution. Repeated IDs and overlapping intervals are permitted.",
+          "examples": [
+            [
+              {
+                "speaker_id": "Interviewer"
+              }
+            ],
+            []
+          ],
+          "type": "array",
+          "maxItems": 1024,
+          "items": {
+            "$ref": "#/$defs/speaker_attribution"
+          }
         }
       },
       "additionalProperties": false
@@ -6127,6 +6166,111 @@
           ]
         }
       ]
+    },
+    "speaker_id": {
+      "title": "Consumer speaker identifier",
+      "description": "Opaque consumer-assigned Unicode text, with no global or universal identity meaning and no enforced document-local scope. Consumers own scope, persistence and interpretation. Accepted text is preserved exactly and never interpreted as markup, a URI, a path, code or encoded binary.",
+      "examples": [
+        "Alex",
+        "f7746aa9-d48c-49ba-9f26-9c30219b1029",
+        "日本語",
+        "é",
+        "🙂"
+      ],
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "allOf": [
+        {
+          "pattern": "^[^\u0000-\u001f\u007f-\u009f\u2028\u2029\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]*$"
+        },
+        {
+          "pattern": "^[^\t-\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]"
+        },
+        {
+          "pattern": "[^\t-\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]$"
+        }
+      ]
+    },
+    "speaker_attribution": {
+      "title": "Consumer speaker attribution",
+      "description": "A consumer-assigned speaker identifier and optional paired absolute millisecond interval. Untimed entries mean participation somewhere in the cue. Timed entries denote positive half-open intervals inside the cue and any declared media bounds; executable semantic validation checks these relationships without changing native labels.",
+      "examples": [
+        {
+          "speaker_id": "Interviewer"
+        },
+        {
+          "start_milliseconds": 1250,
+          "speaker_id": "Alex",
+          "end_milliseconds": 4200
+        }
+      ],
+      "type": "object",
+      "required": [
+        "speaker_id"
+      ],
+      "properties": {
+        "speaker_id": {
+          "description": "Exact arbitrary string chosen and managed by the consumer; names and UUIDs receive the same opaque treatment.",
+          "$ref": "#/$defs/speaker_id"
+        },
+        "start_milliseconds": {
+          "minimum": 0,
+          "description": "Inclusive interval start in absolute cue-timeline integer milliseconds; requires end_milliseconds.",
+          "type": "integer",
+          "maximum": 9223372036854775807
+        },
+        "end_milliseconds": {
+          "minimum": 0,
+          "description": "Exclusive interval end in absolute cue-timeline integer milliseconds; must exceed the start and stay within cue and declared media bounds.",
+          "type": "integer",
+          "maximum": 9223372036854775807
+        }
+      },
+      "dependentRequired": {
+        "end_milliseconds": [
+          "start_milliseconds"
+        ],
+        "start_milliseconds": [
+          "end_milliseconds"
+        ]
+      },
+      "additionalProperties": false
+    },
+    "media_timing": {
+      "title": "Consumer media timing declaration",
+      "description": "Optional finite media duration supplied by a consumer, independent from cue coverage summaries. Media starts at timeline_start_milliseconds (zero when omitted) and ends at that start plus duration_milliseconds with checked arithmetic. This is a declaration, not independent media verification.",
+      "examples": [
+        {
+          "duration_milliseconds": 600000
+        },
+        {
+          "duration_milliseconds": 600000,
+          "timeline_start_milliseconds": 30000
+        },
+        {
+          "duration_milliseconds": 0
+        }
+      ],
+      "type": "object",
+      "required": [
+        "duration_milliseconds"
+      ],
+      "properties": {
+        "duration_milliseconds": {
+          "minimum": 0,
+          "description": "Known finite nonnegative media duration in integer milliseconds; zero means known empty media, never unknown.",
+          "type": "integer",
+          "maximum": 9223372036854775807
+        },
+        "timeline_start_milliseconds": {
+          "minimum": -9223372036854775808,
+          "description": "Signed absolute cue-timeline position of media start. Omission evaluates as zero without adding a persisted value; media end is this start plus duration.",
+          "type": "integer",
+          "maximum": 9223372036854775807
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

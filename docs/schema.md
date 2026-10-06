@@ -13,10 +13,10 @@ This document defines the stable v1.0.0 schema, including the foundation realize
 The schema artifact uses JSON Schema Draft 2020-12. Three similar-looking fields have distinct meanings:
 
 - The schema artifact's `$schema` keyword identifies the Draft 2020-12 metaschema.
-- The current canonical schema artifact's `$id` is `https://cueson.io/schema/v1.1.0/cueson.schema.json`; the historical released schema retains its exact v1.0.0 identity.
-- A current-source Cue JSON instance uses `$schema` `https://cueson.io/schema/v1.1.0/cueson.schema.json` and `schema_version` `1.1.0`. Historical 1.0.0 input retains its original exact identity.
+- The current canonical schema artifact's `$id` is staged `https://cueson.io/schema/v1.2.0-dev/cueson.schema.json`; historical released schemas retain their exact identities.
+- A current-source Cue JSON instance uses `$schema` `https://cueson.io/schema/v1.2.0-dev/cueson.schema.json` and `schema_version` `1.2.0-dev`. Historical 1.1.0 and 1.0.0 input retain their original exact identity.
 
-The canonical Cueson URI identifies an exact contract. Consumers resolve released 1.0.0 through the [immutable v1 schema](../schema/releases/v1.0.0/cueson.schema.json), tagged canonical artifact, [v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), public versioned route or historical executable embedding. Current discovery and the official v1.1.0 packages emit the exact [immutable v1.1.0 schema](../schema/releases/v1.1.0/cueson.schema.json), byte-identical to the tagged canonical, embedded and packaged copies. The reviewed artifact includes its canonical public route; issue #67 governs exact-main activation and live byte read-back. Cueson never emits or serves a mutable `latest` alias.
+The canonical Cueson URI identifies an exact contract. Consumers resolve released 1.0.0 through the [immutable v1 schema](../schema/releases/v1.0.0/cueson.schema.json), tagged canonical artifact, [v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), public versioned route or historical executable embedding. The official v1.1.0 packages emit the exact [immutable v1.1.0 schema](../schema/releases/v1.1.0/cueson.schema.json), byte-identical to the tagged canonical, embedded and packaged copies. The reviewed artifact includes its canonical public route; issue #67 governs exact-main activation and live byte read-back. Cueson never emits or serves a mutable `latest` alias.
 
 Users can discover the embedded contract version with `cueson schema --version` and emit the exact embedded schema with `cueson schema` or `cueson schema --output PATH`. A Cue JSON instance identifies its target contract through `$schema` and `schema_version`; consumers must evaluate both against an exact supported version rather than infer compatibility from the producer software version.
 
@@ -26,7 +26,9 @@ Starting with v1.0.0, breaking changes require a major-version increase. Additiv
 
 S018 froze the implemented CLI and Cue JSON behavior, S019 promoted that reviewed contract to identity 1.0.0 with a byte-identical immutable repository copy, S020 published and independently verified the exact tagged schema and release archives, and S021 publishes the immutable v0.0.0 and v1.0.0 schema bytes at their canonical versioned domain paths. No production alias exists.
 
-## Current 1.1.0 release contract
+## Published 1.1.0 release contract
+
+S033 adds optional `cues[].speaker_attributions` and root `media_timing` under staged exact `1.2.0-dev`. Consumer IDs have application-defined scope and remain separate from native observations. Optional intervals must fit their cue and declared media boundaries; subtitle coverage never supplies source duration. Counts and runtime warnings leave source bytes and archived diagnostics intact. See the [consumer contract](consumer-speakers.md) for precise identifier restrictions, timing rules, export losses and inspection states. Released schemas remain unchanged and the staged URI is not a published production route.
 
 S024 established local exact historical 1.0.0 validation and the typed scripted model; S025-S027 completed native workflows, all twelve conversion edges and CLI/conformance hardening. S028 froze and promoted the current contract to exact 1.1.0, with a byte-identical [immutable repository schema](../schema/releases/v1.1.0/cueson.schema.json). S029 bound those bytes to tag `v1.1.0`, the official release packages and independent public verification at revision `7ff45c1d8cd8df377e1fb568b9785286b649fd7c`. Unknown, mismatched, v0.0.0 and former development identities reject without network retrieval. Historical identity, producer and source observations remain intact. S030 child #76 adds the reviewed route artifact, and #67 governs its production and live verification.
 

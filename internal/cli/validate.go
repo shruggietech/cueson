@@ -118,6 +118,9 @@ func runValidate(ctx context.Context, options validateOptions, stderr io.Writer,
 		return ExitRuntimeFailure
 	}
 	writeModelWarnings(diagnostics, loaded.diagnostics)
+	if consumer := loaded.document.ConsumerAnnotationsSummary(); consumer != nil {
+		diagnostics.write(diagnosticSuccess, "consumer attribution media boundary check: "+consumer.MediaBoundaryCheck)
+	}
 	diagnostics.write(diagnosticSuccess, fmt.Sprintf("valid %s.%s", loaded.inputKind, loaded.document.Format))
 	return ExitSuccess
 }

@@ -75,7 +75,7 @@ var requiredExampleIDs = []string{
 var requiredReferenceMarkers = map[string][]string{
 	"CHANGELOG.md":          {"[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD", "[1.1.0]: https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0", "[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0"},
 	"README.md":             {"v1.1.0 released and independently verified", "v0.0.0", "v1.1.0 GitHub Release", "published v1.0.0 executable rejects new 1.1.0 output"},
-	"CONTRIBUTING.md":       {"Cueson v1.1.0 is published", "Current source matches the published exact v1.1.0 software and schema contract"},
+	"CONTRIBUTING.md":       {"Cueson v1.1.0 is published", "Current source stages exact 1.2.0-dev software and schema identity"},
 	"SECURITY.md":           {"published v1.1.0 release is the current stable line", "exact v1.1.0 release extends the stable boundaries"},
 	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "v1.1.0 schema released and independently verified", "non-normative"},
 	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v1.0.0", "Windows", "macOS", "Linux", "production", "v1.1.0 stable release published and independently verified"},
@@ -84,7 +84,7 @@ var requiredReferenceMarkers = map[string][]string{
 	"docs/releases/v1.1.0.md":                     {"# Cueson v1.1.0", "public v1.1.0 GitHub Release", "cueson_1.1.0_checksums.txt", "released v1.0.0 consumers reject", "unsigned and unattested"},
 	"docs/formats/ass-ssa.md":                     {"Frozen bounded stable profile", "published v1.1.0 release", "All twelve distinct four-format directions", "UTF-8", "attachments", "karaoke", "drawings", "complexity_limit", "scripted-stable-gate"},
 	"docs/cli.md":                                 {"exact `1.1.0`", "complete `experimental`", "`schema_only`", "historical-output selector", "former development identities"},
-	"docs/release-verification.md":                {"-version 1.1.0 -commit", "same bundle", "Published old-consumer proof", "`published: false`"},
+	"docs/release-verification.md":                {"-version 1.2.0-dev -development -commit", "same bundle", "Published old-consumer proof", "`published: false`"},
 	"docs/release-process.md":                     {"## Published v1.1.0 release", "#66/#76/#67", "fresh post-squash main evidence", "preparation pull request", "tag contains the finalized changelog", "#67 governs exact-main production activation"},
 	"docs/roadmap.md":                             {"S030 child [#76]", "parent [#67]", "post-merge exact-main production activation"},
 	"docs/project-management.md":                  {"S030 child #76 owns the reviewed 1.1.0 schema/site artifact", "parent #67", "exact-main production activation"},

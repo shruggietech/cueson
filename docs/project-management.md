@@ -87,6 +87,8 @@ The v1 release binds version/schema lockstep, stable SubRip/WebVTT declarations,
 
 ## Current milestone and active slice
 
+On 2026-10-06, S033 owns [issue #82](https://github.com/shruggietech/cueson/issues/82), one independently testable consumer-attribution/media-boundary outcome. The operator authorized Spec Kit, implementation, push and official PR, all findings and at most two review rounds. Final merge remains human-owned; tag/release and production deployment remain separate. The slice stages `1.2.0-dev` while retaining immutable released contracts. Its [verification record](../specs/S033-consumer-speaker-attribution/verification.md) reports actual evidence and remaining gates.
+
 The [S023 roadmap](roadmap.md) maintains [milestone v1.1.0](https://github.com/shruggietech/cueson/milestone/3), [epic #51](https://github.com/shruggietech/cueson/issues/51) and its atomic outcomes. Issues #52 through #66 and preparation #74 are complete. S030 child #76 owns reviewed artifact preparation and blocks parent #67. The epic and milestone remain open until #67 completes separately authorized exact-main deployment, independent live verification and lifecycle reconciliation.
 
 At S023 publication read-back, `cueson Delivery` contained forty-five unique issue items: twenty-eight historical Done items and seventeen new milestone items. Later preparation #74 added another governed item. Every child retains native milestone/parent/blockers and governed labels, owning Slice text, actual Stage and unused default Status. The spanning epic uses no single Slice. Native GitHub state controls after subsequent transitions; this dated read-back is preserved as historical evidence rather than a permanent assertion that the queue never changes.

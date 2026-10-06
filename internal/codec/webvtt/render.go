@@ -23,6 +23,16 @@ func Render(document model.Document, options RenderOptions) (RenderResult, error
 	if len(document.Cues) == 0 {
 		return RenderResult{}, fmt.Errorf("render WebVTT: at least one cue is required")
 	}
+	if err := document.ValidateConsumerAnnotations(); err != nil {
+		return RenderResult{}, fmt.Errorf("render WebVTT consumer annotations: %w", err)
+	}
+	consumerDiagnostics, err := document.ConsumerAnnotationLossDiagnostics()
+	if err != nil {
+		return RenderResult{}, err
+	}
+	if options.Strict && len(consumerDiagnostics) > 0 {
+		return RenderResult{}, fmt.Errorf("render WebVTT strict: %s", consumerDiagnostics[0].Code)
+	}
 	knownNonconforming := false
 	for _, diagnostic := range document.Diagnostics {
 		if strings.HasPrefix(diagnostic.Code, "webvtt_") && diagnostic.Code != "webvtt_nul_replaced" {
@@ -174,8 +184,11 @@ func Render(document model.Document, options RenderOptions) (RenderResult, error
 		body[index] = items[index].text
 	}
 	output := strings.Join(headerLines, "\n") + "\n\n" + strings.Join(body, "\n\n") + "\n"
-	result := RenderResult{Bytes: []byte(output), Diagnostics: []Diagnostic{}}
+	result := RenderResult{Bytes: []byte(output), Diagnostics: consumerDiagnostics}
 	if knownNonconforming {
+		if len(result.Diagnostics) >= model.MaxDiagnostics {
+			return RenderResult{}, fmt.Errorf("render WebVTT: diagnostic_complexity_limit")
+		}
 		result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: "warning", Code: "webvtt_render_preserved_nonconforming", Message: "permissive rendering retained diagnosed nonconforming WebVTT content"})
 	}
 	return result, nil

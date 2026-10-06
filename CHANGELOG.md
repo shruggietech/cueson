@@ -6,7 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Added optional consumer-owned cue speaker attributions, exact bounded Unicode IDs, cue-contained intervals and declared media duration/offset checks in staged `1.2.0-dev` source (#82, S033).
+- Added count-only consumer inspection, explicit unavailable/not-evaluated/checked media state, nonfatal source-cue conflict warnings, and complete consumer omission accounting in four native renderers and twelve conversion directions.
+
 ### Fixed
+
+- Kept completion syntax checks mandatory while allowing a bounded 30-second interpreter startup after repeated hosted Linux PowerShell cold-start timeouts during S033 verification.
 
 - Corrected protected production workflow argument forwarding, required the workflow execution ref and revision to match exact current `main`, and limited the Cloudflare token to preflight, deployment, and post-deployment read-back steps.
 
@@ -16,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Prepared a deterministic 22-HTML-route, three-immutable-schema artifact with seven exact v1.1.0 primary downloads, local-authority deployment comparison, public content-manifest digest verification and an exact-current-main recheck immediately before any separately authorized production mutation.
 
 ### Decisions
+
+- 2026-10-06: Keep consumer identity scope application-defined and separate from native observations; validate supplied duration without inferring media length from subtitle coverage. Stage exact `1.2.0-dev` while retaining immutable released schemas and separately authorized publication/deployment boundaries.
 
 - 2026-09-17: Use an account-owned Cloudflare token with Entire Account Workers Scripts Legacy Edit and `cueson.io` DNS, Zone, Zone Transform Rules, and Workers Routes Read, expose it only to three Cloudflare-facing protected workflow steps, rotate within 90 days, and require GitHub and public deployment records to identify the same exact `main` revision.
 

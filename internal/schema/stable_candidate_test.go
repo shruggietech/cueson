@@ -10,25 +10,25 @@ import (
 	"testing"
 )
 
-func TestStableCandidateImmutableSchemaIdentity(t *testing.T) {
+func TestCurrentDevelopmentAndHistoricalReleaseSchemaIdentity(t *testing.T) {
 	t.Parallel()
-	if ID() != "https://cueson.io/schema/v1.1.0/cueson.schema.json" || Version() != "1.1.0" {
+	if ID() != "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json" || Version() != "1.2.0-dev" {
 		t.Fatalf("unexpected current contract: %s / %s", ID(), Version())
 	}
 	immutable, err := os.ReadFile(filepath.Join("..", "..", "schema", "releases", "v1.1.0", "cueson.schema.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal(immutable, Bytes()) {
-		t.Fatal("canonical and immutable candidate schema differ")
+	if !bytes.Equal(immutable, historicalV11Bytes) {
+		t.Fatal("historical embedded and immutable released schema differ")
 	}
 	digest := sha256.Sum256(immutable)
 	if got := hex.EncodeToString(digest[:]); got != "223b61cbcf6337167039268576b2c739564585fff10e6cc6076e47a03526a0f7" {
-		t.Fatalf("candidate schema digest = %s", got)
+		t.Fatalf("released schema digest = %s", got)
 	}
 }
 
-func TestStableCandidateRejectsUnreleasedDevelopmentWithoutMutation(t *testing.T) {
+func TestRegistryRejectsFormerDevelopmentWithoutMutation(t *testing.T) {
 	t.Parallel()
 	for _, name := range []string{"representative.cueson.json", "scripted-ass.cueson.json", "scripted-ssa.cueson.json"} {
 		t.Run(name, func(t *testing.T) {
@@ -48,7 +48,7 @@ func TestStableCandidateRejectsUnreleasedDevelopmentWithoutMutation(t *testing.T
 			}
 			before := bytes.Clone(payload)
 			if _, err := Decode(payload); err == nil {
-				t.Fatal("unreleased development identity accepted")
+				t.Fatal("former development identity accepted")
 			}
 			if !bytes.Equal(before, payload) {
 				t.Fatal("identity refusal rewrote original payload")

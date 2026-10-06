@@ -255,6 +255,13 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 				}
 				nativeProof = &proof
 			}
+			if config.Development {
+				proof, err := verifyDevelopmentHostCLI(ctx, binaryBytes, target.Binary, repoDir, config.Version)
+				if err != nil {
+					return evidence, fmt.Errorf("execute development workflows %s: %w", target.Archive, err)
+				}
+				nativeProof = &proof
+			}
 			identity := target.GOOS + "/" + target.GOARCH
 			hostExecuted = &identity
 		}

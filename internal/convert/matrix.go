@@ -22,6 +22,17 @@ func analyzeCompatibility(document model.Document, targetFormat string) (matrixA
 }
 
 func analyzeCompatibilityContext(ctx context.Context, document model.Document, targetFormat string) (matrixAnalysis, error) {
+	analysis, err := analyzeNativeCompatibilityContext(ctx, document, targetFormat)
+	if err != nil {
+		return matrixAnalysis{}, err
+	}
+	if err := appendConsumerAnnotationLosses(ctx, &analysis.Losses, document, targetFormat); err != nil {
+		return matrixAnalysis{}, err
+	}
+	return analysis, nil
+}
+
+func analyzeNativeCompatibilityContext(ctx context.Context, document model.Document, targetFormat string) (matrixAnalysis, error) {
 	if err := ctx.Err(); err != nil {
 		return matrixAnalysis{}, err
 	}

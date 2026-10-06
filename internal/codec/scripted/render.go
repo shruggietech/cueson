@@ -47,6 +47,13 @@ func Render(ctx context.Context, document model.Document, strict bool) (RenderRe
 }
 
 func renderValidated(ctx context.Context, document model.Document, strict bool) (RenderResult, error) {
+	consumerDiagnostics, err := document.ConsumerAnnotationLossDiagnostics()
+	if err != nil {
+		return RenderResult{}, err
+	}
+	if strict && len(consumerDiagnostics) > 0 {
+		return RenderResult{}, fmt.Errorf("render scripted strict: %s", consumerDiagnostics[0].Code)
+	}
 	native := document.FormatData.ASS
 	if document.Format == "ssa" {
 		native = document.FormatData.SSA
@@ -262,8 +269,11 @@ func renderValidated(ctx context.Context, document model.Document, strict bool) 
 		return RenderResult{}, fmt.Errorf("render scripted strict: %s", parsed.Diagnostics[0].Code)
 	}
 	knownNonconforming = knownNonconforming || len(parsed.Diagnostics) > 0
-	result := RenderResult{Bytes: candidate, Diagnostics: []model.Diagnostic{}}
+	result := RenderResult{Bytes: candidate, Diagnostics: consumerDiagnostics}
 	if knownNonconforming {
+		if len(result.Diagnostics) >= model.MaxDiagnostics {
+			return RenderResult{}, fmt.Errorf("render scripted: diagnostic_complexity_limit")
+		}
 		result.Diagnostics = append(result.Diagnostics, model.Diagnostic{Severity: "warning", Code: "scripted_render_preserved_nonconforming", Message: "permissive rendering retained diagnosed native content"})
 	}
 	return result, nil
