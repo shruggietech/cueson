@@ -117,4 +117,3 @@ Decoded length boundaries; supplementary Unicode and composed/decomposed differe
 - Q: How do native exports retain arbitrary IDs/media declarations? A: All current targets omit with bounded deterministic reports; strict refuses, restoration remains exact.
 - Q: How are supplied duration conflicts with source cues handled? A: Runtime warnings preserve valid source envelopes; invalid consumer intervals fail.
 - Q: How is compatibility staged? A: Exact1.2.0-dev current plus local immutable historical1.1.0/1.0.0; no tag/release/production publishing.
-

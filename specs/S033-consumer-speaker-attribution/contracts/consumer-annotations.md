@@ -19,4 +19,3 @@ No current native format can preserve arbitrary consumer identity or media decla
 ## Operator boundaries
 
 Explicit push/PR authority covers this slice. Final merge, tag, release publication and production remain human-owned. At most one second Codex review.
-

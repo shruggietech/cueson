@@ -24,4 +24,3 @@
 - [x] All three stories have independent verification scenarios.
 - [x] Requirements preserve every issue #82 acceptance area.
 - [x] Consumer meaning, unavailable measurements and source/derived roles are distinct.
-

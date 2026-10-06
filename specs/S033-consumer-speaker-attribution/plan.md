@@ -67,4 +67,3 @@ Complete specify/clarify/checklist/plan/tasks and blocking read-only analysis be
 ## Delivery and Verification
 
 Record red/green focused evidence and complete foreground required checks, CI parity and hosted final-head checks. Commit with repository conventional style; no invented co-author identity. Explicit current owner request authorizes branch push and official PR, so skill pre-push halt is already satisfied. At most two bot review rounds; respond to all findings and resolve actually handled threads. Stop before final merge/tag/release/production.
-

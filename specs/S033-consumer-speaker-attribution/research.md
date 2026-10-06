@@ -23,4 +23,3 @@ Decision: explicit frozen forbidden-code-point and boundary-whitespace sets from
 ## Inspection and process artifacts
 
 Decision: optional counts-only inspection projection, established absent-field output unchanged; development snapshot policy and docs-verifier current-source markers updated explicitly. Rationale:1.1.0 current-source equality cannot remain true after a staged new contract. No stable publication/production artifacts change.
-

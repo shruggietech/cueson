@@ -11,4 +11,3 @@ Use current source or a1.2.0-dev development binary. Released1.1.0 is not expect
 7. Load historical1.0.0 and1.1.0 fixtures: their identities and semantics are preserved.
 
 Run focused tests for consumer handling in model/schema/convert/codec/CLI/source, then full foreground Go/nested-module/format/docs/security/build verification. Hosted native/race/site/release-proof checks must be green for the final PR head. Record actual evidence in verification.md.
-

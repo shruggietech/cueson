@@ -64,4 +64,3 @@ Model agent owns T007/T009..012/T015, schema agent owns T003..006/T008 and curre
 ## Implementation strategy
 
 Independently prove consumer storage, then timeline checks, then native omission accounting. Integrate the full issue outcome before publication; a partial story is not issue completion. Checklist quality assessment does not represent completed code tasks.
-

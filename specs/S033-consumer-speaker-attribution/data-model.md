@@ -19,4 +19,3 @@ Every attribution occurrence and declaration omitted from native output produces
 ## Version dispatch
 
 Current1.2.0-dev accepts additions; historical1.1.0/1.0.0 reject them even in direct typed revalidation. Historical1.1.0 scripted support and1.0.0 limitations remain unchanged. Immutable local registry selects exact identity pairs and never fetches input-controlled URIs.
-
