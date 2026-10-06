@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Kept completion syntax checks mandatory while allowing a bounded 30-second interpreter startup after repeated hosted Linux PowerShell cold-start timeouts during S033 verification.
+
 - Corrected protected production workflow argument forwarding, required the workflow execution ref and revision to match exact current `main`, and limited the Cloudflare token to preflight, deployment, and post-deployment read-back steps.
 
 ### Changed

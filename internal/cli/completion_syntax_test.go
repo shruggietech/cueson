@@ -34,7 +34,9 @@ func TestCompletionSyntaxWithAvailableInterpreters(t *testing.T) {
 			if !ok {
 				t.Fatalf("completionScript(%q) was rejected", tt.shell)
 			}
-			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			// Cold PowerShell startup on hosted Linux can exceed ten seconds.
+			// Keep the syntax assertion mandatory while bounding interpreter startup.
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 			defer cancel()
 			command := exec.CommandContext(ctx, executable, tt.arguments...)
 			configureTestCommand(command)

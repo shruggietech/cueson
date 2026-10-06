@@ -22,4 +22,6 @@ Site lint, deterministic generation/check, unit tests, static build, artifact ve
 
 ## Remaining gates
 
+The fresh remediation-head Linux run repeated the same ten-second PowerShell startup timeout. The completion syntax test now permits 30 seconds, with the parser assertion and failure handling unchanged. This proportional verification fix avoids relying on repeated successful retries. Local completion/documentation tests are rerun before pushing, and final hosted CI must validate the allowance.
+
 Official [PR #83](https://github.com/shruggietech/cueson/pull/83) is published with formatted body read-back and issue #82 at Project Stage `PR review`, Slice `S033`. First-round Codex review of `f0435df` found one README source-version expectation mismatch, corrected alongside this evidence update. Hosted Linux/Windows/macOS native tests, race detection, CodeQL, security, site and six builds passed that code head. Linux's first attempt hit the existing PowerShell syntax-check timeout; its retry passed. Non-publishing package proof and final remediation-head CI/review remain pending. Local/cross-build results do not substitute for hosted execution. The final-head result and human merge handoff will be recorded on the PR after all runtime gates complete; no third review is authorized.
