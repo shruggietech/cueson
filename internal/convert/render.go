@@ -120,7 +120,13 @@ func validateTargetSemanticsContext(ctx context.Context, document model.Document
 // AnalyzeSubRipRepresentability returns the reusable atomic target constraints
 // shared by same-format rendering and cross-format conversion.
 func AnalyzeSubRipRepresentability(document model.Document) (Report, error) {
+	if err := document.ValidateConsumerAnnotations(); err != nil {
+		return Report{}, err
+	}
 	losses := make([]Loss, 0)
+	if err := appendConsumerAnnotationLosses(context.Background(), &losses, document, "webvtt"); err != nil {
+		return Report{}, err
+	}
 	if err := appendMetadataLosses(&losses, document, "webvtt"); err != nil {
 		return Report{}, err
 	}
@@ -142,7 +148,13 @@ func AnalyzeSubRipRepresentability(document model.Document) (Report, error) {
 // vocabulary while keeping the underlying representability policy outside the
 // CLI. Conversion itself uses the atomic Loss report above.
 func SubRipRenderDiagnostics(document model.Document) ([]model.Diagnostic, error) {
-	diagnostics := make([]model.Diagnostic, 0)
+	if err := document.ValidateConsumerAnnotations(); err != nil {
+		return nil, err
+	}
+	diagnostics, err := document.ConsumerAnnotationLossDiagnostics()
+	if err != nil {
+		return nil, err
+	}
 	if document.Metadata.Title != nil || document.Metadata.Language != nil || document.Metadata.Kind != nil || document.Metadata.Description != nil {
 		if err := appendRenderDiagnostic(&diagnostics, model.Diagnostic{Severity: "warning", Code: "subrip_render_metadata_unrepresented", Message: "document metadata has no canonical SubRip representation"}); err != nil {
 			return nil, err

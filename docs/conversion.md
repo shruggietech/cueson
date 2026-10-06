@@ -26,6 +26,8 @@ A referenced or reset style represents each emphasis dimension only when that di
 | `conversion_payload_line_degraded` | Both | An empty payload line requires a non-visible target placeholder. |
 | `conversion_ocr_observation_omitted` | Both | Derived OCR observations are not subtitle target syntax. |
 | `conversion_speaker_observation_omitted` | Both | A common speaker observation has no independent target field. |
+| `conversion_speaker_attribution_omitted` | All twelve directions | Each consumer attribution occurrence is omitted, independently of native speaker labels. |
+| `conversion_media_timing_omitted` | All twelve directions | One consumer media declaration is omitted from native output. |
 | `conversion_token_timing_omitted` | Both | Token timing has no equivalent target structure. |
 | `conversion_placement_omitted` | Both | Common placement cannot be represented by the target evidence available. |
 | `conversion_nul_degraded` | Both | NUL is replaced with the semantic replacement character. |

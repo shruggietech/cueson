@@ -30,6 +30,7 @@ func validateCollectionLimits(document Document) error {
 		}{
 			{name: prefix + ".payload.lines", length: len(cue.Payload.Lines)},
 			{name: prefix + ".speakers", length: len(cue.Speakers)},
+			{name: prefix + ".speaker_attributions", length: len(cue.SpeakerAttributions)},
 			{name: prefix + ".tokens", length: len(cue.Tokens)},
 			{name: prefix + ".ocr_observations", length: len(cue.OCRObservations)},
 		} {

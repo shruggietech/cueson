@@ -29,14 +29,14 @@ func stableCandidateSource(t *testing.T, format string) []byte {
 	}
 }
 
-func TestScriptedStableCandidateRenderConformance(t *testing.T) {
+func TestScriptedCurrentDevelopmentRenderConformance(t *testing.T) {
 	t.Parallel()
 	repository := filepath.Dir(fixtureRoot(t))
 	canonical := readFile(t, filepath.Join(repository, "internal", "schema", "cueson.schema.json"))
 	immutable := readFile(t, filepath.Join(repository, "schema", "releases", "v1.1.0", "cueson.schema.json"))
 	emitted, diagnostics := runScriptedPlatformCLI(t, []string{"schema"}, cli.ExitSuccess)
-	if schema.ID() != "https://cueson.io/schema/v1.1.0/cueson.schema.json" || schema.Version() != "1.1.0" || len(diagnostics) != 0 || !bytes.Equal(canonical, immutable) || !bytes.Equal(canonical, emitted) {
-		t.Fatal("stable canonical/immutable/emitted contract differs")
+	if schema.ID() != "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json" || schema.Version() != "1.2.0-dev" || len(diagnostics) != 0 || bytes.Equal(canonical, immutable) || !bytes.Equal(canonical, emitted) {
+		t.Fatal("development canonical/emitted contract or historical artifact separation differs")
 	}
 	for _, format := range []string{"ass", "ssa"} {
 		t.Run(format, func(t *testing.T) {
@@ -76,7 +76,7 @@ func TestScriptedStableCandidateRenderConformance(t *testing.T) {
 }
 
 // Hosted native tests execute the complete stable identity workflow on each governed platform.
-func TestScriptedStableCandidateNativePlatformConformance(t *testing.T) {
+func TestScriptedCurrentDevelopmentNativePlatformConformance(t *testing.T) {
 	t.Parallel()
 	for _, format := range []string{"srt", "vtt", "ass", "ssa"} {
 		t.Run(format, func(t *testing.T) {
@@ -91,7 +91,7 @@ func TestScriptedStableCandidateNativePlatformConformance(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if document.Schema != "https://cueson.io/schema/v1.1.0/cueson.schema.json" || document.SchemaVersion != "1.1.0" || document.Producer.Version != "1.1.0" || document.FormatSupport.Status != "stable" || !document.FormatSupport.IngestSupported || !document.FormatSupport.RenderSupported || !document.FormatSupport.RestoreSupported {
+			if document.Schema != "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json" || document.SchemaVersion != "1.2.0-dev" || document.Producer.Version != "1.2.0-dev" || document.FormatSupport.Status != "stable" || !document.FormatSupport.IngestSupported || !document.FormatSupport.RenderSupported || !document.FormatSupport.RestoreSupported {
 				t.Fatal("official candidate output has inconsistent identity or native support")
 			}
 			asset := document.Source.Assets[0]
@@ -110,7 +110,7 @@ func TestScriptedStableCandidateNativePlatformConformance(t *testing.T) {
 				Schema       struct{ Version string }               `json:"schema"`
 				Capabilities struct{ Declared model.FormatSupport } `json:"capabilities"`
 			}
-			if err = json.Unmarshal(inspected, &report); err != nil || report.Schema.Version != "1.1.0" || report.Capabilities.Declared.Status != "stable" {
+			if err = json.Unmarshal(inspected, &report); err != nil || report.Schema.Version != "1.2.0-dev" || report.Capabilities.Declared.Status != "stable" {
 				t.Fatal("stable inspection did not report loaded identity/capabilities")
 			}
 			output := filepath.Join(directory, "restored."+format)

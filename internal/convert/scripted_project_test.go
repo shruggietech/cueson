@@ -14,6 +14,7 @@ import (
 
 	"github.com/shruggietech/cueson/internal/codec/scripted"
 	"github.com/shruggietech/cueson/internal/model"
+	"github.com/shruggietech/cueson/internal/schema"
 )
 
 func scriptedTextSource(t *testing.T, format, input string) model.Document {
@@ -49,7 +50,7 @@ func TestScriptedTargetsBaselineDeterminismAndHistoricalInput(t *testing.T) {
 				if len(losses) != 0 || len(translation.Issues) != 0 {
 					t.Fatalf("baseline losses: %+v %+v", losses, translation.Issues)
 				}
-				if target.SchemaVersion != "1.1.0" || target.FormatSupport.Status != "stable" {
+				if target.SchemaVersion != schema.Version() || target.FormatSupport.Status != "stable" {
 					t.Fatal("target identity")
 				}
 				if err := target.Validate(); err == nil {

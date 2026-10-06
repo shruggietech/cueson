@@ -34,6 +34,7 @@ func projectScriptedVariant(ctx context.Context, source model.Document, targetFo
 	target.Format = targetFormat
 	target.FormatSupport = model.FormatSupport{Status: "stable", IngestSupported: true, RenderSupported: true, RestoreSupported: true}
 	target.Metadata = model.Metadata{}
+	target.MediaTiming = nil
 	target.Source = cloneSourceEnvelope(source.Source)
 	target.Cues = append([]model.Cue{}, source.Cues...)
 	target.Diagnostics = append([]model.Diagnostic{}, source.Diagnostics...)
@@ -190,6 +191,7 @@ func projectScriptedVariant(ctx context.Context, source model.Document, targetFo
 			}
 		}
 		target.Cues[index].OCRObservations, target.Cues[index].Placement = []model.OCRObservation{}, nil
+		target.Cues[index].SpeakerAttributions = nil
 		if cue.SourceIdentifier != nil {
 			loss := cueLoss(source, targetFormat, cue, LossCodeSourceIdentifierOmitted, KindOmitted, "source cue identifier has no target native representation", fmt.Sprintf("/cues/%d/source_identifier", index), nil)
 			if err := appendOneLoss(&losses, loss); err != nil {

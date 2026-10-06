@@ -1706,11 +1706,11 @@
             },
             {
               "kind": "platform_test",
-              "reference": "internal/conformance:TestScriptedStableCandidateNativePlatformConformance"
+              "reference": "internal/conformance:TestScriptedCurrentDevelopmentNativePlatformConformance"
             },
             {
               "kind": "render_test",
-              "reference": "internal/conformance:TestScriptedStableCandidateRenderConformance"
+              "reference": "internal/conformance:TestScriptedCurrentDevelopmentRenderConformance"
             }
           ]
         }

@@ -118,6 +118,12 @@ func runConvert(ctx context.Context, options convertOptions, stdout io.Writer, s
 
 	writeModelWarnings(diagnostics, document.Diagnostics)
 	result, err := convert.Convert(ctx, document, options.target, convert.Options{Strict: options.strict})
+	runtimeWarnings, timingErr := document.ConsumerTimingDiagnostics()
+	if timingErr != nil {
+		diagnostics.write(diagnosticError, fmt.Sprintf("convert: %v", timingErr))
+		return ExitRuntimeFailure
+	}
+	writeModelWarnings(diagnostics, runtimeWarnings)
 	writeConversionWarnings(diagnostics, result.LossReport)
 	if err != nil {
 		diagnostics.write(diagnosticError, fmt.Sprintf("convert: %v", err))
@@ -199,6 +205,12 @@ func runRender(ctx context.Context, options renderOptions, stdout io.Writer, std
 		return ExitRuntimeFailure
 	}
 	result, err := renderer(ctx, loaded.document, codec.RenderOptions{Strict: options.strict})
+	runtimeWarnings, timingErr := loaded.document.ConsumerTimingDiagnostics()
+	if timingErr != nil {
+		diagnostics.write(diagnosticError, fmt.Sprintf("render: %v", timingErr))
+		return ExitRuntimeFailure
+	}
+	writeModelWarnings(diagnostics, runtimeWarnings)
 	if err != nil {
 		diagnostics.write(diagnosticError, fmt.Sprintf("render: %v", err))
 		return ExitRuntimeFailure

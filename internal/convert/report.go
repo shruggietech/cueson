@@ -75,6 +75,8 @@ const (
 	LossCodeScriptedVariantFieldOmitted    = "conversion_scripted_variant_field_omitted"
 	LossCodeScriptedVariantFieldDegraded   = "conversion_scripted_variant_field_degraded"
 	LossCodeSourceIdentifierOmitted        = "conversion_source_identifier_omitted"
+	LossCodeSpeakerAttributionOmitted      = "conversion_speaker_attribution_omitted"
+	LossCodeMediaTimingOmitted             = "conversion_media_timing_omitted"
 )
 
 type lossCodeSpec struct {
@@ -118,6 +120,8 @@ var knownLossCodes = map[string]lossCodeSpec{
 	LossCodeScriptedVariantFieldOmitted:    {kind: KindOmitted, rank: 390},
 	LossCodeScriptedVariantFieldDegraded:   {kind: KindDegraded, rank: 400},
 	LossCodeSourceIdentifierOmitted:        {kind: KindOmitted, rank: 410},
+	LossCodeSpeakerAttributionOmitted:      {kind: KindOmitted, rank: 420},
+	LossCodeMediaTimingOmitted:             {kind: KindOmitted, rank: 430},
 }
 
 // Attribute is one bounded deterministic context value. Context supplements a
@@ -420,7 +424,7 @@ func validateJSONPointer(pointer string) error {
 	}
 	root := pointerSegment(strings.Split(pointer[1:], "/")[0])
 	switch root {
-	case "$schema", "schema_version", "format", "format_support", "producer", "source", "metadata", "document", "cues", "format_data", "diagnostics", "stats":
+	case "$schema", "schema_version", "format", "format_support", "producer", "source", "metadata", "media_timing", "document", "cues", "format_data", "diagnostics", "stats":
 		return nil
 	default:
 		return fmt.Errorf("path %q is not a Cue JSON Pointer", pointer)

@@ -6,12 +6,12 @@ This guide defines the repository-owned artifact proof established by issue [#11
 
 ## Current stable release proof
 
-The checked-in workflow continues to build non-publishing exact `1.1.0` snapshots and uses stable verification of canonical/immutable/embedded/emitted/packaged schema byte identity. It retains exact head revision, schema/software identity, six archives, six target-bound SBOMs, checksum bijection and legal-file proof. Matching native Linux, Windows and macOS amd64 packages execute four-format workflows and historical/safety checks; verified published v1.0.0 bytes prove rejection of fresh current output. This workflow remains evidence-only even though the exact v1.1.0 release has now been published and independently verified.
+S033 transitions the checked-in workflow to non-publishing exact `1.2.0-dev` snapshots and explicit `-development` verification of matching canonical/embedded/emitted/packaged schema bytes. It retains exact head revision, schema/software identity, six archives, six target-bound SBOMs, checksum bijection and legal-file proof. Matching native Linux, Windows and macOS amd64 packages execute four-format workflows, six historical 1.0.0/1.1.0 inputs and output-refusal checks. Published v1.1.0 evidence below remains immutable. Development proof does not claim a new release, immutable development-schema copy or published old-consumer run.
 
 After building a snapshot, the active local verifier command is:
 
 ```text
-go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 1.1.0 -commit <full-commit> -execute-host
+go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 1.2.0-dev -development -commit <full-commit> -execute-host
 ```
 
 For exact 1.1.0 with `-execute-host`, optional `native_proof` records the four tested formats, two historical input documents, and the verified old-consumer version/revision/archive/digest plus refusal count. The old consumer is the published 1.0.0 binary at `2cad4c816340404289b4d1d87179a4071713bb46`, authenticated against the frozen S020 public asset contract before execution. This verifier-only fetch requires network availability and fails closed on asset/hash/source mismatch; product schema/codec execution remains offline.
@@ -71,7 +71,7 @@ goreleaser check
 goreleaser release --snapshot --clean --skip=publish
 ```
 
-The `.goreleaser.yaml` file fixes the candidate snapshot identity to `1.1.0`, packages the immutable candidate schema, disables publishing in configuration, closes the build matrix to six pure-Go targets, normalizes artifact timestamps to the source commit, strips build paths, and injects the verifier-readable release-version marker. GoReleaser writes only beneath ignored `dist/`. Snapshot status describes the non-publishing packaging operation, not a development schema identity.
+The `.goreleaser.yaml` file fixes the development snapshot identity to `1.2.0-dev`, packages the matching current schema, disables publishing in configuration, closes the build matrix to six pure-Go targets, normalizes artifact timestamps to the source commit, strips build paths, and injects the verifier-readable release-version marker. GoReleaser writes only beneath ignored `dist/`. Both snapshot packaging and development identity are explicit; immutable released resources remain unchanged.
 
 GoReleaser snapshot mode does not upload artifacts. `release.disable: true` is a second boundary so the checked-in configuration cannot publish even if a caller omits snapshot mode. Any later public release requires a separate specification and operator authorization.
 
@@ -80,10 +80,12 @@ GoReleaser snapshot mode does not upload artifacts. `release.disable: true` is a
 Obtain the full current commit identifier with `git rev-parse HEAD`, then run the standalone standard-library verifier:
 
 ```text
-go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 1.1.0 -commit <full-commit> -execute-host
+go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 1.2.0-dev -development -commit <full-commit> -execute-host
 ```
 
-The verifier:
+For a published stable contract the verifier applies the following stable proof. Current `1.2.0-dev -development` proof uses the matching canonical schema, records `development: true`, retains only a prospective `v1.2.0-dev` intended-tag marker and executes current native workflows plus six immutable historical inputs; it does not claim performed old-consumer proof. All archive, SBOM, legal, checksum and source-binding checks still apply. Stable release history below remains the original publication authority.
+
+The stable verifier:
 
 - requires regular canonical/immutable repository schemas with exact current URI, root instance `$schema` constant and `schema_version`, and validates their byte identity;
 - requires the exact six archive names and target tuples;
@@ -97,7 +99,7 @@ The verifier:
 - executes only the host-compatible packaged binary, requiring exact version/schema discovery, four-format native validation/inspection/render/restoration/conversion, historical acceptance and output-refusal safety;
 - writes evidence only after every assertion passes, including intended tag `v1.1.0`, the lowercase schema and legal-file SHA-256 values, the exact source revision, `development` absent or false and `published: false`.
 
-Accepted current candidate evidence records exact version `1.1.0`, intended tag `v1.1.0`, full source revision, schema/license/notice digests, archive/SBOM/checksum counts of six, ordered target identities and archive/SBOM digests, compatible-host workflow proof or `null`, and `published: false`. The intended tag is prospective evidence, not authorization or tag creation. Distinct evidence paths retain each structural/native proof; no historical accepted evidence is overwritten.
+Accepted stable 1.1.0 evidence records exact version `1.1.0`, intended tag `v1.1.0`, full source revision, schema/license/notice digests, archive/SBOM/checksum counts of six, ordered target identities and archive/SBOM digests, compatible-host workflow proof or `null`, and `published: false`. The intended tag was prospective evidence, not authorization or tag creation. Current development evidence records `1.2.0-dev` and `development: true` with a prospective `v1.2.0-dev` marker that grants no tag/publication authority. Distinct evidence paths retain each proof; no historical accepted evidence is overwritten.
 
 Pass additional local values with repeated `-forbid` flags when a machine-specific identifier is not already derived from the repository root, user profile, temporary directory, hostname, or environment.
 
@@ -111,7 +113,7 @@ Syft currently includes variable timestamps and document identifiers in SPDX out
 
 ## Hosted proof
 
-The `Release proof` workflow runs on ordinary pull requests to `main`, pushes to `main`, and manual dispatch. Candidate jobs use read-only repository permission, no credentials/secrets/publication token and exact pinned tools. They build and stably verify the exact `1.1.0` six-target snapshot. Matching Linux, Windows and macOS amd64 smoke jobs download and execute that same bundle without rebuilding. Published old-consumer proof uses a source/digest-bound v1.0.0 executable and verifies current-output identity refusal before publication. Accepted short-lived artifacts are review evidence, never GitHub Release assets.
+The `Release proof` workflow runs on ordinary pull requests to `main`, pushes to `main`, and manual dispatch. Candidate jobs use read-only repository permission, no credentials/secrets/publication token and exact pinned tools. They build and verify the exact `1.2.0-dev` six-target snapshot with explicit `-development`. Matching Linux, Windows and macOS amd64 smoke jobs download and execute that same bundle without rebuilding. Published old-consumer proof for stable 1.1.0 uses a source/digest-bound v1.0.0 executable. Development proof validates six historical inputs locally and does not claim a new published old-consumer execution. Accepted short-lived artifacts are review evidence, never GitHub Release assets.
 
 The retained workflow artifact is CI evidence, not a GitHub Release asset. A failed verifier produces a failed check and uploads no candidate bundle. The workflow has no tag or release trigger, write permission, identity-token permission, signing step, or production deployment step.
 
@@ -165,8 +167,8 @@ go -C scripts/brand-verify test -count=1 ./...
 go -C scripts/brand-verify run . -repo ../..
 goreleaser check
 goreleaser release --snapshot --clean --skip=publish
-go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 1.1.0 -commit <full-commit> -execute-host
+go -C scripts/release-verify run . -dist ../../dist -repo ../.. -version 1.2.0-dev -development -commit <full-commit> -execute-host
 git diff --check
 ```
 
-Success proves the non-publishing exact 1.1.0 stable snapshot at the current clean revision, including immutable-copy proof. The same checks continue to produce review evidence after publication; they do not merge, create or move a tag, publish or replace a release asset, serve the new schema route, close the milestone, add signatures/attestations or mutate production.
+Success proves the non-publishing exact 1.2.0-dev snapshot at the current clean revision, including matching canonical/embedded/emitted/packaged bytes and native historical input proof. The same checks continue to produce review evidence after publication; they do not merge, create or move a tag, publish or replace a release asset, serve the new schema route, close the milestone, add signatures/attestations or mutate production.

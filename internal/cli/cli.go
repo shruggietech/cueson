@@ -221,6 +221,12 @@ func runRestore(ctx context.Context, options restoreOptions, stderr io.Writer, d
 		return ExitRuntimeFailure
 	}
 	metadataMode := source.MetadataDefault
+	runtimeWarnings, timingErr := loaded.document.ConsumerTimingDiagnostics()
+	if timingErr != nil {
+		diagnostics.write(diagnosticError, fmt.Sprintf("restore: %v", timingErr))
+		return ExitRuntimeFailure
+	}
+	writeModelWarnings(diagnostics, runtimeWarnings)
 	if options.strictMetadata {
 		metadataMode = source.MetadataStrict
 	} else if options.noMetadata {

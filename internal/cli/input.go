@@ -113,11 +113,15 @@ func finishCueJSONInput(ctx context.Context, document model.Document, basis sele
 	if err := source.ValidateIntegrity(ctx, document); err != nil {
 		return validatedInput{}, fmt.Errorf("validate Cue JSON source integrity: %w", err)
 	}
+	runtimeWarnings, err := document.ConsumerTimingDiagnostics()
+	if err != nil {
+		return validatedInput{}, fmt.Errorf("validate consumer media timing: %w", err)
+	}
 	return validatedInput{
 		document:       document,
 		inputKind:      inputKindCueJSON,
 		selectionBasis: basis,
-		diagnostics:    cloneDiagnostics(document.Diagnostics),
+		diagnostics:    append(cloneDiagnostics(document.Diagnostics), runtimeWarnings...),
 	}, nil
 }
 

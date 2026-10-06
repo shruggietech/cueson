@@ -78,6 +78,8 @@ Each child has the governed six-section body and independent acceptance/verifica
 
 ## Subsequent roadmap candidates
 
+S033 implements consumer speaker attribution and optional declared-media checks in [issue #82](https://github.com/shruggietech/cueson/issues/82), with a complete [Spec Kit slice](../specs/S033-consumer-speaker-attribution/spec.md). The staged `1.2.0-dev` contract supports application-defined IDs without a diarization engine or inferred source duration. Final review/merge and later release promotion remain independent gates.
+
 | Later milestone | Main-plan families | Required foundation and explicit deferral |
 |---|---|---|
 | XML timed-text | TTML plus a pinned IMSC text profile first; SMPTE-TT and EBU-TT as explicit follow-on profiles | Namespace/unknown-node fidelity, style/layout inheritance, clock/frame/tick timing, profile conformance, safe XML processing, native schema and conversion losses. One generic parser cannot claim every XML family. |

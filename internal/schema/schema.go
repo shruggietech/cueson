@@ -5,6 +5,7 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -16,11 +17,13 @@ import (
 )
 
 const (
-	schemaID            = "https://cueson.io/schema/v1.1.0/cueson.schema.json"
-	schemaVersion       = "1.1.0"
-	historicalV1ID      = "https://cueson.io/schema/v1.0.0/cueson.schema.json"
-	historicalV1Version = "1.0.0"
-	schemaDialect       = "https://json-schema.org/draft/2020-12/schema"
+	schemaID             = "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
+	schemaVersion        = "1.2.0-dev"
+	historicalV1ID       = "https://cueson.io/schema/v1.0.0/cueson.schema.json"
+	historicalV1Version  = "1.0.0"
+	historicalV11ID      = "https://cueson.io/schema/v1.1.0/cueson.schema.json"
+	historicalV11Version = "1.1.0"
+	schemaDialect        = "https://json-schema.org/draft/2020-12/schema"
 )
 
 var (
@@ -35,14 +38,26 @@ var (
 	//go:embed historical/v1.0.0/cueson.schema.json
 	historicalV1Bytes []byte
 
+	//go:embed historical/v1.1.0/cueson.schema.json
+	historicalV11Bytes []byte
+
 	compileOnce   sync.Once
 	compiled      *jsonschema.Schema
 	compiledError error
 
-	historicalCompileOnce  sync.Once
-	historicalCompiled     *jsonschema.Schema
-	historicalCompileError error
+	historicalContracts = map[string]*localContract{
+		historicalV1ID:  {version: historicalV1Version, data: historicalV1Bytes},
+		historicalV11ID: {version: historicalV11Version, data: historicalV11Bytes},
+	}
 )
+
+type localContract struct {
+	version  string
+	data     []byte
+	once     sync.Once
+	compiled *jsonschema.Schema
+	err      error
+}
 
 // ID returns the current canonical schema identifier.
 func ID() string {
@@ -96,6 +111,12 @@ func Decode(data []byte) (model.Document, error) {
 		return document, fmt.Errorf("validate Cue JSON structure: select exact contract: %w", err)
 	}
 	if err := contract.Validate(instance); err != nil {
+		var validation *jsonschema.ValidationError
+		if errors.As(err, &validation) {
+			if path := consumerErrorPath(validation); path != "" {
+				return document, fmt.Errorf("validate Cue JSON structure: %s violates consumer annotation constraints", path)
+			}
+		}
 		return document, fmt.Errorf("validate Cue JSON structure: %w", err)
 	}
 	if err := json.Unmarshal(data, &document); err != nil {
@@ -105,6 +126,24 @@ func Decode(data []byte) (model.Document, error) {
 		return document, fmt.Errorf("validate Cue JSON semantics: %w", err)
 	}
 	return document, nil
+}
+
+// Consumer identifiers are content, including when invalid. The validator's
+// ordinary pattern errors quote values; expose only their governed field path.
+func consumerErrorPath(validation *jsonschema.ValidationError) string {
+	location := validation.InstanceLocation
+	if len(location) > 0 && location[0] == "media_timing" {
+		return "media_timing"
+	}
+	if len(location) > 2 && location[0] == "cues" && location[2] == "speaker_attributions" {
+		return "cues[].speaker_attributions"
+	}
+	for _, cause := range validation.Causes {
+		if path := consumerErrorPath(cause); path != "" {
+			return path
+		}
+	}
+	return ""
 }
 
 func selectContract(instance any) (*jsonschema.Schema, error) {
@@ -117,17 +156,16 @@ func selectContract(instance any) (*jsonschema.Schema, error) {
 	if !idOK || !versionOK {
 		return nil, fmt.Errorf("cue JSON identity requires string $schema and schema_version")
 	}
-	switch {
-	case id == schemaID && version == schemaVersion:
+	if id == schemaID && version == schemaVersion {
 		return Compiled()
-	case id == historicalV1ID && version == historicalV1Version:
-		historicalCompileOnce.Do(func() {
-			historicalCompiled, historicalCompileError = compileArtifact(historicalV1Bytes, historicalV1ID, historicalV1Version)
-		})
-		return historicalCompiled, historicalCompileError
-	default:
-		return nil, fmt.Errorf("unsupported or mismatched Cue JSON identity ($schema, schema_version)")
 	}
+	if contract, ok := historicalContracts[id]; ok && version == contract.version {
+		contract.once.Do(func() {
+			contract.compiled, contract.err = compileArtifact(contract.data, id, contract.version)
+		})
+		return contract.compiled, contract.err
+	}
+	return nil, fmt.Errorf("unsupported or mismatched Cue JSON identity ($schema, schema_version)")
 }
 
 func validateUnicodeEscapes(data []byte) error {

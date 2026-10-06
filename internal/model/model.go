@@ -18,6 +18,7 @@ type Document struct {
 	Source        SourceEnvelope     `json:"source"`
 	Metadata      Metadata           `json:"metadata"`
 	Document      DocumentSummary    `json:"document"`
+	MediaTiming   *MediaTiming       `json:"media_timing,omitempty"`
 	Cues          []Cue              `json:"cues"`
 	FormatData    DocumentFormatData `json:"format_data"`
 	Diagnostics   []Diagnostic       `json:"diagnostics"`
@@ -98,17 +99,18 @@ type DocumentSummary struct {
 }
 
 type Cue struct {
-	ID               string           `json:"id"`
-	Ordinal          int              `json:"ordinal"`
-	SourceOrder      int              `json:"source_order"`
-	SourceIdentifier *string          `json:"source_identifier"`
-	Timing           Timing           `json:"timing"`
-	Payload          Payload          `json:"payload"`
-	Speakers         []Speaker        `json:"speakers"`
-	Tokens           []Token          `json:"tokens"`
-	OCRObservations  []OCRObservation `json:"ocr_observations"`
-	Placement        *Placement       `json:"placement"`
-	FormatData       CueFormatData    `json:"format_data"`
+	ID                  string               `json:"id"`
+	Ordinal             int                  `json:"ordinal"`
+	SourceOrder         int                  `json:"source_order"`
+	SourceIdentifier    *string              `json:"source_identifier"`
+	Timing              Timing               `json:"timing"`
+	Payload             Payload              `json:"payload"`
+	Speakers            []Speaker            `json:"speakers"`
+	SpeakerAttributions []SpeakerAttribution `json:"speaker_attributions,omitempty"`
+	Tokens              []Token              `json:"tokens"`
+	OCRObservations     []OCRObservation     `json:"ocr_observations"`
+	Placement           *Placement           `json:"placement"`
+	FormatData          CueFormatData        `json:"format_data"`
 }
 
 type Timing struct {
@@ -258,7 +260,10 @@ type Stats struct {
 
 // Validate checks invariants that are intentionally clearer outside JSON Schema.
 func (document Document) Validate() error {
-	if document.SchemaVersion == "1.1.0" && document.Schema == "https://cueson.io/schema/v1.1.0/cueson.schema.json" && (document.Format == "ass" || document.Format == "ssa") {
+	if err := validateConsumerAnnotations(document); err != nil {
+		return err
+	}
+	if hasScriptedContract(document) && (document.Format == "ass" || document.Format == "ssa") {
 		return validateScriptedDocument(document)
 	}
 	if document.FormatData.ASS != nil || document.FormatData.SSA != nil {

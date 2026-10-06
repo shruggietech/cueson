@@ -25,6 +25,8 @@ The [official v1.1.0 release](https://github.com/shruggietech/cueson/releases/ta
 
 ## Capability direction
 
+Current development source stages `1.2.0-dev` with optional [consumer speaker attribution and declared media timing](docs/consumer-speakers.md). Downstream applications assign IDs and determine their scope; Cueson stores those results separately from native speaker observations. Cue and declared-media checks catch out-of-range timed assignments. These additions are implemented in source and are not included in published v1.1.0 packages or production schemas.
+
 - Preserve original source bytes, names, hashes, and observable filesystem metadata.
 - Expose cue timing, raw text, plain text, line structure, speakers, and token timing through a stable common model.
 - Retain format-native structures and surface unsupported or lossy interpretations through diagnostics.

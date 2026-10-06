@@ -1,6 +1,6 @@
 {
-  "$schema": "https://cueson.io/schema/v1.1.0/cueson.schema.json",
-  "schema_version": "1.1.0",
+  "$schema": "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json",
+  "schema_version": "1.2.0-dev",
   "format": "subrip",
   "format_support": {
     "status": "stable",
