@@ -20,7 +20,7 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 	workflow := readPolicyFile(t, filepath.Join(repository, ".github", "workflows", "release-proof.yml"))
 
 	for _, required := range []string{
-		`version_template: "1.2.0-dev"`, "release:", "disable: true", "CGO_ENABLED=0",
+		`version_template: "1.2.0"`, "release:", "disable: true", "CGO_ENABLED=0",
 		"github.com/shruggietech/cueson/internal/version.releaseOverride=cueson-release-version:{{ .Version }}",
 		"cueson_{{ .Version }}_checksums.txt", "artifacts: binary", "spdx-json=$document",
 	} {
@@ -33,36 +33,36 @@ func TestRepositoryReleasePolicy(t *testing.T) {
 			t.Errorf(".goreleaser.yaml contains publishing surface %q", forbidden)
 		}
 	}
-	const stableSchemaSource = "- src: internal/schema/cueson.schema.json"
+	const stableSchemaSource = "- src: schema/releases/v1.2.0/cueson.schema.json"
 	if count := strings.Count(config, stableSchemaSource); count != 1 {
 		t.Errorf(".goreleaser.yaml contains %d immutable candidate schema sources, want 1", count)
 	}
-	if strings.Contains(config, "- src: schema/releases/") {
-		t.Error("development candidate packages a released schema instead of its matching current contract")
+	if strings.Contains(config, "- src: internal/schema/cueson.schema.json") {
+		t.Error("stable candidate must package the immutable matching schema")
 	}
 
 	for _, required := range []string{
 		"pull_request:", "workflow_dispatch:", "contents: read", "persist-credentials: false",
 		"SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}",
-		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-1.2.0-dev-candidate-${{ env.SOURCE_COMMIT }}",
+		"ref: ${{ env.SOURCE_COMMIT }}", "name: cueson-1.2.0-candidate-${{ env.SOURCE_COMMIT }}",
 		"github.com/goreleaser/goreleaser/v2@v2.18.1", "github.com/anchore/syft/cmd/syft@v1.51.1",
-		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "-version 1.2.0-dev -development", "-execute-host", "-evidence", "retention-days: 3",
+		"GOTOOLCHAIN: auto", "goreleaser release --snapshot --clean --skip=publish", "-version 1.2.0", "-execute-host", "-evidence", "retention-days: 3",
 		"needs: release-proof", "actions/download-artifact@", "ubuntu-24.04", "windows-2025", "macos-15-intel",
 	} {
 		if !strings.Contains(workflow, required) {
 			t.Errorf("release-proof.yml missing %q", required)
 		}
 	}
-	if count := strings.Count(workflow, "-version 1.2.0-dev -development"); count != 2 {
-		t.Errorf("release-proof.yml has %d development verifications, want bundle and native proof", count)
+	if count := strings.Count(workflow, "-version 1.2.0"); count != 2 {
+		t.Errorf("release-proof.yml has %d stable verifications, want bundle and native proof", count)
 	}
-	if strings.Contains(workflow, "-version 1.1.0") {
-		t.Error("development proof relabels current artifacts as the published release")
+	if strings.Contains(workflow, "-version 1.1.0") || strings.Contains(workflow, "-development") || strings.Contains(workflow, "1.2.0-dev") {
+		t.Error("stable proof uses a historical or development candidate identity")
 	}
 	if count := strings.Count(workflow, "goreleaser release --snapshot --clean --skip=publish"); count != 1 {
 		t.Errorf("release-proof.yml builds %d candidate bundles, want exactly 1", count)
 	}
-	if count := strings.Count(workflow, "name: cueson-1.2.0-dev-candidate-${{ env.SOURCE_COMMIT }}"); count != 2 {
+	if count := strings.Count(workflow, "name: cueson-1.2.0-candidate-${{ env.SOURCE_COMMIT }}"); count != 2 {
 		t.Errorf("release-proof.yml names the accepted bundle %d times, want one upload and one download", count)
 	}
 	pushPattern := regexp.MustCompile(`(?m)^  push:\n((?: {4,}.*\n)*)`)
@@ -184,7 +184,7 @@ func TestReleaseEvidenceContractBindsExactTargetTuples(t *testing.T) {
 func TestRepositoryCandidateSchemaAndLegalIdentity(t *testing.T) {
 	t.Parallel()
 	repository := filepath.Clean(filepath.Join("..", ".."))
-	canonical, schemaDigest, err := loadDevelopmentSchema(repository, "1.2.0-dev")
+	canonical, schemaDigest, err := loadRepositorySchemas(repository, "1.2.0")
 	if err != nil {
 		t.Fatal(err)
 	}

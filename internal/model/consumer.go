@@ -33,7 +33,7 @@ type ConsumerAnnotationSummary struct {
 }
 
 func hasConsumerContract(document Document) bool {
-	return document.SchemaVersion == "1.2.0-dev" && document.Schema == "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
+	return document.SchemaVersion == "1.2.0" && document.Schema == "https://cueson.io/schema/v1.2.0/cueson.schema.json"
 }
 
 func hasScriptedContract(document Document) bool {

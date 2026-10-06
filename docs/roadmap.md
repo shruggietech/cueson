@@ -1,12 +1,16 @@
 # Cueson development roadmap
 
-**Status:** S023-S029 and v1.1.0 publication complete; S030 reviewed schema/site artifact preparation in progress under #76, with production continuation governed by #67
+**Status:** S023-S033 outcomes complete, including published and deployed v1.1.0; S034 prepares the exact 1.2.0 stable candidate without public publication
 
-**Assessed:** 2026-09-16 against merged S029 main revision `7ff45c1d8cd8df377e1fb568b9785286b649fd7c`, the verified v1.1.0 release, all active issues, native dependencies, and milestone/Project state.
+**Current assessment:** 2026-10-06 after merged S033 PR #83. Issue #82 is complete; kickoff found no open issues or new arrivals before the independently closeable v1.2.0 candidate, publication and hosting outcomes were established. Native GitHub state remains planning authority.
 
 ## Current delivery state
 
-v0.0.0, v1.0.0 and v1.1.0 are released and independently verified. Stable SubRip, WebVTT, ASS and SSA native workflows are implemented. S021 launched the public documentation site and v0.0.0/v1.0.0 immutable schemas; S022 corrected independent IPv4/IPv6 verification. S030 child #76 prepares a reviewed artifact containing all three immutable schemas and current documentation, while #67 governs exact-main production activation, independent live verification and lifecycle reconciliation. Repository merges never deploy production automatically.
+v0.0.0, v1.0.0 and v1.1.0 are released and independently verified. Stable SubRip, WebVTT, ASS and SSA native workflows are implemented. S021 launched the public documentation site and v0.0.0/v1.0.0 immutable schemas; S022 corrected independent IPv4/IPv6 verification. S030 completed the three-schema v1.1.0 artifact and independently verified production activation through #76/#67. S032 completed protected deployment repair through #78. S033 implemented optional consumer speaker attribution and declared media timing; S034 prepares exact 1.2.0 candidate identity and package proof. Public downloads and production schemas remain v1.1.0. Repository merges never deploy production automatically.
+
+## Historical v1.1.0 planning assessment
+
+The following S023-S030 narrative and tables retain the 2026-09-16 assessment against merged S029 main revision `7ff45c1d8cd8df377e1fb568b9785286b649fd7c`, the verified v1.1.0 release and then-active issues. Pending states describe that dated assessment, not current outstanding work. Current delivery continues in the S030-S034 table below.
 
 At the fresh S023 assessment there were no open issues or new active arrivals. S023 publishes native [milestone v1.1.0](https://github.com/shruggietech/cueson/milestone/3), coordination [epic #51](https://github.com/shruggietech/cueson/issues/51), and sixteen atomic children. Native issue relationships, milestone membership and cueson Delivery Project remain planning authority. This prose and the [S023 issue-map snapshot](../specs/S023-plan-scripted-format-milestone/issue-map.json) provide traceability rather than duplicate custom Project metadata.
 
@@ -78,7 +82,16 @@ Each child has the governed six-section body and independent acceptance/verifica
 
 ## Subsequent roadmap candidates
 
-S033 implements consumer speaker attribution and optional declared-media checks in [issue #82](https://github.com/shruggietech/cueson/issues/82), with a complete [Spec Kit slice](../specs/S033-consumer-speaker-attribution/spec.md). The staged `1.2.0-dev` contract supports application-defined IDs without a diarization engine or inferred source duration. Final review/merge and later release promotion remain independent gates.
+S033 completed consumer speaker attribution and optional declared-media checks in [issue #82](https://github.com/shruggietech/cueson/issues/82), with a complete [Spec Kit slice](../specs/S033-consumer-speaker-attribution/spec.md). S034 prepares the reviewed contract at exact `1.2.0` with an immutable candidate schema and same-bundle current/historical/old-consumer proof. IDs remain application-defined; source duration is supplied rather than inferred. Candidate readiness, publication and production hosting remain independent outcomes.
+
+Native [milestone v1.2.0](https://github.com/shruggietech/cueson/milestone/4) separates candidate preparation [#84](https://github.com/shruggietech/cueson/issues/84), authorized public publication [#85](https://github.com/shruggietech/cueson/issues/85) and production schema/site hosting [#86](https://github.com/shruggietech/cueson/issues/86). Publication depends on reviewed preparation reaching fresh verified main; hosting depends on independently verified publication. Native issue metadata, dependencies and the unique cueson Delivery items control subsequent stages.
+
+| Order | Slice | Current outcome |
+|---|---|---|
+| 1 | S030-publish-v1-1-public-schema-site | PR #77 completed reviewed artifact #76; #67 completed independently verified production activation and lifecycle reconciliation. |
+| 2 | S032-repair-protected-production-deploy | PR #80 completed #78 protected-path repair; PR #81 completed the permission contract. |
+| 3 | S033-consumer-speaker-attribution | PR #83 completed #82 optional attribution, declared-media boundaries and complete omission/strict-refusal behavior. |
+| 4 | S034-prepare-v1-2-release-candidate | Prepare exact 1.2.0 source/schema/package identity, candidate documentation and post-merge publication decision requirements; later publication and hosting remain separate. |
 
 | Later milestone | Main-plan families | Required foundation and explicit deferral |
 |---|---|---|
@@ -95,4 +108,4 @@ Every slice has blocking analysis, foreground verification, responses to every a
 
 Candidate readiness proves source/current schema/executable identity, historical input behavior, accepted native/common corpus cycles, exact restore, complete loss reports, native platforms, six package targets, six target-bound SPDX SBOMs and checksums. Official publication then independently verifies exact tag/release/public assets. Public hosting finally verifies the authorized reviewed deployment, DNS/trusted TLS/redirects/routes/downloads/revision and all three immutable schema hashes without a mutable latest alias.
 
-After every human-confirmed merge, verify GitHub merge and exact-main CI, prune and synchronize clean state, reconcile closing children/parent/milestone/dependencies and Project fields, then reassess new issues before proposing the next slice. Close the v1.1.0 epic/milestone only after all sixteen scoped outcomes have independently completed and the public release/hosting verification has passed.
+After every human-confirmed merge, verify GitHub merge and exact-main CI, prune and synchronize clean state, reconcile closing children/parent/milestone/dependencies and Project fields, then reassess new issues before proposing the next slice. The v1.1.0 epic/milestone closure is complete. Close any later release milestone only after its scoped publication and hosting outcomes independently complete and the operator authorizes lifecycle reconciliation.

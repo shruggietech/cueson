@@ -46,30 +46,39 @@ type Config struct {
 }
 
 type Target struct {
-	GOOS       string `json:"goos"`
-	GOARCH     string `json:"goarch"`
-	Archive    string `json:"archive"`
-	Binary     string `json:"binary"`
-	SBOM       string `json:"sbom"`
-	ArchiveSHA string `json:"archive_sha256"`
-	SBOMSHA    string `json:"sbom_sha256"`
+	ArchiveSize int64  `json:"archive_size,omitempty"`
+	SBOMSize    int64  `json:"sbom_size,omitempty"`
+	GOOS        string `json:"goos"`
+	GOARCH      string `json:"goarch"`
+	Archive     string `json:"archive"`
+	Binary      string `json:"binary"`
+	SBOM        string `json:"sbom"`
+	ArchiveSHA  string `json:"archive_sha256"`
+	SBOMSHA     string `json:"sbom_sha256"`
 }
 
 type ReleaseEvidence struct {
-	Version             string       `json:"version"`
-	Development         bool         `json:"development,omitempty"`
-	IntendedTag         string       `json:"intended_tag"`
-	SourceRevision      string       `json:"source_revision"`
-	ReleaseSchemaSHA256 string       `json:"release_schema_sha256"`
-	LicenseSHA256       string       `json:"license_sha256"`
-	NoticeSHA256        string       `json:"notice_sha256"`
-	ArchiveCount        int          `json:"archive_count"`
-	SBOMCount           int          `json:"sbom_count"`
-	ChecksumCount       int          `json:"checksum_count"`
-	HostExecuted        *string      `json:"host_executed"`
-	Targets             []Target     `json:"targets"`
-	Published           bool         `json:"published"`
-	NativeProof         *NativeProof `json:"native_proof,omitempty"`
+	ChecksumManifest    *ChecksumManifestEvidence `json:"checksum_manifest,omitempty"`
+	Version             string                    `json:"version"`
+	Development         bool                      `json:"development,omitempty"`
+	IntendedTag         string                    `json:"intended_tag"`
+	SourceRevision      string                    `json:"source_revision"`
+	ReleaseSchemaSHA256 string                    `json:"release_schema_sha256"`
+	LicenseSHA256       string                    `json:"license_sha256"`
+	NoticeSHA256        string                    `json:"notice_sha256"`
+	ArchiveCount        int                       `json:"archive_count"`
+	SBOMCount           int                       `json:"sbom_count"`
+	ChecksumCount       int                       `json:"checksum_count"`
+	HostExecuted        *string                   `json:"host_executed"`
+	Targets             []Target                  `json:"targets"`
+	Published           bool                      `json:"published"`
+	NativeProof         *NativeProof              `json:"native_proof,omitempty"`
+}
+
+type ChecksumManifestEvidence struct {
+	Name   string `json:"name"`
+	Size   int64  `json:"size"`
+	SHA256 string `json:"sha256"`
 }
 
 type archiveMember struct {
@@ -208,6 +217,10 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 
 	var hostExecuted *string
 	var nativeProof *NativeProof
+	var manifestEvidence *ChecksumManifestEvidence
+	if config.Version == "1.2.0" && !config.Development {
+		manifestEvidence = &ChecksumManifestEvidence{Name: checksumName, Size: int64(len(checksumRaw)), SHA256: digestHex(checksumRaw)}
+	}
 	for index := range targets {
 		target := &targets[index]
 		archivePath := filepath.Join(distDir, target.Archive)
@@ -240,6 +253,9 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 		}
 		sbomDigest := sha256.Sum256(sbomRaw)
 		target.SBOMSHA = hex.EncodeToString(sbomDigest[:])
+		if manifestEvidence != nil {
+			target.ArchiveSize, target.SBOMSize = int64(len(archiveBytes)), int64(len(sbomRaw))
+		}
 
 		if config.ExecuteHost && target.GOOS == runtime.GOOS && target.GOARCH == runtime.GOARCH {
 			if hostExecuted != nil {
@@ -248,7 +264,7 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 			if err := verifyHostCLI(ctx, binaryBytes, target.Binary, canonicalSchema, config.Version); err != nil {
 				return evidence, fmt.Errorf("execute %s: %w", target.Archive, err)
 			}
-			if config.Version == "1.1.0" && !config.Development {
+			if requiresStableNativeProof(config.Version, config.Development) {
 				proof, err := verifyStableHostCLI(ctx, binaryBytes, target.Binary, repoDir, config.Version)
 				if err != nil {
 					return evidence, fmt.Errorf("execute stable workflows %s: %w", target.Archive, err)
@@ -271,7 +287,8 @@ func Verify(ctx context.Context, config Config) (ReleaseEvidence, error) {
 	}
 
 	return ReleaseEvidence{
-		Version: config.Version, Development: config.Development, IntendedTag: "v" + config.Version,
+		ChecksumManifest: manifestEvidence,
+		Version:          config.Version, Development: config.Development, IntendedTag: "v" + config.Version,
 		SourceRevision: config.Commit, ReleaseSchemaSHA256: releaseSchemaDigest, LicenseSHA256: license.sha256, NoticeSHA256: notice.sha256,
 		ArchiveCount: len(targets), SBOMCount: len(targets), ChecksumCount: len(checksums),
 		HostExecuted: hostExecuted, Targets: targets, Published: false, NativeProof: nativeProof,

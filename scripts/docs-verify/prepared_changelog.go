@@ -20,17 +20,28 @@ type preparedSection struct {
 }
 
 func verifyPreparedChangelog(content string) []violation {
+	return verifyPreparedChangelogForVersion(content, "1.2.0")
+}
+
+// Historical parser regressions retain their original scoped candidate, while
+// repository validation always uses the current candidate above.
+func verifyPreparedChangelogForVersion(content, candidate string) []violation {
 	const name = "CHANGELOG.md"
 	var violations []violation
 	var sections []preparedSection
 	counts := make(map[string]int)
 	linkCounts := make(map[string]int)
 	links := map[string]string{
-		"Unreleased": "https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD",
+		"Unreleased": "https://github.com/shruggietech/cueson/compare/v" + candidate + "...HEAD",
+		"1.2.0":      "https://github.com/shruggietech/cueson/compare/v1.1.0...v1.2.0",
 		"1.1.0":      "https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0",
 		"1.0.0":      "https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0",
 	}
-	versions := map[string]string{"unreleased": "Unreleased", "1.1.0": "1.1.0", "1.0.0": "1.0.0"}
+	versions := map[string]string{"unreleased": "Unreleased", "1.2.0": "1.2.0", "1.1.0": "1.1.0", "1.0.0": "1.0.0"}
+	expectedSections := []string{"Unreleased", "1.2.0", "1.1.0", "1.0.0"}
+	if candidate == "1.1.0" {
+		expectedSections = []string{"Unreleased", "1.1.0", "1.0.0"}
+	}
 	categories := make(map[string]bool)
 	current := ""
 	var fenceMarker byte
@@ -126,7 +137,7 @@ func verifyPreparedChangelog(content string) []violation {
 			categories = make(map[string]bool)
 			match := preparedReleaseHeading.FindStringSubmatch(text)
 			if len(match) == 0 {
-				if strings.HasPrefix(text, "[Unreleased]") || strings.HasPrefix(text, "[1.1.0]") {
+				if strings.HasPrefix(text, "[Unreleased]") || strings.HasPrefix(text, "["+candidate+"]") {
 					violations = append(violations, violation{path: name, line: index + 1, message: "malformed prepared release heading"})
 				}
 				continue
@@ -140,14 +151,14 @@ func verifyPreparedChangelog(content string) []violation {
 			if current == "Unreleased" && match[2] != "" {
 				violations = append(violations, violation{path: name, line: index + 1, message: "Unreleased must not have a release date"})
 			}
-			if current == "1.1.0" {
+			if current == candidate {
 				if _, err := time.Parse("2006-01-02", match[2]); err != nil {
-					violations = append(violations, violation{path: name, line: index + 1, message: "prepared 1.1.0 date must be a valid YYYY-MM-DD"})
+					violations = append(violations, violation{path: name, line: index + 1, message: "prepared " + candidate + " date must be a valid YYYY-MM-DD"})
 				}
 			}
 			continue
 		}
-		if (current == "Unreleased" || current == "1.1.0") && level == 3 {
+		if (current == "Unreleased" || current == candidate) && level == 3 {
 			category := text
 			if !allowedCategories[category] {
 				violations = append(violations, violation{path: name, line: index + 1, message: "invalid prepared changelog category: " + category})
@@ -157,7 +168,7 @@ func verifyPreparedChangelog(content string) []violation {
 			categories[category] = true
 		}
 	}
-	for _, version := range []string{"Unreleased", "1.1.0", "1.0.0"} {
+	for _, version := range expectedSections {
 		if counts[version] != 1 {
 			violations = append(violations, violation{path: name, message: "prepared history requires exactly one " + version + " section"})
 		}
@@ -165,8 +176,16 @@ func verifyPreparedChangelog(content string) []violation {
 			violations = append(violations, violation{path: name, message: "prepared history requires exactly one comparison link: " + version})
 		}
 	}
-	if len(sections) < 3 || sections[0].name != "Unreleased" || sections[1].name != "1.1.0" || sections[2].name != "1.0.0" {
-		violations = append(violations, violation{path: name, message: "prepared sections must begin Unreleased, dated 1.1.0, then historical 1.0.0"})
+	ordered := len(sections) >= len(expectedSections)
+	if ordered {
+		for index, name := range expectedSections {
+			if sections[index].name != name {
+				ordered = false
+			}
+		}
+	}
+	if !ordered {
+		violations = append(violations, violation{path: name, message: "prepared sections must begin Unreleased, dated " + candidate + ", then historical releases in order"})
 	}
 	return violations
 }

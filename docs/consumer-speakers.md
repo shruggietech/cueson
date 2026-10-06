@@ -1,6 +1,6 @@
 # Consumer speaker attribution
 
-**Status:** Implemented in staged source contract `1.2.0-dev`. Published v1.1.0 packages and immutable public schemas do not include these fields.
+**Status:** Implemented in exact `1.2.0` stable release candidate source. Published v1.1.0 packages and immutable public schemas do not include these fields.
 
 Cueson stores speaker assignments made by downstream applications. A `speaker_id` is an opaque string whose meaning, lifetime and scope are assigned by the consumer. Cueson never treats it as a global or universal identity. An application may share IDs across its own collection or use temporary IDs for one file. Names and UUIDs are both ordinary values. Cueson requires no registry, UUID format, automatic ID generation or diarization engine.
 
@@ -50,6 +50,6 @@ All four matching native renderers and all twelve cross-format conversion direct
 
 ## Version boundary
 
-Current source emits exact schema and executable identity `1.2.0-dev`. It validates supported historical `1.1.0` and `1.0.0` documents locally without network retrieval and preserves their identity and source observations. Historical schemas reject the new fields; adding fields requires selecting the current contract explicitly. Older executables have no promised forward compatibility. Released schema bytes and production routes/downloads remain their independently published versions. Release promotion and production deployment require separate authorization.
+Current candidate source emits exact schema and executable identity `1.2.0`, with a byte-identical [immutable candidate schema](../schema/releases/v1.2.0/cueson.schema.json). It validates supported historical `1.1.0` and `1.0.0` documents locally without network retrieval and preserves their identity and source observations. Historical schemas reject the new fields; adding fields requires selecting the current contract explicitly. Older executables have no promised forward compatibility. The former `1.2.0-dev` identity is unsupported. Released schema bytes and production routes/downloads remain their independently published versions. Candidate preparation does not publish the 1.2.0 schema URI or release packages; publication and production deployment require separate authorization.
 
 The complete implementation and acceptance mapping is in [S033](../specs/S033-consumer-speaker-attribution/spec.md), tracked by [issue #82](https://github.com/shruggietech/cueson/issues/82).

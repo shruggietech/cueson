@@ -1,0 +1,18 @@
+{
+  "version": "1.1.0",
+  "source_revision": "7ff45c1d8cd8df377e1fb568b9785286b649fd7c",
+  "release_url": "https://github.com/shruggietech/cueson/releases/tag/v1.1.0",
+  "checksum_manifest": {
+    "name": "cueson_1.1.0_checksums.txt",
+    "size": 588,
+    "sha256": "57089835e30184f9625d5b9b493ebb41d58ca5ac7ec76af84d0c72aa8ca5e908"
+  },
+  "release_schema_sha256": "223b61cbcf6337167039268576b2c739564585fff10e6cc6076e47a03526a0f7",
+  "license_sha256": "4e2221f7a8060092f01e563dd2f399fa573a17823e0d25d34a5c28df75a6a654",
+  "notice_sha256": "9f7a0dfad459dd180b4d0ebd8c616afd8c710d3cd8322c5ec59d294eeabae2af",
+  "assets": [
+    {"name":"cueson_1.1.0_linux_amd64.tar.gz","goos":"linux","goarch":"amd64","size":2244709,"sha256":"689738ae27098f67bb9308ac690e9e3304ba732464c98835fff34fe7473406a1"},
+    {"name":"cueson_1.1.0_darwin_amd64.tar.gz","goos":"darwin","goarch":"amd64","size":2260001,"sha256":"c48225a74eff45956fbdafc4523b75bc546ba22334aa133aecda3abfe767bcca"},
+    {"name":"cueson_1.1.0_windows_amd64.zip","goos":"windows","goarch":"amd64","size":2306834,"sha256":"2aff230ca03127eeca49d4be447b5a49563026caab96b5c545189a4181e8e672"}
+  ]
+}

@@ -1,0 +1,794 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cueson.io/contracts/release-evidence/v1.2.0.schema.json",
+  "title": "Cueson v1.2.0 non-publishing release-candidate evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "intended_tag",
+    "source_revision",
+    "release_schema_sha256",
+    "license_sha256",
+    "notice_sha256",
+    "archive_count",
+    "sbom_count",
+    "checksum_count",
+    "host_executed",
+    "targets",
+    "published",
+    "checksum_manifest"
+  ],
+  "properties": {
+    "version": {
+      "const": "1.2.0"
+    },
+    "development": {
+      "const": false
+    },
+    "intended_tag": {
+      "const": "v1.2.0"
+    },
+    "source_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "release_schema_sha256": {
+      "const": "f2661a3d52effbab4a82a4d47197b5c7fae58496dc30a397ea3f2f668358b654"
+    },
+    "license_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "notice_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "archive_count": {
+      "const": 6
+    },
+    "sbom_count": {
+      "const": 6
+    },
+    "checksum_count": {
+      "const": 6
+    },
+    "host_executed": {
+      "enum": [
+        "linux/amd64",
+        "darwin/amd64",
+        "windows/amd64",
+        null
+      ]
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/linux_amd64"
+        },
+        {
+          "$ref": "#/$defs/linux_arm64"
+        },
+        {
+          "$ref": "#/$defs/darwin_amd64"
+        },
+        {
+          "$ref": "#/$defs/darwin_arm64"
+        },
+        {
+          "$ref": "#/$defs/windows_amd64"
+        },
+        {
+          "$ref": "#/$defs/windows_arm64"
+        }
+      ],
+      "items": false
+    },
+    "published": {
+      "const": false
+    },
+    "native_proof": {
+      "$ref": "#/$defs/native_proof"
+    },
+    "checksum_manifest": {
+      "$ref": "#/$defs/checksum_manifest"
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goos",
+        "goarch",
+        "archive",
+        "binary",
+        "sbom",
+        "archive_sha256",
+        "sbom_sha256",
+        "archive_size",
+        "sbom_size"
+      ],
+      "properties": {
+        "goos": {
+          "enum": [
+            "linux",
+            "darwin",
+            "windows"
+          ]
+        },
+        "goarch": {
+          "enum": [
+            "amd64",
+            "arm64"
+          ]
+        },
+        "archive": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binary": {
+          "enum": [
+            "cueson",
+            "cueson.exe"
+          ]
+        },
+        "sbom": {
+          "type": "string",
+          "minLength": 1
+        },
+        "archive_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sbom_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "archive_size": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sbom_size": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      }
+    },
+    "linux_amd64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "linux"
+            },
+            "goarch": {
+              "const": "amd64"
+            },
+            "archive": {
+              "const": "cueson_1.2.0_linux_amd64.tar.gz"
+            },
+            "binary": {
+              "const": "cueson"
+            },
+            "sbom": {
+              "const": "cueson_1.2.0_linux_amd64.tar.gz.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "linux_arm64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "linux"
+            },
+            "goarch": {
+              "const": "arm64"
+            },
+            "archive": {
+              "const": "cueson_1.2.0_linux_arm64.tar.gz"
+            },
+            "binary": {
+              "const": "cueson"
+            },
+            "sbom": {
+              "const": "cueson_1.2.0_linux_arm64.tar.gz.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "darwin_amd64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "darwin"
+            },
+            "goarch": {
+              "const": "amd64"
+            },
+            "archive": {
+              "const": "cueson_1.2.0_darwin_amd64.tar.gz"
+            },
+            "binary": {
+              "const": "cueson"
+            },
+            "sbom": {
+              "const": "cueson_1.2.0_darwin_amd64.tar.gz.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "darwin_arm64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "darwin"
+            },
+            "goarch": {
+              "const": "arm64"
+            },
+            "archive": {
+              "const": "cueson_1.2.0_darwin_arm64.tar.gz"
+            },
+            "binary": {
+              "const": "cueson"
+            },
+            "sbom": {
+              "const": "cueson_1.2.0_darwin_arm64.tar.gz.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "windows_amd64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "windows"
+            },
+            "goarch": {
+              "const": "amd64"
+            },
+            "archive": {
+              "const": "cueson_1.2.0_windows_amd64.zip"
+            },
+            "binary": {
+              "const": "cueson.exe"
+            },
+            "sbom": {
+              "const": "cueson_1.2.0_windows_amd64.zip.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "windows_arm64": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/target"
+        },
+        {
+          "properties": {
+            "goos": {
+              "const": "windows"
+            },
+            "goarch": {
+              "const": "arm64"
+            },
+            "archive": {
+              "const": "cueson_1.2.0_windows_arm64.zip"
+            },
+            "binary": {
+              "const": "cueson.exe"
+            },
+            "sbom": {
+              "const": "cueson_1.2.0_windows_arm64.zip.sbom.json"
+            }
+          }
+        }
+      ]
+    },
+    "native_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "formats",
+        "historical_input_count",
+        "old_consumer_version",
+        "old_consumer_revision",
+        "old_consumer_archive",
+        "old_consumer_archive_sha256",
+        "old_consumer_refusal_count",
+        "old_consumer_identity_probe_count",
+        "consumer_annotations",
+        "published_consumers",
+        "historical_strict_refusal_count"
+      ],
+      "properties": {
+        "formats": {
+          "const": [
+            "srt",
+            "vtt",
+            "ass",
+            "ssa"
+          ]
+        },
+        "historical_input_count": {
+          "const": 6
+        },
+        "old_consumer_version": {
+          "const": "1.0.0"
+        },
+        "old_consumer_revision": {
+          "const": "2cad4c816340404289b4d1d87179a4071713bb46"
+        },
+        "old_consumer_archive": {
+          "enum": [
+            "cueson_1.0.0_linux_amd64.tar.gz",
+            "cueson_1.0.0_linux_arm64.tar.gz",
+            "cueson_1.0.0_darwin_amd64.tar.gz",
+            "cueson_1.0.0_darwin_arm64.tar.gz",
+            "cueson_1.0.0_windows_amd64.zip",
+            "cueson_1.0.0_windows_arm64.zip"
+          ]
+        },
+        "old_consumer_archive_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "old_consumer_refusal_count": {
+          "const": 32
+        },
+        "old_consumer_identity_probe_count": {
+          "const": 32
+        },
+        "historical_strict_refusal_count": {
+          "const": 12
+        },
+        "consumer_annotations": {
+          "$ref": "#/$defs/consumer_annotations"
+        },
+        "published_consumers": {
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/published_consumer_v100"
+            },
+            {
+              "$ref": "#/$defs/published_consumer_v110"
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array",
+          "items": false
+        }
+      }
+    },
+    "checksum_manifest": {
+      "properties": {
+        "size": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "name": {
+          "const": "cueson_1.2.0_checksums.txt"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "size",
+        "sha256"
+      ]
+    },
+    "consumer_annotations": {
+      "properties": {
+        "matching_render_count": {
+          "const": 4
+        },
+        "invalid_timing_refusal_count": {
+          "const": 4
+        },
+        "strict_refusal_count": {
+          "const": 32
+        },
+        "cue_media_conflict_count": {
+          "const": 4
+        },
+        "media_boundary_destination_refusal_count": {
+          "const": 8
+        },
+        "invalid_identifier_refusal_count": {
+          "const": 4
+        },
+        "conversion_count": {
+          "const": 12
+        },
+        "restore_count": {
+          "const": 4
+        },
+        "media_boundary_refusal_count": {
+          "const": 4
+        }
+      },
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conversion_count",
+        "cue_media_conflict_count",
+        "invalid_identifier_refusal_count",
+        "invalid_timing_refusal_count",
+        "matching_render_count",
+        "media_boundary_destination_refusal_count",
+        "media_boundary_refusal_count",
+        "restore_count",
+        "strict_refusal_count"
+      ]
+    },
+    "published_consumer_v100": {
+      "properties": {
+        "archive_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "selector_identity_probe_count": {
+          "const": 32
+        },
+        "version": {
+          "const": "1.0.0"
+        },
+        "archive": {
+          "type": "string"
+        },
+        "identity_probe_count": {
+          "const": 32
+        },
+        "refusal_count": {
+          "const": 32
+        },
+        "positive_control_count": {
+          "const": 2
+        },
+        "source_revision": {
+          "const": "2cad4c816340404289b4d1d87179a4071713bb46"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "archive_sha256": {
+              "const": "eccf2c393b1272a73ad7958678ebad7b0d677bf306427c451636bd6613517376"
+            },
+            "archive": {
+              "const": "cueson_1.0.0_darwin_amd64.tar.gz"
+            }
+          }
+        },
+        {
+          "properties": {
+            "archive_sha256": {
+              "const": "1bdefe6248847a35a319b545352793e666582c02454e241109cf8c98bb4f8df7"
+            },
+            "archive": {
+              "const": "cueson_1.0.0_linux_amd64.tar.gz"
+            }
+          }
+        },
+        {
+          "properties": {
+            "archive_sha256": {
+              "const": "38bfb3ce32f56925e95462f94480e5ce7e3e24e3a0356e17a9115efcb6865003"
+            },
+            "archive": {
+              "const": "cueson_1.0.0_windows_amd64.zip"
+            }
+          }
+        }
+      ],
+      "required": [
+        "archive",
+        "archive_sha256",
+        "identity_probe_count",
+        "positive_control_count",
+        "refusal_count",
+        "selector_identity_probe_count",
+        "source_revision",
+        "version"
+      ]
+    },
+    "published_consumer_v110": {
+      "properties": {
+        "archive_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "selector_identity_probe_count": {
+          "const": 64
+        },
+        "version": {
+          "const": "1.1.0"
+        },
+        "archive": {
+          "type": "string"
+        },
+        "identity_probe_count": {
+          "const": 64
+        },
+        "refusal_count": {
+          "const": 64
+        },
+        "positive_control_count": {
+          "const": 4
+        },
+        "source_revision": {
+          "const": "7ff45c1d8cd8df377e1fb568b9785286b649fd7c"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "archive_sha256": {
+              "const": "689738ae27098f67bb9308ac690e9e3304ba732464c98835fff34fe7473406a1"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_linux_amd64.tar.gz"
+            }
+          }
+        },
+        {
+          "properties": {
+            "archive_sha256": {
+              "const": "c48225a74eff45956fbdafc4523b75bc546ba22334aa133aecda3abfe767bcca"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_darwin_amd64.tar.gz"
+            }
+          }
+        },
+        {
+          "properties": {
+            "archive_sha256": {
+              "const": "2aff230ca03127eeca49d4be447b5a49563026caab96b5c545189a4181e8e672"
+            },
+            "archive": {
+              "const": "cueson_1.1.0_windows_amd64.zip"
+            }
+          }
+        }
+      ],
+      "required": [
+        "archive",
+        "archive_sha256",
+        "identity_probe_count",
+        "positive_control_count",
+        "refusal_count",
+        "selector_identity_probe_count",
+        "source_revision",
+        "version"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "host_executed": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "host_executed"
+        ]
+      },
+      "then": {
+        "required": [
+          "native_proof"
+        ]
+      }
+    },
+    {
+      "then": {
+        "not": {
+          "required": [
+            "native_proof"
+          ]
+        }
+      },
+      "if": {
+        "properties": {
+          "host_executed": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "host_executed"
+        ]
+      }
+    },
+    {
+      "then": {
+        "properties": {
+          "native_proof": {
+            "properties": {
+              "old_consumer_archive_sha256": {
+                "const": "1bdefe6248847a35a319b545352793e666582c02454e241109cf8c98bb4f8df7"
+              },
+              "published_consumers": {
+                "prefixItems": [
+                  {
+                    "properties": {
+                      "archive_sha256": {
+                        "const": "1bdefe6248847a35a319b545352793e666582c02454e241109cf8c98bb4f8df7"
+                      },
+                      "archive": {
+                        "const": "cueson_1.0.0_linux_amd64.tar.gz"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "archive_sha256": {
+                        "const": "689738ae27098f67bb9308ac690e9e3304ba732464c98835fff34fe7473406a1"
+                      },
+                      "archive": {
+                        "const": "cueson_1.1.0_linux_amd64.tar.gz"
+                      }
+                    }
+                  }
+                ]
+              },
+              "old_consumer_archive": {
+                "const": "cueson_1.0.0_linux_amd64.tar.gz"
+              }
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "host_executed": {
+            "const": "linux/amd64"
+          }
+        },
+        "required": [
+          "host_executed"
+        ]
+      }
+    },
+    {
+      "then": {
+        "properties": {
+          "native_proof": {
+            "properties": {
+              "old_consumer_archive_sha256": {
+                "const": "eccf2c393b1272a73ad7958678ebad7b0d677bf306427c451636bd6613517376"
+              },
+              "published_consumers": {
+                "prefixItems": [
+                  {
+                    "properties": {
+                      "archive_sha256": {
+                        "const": "eccf2c393b1272a73ad7958678ebad7b0d677bf306427c451636bd6613517376"
+                      },
+                      "archive": {
+                        "const": "cueson_1.0.0_darwin_amd64.tar.gz"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "archive_sha256": {
+                        "const": "c48225a74eff45956fbdafc4523b75bc546ba22334aa133aecda3abfe767bcca"
+                      },
+                      "archive": {
+                        "const": "cueson_1.1.0_darwin_amd64.tar.gz"
+                      }
+                    }
+                  }
+                ]
+              },
+              "old_consumer_archive": {
+                "const": "cueson_1.0.0_darwin_amd64.tar.gz"
+              }
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "host_executed": {
+            "const": "darwin/amd64"
+          }
+        },
+        "required": [
+          "host_executed"
+        ]
+      }
+    },
+    {
+      "then": {
+        "properties": {
+          "native_proof": {
+            "properties": {
+              "old_consumer_archive_sha256": {
+                "const": "38bfb3ce32f56925e95462f94480e5ce7e3e24e3a0356e17a9115efcb6865003"
+              },
+              "published_consumers": {
+                "prefixItems": [
+                  {
+                    "properties": {
+                      "archive_sha256": {
+                        "const": "38bfb3ce32f56925e95462f94480e5ce7e3e24e3a0356e17a9115efcb6865003"
+                      },
+                      "archive": {
+                        "const": "cueson_1.0.0_windows_amd64.zip"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "archive_sha256": {
+                        "const": "2aff230ca03127eeca49d4be447b5a49563026caab96b5c545189a4181e8e672"
+                      },
+                      "archive": {
+                        "const": "cueson_1.1.0_windows_amd64.zip"
+                      }
+                    }
+                  }
+                ]
+              },
+              "old_consumer_archive": {
+                "const": "cueson_1.0.0_windows_amd64.zip"
+              }
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "host_executed": {
+            "const": "windows/amd64"
+          }
+        },
+        "required": [
+          "host_executed"
+        ]
+      }
+    }
+  ]
+}

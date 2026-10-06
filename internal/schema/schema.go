@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	schemaID             = "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
-	schemaVersion        = "1.2.0-dev"
+	schemaID             = "https://cueson.io/schema/v1.2.0/cueson.schema.json"
+	schemaVersion        = "1.2.0"
 	historicalV1ID       = "https://cueson.io/schema/v1.0.0/cueson.schema.json"
 	historicalV1Version  = "1.0.0"
 	historicalV11ID      = "https://cueson.io/schema/v1.1.0/cueson.schema.json"

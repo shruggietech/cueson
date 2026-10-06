@@ -1,6 +1,6 @@
 # Release process
 
-**Current state:** Exact v1.1.0 publicly released, deployed to cueson.io, and independently verified; #78 governs durable protected-path repair and default-branch revalidation
+**Current state:** Exact 1.2.0 stable candidate preparation; published and independently verified v1.1.0 remains current on cueson.io, with #78 protected-path repair complete
 
 This document defines the protected release lifecycle around Cueson's repository-owned candidate proof and authorized public releases. It does not provide an executable publishing path or grant release authority by itself. The runnable candidate checks and independent v0.0.0, v1.0.0 and v1.1.0 publication evidence are recorded in [release verification](release-verification.md).
 
@@ -30,7 +30,7 @@ A release decision starts only from a clean, reviewed default-branch commit. Bef
 
 1. Every issue committed to the candidate is closed or truthfully moved, and the Project and milestone agree with that state.
 2. The executable version, embedded schema version, and intended tag version are identical.
-3. The detailed candidate history and chronological architecture decisions are finalized in one valid dated 1.1.0 section of [CHANGELOG.md](../CHANGELOG.md), with one fresh `[Unreleased]` section retained. This prepared metadata must reach reviewed main before tag selection, so the tag contains the finalized changelog; a dated section does not assert public availability.
+3. The detailed candidate history and chronological architecture decisions are finalized in one valid dated section for the intended candidate version of [CHANGELOG.md](../CHANGELOG.md), with one fresh `[Unreleased]` section retained. This prepared metadata must reach reviewed main before tag selection, so the tag contains the finalized changelog; a dated section does not assert public availability.
 4. Repository formatting, tests, race detection, vet, vulnerability analysis, CodeQL, platform-native tests, and pure-Go target builds are green.
 5. The non-publishing snapshot and repository-owned verifier pass for the exact default-branch candidate commit and record its full revision plus `release_schema_sha256` in deterministic evidence.
 6. Documentation describes the candidate's actual commands and format-support declarations, distinguishes exact restoration from rendering and conversion, and contains no capability inherited from a different release.
@@ -38,6 +38,14 @@ A release decision starts only from a clean, reviewed default-branch commit. Bef
 8. The proposed release does not depend on an unapproved production-domain change.
 
 Candidate readiness proves that a release decision can be made. It does not make the decision and does not grant permission to publish.
+
+## v1.2.0 candidate preparation
+
+S033 completed consumer-assigned speaker attribution and declared media timing in PR #83, closing #82. S034 prepares this reviewed addition through [#84](https://github.com/shruggietech/cueson/issues/84) as the exact 1.2.0 stable candidate, admits its byte-identical immutable repository schema and finalizes the dated 2026-10-06 changelog and [concise candidate highlights](releases/v1.2.0.md). Published software, downloads and production schema routes remain v1.1.0. Former development identities remain unsupported. Later [#85](https://github.com/shruggietech/cueson/issues/85) owns authorized publication and independent verification; [#86](https://github.com/shruggietech/cueson/issues/86) owns separately authorized production hosting.
+
+The candidate proof requires six pure-Go archives, six target-bound SPDX JSON SBOMs, one checksum manifest, matching schema/legal bytes and the exact clean source revision. Three amd64 native hosts execute the same accepted bundle, including consumer timing/storage/strict-refusal checks, all twelve conversions, six historical inputs and authenticated published 1.0.0/1.1.0 consumer refusal. Arm64 verification remains structural and build-information proof.
+
+The [S034 publication decision contract](../specs/S034-prepare-v1-2-release-candidate/contracts/publication-decision.md) prepares the intended version, inventory and evidence requirements. It leaves the actual post-merge main revision, accepted artifact identity/expiry, public asset sizes/digests and operator approval unpopulated until fresh default-branch proof exists. Pull-request head proof cannot substitute for the squash-merge revision. A source, note, schema, tool, artifact, review or expiry change requires a refreshed decision. Tag creation/push, release/body/assets publication and production hosting remain distinct authorized actions.
 
 ## Release preparation lifecycle
 
@@ -67,7 +75,7 @@ S028 combined contract/documentation freeze (#64) and exact candidate proof (#65
 
 Candidate construction accepts six pure-Go archives, six target-bound SBOMs, one six-entry checksum manifest and identical schema/legal bytes at the exact clean revision. Matching packaged-host native/historical/safety workflows run on governed amd64 Linux, Windows and macOS; arm64 packages receive structural/build-information proof without native execution claims. Pull-request evidence binds the reviewed head only, and fresh post-squash main evidence must identify the later publication commit.
 
-The maintained [v1.1.0 release page](releases/v1.1.0.md) records the official release, exact tag target and public inventory. The immutable annotated tag `v1.1.0` peels to `7ff45c1d8cd8df377e1fb568b9785286b649fd7c`. The final non-prerelease GitHub Release publishes the reviewed concise notes, six pure-Go archives, six target-bound SPDX JSON SBOMs and one checksum manifest. Independent verification downloaded and checked all thirteen public assets, executed the compatible Windows package and read back the exact tag/release state. The #66/#76/#67 authority split remains explicit: issue #66 owns completed software publication, #76 owns the reviewed schema/site artifact, and #67 governs exact-main production activation and live verification.
+The maintained [v1.1.0 release page](releases/v1.1.0.md) records the official release, exact tag target and public inventory. The immutable annotated tag `v1.1.0` peels to `7ff45c1d8cd8df377e1fb568b9785286b649fd7c`. The final non-prerelease GitHub Release publishes the reviewed concise notes, six pure-Go archives, six target-bound SPDX JSON SBOMs and one checksum manifest. Independent verification downloaded and checked all thirteen public assets, executed the compatible Windows package and read back the exact tag/release state. The #66/#76/#67 authority split remains explicit: #66 completed software publication, #76 completed the reviewed schema/site artifact, and #67 completed exact-main production activation and live verification. S032/#78 subsequently completed protected deployment repair.
 
 ## Reviewed publication preparation
 
@@ -75,7 +83,7 @@ S029 finalized the dated history and froze a separate exact public release-note 
 
 After that squash merge, fresh green main CI, security, Site and same-bundle native package proof bound the actual resulting revision. The operator received one exact decision package with source, schema/legal identity, thirteen named/sized/digested assets, checksum bijection, three governed native evidence records and the digest of the explicitly selected formatted public notes. Neither an earlier S028 bundle nor the preparation PR head substituted for the final publication package.
 
-Exact tag creation/push and official release/asset publication each required their specific authorizations. Source, tool, artifact, schema, note or check changes, expired proof or partial publication would have required a refreshed decision. Independent public verification proved the approved tag, official release, exact assets and body, closing #66. Production deployment, live verification and epic/milestone closure are governed separately through #67. Current public software availability is v1.1.0.
+Exact tag creation/push and official release/asset publication each required their specific authorizations. Source, tool, artifact, schema, note or check changes, expired proof or partial publication would have required a refreshed decision. Independent public verification proved the approved tag, official release, exact assets and body, closing #66. Production deployment, live verification and epic/milestone reconciliation were completed separately through #67. Current public software availability is v1.1.0.
 
 ## Pull-request and default-branch candidate binding
 
@@ -120,7 +128,7 @@ The release must use the verified artifacts associated with the approved source 
 
 The versioned repository schema, the schema embedded in every official binary, and the schema distributed in every release archive must be byte-identical. Their schema identity and version must match the release version.
 
-After release, `schema/releases/v0.0.0/cueson.schema.json`, `schema/releases/v1.0.0/cueson.schema.json` and `schema/releases/v1.1.0/cueson.schema.json` are immutable. Their corresponding tagged canonical, embedded, emitted and packaged copies match byte-for-byte. S028 established exact `1.1.0` bytes, and #66 published and independently verified their packaged release copies. The reviewed artifact includes the versioned production route, while #67 governs its exact-main activation and live byte verification. No path may overwrite a released schema or move a released tag.
+After release, `schema/releases/v0.0.0/cueson.schema.json`, `schema/releases/v1.0.0/cueson.schema.json` and `schema/releases/v1.1.0/cueson.schema.json` are immutable. Their corresponding tagged canonical, embedded, emitted and packaged copies match byte-for-byte. S028 established exact `1.1.0` bytes, and #66 published and independently verified their packaged release copies. S030 completed the versioned production route, exact-main activation and live byte verification through #76/#67. No path may overwrite a released schema or move a released tag.
 
 The canonical `https://cueson.io/schema/v0.0.0/cueson.schema.json` and `https://cueson.io/schema/v1.0.0/cueson.schema.json` paths are published by the separately specified and authorized S021 production continuation. Their bytes must equal the immutable repository and release copies. Consumers may continue using embedded, repository, or release-artifact copies offline. No mutable schema alias is published.
 
@@ -144,7 +152,7 @@ If any comparison fails, stop dependent actions, retain the evidence, and ask th
 
 S013 publication verification deliberately left the v0.0.0 milestone open because publication authority did not include milestone closure. A later separately authorized reconciliation closed it after the public release and repository record were verified.
 
-The v1.0.0 milestone and epic were closed through authorized post-publication reconciliation. The v1.1.0 milestone and epic remain open until their publication, independent verification and public hosting outcomes complete, followed by authorized lifecycle reconciliation.
+The v1.0.0 milestone and epic were closed through authorized post-publication reconciliation. The v1.1.0 publication, independent verification and public hosting outcomes completed, followed by authorized epic/milestone reconciliation. The v1.2.0 candidate, publication and hosting outcomes retain their own native lifecycle state.
 
 For a future abandoned release, its milestone may be retired or its remaining commitments moved only through an explicit recorded decision. Repository status must continue to reflect the actual publication outcome.
 
