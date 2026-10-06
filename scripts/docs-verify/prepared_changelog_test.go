@@ -34,7 +34,7 @@ func TestPreparedChangelogMetadata(t *testing.T) {
 		{"fenced fake headings", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n```text\n## [1.1.0] - 2026-01-01\n### Added\n### Bogus\n```", 1), ""},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			violations := violationStrings(verifyPreparedChangelog(test.content))
+			violations := violationStrings(verifyPreparedChangelogForVersion(test.content, "1.1.0"))
 			if test.want == "" {
 				if len(violations) != 0 {
 					t.Fatalf("unexpected violations: %v", violations)
@@ -48,11 +48,11 @@ func TestPreparedChangelogMetadata(t *testing.T) {
 	}
 }
 
-func TestRepositoryChangelogIsPreparedForV110(t *testing.T) {
+func TestRepositoryChangelogIsPreparedForV120(t *testing.T) {
 	repo := filepath.Clean(filepath.Join("..", ".."))
 	content := readFileForVerifierTest(t, repo, "CHANGELOG.md")
-	if got := strings.Count(content, "\n## [1.1.0] - "); got != 1 {
-		t.Fatalf("prepared repository history has %d dated 1.1.0 headings, want exactly one before tag authorization", got)
+	if got := strings.Count(content, "\n## [1.2.0] - "); got != 1 {
+		t.Fatalf("prepared repository history has %d dated 1.2.0 headings, want exactly one before tag authorization", got)
 	}
 	if violations := verifyReleaseChangelog(repo); len(violations) != 0 {
 		t.Fatalf("prepared repository metadata: %v", violationStrings(violations))
@@ -87,7 +87,7 @@ func TestPreparedChangelogMarkdownEquivalence(t *testing.T) {
 		{"unfinished label cannot hide heading", strings.Replace(validPreparedHistory, "## [1.1.0] - 2026-09-15", "[\n   ## [1.1.0] - 2026-09-15", 1), ""},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			violations := violationStrings(verifyPreparedChangelog(test.content))
+			violations := violationStrings(verifyPreparedChangelogForVersion(test.content, "1.1.0"))
 			if test.want == "" {
 				if len(violations) != 0 {
 					t.Fatalf("unexpected violations: %v", violations)
@@ -120,7 +120,7 @@ func TestPreparedChangelogSetextAndFullFences(t *testing.T) {
 		{"mixed marker is content", strings.Replace(validPreparedHistory, "- Complete prepared history.", "- Complete prepared history.\n\n```text\n~~~\n## [1.1.0] - 2026-09-15\n```", 1), ""},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			violations := violationStrings(verifyPreparedChangelog(test.content))
+			violations := violationStrings(verifyPreparedChangelogForVersion(test.content, "1.1.0"))
 			if test.want == "" {
 				if len(violations) != 0 {
 					t.Fatalf("unexpected violations: %v", violations)

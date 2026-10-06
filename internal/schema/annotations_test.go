@@ -20,9 +20,9 @@ import (
 )
 
 const (
-	// S033 stages consumer additions and exact development identity;
+	// S034 promotes the reviewed consumer contract to exact stable identity;
 	// annotation-only edits cannot change this normative snapshot.
-	normativeSchemaSHA256  = "0e69d9c884add390f345e0a914a80c8a8a315d78f1bcb6ae2b636a43816288cd"
+	normativeSchemaSHA256  = "89f2104a1710c6baeee50c2891bfd9c8911287b4749172f92ec91e51a13fc3c2"
 	v0ReleasedSchemaSHA256 = "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975"
 	v1ReleasedSchemaSHA256 = "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541"
 )

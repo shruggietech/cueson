@@ -1,0 +1,14 @@
+{
+  "slice": "S034-prepare-v1-2-release-candidate",
+  "branch": "codex/S034-prepare-v1-2-release-candidate",
+  "feature_directory": "specs/S034-prepare-v1-2-release-candidate",
+  "assessed_at": "2026-10-06",
+  "baseline_revision": "40473babe6fd649515f547115872b6316b641263",
+  "milestone": "https://github.com/shruggietech/cueson/milestone/4",
+  "in_scope": [84],
+  "completed_baseline": [82],
+  "later_outcomes": [85, 86],
+  "native_dependencies_snapshot": {"85": [84], "86": [85]},
+  "new_arrivals_at_kickoff": [],
+  "authority": "Native GitHub issues, milestone, dependencies and Project fields own current facts; this file is a dated traceability snapshot."
+}

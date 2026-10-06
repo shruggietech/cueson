@@ -9,12 +9,27 @@ import (
 
 func consumerExample() Document {
 	doc := representativeDocument()
-	doc.Schema = "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
-	doc.SchemaVersion = "1.2.0-dev"
+	doc.Schema = "https://cueson.io/schema/v1.2.0/cueson.schema.json"
+	doc.SchemaVersion = "1.2.0"
 	return doc
 }
 
 func consumerInt(value int64) *int64 { return &value }
+
+func TestConsumerStableContractRejectsFormerDevelopment(t *testing.T) {
+	doc := consumerExample()
+	doc.Schema = "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
+	doc.SchemaVersion = "1.2.0-dev"
+	doc.Cues[0].SpeakerAttributions = []SpeakerAttribution{{SpeakerID: "consumer-assigned"}}
+	if err := doc.ValidateConsumerAnnotations(); err == nil {
+		t.Fatal("former development contract accepted consumer attribution in typed revalidation")
+	}
+	doc.Cues[0].SpeakerAttributions = nil
+	doc.MediaTiming = &MediaTiming{DurationMilliseconds: 5000}
+	if err := doc.ValidateConsumerAnnotations(); err == nil {
+		t.Fatal("former development contract accepted media timing in typed revalidation")
+	}
+}
 
 func TestConsumerIdentifierPreservationAndLimits(t *testing.T) {
 	for _, id := range []string{"Alex", "__proto__", "https://example.test/id", "<script>inert</script>", "YWJjZA==", "مريم", "李 四", "👩‍💻", "e\u0301", "é", strings.Repeat("🗣", 256)} {
@@ -200,8 +215,8 @@ func TestConsumerLimitsAndHistoricalContracts(t *testing.T) {
 func TestConsumerCurrentScriptedContracts(t *testing.T) {
 	for _, format := range []string{"ass", "ssa"} {
 		doc := scriptedExample(t, format)
-		doc.SchemaVersion = "1.2.0-dev"
-		doc.Schema = "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
+		doc.SchemaVersion = "1.2.0"
+		doc.Schema = "https://cueson.io/schema/v1.2.0/cueson.schema.json"
 		doc.Cues[0].SpeakerAttributions = []SpeakerAttribution{{SpeakerID: "independent"}}
 		if err := doc.Validate(); err != nil {
 			t.Fatalf("%s: %v", format, err)
@@ -255,8 +270,8 @@ func TestConsumerPrivateScriptedTargetRevalidatesAnnotations(t *testing.T) {
 	source := scriptedExample(t, "ssa")
 	target := captureFreeScriptedExample(t, "ass")
 	target.Source = source.Source
-	target.Schema = "https://cueson.io/schema/v1.2.0-dev/cueson.schema.json"
-	target.SchemaVersion = "1.2.0-dev"
+	target.Schema = "https://cueson.io/schema/v1.2.0/cueson.schema.json"
+	target.SchemaVersion = "1.2.0"
 	target.Cues[0].SpeakerAttributions = []SpeakerAttribution{{SpeakerID: "id"}}
 	if err := ValidateScriptedTarget(source, target); err != nil {
 		t.Fatal("current private target rejected", err)

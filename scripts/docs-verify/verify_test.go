@@ -15,7 +15,7 @@ func TestRunCLI(t *testing.T) {
 	if code := runCLI([]string{"-repo", repo}, &stdout, &stderr); code != 0 {
 		t.Fatalf("runCLI() = %d, stderr = %q", code, stderr.String())
 	}
-	if got := stdout.String(); !strings.Contains(got, "checked 24 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
+	if got := stdout.String(); !strings.Contains(got, "checked 25 documents") || !strings.Contains(got, "0 local links") || !strings.Contains(got, "10 registered examples") || !strings.Contains(got, "2 format rows") {
 		t.Fatalf("unexpected success output: %q", got)
 	}
 
@@ -103,7 +103,7 @@ func TestFormatMatrixRowsMustAppearInMatchingGuide(t *testing.T) {
 }
 
 func TestReleaseNotesAreRequired(t *testing.T) {
-	for _, name := range []string{"docs/releases/v0.0.0.md", "docs/releases/v1.0.0.md", "docs/releases/v1.1.0.md"} {
+	for _, name := range []string{"docs/releases/v0.0.0.md", "docs/releases/v1.0.0.md", "docs/releases/v1.1.0.md", "docs/releases/v1.2.0.md"} {
 		t.Run(name, func(t *testing.T) {
 			repo := newRepository(t)
 			if err := os.Remove(filepath.Join(repo, filepath.FromSlash(name))); err != nil {
@@ -156,14 +156,14 @@ func TestScriptedFreezeRejectsStaleCapabilityAndPrematureRelease(t *testing.T) {
 func TestCandidateRequiresExactHistoricalRefusalAndProspectiveNotes(t *testing.T) {
 	repo := newRepository(t)
 	readme := readFileForVerifierTest(t, repo, "README.md")
-	writeFile(t, repo, "README.md", strings.ReplaceAll(readme, "published v1.0.0 executable rejects new 1.1.0 output", "older consumers may accept new output"))
+	writeFile(t, repo, "README.md", strings.ReplaceAll(readme, "1.2.0", "future version"))
 	notes := readFileForVerifierTest(t, repo, "docs/releases/v1.1.0.md")
 	writeFile(t, repo, "docs/releases/v1.1.0.md", strings.ReplaceAll(notes, "blob/v1.1.0/CHANGELOG.md", "blob/main/CHANGELOG.md"))
 	result, err := verifyRepository(repo)
 	if err != nil {
 		t.Fatal(err)
 	}
-	assertViolation(t, result.violations, "README.md: required contract marker is missing: published v1.0.0 executable rejects new 1.1.0 output")
+	assertViolation(t, result.violations, "README.md: required contract marker is missing: 1.2.0")
 	assertViolation(t, result.violations, "docs/releases/v1.1.0.md: required final suffix is missing: Full changelog: https://github.com/shruggietech/cueson/blob/v1.1.0/CHANGELOG.md")
 }
 
@@ -175,7 +175,7 @@ func TestV1ChangelogRequiresUnreleasedBeforeReleaseSection(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assertViolation(t, result.violations, "CHANGELOG.md: prepared sections must begin Unreleased, dated 1.1.0, then historical 1.0.0")
+	assertViolation(t, result.violations, "CHANGELOG.md: prepared sections must begin Unreleased, dated 1.2.0, then historical releases in order")
 }
 
 func TestCurrentV1CandidateAndWorkingSpecificationMarkers(t *testing.T) {
@@ -199,14 +199,14 @@ func TestPublishedV110CurrentStateMarkersAreRequired(t *testing.T) {
 	}{
 		{name: "readme release", path: "README.md", marker: "v1.1.0 released and independently verified"},
 		{name: "readme GitHub release", path: "README.md", marker: "v1.1.0 GitHub Release"},
-		{name: "schema release", path: "docs/schema.md", marker: "v1.1.0 schema released and independently verified"},
-		{name: "compatibility release", path: "docs/compatibility.md", marker: "v1.1.0 stable release published and independently verified"},
+		{name: "schema release", path: "docs/schema.md", marker: "published v1.1.0 and v1.0.0 remain unchanged"},
+		{name: "compatibility release", path: "docs/compatibility.md", marker: "published v1.1.0 remains current"},
 		{name: "immutable schema copies", path: "docs/Cueson-Project-Specification-v0.0.0.md", marker: "canonical, immutable repository, embedded, emitted, and packaged v1.1.0 schema copies match byte-for-byte"},
 		{name: "release notes publication", path: "docs/releases/v1.1.0.md", marker: "public v1.1.0 GitHub Release"},
 		{name: "release checksum", path: "docs/releases/v1.1.0.md", marker: "cueson_1.1.0_checksums.txt"},
 		{name: "scripted format publication", path: "docs/formats/ass-ssa.md", marker: "published v1.1.0 release"},
-		{name: "roadmap issue split", path: "docs/roadmap.md", marker: "S030 child [#76]"},
-		{name: "project issue split", path: "docs/project-management.md", marker: "S030 child #76 owns the reviewed 1.1.0 schema/site artifact"},
+		{name: "roadmap active candidate", path: "docs/roadmap.md", marker: "#84"},
+		{name: "project publication split", path: "docs/project-management.md", marker: "#85"},
 	}
 
 	for _, test := range tests {
@@ -489,7 +489,7 @@ func newRepository(t *testing.T) string {
 	}
 	writeFile(t, repo, "README.md", readme.String())
 	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative\n")
-	writeFile(t, repo, "CHANGELOG.md", "# Changelog\n\n## [Unreleased]\n\n### Added\n\n- Post-release work.\n\n## [1.1.0] - 2026-09-15\n\n### Added\n\n- Prepared candidate history.\n\n## [1.0.0] - 2026-09-11\n\n[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD\n[1.1.0]: https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0\n[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0\n")
+	writeFile(t, repo, "CHANGELOG.md", strings.Replace(validV120History, "## [Unreleased]\n", "## [Unreleased]\n\n### Added\n\n- Post-release work.\n", 1))
 	writeFile(t, repo, "README.md", readme.String()+"\nv1.0.0 released and independently verified; v0.0.0 remains historical; v1.0.0 GitHub Release.\n")
 	writeFile(t, repo, "docs/schema.md", "# Schema\n\n$id schema_version format_support format_data source v0.0.0 v1.0.0 non-normative stable schema released and independently verified\n")
 	writeFile(t, repo, "docs/compatibility.md", "# Compatibility\n\nCLI Cue JSON Schema internal/ v0.0.0 v1.0.0 Windows macOS Linux production stable release published and independently verified\n")

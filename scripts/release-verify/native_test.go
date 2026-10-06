@@ -25,12 +25,14 @@ func TestPackagedNativeWorkflowConformance(t *testing.T) {
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("build native test binary: %v: %s", err, output)
 	}
-	if _, err := verifyNativeWorkflows(context.Background(), binary, repository, t.TempDir(), "1.2.0-dev"); err != nil {
+	directory := t.TempDir()
+	if _, err := verifyNativeWorkflows(context.Background(), binary, repository, directory, "1.2.0"); err != nil {
 		t.Fatal(err)
 	}
 	if count, err := verifyHistoricalNative(context.Background(), binary, repository, t.TempDir()); err != nil || count != 6 {
 		t.Fatalf("historical packaged proof: count=%d error=%v", count, err)
 	}
+	checkConsumerWorkflows(t, binary, repository, directory)
 	// The normal unit suite never needs network access. Explicit proof execution
 	// uses the actual public release asset, not a source rebuild substitute.
 	if os.Getenv("CUESON_VERIFY_PUBLISHED_CONSUMER") == "1" {
@@ -38,12 +40,15 @@ func TestPackagedNativeWorkflowConformance(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		proof, err := verifyStableHostCLI(context.Background(), binaryBytes, filepath.Base(binary), repository, "1.2.0-dev")
+		proof, err := verifyStableHostCLI(context.Background(), binaryBytes, filepath.Base(binary), repository, "1.2.0")
 		if err != nil {
 			t.Fatal(err)
 		}
 		if proof.OldConsumerRefusalCount != 32 || proof.OldConsumerIdentityProbeCount != 32 {
 			t.Fatalf("old consumer refusal count = %d", proof.OldConsumerRefusalCount)
+		}
+		if proof.HistoricalStrictRefusalCount != 12 || len(proof.PublishedConsumers) != 2 || proof.PublishedConsumers[0].PositiveControlCount != 2 || proof.PublishedConsumers[0].SelectorIdentityProbeCount != 32 || proof.PublishedConsumers[1].Version != "1.1.0" || proof.PublishedConsumers[1].PositiveControlCount != 4 || proof.PublishedConsumers[1].RefusalCount != 64 || proof.PublishedConsumers[1].IdentityProbeCount != 64 || proof.PublishedConsumers[1].SelectorIdentityProbeCount != 64 {
+			t.Fatalf("published consumer proof differs: %+v", proof.PublishedConsumers)
 		}
 	}
 }

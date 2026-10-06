@@ -1,6 +1,6 @@
 # Cueson Compatibility Contract
 
-**Status:** v1.1.0 stable release published and independently verified; v1.0.0 input compatibility retained
+**Status:** Exact 1.2.0 stable release candidate; published v1.1.0 remains current, with historical 1.0.0 and 1.1.0 input compatibility retained
 
 This document defines which Cueson surfaces receive a public compatibility promise, how format capability states are interpreted, and which release and platform claims are currently valid.
 
@@ -27,11 +27,11 @@ No mutable `latest` schema identity is part of the contract. Every released sche
 
 The exact 1.1.0 stable release accepts historical 1.0.0 documents through the bundled immutable local schema and preserved version-specific semantics. Validate, inspect, restore, matching native render and established conversion paths preserve loaded identity, producer and source truth. Missing, approximate, mismatched, unknown, v0.0.0 and former 1.1.0-dev identities reject locally without network retrieval. Discovery and native encode from the released v1.1.0 executable use exact 1.1.0. The published v1.0.0 executable rejects this new output; historical input support in v1.1.0 does not grant forward compatibility to old consumers. No historical-output selector or migration command is added.
 
-The release freezes bounded ASS v4+/SSA v4 detection, strict UTF-8 ingest, common/native semantic ownership, textual model rendering, all twelve four-format conversion directions, validation, privacy-safe inspection and independently verified exact restoration. Official encode and private native targets declare `stable`; exact-current `schema_only` and complete `experimental` declarations remain valid observations unchanged. Stable identifies the verified bounded contract, not pixel rendering. The reviewed artifact includes the exact 1.1.0 schema URI; issue #67 governs production activation and live read-back.
+The release freezes bounded ASS v4+/SSA v4 detection, strict UTF-8 ingest, common/native semantic ownership, textual model rendering, all twelve four-format conversion directions, validation, privacy-safe inspection and independently verified exact restoration. Official encode and private native targets declare `stable`; exact-current `schema_only` and complete `experimental` declarations remain valid observations unchanged. Stable identifies the verified bounded contract, not pixel rendering. The exact 1.1.0 schema URI and production documentation are deployed and independently verified through completed #76/#67; #78 completed protected deployment repair.
 
 ## Format capability states
 
-Staged source `1.2.0-dev` adds optional [consumer attribution and media timing](consumer-speakers.md). It retains exact local 1.1.0 and 1.0.0 validation/render/conversion/restore and their immutable schemas. Historical documents cannot acquire new fields under an old identity. New source output uses the staged identity; older executables reject unsupported contracts. The optional count-only inspection extension retains report version `1` and unannotated report layout. Development schema publication and production deployment remain separate from implementation.
+Candidate source `1.2.0` adds optional [consumer attribution and media timing](consumer-speakers.md). It retains exact local 1.1.0 and 1.0.0 validation/render/conversion/restore and their immutable schemas. Historical documents cannot acquire new fields under an old identity. New source output uses exact 1.2.0; older executables reject unsupported contracts, and the former 1.2.0-dev identity is unsupported. The optional count-only inspection extension retains report version `1` and unannotated report layout. Candidate readiness remains distinct from release publication and production deployment.
 
 - `envelope_only`: the release can preserve and exactly restore a valid source envelope but does not claim native semantic ingest or model-driven rendering.
 - `schema_only`: the declaration records schema/model recognition and generic restoration without claiming native ingest/render. Current source accepts this exact-current observation without promoting it to the running executable's installed capabilities.
@@ -54,7 +54,7 @@ Core CLI, schema, parsing, rendering, conversion, validation, inspection, and co
 
 ## Installation and release boundary
 
-Users can download v1.0.0 from GitHub and verify the selected archive with the published `cueson_1.0.0_checksums.txt` manifest. Building or running from source requires Go 1.25.0 or newer.
+Users can download the latest published [v1.1.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.1.0) from GitHub and verify the selected archive with the published `cueson_1.1.0_checksums.txt` manifest. The 1.2.0 candidate is not publicly released. Building or running from source requires Go 1.25.0 or newer.
 
 The v1.0.0 executable, immutable schema, release notes, annotated tag, and thirteen-asset GitHub Release are published and independently verified. Its epic and milestone are closed. S021 completed public schema hosting and the production documentation site; S022 corrected independent address-family verification. Future release and production changes remain distinct explicitly authorized steps under the [release process](release-process.md).
 
@@ -62,6 +62,6 @@ The v1.0.0 executable, immutable schema, release notes, annotated tag, and thirt
 
 The [S023 roadmap](roadmap.md) planned the compatible v1.1.0 ASS/SSA addition. The [ratified version contract](../specs/S023-plan-scripted-format-milestone/contracts/version-compatibility.md) requires the v1.1.0 executable to accept exact historical v1.0.0 documents using the released local schema and version-specific semantics, preserving their input identity, producer, source truth and promised CLI behavior. Released v1.0.0 and v1.1.0 reject v0.0.0 input identity; the historical v0.0.0 executable remains available for its own envelopes.
 
-New native encode output targets exact 1.1.0 identity, with current software/schema lockstep. Old exact-version consumers, including the released v1.0.0 executable, reject these new documents. Historical input support on the new executable does not provide forward compatibility to old consumers. No historical-output selector or migration command is included in this release. Any incompatible change to an established public guarantee requires a major-version decision; all compatibility claims must be proven by the documented command/version matrix and release evidence.
+Native encode output from the published v1.1.0 executable targets exact 1.1.0 identity, with released software/schema lockstep. Old exact-version consumers, including the released v1.0.0 executable, reject these new documents. Historical input support on the new executable does not provide forward compatibility to old consumers. No historical-output selector or migration command is included in this release. Any incompatible change to an established public guarantee requires a major-version decision; all compatibility claims must be proven by the documented command/version matrix and release evidence.
 
-The [ASS/SSA contract](formats/ass-ssa.md) freezes the bounded native profile completed by S025-S027, promoted in S028 and published through #66. S030 child #76 prepares the public schema/site artifact, while #67 governs production deployment and live verification. Other format families remain explicitly deferred.
+The [ASS/SSA contract](formats/ass-ssa.md) freezes the bounded native profile completed by S025-S027, promoted in S028 and published through #66. S030 completed the public schema/site artifact and production/live verification through #76/#67; S032 completed protected deployment repair through #78. Other format families remain explicitly deferred.

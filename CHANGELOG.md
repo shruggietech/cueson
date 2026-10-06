@@ -6,10 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-06
+
 ### Added
 
-- Added optional consumer-owned cue speaker attributions, exact bounded Unicode IDs, cue-contained intervals and declared media duration/offset checks in staged `1.2.0-dev` source (#82, S033).
+- Added optional consumer-owned cue speaker attributions, exact bounded Unicode IDs, cue-contained intervals and declared media duration/offset checks (#82, S033).
 - Added count-only consumer inspection, explicit unavailable/not-evaluated/checked media state, nonfatal source-cue conflict warnings, and complete consumer omission accounting in four native renderers and twelve conversion directions.
+- Added exact 1.2.0 immutable candidate schema and package proof, six historical input paths, consumer annotation workflows and authenticated published v1.1.0 consumer refusal alongside retained v1.0.0 proof.
 
 ### Fixed
 
@@ -19,14 +22,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Promoted reviewed current executable/schema/new output from 1.2.0-dev to the exact 1.2.0 stable release candidate, preserving released 1.0.0/1.1.0 contracts and public v1.1.0 downloads and production schemas.
+- Reconciled maintained candidate/compatibility/roadmap guidance with completed S030-S033 outcomes and prepared concise highlights and an exact post-merge publication decision contract; candidate preparation does not publish a tag, release, assets or production route.
 - Reconciled maintained documentation with the independently verified public v1.1.0 tag, release and thirteen-asset inventory while preserving the frozen S028/S029 evidence.
 - Prepared a deterministic 22-HTML-route, three-immutable-schema artifact with seven exact v1.1.0 primary downloads, local-authority deployment comparison, public content-manifest digest verification and an exact-current-main recheck immediately before any separately authorized production mutation.
 
 ### Decisions
 
-- 2026-10-06: Keep consumer identity scope application-defined and separate from native observations; validate supplied duration without inferring media length from subtitle coverage. Stage exact `1.2.0-dev` while retaining immutable released schemas and separately authorized publication/deployment boundaries.
-
 - 2026-09-17: Use an account-owned Cloudflare token with Entire Account Workers Scripts Legacy Edit and `cueson.io` DNS, Zone, Zone Transform Rules, and Workers Routes Read, expose it only to three Cloudflare-facing protected workflow steps, rotate within 90 days, and require GitHub and public deployment records to identify the same exact `main` revision.
+- 2026-10-06: Keep consumer identity scope application-defined and separate from native observations; validate supplied duration without inferring media length from subtitle coverage. Stage exact `1.2.0-dev` while retaining immutable released schemas and separately authorized publication/deployment boundaries.
+- 2026-10-06: Promote the reviewed consumer contract to exact 1.2.0 with immutable candidate schema equality, six historical input paths and separately authenticated published 1.0.0/1.1.0 consumer refusal. Keep source/review proof separate from the future actual post-merge publication revision, and retain public v1.1.0 installation and production state until separately authorized publication and hosting.
 
 ## [1.1.0] - 2026-09-15
 
@@ -191,7 +196,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 2026-09-10: Treat the operator-designated ShruggieTech 1.0.0 ZIP as the sole S011 acquisition authority, retain its archive and every safe payload file byte for byte, and preserve bundled terms without a redundant separate legal-review gate.
 - 2026-09-10: Treat pull-request release proof as review evidence and bind the proposed publication target only after the S012 squash-merge commit passes its own non-publishing proof on `main`.
 
-[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/shruggietech/cueson/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0
 [0.0.0]: https://github.com/shruggietech/cueson/releases/tag/v0.0.0

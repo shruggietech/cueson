@@ -21,14 +21,17 @@ import (
 
 // NativeProof records only governed identities and counts, never temporary paths.
 type NativeProof struct {
-	Formats                       []string `json:"formats"`
-	HistoricalInputCount          int      `json:"historical_input_count"`
-	OldConsumerVersion            string   `json:"old_consumer_version,omitempty"`
-	OldConsumerRevision           string   `json:"old_consumer_revision,omitempty"`
-	OldConsumerArchive            string   `json:"old_consumer_archive,omitempty"`
-	OldConsumerArchiveSHA256      string   `json:"old_consumer_archive_sha256,omitempty"`
-	OldConsumerRefusalCount       int      `json:"old_consumer_refusal_count,omitempty"`
-	OldConsumerIdentityProbeCount int      `json:"old_consumer_identity_probe_count,omitempty"`
+	ConsumerAnnotations           *ConsumerAnnotationProof `json:"consumer_annotations,omitempty"`
+	PublishedConsumers            []PublishedConsumerProof `json:"published_consumers,omitempty"`
+	Formats                       []string                 `json:"formats"`
+	HistoricalInputCount          int                      `json:"historical_input_count"`
+	HistoricalStrictRefusalCount  int                      `json:"historical_strict_refusal_count,omitempty"`
+	OldConsumerVersion            string                   `json:"old_consumer_version,omitempty"`
+	OldConsumerRevision           string                   `json:"old_consumer_revision,omitempty"`
+	OldConsumerArchive            string                   `json:"old_consumer_archive,omitempty"`
+	OldConsumerArchiveSHA256      string                   `json:"old_consumer_archive_sha256,omitempty"`
+	OldConsumerRefusalCount       int                      `json:"old_consumer_refusal_count,omitempty"`
+	OldConsumerIdentityProbeCount int                      `json:"old_consumer_identity_probe_count,omitempty"`
 }
 
 type nativeEnvelope struct {
@@ -99,6 +102,29 @@ func verifyHostWorkflows(ctx context.Context, binary []byte, name, repository, v
 		}
 	}
 	proof.Formats, proof.HistoricalInputCount = formats, historical
+	if version == "1.2.0" {
+		proof.HistoricalStrictRefusalCount = historical * 2
+		annotations, err := verifyConsumerNativeWorkflows(ctx, path, repository, directory)
+		if err != nil {
+			return proof, err
+		}
+		proof.ConsumerAnnotations = &annotations
+		if publishedConsumer {
+			legacy := PublishedConsumerProof{Version: proof.OldConsumerVersion, Revision: proof.OldConsumerRevision, Archive: proof.OldConsumerArchive, ArchiveSHA256: proof.OldConsumerArchiveSHA256, RefusalCount: proof.OldConsumerRefusalCount, IdentityProbeCount: proof.OldConsumerIdentityProbeCount, SelectorIdentityProbeCount: proof.OldConsumerIdentityProbeCount}
+			for _, format := range []string{"subrip", "webvtt"} {
+				input := filepath.Join(repository, "internal", "schema", "testdata", "historical-v1.0.0-"+format+".json")
+				if _, err := nativeSuccess(ctx, filepath.Join(directory, "old-"+name), "validate", input); err != nil {
+					return proof, err
+				}
+				legacy.PositiveControlCount++
+			}
+			consumer, err := verifyPublishedV110Consumer(ctx, repository, directory)
+			if err != nil {
+				return proof, err
+			}
+			proof.PublishedConsumers = []PublishedConsumerProof{legacy, consumer}
+		}
+	}
 	return proof, nil
 }
 
@@ -127,8 +153,16 @@ func nativeSuccess(ctx context.Context, binary string, args ...string) ([]byte, 
 	if status != 0 {
 		return nil, fmt.Errorf("native %s returned %d", args[0], status)
 	}
+	if args[0] == "validate" || args[0] == "inspect" {
+		if err := verifyConsumerReadoutPrivacy(stdout, stderr); err != nil {
+			return nil, err
+		}
+	}
+	if args[0] == "validate" && len(stdout) != 0 {
+		return nil, fmt.Errorf("successful validation unexpectedly produced a payload")
+	}
 	// Successful codec/conversion diagnostics are allowed by the CLI contract.
-	if err := verifyDiagnosticPrivacy(stderr, deriveForbidden(filepath.Dir(binary), nil)); err != nil {
+	if err := verifyDiagnosticPrivacy(stderr, append(deriveForbidden(filepath.Dir(binary), nil), proofSpeakerID)); err != nil {
 		return nil, err
 	}
 	return stdout, nil
@@ -371,7 +405,7 @@ func verifyForcedRefusal(ctx context.Context, binary, directory, input, action, 
 		return fmt.Errorf("%s: %w", action, err)
 	}
 	after, err := os.ReadDir(directory)
-	if err != nil || len(before) != len(after) {
+	if err != nil || !sameNativeDirectoryEntries(before, after) {
 		return fmt.Errorf("refusal created staging or publication artifacts")
 	}
 	payloadAfter, err := os.ReadFile(input)
@@ -420,6 +454,11 @@ func verifyHistoricalNative(ctx context.Context, binary, repository, directory s
 		restored, err := os.ReadFile(output)
 		if err != nil || !bytes.Equal(original, restored) {
 			return 0, fmt.Errorf("historical source restoration differs")
+		}
+		for _, occupied := range []bool{true, false} {
+			if err := verifyNativeDestinationRefusal(ctx, binary, directory, input, "convert", format.target, occupied, "--strict"); err != nil {
+				return 0, fmt.Errorf("historical strict conversion %s/%s: %w", format.version, format.name, err)
+			}
 		}
 		corrupt := bytes.Replace(payload, []byte(envelope.Source.Assets[0].Hashes.SHA256), []byte(strings.Repeat("0", 64)), 1)
 		corruptPath := input + ".corrupt.json"
@@ -601,7 +640,7 @@ func verifyAbsentRefusal(ctx context.Context, binary, directory, input, action, 
 		return fmt.Errorf("refusal published absent destination")
 	}
 	after, err := os.ReadDir(directory)
-	if err != nil || len(before) != len(after) {
+	if err != nil || !sameNativeDirectoryEntries(before, after) {
 		return fmt.Errorf("refusal created staging artifacts")
 	}
 	payloadAfter, err := os.ReadFile(input)
@@ -620,6 +659,13 @@ func verifyOldConsumerIdentityGate(ctx context.Context, binary, input, directory
 	if err != nil {
 		return err
 	}
+	if err := verifyMinimalIdentityGate(ctx, binary, input, directory, "1.0.0"); err != nil {
+		return err
+	}
+	entries, err := os.ReadDir(directory)
+	if err != nil {
+		return err
+	}
 	status, stdout, stderr, err := invokeNative(ctx, binary, "validate", input)
 	if err != nil {
 		return err
@@ -633,6 +679,10 @@ func verifyOldConsumerIdentityGate(ctx context.Context, binary, input, directory
 	after, err := os.ReadFile(input)
 	if err != nil || !bytes.Equal(before, after) {
 		return fmt.Errorf("old identity probe mutated candidate input")
+	}
+	afterEntries, err := os.ReadDir(directory)
+	if err != nil || !sameNativeDirectoryEntries(entries, afterEntries) {
+		return fmt.Errorf("full-document identity probe created publication or staging artifacts")
 	}
 	return nil
 }
