@@ -59,7 +59,7 @@ Run these examples from the repository root. Create an empty `quickstart` direct
 go run ./cmd/cueson version
 ```
 
-Expected result for current source and the published v1.1.0 executable: exit status 0, stdout is exactly `1.1.0` plus LF, and stderr is empty.
+Expected result for current source: exit status 0, stdout is exactly `1.2.0-dev` plus LF, and stderr is empty. The published v1.1.0 executable reports `1.1.0` plus LF.
 
 <!-- docs-verify:example encode -->
 

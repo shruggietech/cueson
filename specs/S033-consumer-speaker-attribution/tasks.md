@@ -50,7 +50,7 @@
 - [x] T021 Update README.md, docs/schema.md, cli.md, conversion.md, compatibility.md, architecture.md and CHANGELOG.md with consumer meaning, duration/coverage distinction and process decisions (FR-018; SC-005).
 - [x] T022 Update scripts/docs-verify current-source markers and Site-preview development prose while preserving immutable published routes/downloads (FR-016,018).
 - [x] T023 Run focused/full foreground CI parity, fuzz, security, native/platform/build and formatting/docs checks; record actual results in specs/S033-consumer-speaker-attribution/verification.md (FR-019; SC-001..006).
-- [ ] T024 Commit, authorized push and official PR closing #82; verify formatted publication and Project stages (FR-020).
+- [x] T024 Commit, authorized push and official PR closing #82; verify formatted publication and Project stages (FR-020).
 - [ ] T025 Handle all bot findings through at most two review rounds and green final-head CI; prepare human final merge handoff in verification.md (FR-020; SC-006).
 
 ## Dependencies and execution
