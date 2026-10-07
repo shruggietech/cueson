@@ -1,0 +1,14 @@
+{
+  "slice": "S035-publish-v1-2-public-schema-site",
+  "branch": "codex/S035-publish-v1-2-public-schema-site",
+  "feature_directory": "specs/S035-publish-v1-2-public-schema-site",
+  "assessed_at": "2026-10-06",
+  "baseline_revision": "6a1fd7a541767c0b19dcc10022fafc0e46903cff",
+  "milestone": "https://github.com/shruggietech/cueson/milestone/4",
+  "in_scope": [88, 86],
+  "completed_baseline": [82, 84, 85],
+  "post_merge_outcomes": [86],
+  "native_dependencies_snapshot": {"88": [85], "86": [85, 88]},
+  "new_arrivals_at_kickoff": [],
+  "authority": "Native GitHub metadata owns current state; #88 separates PR preparation from live #86. Owner steering authorizes S035 to continue production immediately after their final specific PR merge without another kickoff or approval."
+}

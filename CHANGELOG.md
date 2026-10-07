@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Reconciled maintained release and lifecycle documentation with the independently verified public v1.2.0 tag and thirteen-asset release; prepared v1.2.0 site downloads, release/speaker documentation and the fourth immutable schema route while preserving historical resources.
+
+### Decisions
+
+- 2026-10-06: Record the operator's S035 authorization to continue immediately after their specific PR merge through protected exact-main production deployment and independent live verification without another kickoff or deployment approval. Retain operator final merge authority and keep production #86 and milestone v1.2.0 open until full live acceptance passes.
+
 ## [1.2.0] - 2026-10-06
 
 ### Added

@@ -33,11 +33,12 @@ test("apex assets receive production security policy", async () => {
 
 test("all released schema routes retain bytes and receive immutable schema headers", async () => {
   const bytes = new Uint8Array([0, 1, 2, 255]);
-  for (const version of ["v0.0.0", "v1.0.0", "v1.1.0"]) {
+  for (const version of ["v0.0.0", "v1.0.0", "v1.1.0", "v1.2.0"]) {
     const response = await handleRequest(new Request(`https://cueson.io/schema/${version}/cueson.schema.json`), environment(bytes));
     assert.deepEqual(new Uint8Array(await response.arrayBuffer()), bytes);
     assert.equal(response.headers.get("content-type"), "application/schema+json; charset=utf-8");
     assert.equal(response.headers.get("cache-control"), "public, max-age=31536000, immutable");
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff");
   }
 });
 

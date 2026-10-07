@@ -75,6 +75,8 @@ An AI agent MUST NOT perform the final pull-request merge, enable auto-merge, or
 
 Do not push, create or move a tag, publish a release, publish a schema to the production domain, or mutate production `cueson.io` configuration without explicit authorization for that action. General instructions to finish, build, or use autopilot do not grant those authorities.
 
+For S035 only, the operator explicitly authorized push and official PR, then directed that deployment and verification must not be left hanging. After the operator's final specific PR merge, continue S035 immediately through exact-main protected production deployment and independent live verification without requesting another kickoff or deployment approval. Keep #86 and milestone v1.2.0 open until their full acceptance criteria pass. This recorded authorization does not grant final PR merge authority or extend to unrelated releases or production changes.
+
 ## Post-merge housekeeping
 
 Begin housekeeping only after the operator confirms a successful merge, then verify the GitHub merge state. Fetch and prune, fast-forward a clean non-divergent default branch, inspect slice branches and worktrees, and remove only state proven stale and clean. Never use broad destructive cleanup, forced worktree removal, `git reset --hard`, or routine force deletion.

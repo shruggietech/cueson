@@ -83,13 +83,13 @@ func TestRepositoryV120DecisionRemainsPreparationOnly(t *testing.T) {
 	}
 }
 
-func TestV120NotesRequireCandidateAndExactSuffix(t *testing.T) {
+func TestV120NotesRequirePublishedStateAndExactSuffix(t *testing.T) {
 	repo := newRepository(t)
-	writeFile(t, repo, "docs/releases/v1.2.0.md", "# Cueson v1.2.0\n\nCueson v1.2.0 is now published.\n\nFull changelog: https://github.com/shruggietech/cueson/blob/main/CHANGELOG.md\n")
+	writeFile(t, repo, "docs/releases/v1.2.0.md", "# Cueson v1.2.0\n\nStable release candidate, not publicly released.\n\nFull changelog: https://github.com/shruggietech/cueson/blob/main/CHANGELOG.md\n")
 	result, err := verifyRepository(repo)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertViolation(t, result.violations, "docs/releases/v1.2.0.md: required final suffix is missing: Full changelog: https://github.com/shruggietech/cueson/blob/v1.2.0/CHANGELOG.md")
-	assertViolation(t, result.violations, "docs/releases/v1.2.0.md: stale capability or release claim remains: v1.2.0 is now published")
+	assertViolation(t, result.violations, "docs/releases/v1.2.0.md: stale capability or release claim remains: not publicly released")
 }

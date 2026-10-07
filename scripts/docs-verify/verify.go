@@ -75,15 +75,15 @@ var requiredExampleIDs = []string{
 
 var requiredReferenceMarkers = map[string][]string{
 	"CHANGELOG.md":          {"[Unreleased]: https://github.com/shruggietech/cueson/compare/v1.2.0...HEAD", "[1.2.0]: https://github.com/shruggietech/cueson/compare/v1.1.0...v1.2.0", "[1.1.0]: https://github.com/shruggietech/cueson/compare/v1.0.0...v1.1.0", "[1.0.0]: https://github.com/shruggietech/cueson/compare/v0.0.0...v1.0.0"},
-	"README.md":             {"v1.1.0 released and independently verified", "v0.0.0", "v1.1.0 GitHub Release", "1.2.0", "speaker"},
-	"CONTRIBUTING.md":       {"Cueson v1.1.0 is published", "exact 1.2.0"},
-	"SECURITY.md":           {"published v1.1.0 release is the current stable line", "exact v1.1.0 release extends the stable boundaries"},
-	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "published v1.1.0 and v1.0.0 remain unchanged", "non-normative"},
-	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v1.0.0", "Windows", "macOS", "Linux", "production", "published v1.1.0 remains current"},
+	"README.md":             {"v1.2.0 released and independently verified", "v0.0.0", "v1.2.0 GitHub Release", "1.2.0", "speaker"},
+	"CONTRIBUTING.md":       {"Cueson v1.2.0 is published", "exact 1.2.0"},
+	"SECURITY.md":           {"published v1.2.0 release is the current stable line", "exact v1.2.0 release retains bounded"},
+	"docs/schema.md":        {"$id", "schema_version", "format_support", "format_data", "source", "v0.0.0", "v1.0.0", "historical v1.1.0 and v1.0.0 remain unchanged", "non-normative"},
+	"docs/compatibility.md": {"CLI", "Cue JSON Schema", "internal/", "v0.0.0", "v1.0.0", "Windows", "macOS", "Linux", "production", "Published exact 1.2.0 stable release"},
 	"docs/Cueson-Project-Specification-v0.0.0.md": {"canonical, immutable repository, embedded, emitted, and packaged v1.0.0 schema copies match byte-for-byte", "canonical, immutable repository, embedded, emitted, and packaged v1.1.0 schema copies match byte-for-byte", "v1 release-candidate verification issue is complete"},
 	"docs/releases/v1.0.0.md":                     {"# Cueson v1.0.0", "stable Cue JSON", "unsigned and unattested"},
 	"docs/releases/v1.1.0.md":                     {"# Cueson v1.1.0", "public v1.1.0 GitHub Release", "cueson_1.1.0_checksums.txt", "released v1.0.0 consumers reject", "unsigned and unattested"},
-	"docs/releases/v1.2.0.md":                     {"# Cueson v1.2.0", "candidate", "speaker", "media", "1.1.0", "unsigned and unattested"},
+	"docs/releases/v1.2.0.md":                     {"# Cueson v1.2.0", "public v1.2.0 GitHub Release", "cueson_1.2.0_checksums.txt", "speaker", "media", "1.1.0", "unsigned and unattested"},
 	"docs/formats/ass-ssa.md":                     {"Frozen bounded stable profile", "published v1.1.0 release", "All twelve distinct four-format directions", "UTF-8", "attachments", "karaoke", "drawings", "complexity_limit", "scripted-stable-gate"},
 	"docs/cli.md":                                 {"exact `1.2.0`", "complete `experimental`", "`schema_only`", "historical-output selector", "former development identities"},
 	"docs/release-verification.md":                {"-version 1.2.0 -commit", "same bundle", "published 1.0.0 and 1.1.0 consumers", "`published: false`"},
@@ -93,7 +93,7 @@ var requiredReferenceMarkers = map[string][]string{
 }
 
 var staleClaims = map[string][]string{
-	"docs/releases/v1.2.0.md":                     {"v1.2.0 is now published", "public v1.2.0 GitHub Release", "Download Cueson v1.2.0"},
+	"docs/releases/v1.2.0.md":                     {"not publicly released", "unpublished 1.2.0", "Stable release candidate"},
 	"README.md":                                   {"v0.1.0 development", "native capabilities remain `experimental`", "A v1.0.0 binary, immutable v1 schema", "unpublished 1.1.0 stable candidate", "The candidate is not tagged or publicly released", "Published downloads below remain v1.0.0", "publication of the new 1.1.0 schema route and refreshed site remains issue"},
 	"CONTRIBUTING.md":                             {"Cueson is an unreleased v0.0.0 foundation candidate", "native SubRip/WebVTT ingest, model-driven rendering, and conversion are not implemented", "v0.1.0 development", "v1 candidate is prepared in source but not yet tagged or published", "Current source targets the unpublished exact 1.1.0 stable candidate", "Cueson v1.0.0 is published with stable"},
 	"SECURITY.md":                                 {"before the first public release", "v0.1.0 development", "tag and GitHub Release publication remain pending", "published v1.0.0 release is the current stable line", "unpublished exact 1.1.0 candidate"},

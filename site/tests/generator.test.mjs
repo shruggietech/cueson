@@ -14,26 +14,27 @@ import {
 const siteRoot = path.resolve(import.meta.dirname, "..");
 const repoRoot = path.resolve(siteRoot, "..");
 const release = {
-  version: "1.1.0",
-  tag: "v1.1.0",
-  url: "https://github.com/shruggietech/cueson/releases/tag/v1.1.0",
+  version: "1.2.0",
+  tag: "v1.2.0",
+  url: "https://github.com/shruggietech/cueson/releases/tag/v1.2.0",
 };
 const downloads = [
-  ["Windows x86-64", "cueson_1.1.0_windows_amd64.zip"],
-  ["Windows Arm64", "cueson_1.1.0_windows_arm64.zip"],
-  ["macOS Intel", "cueson_1.1.0_darwin_amd64.tar.gz"],
-  ["macOS Apple silicon", "cueson_1.1.0_darwin_arm64.tar.gz"],
-  ["Linux x86-64", "cueson_1.1.0_linux_amd64.tar.gz"],
-  ["Linux Arm64", "cueson_1.1.0_linux_arm64.tar.gz"],
-  ["SHA-256 checksums", "cueson_1.1.0_checksums.txt"],
+  ["Windows x86-64", "cueson_1.2.0_windows_amd64.zip"],
+  ["Windows Arm64", "cueson_1.2.0_windows_arm64.zip"],
+  ["macOS Intel", "cueson_1.2.0_darwin_amd64.tar.gz"],
+  ["macOS Apple silicon", "cueson_1.2.0_darwin_arm64.tar.gz"],
+  ["Linux x86-64", "cueson_1.2.0_linux_amd64.tar.gz"],
+  ["Linux Arm64", "cueson_1.2.0_linux_arm64.tar.gz"],
+  ["SHA-256 checksums", "cueson_1.2.0_checksums.txt"],
 ].map(([name, filename]) => ({
   name,
-  url: `https://github.com/shruggietech/cueson/releases/download/v1.1.0/${filename}`,
+  url: `https://github.com/shruggietech/cueson/releases/download/v1.2.0/${filename}`,
 }));
 const schemas = [
   { version: "0.0.0", byte_length: 22_263, sha256: "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975" },
   { version: "1.0.0", byte_length: 61_445, sha256: "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541" },
   { version: "1.1.0", byte_length: 185_641, sha256: "223b61cbcf6337167039268576b2c739564585fff10e6cc6076e47a03526a0f7" },
+  { version: "1.2.0", byte_length: 191_170, sha256: "f2661a3d52effbab4a82a4d47197b5c7fae58496dc30a397ea3f2f668358b654" },
 ];
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
@@ -68,7 +69,7 @@ test("generation is deterministic and check mode detects drift", async () => {
   await generateSite({ repoRoot, siteRoot, sourceCommit: commit });
 });
 
-test("generated schemas retain all three immutable repository identities and latest is absent", async () => {
+test("generated schemas retain all four immutable repository identities and latest is absent", async () => {
   const commit = "0123456789abcdef0123456789abcdef01234567";
   await generateSite({ repoRoot, siteRoot, sourceCommit: commit });
   for (const schema of schemas) {
@@ -83,7 +84,7 @@ test("generated schemas retain all three immutable repository identities and lat
   await assert.rejects(readFile(path.join(siteRoot, "public", "schema", "v9.9.9", "cueson.schema.json")), { code: "ENOENT" });
 });
 
-test("published v1.1 release, downloads, and format navigation derive from maintained authority", async () => {
+test("published v1.2 release, downloads, and speaker navigation derive from maintained authority", async () => {
   const contentMap = await loadContentMap(siteRoot);
   await generateSite({ repoRoot, siteRoot });
   assert.deepEqual(contentMap.release, release);
@@ -92,7 +93,9 @@ test("published v1.1 release, downloads, and format navigation derive from maint
   assert.equal(new Set(contentMap.downloads.map((download) => download.url)).size, 7);
   assert.deepEqual(contentMap.documents
     .filter((document) => document.slug[0] === "releases")
-    .map((document) => document.slug[1]), ["v1.1.0", "v1.0.0", "v0.0.0"]);
+    .map((document) => document.slug[1]), ["v1.2.0", "v1.1.0", "v1.0.0", "v0.0.0"]);
+  assert.ok(contentMap.documents.some((document) => document.source === "docs/consumer-speakers.md" && document.slug.join("/") === "consumer-speakers"));
+  assert.equal(rewriteMarkdownLinks("See [speakers](consumer-speakers.md#identifier-limits).", "docs/schema.md", contentMap), "See [speakers](/docs/consumer-speakers/#identifier-limits).");
   const formatDocs = [...contentMap.documents].sort((a, b) => a.order - b.order)
     .filter((document) => document.slug.length === 2 && document.slug[0] === "formats");
   const scriptedDocument = formatDocs.find((document) => document.source === "docs/formats/ass-ssa.md" && document.slug[1] === "ass-ssa");
@@ -113,9 +116,15 @@ test("published v1.1 release, downloads, and format navigation derive from maint
     readFile(path.join(siteRoot, "content", "generated", "security.mdx"), "utf8"),
   ]);
   assert.doesNotMatch(currentGeneratedDocuments.join("\n"), /published v1\.0\.0 release is the current stable line|unpublished exact 1\.1\.0|Current source targets the unpublished exact 1\.1\.0/i);
-  const releasePage = await readFile(path.join(siteRoot, "content", "generated", "releases", "v1.1.0.mdx"), "utf8");
-  assert.match(releasePage, /Cueson v1\.1\.0/);
+  const releasePage = await readFile(path.join(siteRoot, "content", "generated", "releases", "v1.2.0.mdx"), "utf8");
+  assert.match(releasePage, /Cueson v1\.2\.0/);
   assert.match(releasePage, /independently verified/i);
+  assert.doesNotMatch(releasePage, /not publicly released|unpublished/i);
+  for (const download of downloads) assert.ok(releasePage.includes(download.url));
+  const speakerPage = await readFile(path.join(siteRoot, "content", "generated", "consumer-speakers.mdx"), "utf8");
+  assert.match(speakerPage, /never treats it as a global or universal identity/);
+  assert.match(speakerPage, /1 to 256 decoded Unicode scalar values/);
+  assert.match(speakerPage, /does not independently measure or authenticate the audio/);
   const guide = await readFile(path.join(siteRoot, "public", "guides", "media-formats", "index.html"), "utf8");
   for (const dialect of ["ASS", "SSA"]) {
     const row = guide.match(new RegExp(`<div class="format-name">${dialect}</div>[\\s\\S]*?</tr>`));
@@ -130,13 +139,13 @@ test("release asset filenames must match the declared release version", async ()
   const original = await readFile(contentMapPath, "utf8");
   const changed = JSON.parse(original);
   changed.release = {
-    version: "1.2.0",
-    tag: "v1.2.0",
-    url: "https://github.com/shruggietech/cueson/releases/tag/v1.2.0",
+    version: "1.3.0",
+    tag: "v1.3.0",
+    url: "https://github.com/shruggietech/cueson/releases/tag/v1.3.0",
   };
   changed.downloads = changed.downloads.map((download) => ({
     ...download,
-    url: download.url.replace("/download/v1.1.0/", "/download/v1.2.0/"),
+    url: download.url.replace("/download/v1.2.0/", "/download/v1.3.0/"),
   }));
   try {
     await writeFile(contentMapPath, `${JSON.stringify(changed, null, 2)}\n`);
@@ -146,16 +155,16 @@ test("release asset filenames must match the declared release version", async ()
   }
 });
 
-test("generated deployment declares exactly 22 HTML routes, three schemas, and seven downloads", async () => {
+test("generated deployment declares exactly 24 HTML routes, four schemas, and seven downloads", async () => {
   const commit = "0123456789abcdef0123456789abcdef01234567";
   await generateSite({ repoRoot, siteRoot, sourceCommit: commit });
   const deployment = JSON.parse(await readFile(path.join(siteRoot, "public", "deployment.json"), "utf8"));
   const manifest = JSON.parse(await readFile(path.join(siteRoot, "public", "content-manifest.json"), "utf8"));
   const htmlRoutes = deployment.routes.filter((route) => route === "/" || route.endsWith("/"));
   const schemaRoutes = deployment.routes.filter((route) => route.endsWith("/cueson.schema.json"));
-  assert.equal(deployment.routes.length, 25);
-  assert.equal(new Set(deployment.routes).size, 25);
-  assert.equal(htmlRoutes.length, 22);
+  assert.equal(deployment.routes.length, 28);
+  assert.equal(new Set(deployment.routes).size, 28);
+  assert.equal(htmlRoutes.length, 24);
   assert.deepEqual(schemaRoutes, schemas.map((schema) => `/schema/v${schema.version}/cueson.schema.json`));
   assert.deepEqual(deployment.release, release);
   assert.deepEqual(deployment.downloads, downloads);
