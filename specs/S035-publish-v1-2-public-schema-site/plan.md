@@ -48,7 +48,9 @@ README.md, SECURITY.md, CONTRIBUTING.md, CHANGELOG.md
 docs/architecture.md, schema.md, compatibility.md, consumer-speakers.md
 docs/roadmap.md, project-management.md, release-process.md
 docs/release-verification.md, releases/v1.2.0.md
+docs/conversion.md, Cueson-Project-Specification-v0.0.0.md
 scripts/docs-verify/verify.go, verify_test.go, candidate_v120_test.go
+scripts/docs-verify/s035_publication_test.go
 ```
 
 **Structure Decision**: Reuse maintained authorities and generic site generation. Independent fixed test inventories are intentionally separate from mutable content-map values. Generated files stay ignored.

@@ -47,6 +47,8 @@ The local Playwright shell launcher could not start its `cmd.exe` subprocess. Br
 
 ## Runtime PR acceptance
 
+First Codex review on PR #89 found two P2 issues: a scope-update bug substituted ASCII letters throughout the validation guide, and conversion/working-spec current-state prose still described unpublished v1.2.0. UTF-8 checks could not detect the ASCII corruption. The guide was restored, its actual workflow fence and handoff target now have a focused contract test, both stale current-state pages were reconciled, and documentation/generated-page regressions explicitly reject those old claims. All affected checks were rerun before updating the head and requesting the one authorized second review. Frozen history and runtime behavior remain unchanged.
+
 T014/T015 exact pushed head, PR identity, hosted checks and external review outcomes are recorded in the final formatted/read-back PR body after they occur. They are not claimed complete by this pre-push record. No second Codex round is requested unless the automatic first round reports findings; no third round is authorized.
 
 ## Production before-state and remaining execution

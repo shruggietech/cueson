@@ -114,8 +114,11 @@ test("published v1.2 release, downloads, and speaker navigation derive from main
   const currentGeneratedDocuments = await Promise.all([
     readFile(path.join(siteRoot, "content", "generated", "contributing.mdx"), "utf8"),
     readFile(path.join(siteRoot, "content", "generated", "security.mdx"), "utf8"),
+    readFile(path.join(siteRoot, "content", "generated", "conversion.mdx"), "utf8"),
+    readFile(path.join(siteRoot, "content", "generated", "project-specification.mdx"), "utf8"),
   ]);
   assert.doesNotMatch(currentGeneratedDocuments.join("\n"), /published v1\.0\.0 release is the current stable line|unpublished exact 1\.1\.0|Current source targets the unpublished exact 1\.1\.0/i);
+  assert.doesNotMatch(currentGeneratedDocuments.join("\n"), /S034 prepares this behavior in the exact 1\.2\.0 candidate without changing published downloads|public availability remains v1\.1\.0/i);
   const releasePage = await readFile(path.join(siteRoot, "content", "generated", "releases", "v1.2.0.mdx"), "utf8");
   assert.match(releasePage, /Cueson v1\.2\.0/);
   assert.match(releasePage, /independently verified/i);
