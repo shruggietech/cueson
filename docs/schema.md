@@ -1,19 +1,19 @@
 # Cue JSON Schema Baseline
 
-**Status:** Exact 1.2.0 stable release candidate schema; published v1.1.0 and v1.0.0 remain unchanged
+**Status:** Published exact 1.2.0 stable schema; historical v1.1.0 and v1.0.0 remain unchanged
 
 Historical v1.0.0: stable schema released and independently verified. Its immutable bytes remain the historical input authority.
 
 **Ratified:** 2026-09-09 through Spec Kit slice `001-ratify-foundation-contracts`
 
-This document defines the stable v1.0.0 schema, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32), conversion behavior added by issue [#33](https://github.com/shruggietech/cueson/issues/33), and contract hardening completed by issues [#35](https://github.com/shruggietech/cueson/issues/35), [#36](https://github.com/shruggietech/cueson/issues/36), and [#41](https://github.com/shruggietech/cueson/issues/41). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable and includes machine-readable annotations for schema-aware consumers.
+This document defines the current stable v1.2.0 schema and its immutable historical baselines, including the foundation realized by issues [#5](https://github.com/shruggietech/cueson/issues/5) and [#6](https://github.com/shruggietech/cueson/issues/6), native SubRip capability added by issues [#30](https://github.com/shruggietech/cueson/issues/30) and [#31](https://github.com/shruggietech/cueson/issues/31), native WebVTT capability added by issue [#32](https://github.com/shruggietech/cueson/issues/32), conversion behavior added by issue [#33](https://github.com/shruggietech/cueson/issues/33), and contract hardening completed by issues [#35](https://github.com/shruggietech/cueson/issues/35), [#36](https://github.com/shruggietech/cueson/issues/36), and [#41](https://github.com/shruggietech/cueson/issues/41). The [canonical schema artifact](../internal/schema/cueson.schema.json) is embedded in the executable and includes machine-readable annotations for schema-aware consumers.
 
 ## Dialect, identity, and version
 
 The schema artifact uses JSON Schema Draft 2020-12. Three similar-looking fields have distinct meanings:
 
 - The schema artifact's `$schema` keyword identifies the Draft 2020-12 metaschema.
-- The current canonical schema artifact's `$id` is `https://cueson.io/schema/v1.2.0/cueson.schema.json`; historical released schemas retain their exact identities. Candidate preparation does not publish this production route.
+- The current canonical schema artifact's `$id` is `https://cueson.io/schema/v1.2.0/cueson.schema.json`; historical released schemas retain their exact identities. The embedded, packaged and immutable repository copies are published; S035 production activation and independent live verification remain tracked by #86.
 - A current-source Cue JSON instance uses `$schema` `https://cueson.io/schema/v1.2.0/cueson.schema.json` and `schema_version` `1.2.0`. Historical 1.1.0 and 1.0.0 input retain their original exact identity; former development identities reject.
 
 The canonical Cueson URI identifies an exact contract. Consumers resolve released 1.0.0 through the [immutable v1 schema](../schema/releases/v1.0.0/cueson.schema.json), tagged canonical artifact, [v1.0.0 release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0), public versioned route or historical executable embedding. The official v1.1.0 packages emit the exact [immutable v1.1.0 schema](../schema/releases/v1.1.0/cueson.schema.json), byte-identical to the tagged canonical, embedded and packaged copies. Its canonical public route is deployed and independently byte-verified through completed #76/#67; #78 completed protected deployment repair. Cueson never emits or serves a mutable `latest` alias.
@@ -26,9 +26,9 @@ Starting with v1.0.0, breaking changes require a major-version increase. Additiv
 
 S018 froze the implemented CLI and Cue JSON behavior, S019 promoted that reviewed contract to identity 1.0.0 with a byte-identical immutable repository copy, S020 published and independently verified the exact tagged schema and release archives, and S021 publishes the immutable v0.0.0 and v1.0.0 schema bytes at their canonical versioned domain paths. No production alias exists.
 
-## Published 1.1.0 release contract
+## Published 1.2.0 release contract
 
-S033 implemented optional `cues[].speaker_attributions` and root `media_timing`; S034 promotes the reviewed contract to the exact `1.2.0` stable candidate and admits a byte-identical [immutable candidate schema](../schema/releases/v1.2.0/cueson.schema.json). Consumer IDs have application-defined scope and remain separate from native observations. Optional intervals must fit their cue and declared media boundaries; subtitle coverage never supplies source duration. Counts and runtime warnings leave source bytes and archived diagnostics intact. See the [consumer contract](consumer-speakers.md) for precise identifier restrictions, timing rules, export losses and inspection states. Released schemas remain unchanged and the candidate URI is not a published production route.
+S033 implemented optional `cues[].speaker_attributions` and root `media_timing`; S034 promoted the reviewed contract to exact `1.2.0` and admitted a byte-identical [immutable release schema](../schema/releases/v1.2.0/cueson.schema.json). Completed [#85](https://github.com/shruggietech/cueson/issues/85) published and independently verified that schema in the official release archives at tagged revision `6a1fd7a541767c0b19dcc10022fafc0e46903cff`. Consumer IDs have application-defined scope and remain separate from native observations. Optional intervals must fit their cue and declared media boundaries; subtitle coverage never supplies source duration. Counts and runtime warnings leave source bytes and archived diagnostics intact. See the [consumer contract](consumer-speakers.md) for precise identifier restrictions, timing rules, export losses and inspection states. Historical released schemas remain unchanged. The 1.2.0 schema is 191,170 bytes with SHA-256 `f2661a3d52effbab4a82a4d47197b5c7fae58496dc30a397ea3f2f668358b654`; matching production activation remains tracked by #86.
 
 S024 established local exact historical 1.0.0 validation and the typed scripted model; S025-S027 completed native workflows, all twelve conversion edges and CLI/conformance hardening. S028 froze and promoted the current contract to exact 1.1.0, with a byte-identical [immutable repository schema](../schema/releases/v1.1.0/cueson.schema.json). S029 bound those bytes to tag `v1.1.0`, the official release packages and independent public verification at revision `7ff45c1d8cd8df377e1fb568b9785286b649fd7c`. Unknown, mismatched, v0.0.0 and former development identities reject without network retrieval. Historical identity, producer and source observations remain intact. S030 completed the reviewed route artifact and production/live verification through #76/#67; S032 completed protected deployment repair through #78.
 
@@ -66,6 +66,7 @@ format_support
 producer
 source
 metadata
+media_timing
 document
 cues
 format_data
@@ -73,7 +74,7 @@ diagnostics
 stats
 ```
 
-The exact JSON Schema defines required versus optional properties. The common cue model and source envelope are both first-class; neither is a substitute for the other.
+The exact JSON Schema defines required versus optional properties. Root `media_timing` is optional in 1.2.0 and absent from historical schemas. The common cue model and source envelope are both first-class; neither is a substitute for the other.
 
 ## Initial format keys
 
@@ -88,7 +89,7 @@ File extensions and CLI tokens `srt` and `vtt` are aliases that normalize to can
 
 These keys and their format-native shapes identify format families. Capability fields separately declare whether the matching executable can ingest, render, or restore them. SubRip and WebVTT have completed the stable v1.0.0 release gate.
 
-Current release 1.1.0 also defines `ass` and `ssa`, with stable bounded native ingest/render and twelve-direction conversion support. Canonical format keys alone never prove declared or installed capabilities.
+Current release 1.2.0 retains the 1.1.0 additions `ass` and `ssa`, with stable bounded native ingest/render and twelve-direction conversion support. Canonical format keys alone never prove declared or installed capabilities.
 
 ## Official format capability
 
@@ -122,6 +123,7 @@ source_identifier
 timing
 payload
 speakers
+speaker_attributions
 tokens
 ocr_observations
 placement

@@ -6,32 +6,33 @@ import { expectMetadata, expectNoHorizontalOverflow } from "./helpers";
 const routes = [
   "/", "/docs/", "/docs/architecture/", "/docs/cli/", "/docs/schema/", "/docs/formats/subrip/",
   "/docs/formats/webvtt/", "/docs/formats/ass-ssa/", "/docs/conversion/", "/docs/compatibility/", "/docs/brand/", "/docs/security/",
-  "/docs/contributing/", "/docs/changelog/", "/docs/releases/v1.1.0/", "/docs/releases/v1.0.0/", "/docs/releases/v0.0.0/",
+  "/docs/contributing/", "/docs/changelog/", "/docs/releases/v1.2.0/", "/docs/consumer-speakers/", "/docs/releases/v1.1.0/", "/docs/releases/v1.0.0/", "/docs/releases/v0.0.0/",
   "/docs/release-process/", "/docs/release-verification/", "/docs/project-management/", "/docs/project-specification/",
   "/guides/media-formats/",
 ];
 const downloadFiles = [
-  "cueson_1.1.0_windows_amd64.zip",
-  "cueson_1.1.0_windows_arm64.zip",
-  "cueson_1.1.0_darwin_amd64.tar.gz",
-  "cueson_1.1.0_darwin_arm64.tar.gz",
-  "cueson_1.1.0_linux_amd64.tar.gz",
-  "cueson_1.1.0_linux_arm64.tar.gz",
-  "cueson_1.1.0_checksums.txt",
+  "cueson_1.2.0_windows_amd64.zip",
+  "cueson_1.2.0_windows_arm64.zip",
+  "cueson_1.2.0_darwin_amd64.tar.gz",
+  "cueson_1.2.0_darwin_arm64.tar.gz",
+  "cueson_1.2.0_linux_amd64.tar.gz",
+  "cueson_1.2.0_linux_arm64.tar.gz",
+  "cueson_1.2.0_checksums.txt",
 ];
 const schemaIdentities = [
   ["v0.0.0", 22_263, "d15c7fa5227156109dd6be3d39b711aca3503794bb862169dfca96ee80adb975"],
   ["v1.0.0", 61_445, "1aad14567033d7e14d9beb78985e18007aefb5345095370b11b6b887df7ec541"],
   ["v1.1.0", 185_641, "223b61cbcf6337167039268576b2c739564585fff10e6cc6076e47a03526a0f7"],
+  ["v1.2.0", 191_170, "f2661a3d52effbab4a82a4d47197b5c7fae58496dc30a397ea3f2f668358b654"],
 ] as const;
 
 test("landing page makes installation, documentation, and release downloads obvious", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Universal captions");
   await expect(page.getByRole("link", { name: /Read the docs/i })).toHaveAttribute("href", "/docs/");
-  await expect(page.getByRole("link", { name: /Download v1.1.0/i })).toHaveAttribute("href", "https://github.com/shruggietech/cueson/releases/tag/v1.1.0");
-  await expect(page.getByText("go install github.com/shruggietech/cueson/cmd/cueson@v1.1.0")).toBeVisible();
-  const primaryDownloads = page.locator('section[aria-labelledby="downloads"] a[href^="https://github.com/shruggietech/cueson/releases/download/v1.1.0/"]');
+  await expect(page.getByRole("link", { name: /Download v1.2.0/i })).toHaveAttribute("href", "https://github.com/shruggietech/cueson/releases/tag/v1.2.0");
+  await expect(page.getByText("go install github.com/shruggietech/cueson/cmd/cueson@v1.2.0")).toBeVisible();
+  const primaryDownloads = page.locator('section[aria-labelledby="downloads"] a[href^="https://github.com/shruggietech/cueson/releases/download/v1.2.0/"]');
   await expect(primaryDownloads).toHaveCount(7);
   expect(await primaryDownloads.evaluateAll((links) => links.map((link) => new URL((link as HTMLAnchorElement).href).pathname.split("/").at(-1)))).toEqual(downloadFiles);
   const primaryNavigation = page.getByRole("navigation", { name: "Primary" });
@@ -119,5 +120,18 @@ test("published v1.1 release and ASS/SSA guide present stable current content", 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Cueson v1.1.0");
   await expect(page.locator("main")).toContainText(/independently verified/i);
   await page.goto("/");
-  await expect(page.getByRole("link", { name: /Download v1.1.0/i })).toHaveAttribute("href", /releases\/tag\/v1\.1\.0/);
+  await expect(page.getByRole("link", { name: /Download v1.2.0/i })).toHaveAttribute("href", /releases\/tag\/v1\.2\.0/);
+});
+
+test("published v1.2 release and consumer guide expose shipped attribution semantics", async ({ page }) => {
+  await page.goto("/docs/releases/v1.2.0/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Cueson v1.2.0");
+  await expect(page.locator("main")).toContainText(/independently verified/i);
+  await expect(page.locator("main")).not.toContainText(/not publicly released|unpublished/i);
+  for (const file of downloadFiles) await expect(page.locator(`main a[href="https://github.com/shruggietech/cueson/releases/download/v1.2.0/${file}"]`)).toHaveCount(1);
+  await page.goto("/docs/consumer-speakers/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Consumer speaker attribution");
+  await expect(page.locator("main")).toContainText("never treats it as a global or universal identity");
+  await expect(page.locator("main")).toContainText("does not independently measure or authenticate the audio");
+  await expect(page.locator("main")).toContainText("1 to 256 decoded Unicode scalar values");
 });

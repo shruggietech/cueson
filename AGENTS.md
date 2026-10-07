@@ -69,11 +69,15 @@ Normal pull requests to the default branch contain at least one complete closing
 
 If round one finds issues, inspect and address every finding, resolve threads only after the concern is actually handled, rerun verification, update the head, and then request exactly one second review with `@codex review`. Do not request a third review automatically.
 
+Before publishing that second-round request, include exactly one backticked full commit ID for the requested head and verify its repository-policy binding. Preserve the request receipt after publication: editing it changes its evidence timestamp and can invalidate round-two attribution. A malformed or stale receipt never authorizes another review or a self-issued waiver; finish the remediation and present the exact remaining policy decision to the operator.
+
 An AI agent MUST NOT perform the final pull-request merge, enable auto-merge, or enter a merge queue unless the human operator explicitly authorizes that specific pull request. A merge authorization is single-use and expires when material state changes require new judgment.
 
 ## Push, release, and production boundaries
 
 Do not push, create or move a tag, publish a release, publish a schema to the production domain, or mutate production `cueson.io` configuration without explicit authorization for that action. General instructions to finish, build, or use autopilot do not grant those authorities.
+
+For S035 only, the operator explicitly authorized push and official PR, then directed that deployment and verification must not be left hanging. After the operator's final specific PR merge, continue S035 immediately through exact-main protected production deployment and independent live verification without requesting another kickoff or deployment approval. Keep #86 and milestone v1.2.0 open until their full acceptance criteria pass. This recorded authorization does not grant final PR merge authority or extend to unrelated releases or production changes.
 
 ## Post-merge housekeeping
 

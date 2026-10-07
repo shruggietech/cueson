@@ -1,18 +1,18 @@
 # Cueson CLI Contract
 
-**Status:** Exact 1.2.0 stable release candidate; published v1.1.0 and historical input behavior retained
+**Status:** Published exact 1.2.0 stable release; historical input behavior retained
 
 This document is the maintained CLI authority. The public command names and behavior described here form the stable v1.0.0 contract published through immutable tag [`v1.0.0`](https://github.com/shruggietech/cueson/tree/v1.0.0) and the verified [GitHub Release](https://github.com/shruggietech/cueson/releases/tag/v1.0.0). The exact generated help under `internal/cli/testdata/help/` and executable documentation tests are checked against this reference.
 
 ## Current stable release
 
-The official v1.1.0 executable reports exact `1.1.0` from `version` and `schema --version`, and emits its byte-identical immutable release schema. Its native encode uses that identity and official producer version. Exact historical 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown, mismatched and former development identities and corrupt source envelopes fail before publication. The released v1.0.0 executable rejects new 1.1.0 output, including documents encoded from its existing text formats; there is no historical-output selector.
+The official v1.2.0 executable reports exact `1.2.0` from `version` and `schema --version`, and emits its byte-identical immutable release schema. Its native encode uses that identity and official producer version. Exact historical 1.1.0 and 1.0.0 Cue JSON uses local historical structure/semantics through every promised command, preserving input identity, producer and source truth; inspection reports its loaded identity. Unknown, mismatched and former development identities and corrupt source envelopes fail before publication. Released v1.1.0 and v1.0.0 executables reject new 1.2.0 output, including documents encoded from its existing text formats; there is no historical-output selector.
 
-The frozen bounded ASS/SSA profile provides stable native detection/ingest, textual rendering, all twelve conversion directions, validation, privacy-safe inspection, exact restoration and shared help/completion discovery. Official new output declares `stable` with ingest, render and restore true and OCR false. Exact-current `schema_only` and complete `experimental` declarations remain accepted observations independent of installed codec availability and are never rewritten on load. Version 1.1.0 is tagged, publicly released and independently verified. Its public schema route and production site are deployed and independently verified through completed #76/#67; #78 completed protected deployment repair.
+The frozen bounded ASS/SSA profile provides stable native detection/ingest, textual rendering, all twelve conversion directions, validation, privacy-safe inspection, exact restoration and shared help/completion discovery. Official new output declares `stable` with ingest, render and restore true and OCR false. Exact-current `schema_only` and complete `experimental` declarations remain accepted observations independent of installed codec availability and are never rewritten on load. Version 1.2.0 is tagged, publicly released and independently verified. Historical 1.1.0 schema hosting and production deployment completed through #76/#67, with protected deployment repair through #78. S035 prepares matching 1.2.0 production schema/documentation; #86 remains open until authorized exact-main deployment and independent live verification pass after the owner merges the reviewed PR.
 
 ## Invocation, streams, and status
 
-Current candidate source uses exact `1.2.0` for version/schema discovery and new encode, with local historical 1.1.0 and 1.0.0 validation. Optional [consumer attributions and media timing](consumer-speakers.md) add count-only inspection and runtime media-conflict warnings without changing archived source observations. `validate` reports media boundary state when consumer data exists. Native render and conversion omit consumer fields with complete warnings/losses; strict refuses before publishing. The former `1.2.0-dev` identity rejects. These additions are not shipped by the published v1.1.0 executable.
+The published executable and current source use exact `1.2.0` for version/schema discovery and new encode, with local historical 1.1.0 and 1.0.0 validation. Optional [consumer attributions and media timing](consumer-speakers.md) add count-only inspection and runtime media-conflict warnings without changing archived source observations. `validate` reports media boundary state when consumer data exists. Native render and conversion omit consumer fields with complete warnings/losses; strict refuses before publishing. The former `1.2.0-dev` identity rejects. These additions ship in v1.2.0 and are absent from historical v1.1.0 packages.
 
 The root form is `cueson [global options] <command>`. Global options may appear before or after the command until the `--` delimiter ends option processing. User paths are literal; Cueson does not expand globs, tildes, or environment-variable syntax.
 
@@ -188,7 +188,7 @@ cueson schema --output quickstart/cueson.schema.json
 cueson [global options] version
 ```
 
-`version` accepts no local options or operands. Cueson v1.0.0 writes exactly `1.0.0` plus LF to stdout and uses stderr only for errors. The historical v0.0.0 binary continues to write `0.0.0`.
+`version` accepts no local options or operands. Cueson v1.2.0 writes exactly `1.2.0` plus LF to stdout and uses stderr only for errors. Historical v1.1.0, v1.0.0 and v0.0.0 binaries retain their own exact versions.
 
 ```text
 cueson version
@@ -211,4 +211,4 @@ cueson completion powershell
 
 ## Compatibility and release boundary
 
-The command names, options, aliases, streams and exit-code classes above form the stable v1 CLI compatibility surface. Go packages remain under `internal/` and are not public APIs. Published executable and schema identity is `1.1.0`, and the immutable v1.1 schema is reviewed, released and independently verified with that identity. GitHub Release publication does not itself serve the public schema endpoint or deploy production state. See the [compatibility contract](compatibility.md) and [release process](release-process.md).
+The command names, options, aliases, streams and exit-code classes above form the stable v1 CLI compatibility surface. Go packages remain under `internal/` and are not public APIs. Published executable and schema identity is `1.2.0`, and the immutable v1.2 schema is reviewed, released and independently verified with that identity. GitHub Release publication does not itself serve the public schema endpoint or deploy production state. See the [compatibility contract](compatibility.md) and [release process](release-process.md).

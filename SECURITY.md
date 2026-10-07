@@ -2,11 +2,11 @@
 
 ## Supported versions
 
-The published v1.1.0 release is the current stable line and includes the documented SubRip, WebVTT, ASS, SSA, conversion, validation, inspection, completion, schema, and restoration boundaries. The published v1.0.0 and v0.0.0 releases remain immutable historical foundations. Publication never extends any release beyond its documented capability boundary.
+The published v1.2.0 release is the current stable line and includes the documented SubRip, WebVTT, ASS, SSA, conversion, validation, inspection, completion, schema, and restoration boundaries. The published v1.1.0, v1.0.0 and v0.0.0 releases remain immutable historical foundations. Publication never extends any release beyond its documented capability boundary.
 
 Security corrections are applied to current development and assessed for every affected published release. Supported-version declarations accompany published stable releases and do not authorize rewriting an immutable release artifact or schema.
 
-The exact v1.1.0 release extends the stable boundaries to bounded ASS/SSA native workflows and all twelve conversion directions. Drawings, overrides and attachments are retained data, never external resource loading or execution. This support does not replace immutable historical resources.
+The exact v1.2.0 release retains bounded ASS/SSA native workflows and all twelve conversion directions, and adds optional consumer speaker attribution and declared media timing. Speaker IDs are bounded inert Unicode strings governed by consumers; their scope is never universal. Timed assignments must fit their cue and any declared media interval. These checks validate supplied bounds without measuring or authenticating audio duration. Drawings, overrides and attachments remain retained data, never external resource loading or execution. See the [consumer contract](docs/consumer-speakers.md) for precise constraints and export behavior. This support does not replace immutable historical resources.
 
 ## Reporting a vulnerability
 

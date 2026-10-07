@@ -191,20 +191,22 @@ func TestCurrentV1CandidateAndWorkingSpecificationMarkers(t *testing.T) {
 	assertViolation(t, result.violations, "docs/Cueson-Project-Specification-v0.0.0.md: stale capability or release claim remains: public v1.0.0 schema matches the repository artifact exactly")
 }
 
-func TestPublishedV110CurrentStateMarkersAreRequired(t *testing.T) {
+func TestPublishedV120CurrentStateMarkersAreRequired(t *testing.T) {
 	tests := []struct {
 		name   string
 		path   string
 		marker string
 	}{
-		{name: "readme release", path: "README.md", marker: "v1.1.0 released and independently verified"},
-		{name: "readme GitHub release", path: "README.md", marker: "v1.1.0 GitHub Release"},
-		{name: "schema release", path: "docs/schema.md", marker: "published v1.1.0 and v1.0.0 remain unchanged"},
-		{name: "compatibility release", path: "docs/compatibility.md", marker: "published v1.1.0 remains current"},
+		{name: "readme release", path: "README.md", marker: "v1.2.0 released and independently verified"},
+		{name: "readme GitHub release", path: "README.md", marker: "v1.2.0 GitHub Release"},
+		{name: "schema release", path: "docs/schema.md", marker: "historical v1.1.0 and v1.0.0 remain unchanged"},
+		{name: "compatibility release", path: "docs/compatibility.md", marker: "Published exact 1.2.0 stable release"},
 		{name: "immutable schema copies", path: "docs/Cueson-Project-Specification-v0.0.0.md", marker: "canonical, immutable repository, embedded, emitted, and packaged v1.1.0 schema copies match byte-for-byte"},
 		{name: "release notes publication", path: "docs/releases/v1.1.0.md", marker: "public v1.1.0 GitHub Release"},
 		{name: "release checksum", path: "docs/releases/v1.1.0.md", marker: "cueson_1.1.0_checksums.txt"},
-		{name: "scripted format publication", path: "docs/formats/ass-ssa.md", marker: "published v1.1.0 release"},
+		{name: "scripted format publication", path: "docs/formats/ass-ssa.md", marker: "published v1.2.0 release"},
+		{name: "new release publication", path: "docs/releases/v1.2.0.md", marker: "public v1.2.0 GitHub Release"},
+		{name: "new release checksums", path: "docs/releases/v1.2.0.md", marker: "cueson_1.2.0_checksums.txt"},
 		{name: "roadmap active candidate", path: "docs/roadmap.md", marker: "#84"},
 		{name: "project publication split", path: "docs/project-management.md", marker: "#85"},
 	}
