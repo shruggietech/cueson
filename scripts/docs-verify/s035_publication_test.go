@@ -46,6 +46,14 @@ func TestS035GeneratedSourcePagesRejectStalePublicationClaims(t *testing.T) {
 	for _, tc := range []struct{ path, claim string }{
 		{"docs/conversion.md", "S034 prepares this behavior in the exact 1.2.0 candidate without changing published downloads"},
 		{"docs/Cueson-Project-Specification-v0.0.0.md", "public availability remains v1.1.0"},
+		{"docs/formats/srt.md", "New encode output always uses exact 1.1.0"},
+		{"docs/formats/webvtt.md", "New encode output always uses exact 1.1.0"},
+		{"docs/formats/ass-ssa.md", "exact current `1.1.0` identity"},
+		{"docs/formats/ass-ssa.md", "#67 governs production activation and live verification"},
+		{"docs/cueson-media-format-guide.html", "Current v1.1.0 release boundary:"},
+		{"docs/cueson-media-format-guide.html", "issue #67 governs exact-main production activation"},
+		{"docs/cueson-media-format-guide.html", "Stable 1.1.0"},
+		{"docs/release-process.md", "Current public software availability is v1.1.0"},
 	} {
 		t.Run(tc.path, func(t *testing.T) {
 			repo := newRepository(t)

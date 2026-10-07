@@ -85,7 +85,7 @@ S029 finalized the dated history and froze a separate exact public release-note 
 
 After that squash merge, fresh green main CI, security, Site and same-bundle native package proof bound the actual resulting revision. The operator received one exact decision package with source, schema/legal identity, thirteen named/sized/digested assets, checksum bijection, three governed native evidence records and the digest of the explicitly selected formatted public notes. Neither an earlier S028 bundle nor the preparation PR head substituted for the final publication package.
 
-Exact tag creation/push and official release/asset publication each required their specific authorizations. Source, tool, artifact, schema, note or check changes, expired proof or partial publication would have required a refreshed decision. Independent public verification proved the approved tag, official release, exact assets and body, closing #66. Production deployment, live verification and epic/milestone reconciliation were completed separately through #67. Current public software availability is v1.1.0.
+Exact tag creation/push and official release/asset publication each required their specific authorizations. Source, tool, artifact, schema, note or check changes, expired proof or partial publication would have required a refreshed decision. Independent public verification proved the approved tag, official release, exact assets and body, closing #66. Production deployment, live verification and epic/milestone reconciliation were completed separately through #67. Public software availability at that S029 publication decision was v1.1.0; the current published release is v1.2.0.
 
 ## Pull-request and default-branch candidate binding
 

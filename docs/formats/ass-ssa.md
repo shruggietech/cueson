@@ -1,10 +1,10 @@
 # ASS and SSA format contract
 
-**Status:** Frozen bounded stable profile in the published v1.1.0 release; published v1.0.0 has no ASS/SSA codec
+**Status:** Frozen bounded stable profile retained in the published v1.2.0 release; historical v1.1.0 introduced the profile and published v1.0.0 has no ASS/SSA codec
 
 On 2026-09-15, S023 ratified the bounded native contract for the scripted-format milestone without adding codecs or changing a released capability. The [constitution](../../.specify/memory/constitution.md), [schema baseline](../schema.md), [compatibility contract](../compatibility.md), and [architecture](../architecture.md) control shared behavior. P02 owns the planning contract, P05 owns schema realization, and P06-P08 own corpus, ingest and rendering evidence. The P identifiers refer to atomic outcomes in the S023 milestone plan; their completion and development availability are stated separately below.
 
-S024 established typed schema/model recognition; S025-S027 completed native ingest/render, independent restoration, twelve-direction conversion, shared CLI discovery and conformance hardening. S028 froze and promoted this bounded profile to exact stable 1.1.0, and #66 published and independently verified the release. Official native encode and private targets declare stable capability; exact-current schema-only and complete experimental declarations remain accepted unchanged observations. Former development identities are not accepted. Published v1.0.0 remains unchanged. The reviewed 1.1.0 schema/site artifact belongs to #76; #67 governs production activation and live verification.
+S024 established typed schema/model recognition; S025-S027 completed native ingest/render, independent restoration, twelve-direction conversion, shared CLI discovery and conformance hardening. S028 froze and promoted this bounded profile to exact stable 1.1.0, and #66 published and independently verified that historical release. S030 completed its schema/site activation through #76 and #67. The published v1.2.0 release retains the native profile and emits exact 1.2.0 documents while accepting historical 1.0.0 and 1.1.0 through their local contracts. Optional [consumer speaker assignments and media timing](../consumer-speakers.md) remain separate from native actor observations and receive explicit omission reporting during textual rendering and conversion. Official native encode and private targets declare stable capability; exact-current schema-only and complete experimental declarations remain accepted unchanged observations. Former development identities are not accepted. Published v1.0.0 remains unchanged. S035 prepares matching v1.2.0 schema/site content; #86 governs authorized post-merge production activation and independent live verification.
 
 ## References and authority
 
@@ -21,7 +21,7 @@ References were inspected on 2026-09-15. They inform the dialect boundaries; the
 
 ## Capability and dialect boundaries
 
-| Capability | Released v1.0.0 | Published v1.1.0 | Acceptance owner or remaining gate |
+| Capability | Released v1.0.0 | Published v1.2.0 (profile introduced in v1.1.0) | Acceptance owner or remaining gate |
 |---|---|---|---|
 | ASS/SSA schema recognition | Unavailable | Available; earlier schema-only observations remain accepted. | P05 defines annotated native shapes. |
 | Raw detection and decoding | Unavailable | Stable bounded content-first detection and strict UTF-8 decoding. | P07 implements the bounded profile below. |
@@ -48,7 +48,7 @@ Accepted event timing is nonnegative `h:mm:ss.cc` with one or more hour digits, 
 
 ## Ordered native shape and declared fields
 
-The current release schema realizes the following structural ownership. S023 first ratified these logical shapes for P05; S028 accepted them under exact current `1.1.0` identity, preserving the original ownership boundaries.
+The current exact `1.2.0` release schema retains the following structural ownership. S023 first ratified these logical shapes for P05; S028 accepted them under the historical `1.1.0` identity, preserving the original ownership boundaries.
 
 | Location | Properties and meaning |
 |---|---|

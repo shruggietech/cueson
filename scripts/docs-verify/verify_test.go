@@ -204,7 +204,7 @@ func TestPublishedV120CurrentStateMarkersAreRequired(t *testing.T) {
 		{name: "immutable schema copies", path: "docs/Cueson-Project-Specification-v0.0.0.md", marker: "canonical, immutable repository, embedded, emitted, and packaged v1.1.0 schema copies match byte-for-byte"},
 		{name: "release notes publication", path: "docs/releases/v1.1.0.md", marker: "public v1.1.0 GitHub Release"},
 		{name: "release checksum", path: "docs/releases/v1.1.0.md", marker: "cueson_1.1.0_checksums.txt"},
-		{name: "scripted format publication", path: "docs/formats/ass-ssa.md", marker: "published v1.1.0 release"},
+		{name: "scripted format publication", path: "docs/formats/ass-ssa.md", marker: "published v1.2.0 release"},
 		{name: "new release publication", path: "docs/releases/v1.2.0.md", marker: "public v1.2.0 GitHub Release"},
 		{name: "new release checksums", path: "docs/releases/v1.2.0.md", marker: "cueson_1.2.0_checksums.txt"},
 		{name: "roadmap active candidate", path: "docs/roadmap.md", marker: "#84"},

@@ -111,6 +111,13 @@ test("published v1.2 release, downloads, and speaker navigation derive from main
   assert.match(rendered, /1\.1\.0/);
   assert.doesNotMatch(rendered, /unpublished 1\.1\.0 candidate/i);
   assert.doesNotMatch(rendered, /Unavailable for scripted formats|conversion and the complete later CLI freeze remain deferred/);
+  assert.match(rendered, /current exact `1\.2\.0` release schema/);
+  assert.doesNotMatch(rendered, /exact current `1\.1\.0` identity|#67 governs production activation and live verification/);
+  for (const format of ["subrip", "webvtt"]) {
+    const page = await readFile(path.join(siteRoot, "content", "generated", "formats", `${format}.mdx`), "utf8");
+    assert.match(page, /New encode output always uses exact 1\.2\.0/);
+    assert.doesNotMatch(page, /New encode output always uses exact 1\.1\.0/);
+  }
   const currentGeneratedDocuments = await Promise.all([
     readFile(path.join(siteRoot, "content", "generated", "contributing.mdx"), "utf8"),
     readFile(path.join(siteRoot, "content", "generated", "security.mdx"), "utf8"),
@@ -129,10 +136,14 @@ test("published v1.2 release, downloads, and speaker navigation derive from main
   assert.match(speakerPage, /1 to 256 decoded Unicode scalar values/);
   assert.match(speakerPage, /does not independently measure or authenticate the audio/);
   const guide = await readFile(path.join(siteRoot, "public", "guides", "media-formats", "index.html"), "utf8");
+  assert.match(guide, /Current v1\.2\.0 release boundary:/);
+  assert.match(guide, /immutable v0\.0\.0, v1\.0\.0, v1\.1\.0 and v1\.2\.0 schemas/);
+  assert.match(guide, /issue #86 governs authorized post-merge production activation/);
+  assert.doesNotMatch(guide, /Current v1\.1\.0 release boundary:|Stable 1\.1\.0|issue #67 governs exact-main production activation/);
   for (const dialect of ["ASS", "SSA"]) {
     const row = guide.match(new RegExp(`<div class="format-name">${dialect}</div>[\\s\\S]*?</tr>`));
     assert.ok(row, `${dialect} support row is absent`);
-    assert.match(row[0], /Stable 1\.1\.0/);
+    assert.match(row[0], /Stable 1\.2\.0/);
     assert.doesNotMatch(row[0], /status-future">Future/);
   }
 });
