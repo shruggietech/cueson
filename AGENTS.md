@@ -69,6 +69,8 @@ Normal pull requests to the default branch contain at least one complete closing
 
 If round one finds issues, inspect and address every finding, resolve threads only after the concern is actually handled, rerun verification, update the head, and then request exactly one second review with `@codex review`. Do not request a third review automatically.
 
+Before publishing that second-round request, include exactly one backticked full commit ID for the requested head and verify its repository-policy binding. Preserve the request receipt after publication: editing it changes its evidence timestamp and can invalidate round-two attribution. A malformed or stale receipt never authorizes another review or a self-issued waiver; finish the remediation and present the exact remaining policy decision to the operator.
+
 An AI agent MUST NOT perform the final pull-request merge, enable auto-merge, or enter a merge queue unless the human operator explicitly authorizes that specific pull request. A merge authorization is single-use and expires when material state changes require new judgment.
 
 ## Push, release, and production boundaries

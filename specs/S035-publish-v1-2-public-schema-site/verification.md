@@ -53,6 +53,8 @@ The second and final Codex review found stale v1.1.0 current-state claims in the
 
 T014/T015 exact pushed head, PR identity, hosted checks and external review outcomes are recorded in the final formatted/read-back PR body after they occur. They are not claimed complete by this pre-push record. No second Codex round is requested unless the automatic first round reports findings; no third round is authorized.
 
+The single second-round request originally omitted its exact backticked head required by repository policy. Correcting that existing receipt after the completed review changed its evidence timestamp, so the trusted default-branch policy treats the result as stale despite all findings being fixed and resolved. No third request or operator waiver was issued. AGENTS.md now requires the exact head binding before publication and preserves the posted receipt. The remaining policy gate requires an explicit operator decision; successful product/site checks do not override it.
+
 ## Production before-state and remaining execution
 
 Independent live HTTPS before-state confirms `https://cueson.io/deployment.json` returned200 with revision `ec8cab355f833efb5a632dcdc980881e294ee2f8`, release1.1.0 and three schemas. The v1.2.0 schema, release page and consumer-speaker route each returned404. This distinguishes already verified GitHub publication from website activation.
